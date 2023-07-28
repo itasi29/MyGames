@@ -11,12 +11,18 @@ public class RollingControl : MonoBehaviour
 
     void Start()
     {
-        
+        this.rigid = GetComponent<Rigidbody2D>();
     }
 
     void FixedUpdate()
     {
         this.rigid.AddForce(speed);
+
+        // 画面外にいったら消す
+        if (this.transform.position.x >= 11.5f)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)

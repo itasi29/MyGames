@@ -13,7 +13,7 @@ public class missileAttack : MonoBehaviour
     {
         // すべてに反応するように少しの間残す
         waitFrame++;
-        if (2 < waitFrame)
+        if (2 <= waitFrame)
         {
             Destroy(this.gameObject);
         }
