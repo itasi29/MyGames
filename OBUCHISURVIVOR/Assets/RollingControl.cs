@@ -23,6 +23,8 @@ public class RollingControl : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
+        Debug.Log("OK");
     }
 
     void OnTriggerEnter2D(Collider2D collision)
