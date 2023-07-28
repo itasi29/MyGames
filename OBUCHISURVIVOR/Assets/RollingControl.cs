@@ -25,6 +25,7 @@ public class RollingControl : MonoBehaviour
         }
 
         Debug.Log("OK");
+        Debug.Log("WWWWWWWWWW");
     }
 
     void OnTriggerEnter2D(Collider2D collision)
