@@ -25,6 +25,7 @@ public class RollingControl : MonoBehaviour
         }
 
         Debug.Log("OK");
+        Debug.Log("ERRAA");
     }
 
     void OnTriggerEnter2D(Collider2D collision)
