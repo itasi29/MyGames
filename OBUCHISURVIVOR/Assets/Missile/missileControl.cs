@@ -10,6 +10,12 @@ public class missileControl : MonoBehaviour
     // 攻撃をするようの変数
     public GameObject attack;
 
+    void Start()
+    {
+        // 横向きに発射させるよう回転
+        this.transform.Rotate(0.0f, 0.0f, 90.0f);
+    }
+
     void FixedUpdate()
     {
         this.transform.Translate(0.0f, speed, 0.0f);

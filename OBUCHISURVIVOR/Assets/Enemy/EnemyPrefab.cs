@@ -4,35 +4,37 @@ using UnityEngine;
 
 public class EnemyPrefab : MonoBehaviour
 {
-    // ¶¬‚·‚é“GƒLƒƒƒ‰‚ð“ü‚ê‚é•Ï”
-    // ¶¬ŠÔŠu
-    public GameObject enemy1;
-    public int generationFrame1 = 1;
-    public GameObject enemy2;
-    public int generationFrame2 = 1;
-    public GameObject enemy3;
-    public int generationrame3 = 1;
+    // ç”Ÿæˆã™ã‚‹æ•µã‚­ãƒ£ãƒ©ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
+    // ç”Ÿæˆé–“éš”
+    [SerializeField] GameObject[] enemy;
+    [SerializeField] int[] createFrame;
 
-    // ¶¬ƒJƒEƒ“ƒg—p
-    int createFreamCount;
+    // ç”Ÿæˆã‚«ã‚¦ãƒ³ãƒˆç”¨
+    [SerializeField] int[] createFrameCount;
 
     void Start()
     {
-        createFreamCount = 1;
+        for (int i = 0; i < createFrameCount.Length; i++)
+        {
+            createFrameCount[i] = 0;
+        }
     }
 
     void FixedUpdate()
     {
-        createFreamCount++;
-
-        if (createFreamCount % generationFrame1 == 0 && generationFrame1 != 1)
+        for (int i = 0; i < createFrameCount.Length; i++)
         {
-            Instantiate(enemy1);
+            createFrameCount[i]++;
         }
 
-        if (createFreamCount % generationFrame2 == 0 && generationFrame2 != 1)
+        for (int i = 0; i < createFrameCount.Length; i++)
         {
-            Instantiate(enemy2);
+            if (createFrame[i] <= createFrameCount[i])
+            {
+                createFrameCount[i] = 0;
+
+                Instantiate(enemy[i]);
+            }
         }
     }
 }

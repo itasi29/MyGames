@@ -2,23 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RollingControl : MonoBehaviour
+public class StormTornadoControl : MonoBehaviour
 {
-    int attack = 40;
-    Vector2 speed = new Vector2(3.0f, 0.0f);
+    int attack = 10;
 
     Rigidbody2D rigid;
 
     void Start()
     {
         this.rigid = GetComponent<Rigidbody2D>();
+
+        // 初速度のみ与える
+        this.rigid.AddForce(new Vector2(7.0f, 0.0f), ForceMode2D.Impulse);
     }
 
+    
     void FixedUpdate()
     {
-        // 徐々に加速
-        this.rigid.AddForce(speed);
-
         // 画面外にいったら消す
         if (this.transform.position.x >= 11.5f)
         {

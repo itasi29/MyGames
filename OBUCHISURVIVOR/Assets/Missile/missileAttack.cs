@@ -22,13 +22,9 @@ public class missileAttack : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         // 敵にあたったらダメージを与える
-        if (collision.gameObject.CompareTag("enemyShortDistance"))
+        if (collision.gameObject.CompareTag("enemy"))
         {
-            collision.gameObject.GetComponent<EnemyMoveShortDistance>().HpDown(this.attack);
-        }
-        else if (collision.gameObject.CompareTag("enemyLongDistance"))
-        {
-            collision.gameObject.GetComponent<EnemyMoveLongDistance>().HpDown(this.attack);
+            collision.gameObject.GetComponent<EnemyMove>().HpDown(this.attack);
         }
     }
 }

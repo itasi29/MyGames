@@ -2,22 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RollingControl : MonoBehaviour
+public class IceSlasherControl : MonoBehaviour
 {
-    int attack = 40;
-    Vector2 speed = new Vector2(3.0f, 0.0f);
+    int attack = 3;
 
-    Rigidbody2D rigid;
+    float speed = 0.2f;
 
     void Start()
     {
-        this.rigid = GetComponent<Rigidbody2D>();
+        
     }
 
     void FixedUpdate()
     {
-        // 徐々に加速
-        this.rigid.AddForce(speed);
+        this.transform.Translate(speed, 0.0f, 0.0f);
 
         // 画面外にいったら消す
         if (this.transform.position.x >= 11.5f)
@@ -28,10 +26,11 @@ public class RollingControl : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // 敵にあたったらダメージを与える
+        // 敵にあたったらダメージを与え、アイス攻撃処理を行う
         if (collision.gameObject.CompareTag("enemy"))
         {
             collision.gameObject.GetComponent<EnemyMove>().HpDown(this.attack);
+            collision.gameObject.GetComponent<EnemyMove>().Freeze();
         }
     }
 }
