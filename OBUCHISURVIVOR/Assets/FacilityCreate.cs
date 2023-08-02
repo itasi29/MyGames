@@ -8,7 +8,6 @@ public class FacilityCreate : MonoBehaviour
     [SerializeField] GameObject leftBt;
     [SerializeField] GameObject selectBt;
     [SerializeField] GameObject exisBt;
-    [SerializeField] GameObject facilitys;
 
     public int facilityNo = 0;
 
@@ -21,13 +20,10 @@ public class FacilityCreate : MonoBehaviour
 
     public void OnClick()
     {
-        Debug.Log("Hit");
-
         rightBt.SetActive(true);
         leftBt.SetActive(true);
         selectBt.SetActive(true);
         exisBt.SetActive(true);
-        facilitys.SetActive(true);
 
         PlayerPrefs.SetInt("FacilityNo", facilityNo);
 

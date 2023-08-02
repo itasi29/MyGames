@@ -22,6 +22,11 @@ public class FacilitySelect : MonoBehaviour
 
     // 現状写しているプレハブ
     GameObject nowInstance;
+    // プレハブ生成
+    GameObject rightInstance;
+    GameObject leftInstance;
+    GameObject selectInstance;
+    GameObject exisInstance;
 
     // 選択している施設の番号
     int _selected = 0;
@@ -73,14 +78,6 @@ public class FacilitySelect : MonoBehaviour
 
     public async void SelectFacility()
     {
-        PlayerPrefs.SetInt("FacilitySelect", _selected);
-
-        Destroy(nowInstance);
-        rightBt.SetActive(false);
-        leftBt.SetActive(false);
-        selectBt.SetActive(false);
-        exisBt.SetActive(false);
-
         // スクリーン座標をワールド座標に
         setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
         // Z軸がカメラ外のため0に
@@ -99,11 +96,36 @@ public class FacilitySelect : MonoBehaviour
         // ボタンの透明化
         setFacilitys[_facilityNo].GetComponent<Image>().color = color;
 
-        // ほかを動かしだす
-        Time.timeScale = 1;
+        End();
     }
 
     public void Exist()
+    {
+        End();
+    }
+
+    public void StartInstance()
+    {
+        nowInstance = Instantiate(createFacilitys[_selected]);
+        _facilityNo = PlayerPrefs.GetInt("FacilityNo", 0);
+
+        /*
+        rightInstance = Instantiate(rightBt);
+        leftInstance = Instantiate(leftBt);
+        selectInstance = Instantiate(selectBt);
+        exisInstance = Instantiate(exisBt);
+
+        rightInstance.transform.SetParent(rightInstance.transform, false);
+        leftInstance.transform.SetParent(leftInstance.transform, false);
+        selectInstance.transform.SetParent(selectInstance.transform, false);
+        exisInstance.transform.SetParent(exisInstance.transform, false);
+        */
+
+        // ほかの動きを止める
+        Time.timeScale = 0;
+    }
+
+    void End()
     {
         PlayerPrefs.SetInt("FacilitySelect", _selected);
 
@@ -115,14 +137,5 @@ public class FacilitySelect : MonoBehaviour
 
         // ほかを動かしだす
         Time.timeScale = 1;
-    }
-
-    public void StartInstance()
-    {
-        nowInstance = Instantiate(createFacilitys[_selected]);
-        _facilityNo = PlayerPrefs.GetInt("FacilityNo", 0);
-
-        // ほかの動きを止める
-        Time.timeScale = 0;
     }
 }

@@ -160,7 +160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -350, y: 150}
+  m_AnchoredPosition: {x: -350, y: 155}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &16134397
@@ -179,7 +179,6 @@ MonoBehaviour:
   leftBt: {fileID: 1743150453}
   selectBt: {fileID: 325801412}
   exisBt: {fileID: 1246397523}
-  facilitys: {fileID: 869216395}
   facilityNo: 0
 --- !u!114 &16134398
 MonoBehaviour:
@@ -687,6 +686,7 @@ MonoBehaviour:
   - {fileID: 8431572160201887164, guid: d42fbbbadbed5304082f26e4adff9e90, type: 3}
   - {fileID: 8649848156904846613, guid: 41cd9622fd79f5949bb1de4b15d65201, type: 3}
   - {fileID: 119840153655905328, guid: 30cfd636e4e37b749a982978dc430d44, type: 3}
+  deleteObj: {fileID: 4447107740422361088, guid: 64408ee8a48daea44b34abca6374f3bf, type: 3}
 --- !u!1 &884700502
 GameObject:
   m_ObjectHideFlags: 0
@@ -754,7 +754,6 @@ MonoBehaviour:
   leftBt: {fileID: 1743150453}
   selectBt: {fileID: 325801412}
   exisBt: {fileID: 1246397523}
-  facilitys: {fileID: 869216395}
   facilityNo: 1
 --- !u!114 &912712694
 MonoBehaviour:
@@ -1351,7 +1350,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -350, y: -150}
+  m_AnchoredPosition: {x: -350, y: -155}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1372075508
@@ -1370,7 +1369,6 @@ MonoBehaviour:
   leftBt: {fileID: 1743150453}
   selectBt: {fileID: 325801412}
   exisBt: {fileID: 1246397523}
-  facilitys: {fileID: 869216395}
   facilityNo: 2
 --- !u!114 &1372075509
 MonoBehaviour:
