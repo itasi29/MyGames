@@ -29,10 +29,13 @@ public class missileControl : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        Instantiate(this.attack, this.transform.position, Quaternion.identity);
+        if (collision.gameObject.CompareTag("enemy"))
+        {
+            Instantiate(this.attack, this.transform.position, Quaternion.identity);
 
-        Destroy(this.gameObject);
+            Destroy(this.gameObject);
+        }
     }
 }

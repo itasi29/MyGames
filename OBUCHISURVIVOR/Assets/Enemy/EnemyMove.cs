@@ -9,9 +9,6 @@ public class EnemyMove : MonoBehaviour
     public int attack = 4;
     public float speed = 0.05f;
 
-    // スピード倍率
-    public int speedMultiplier = 1;
-
     // 初期位置位置
     float posX;
     float posY;
@@ -36,9 +33,6 @@ public class EnemyMove : MonoBehaviour
 
     void Start()
     {
-        // 速度の倍率処理
-        speed *= speedMultiplier;
-
         // 位置の初期化
         posY = Random.Range(-1, 2) * 3.0f;
         posX = 9.5f;

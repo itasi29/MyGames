@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,9 @@ public class FacilitySelect : MonoBehaviour
     [SerializeField] GameObject[] setFacilitys;
     // 元となるもの
     [SerializeField] GameObject[] createFacilitys;
+
+    // 元あった施設破壊用
+    [SerializeField] GameObject deleteObj;
 
     // 現状写しているプレハブ
     GameObject nowInstance;
@@ -33,6 +37,8 @@ public class FacilitySelect : MonoBehaviour
 
     // 生成した施設
     GameObject createFacility;
+    // 元あった施設破壊用
+    GameObject delete;
 
     void Start()
     {
@@ -43,29 +49,29 @@ public class FacilitySelect : MonoBehaviour
 
     public void Right()
     {
-        // 現在のものを非アクティブ化
+        // 現在のものを削除
         Destroy(nowInstance);
         _selected++;
 
         if (_selected >= createFacilitys.Length)
             _selected = 0;
-        // 次のものをアクティブ化
+        // 次のものを生成
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
 
-    public void Left() 
+    public void Left()
     {
-        // 現在のものを非アクティブ化
+        // 現在のものを削除
         Destroy(nowInstance);
         _selected--;
 
         if (_selected < 0)
             _selected = createFacilitys.Length - 1;
-        // 次のものをアクティブ化
+        // 次のものを生成
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
 
-    public void SelectFacility()
+    public async void SelectFacility()
     {
         PlayerPrefs.SetInt("FacilitySelect", _selected);
 
@@ -75,17 +81,26 @@ public class FacilitySelect : MonoBehaviour
         selectBt.SetActive(false);
         exisBt.SetActive(false);
 
-        Debug.Log("HIT");
-
         // スクリーン座標をワールド座標に
         setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
         // Z軸がカメラ外のため0に
         setPosition.z = 0;
+
+        // 設置する場所に元々施設があったら消す
+        delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
+        Time.timeScale = 1;
+        await Task.Delay(50);
+        Time.timeScale = 0;
+        Destroy(this.delete);
+
         // プレハブの生成
         createFacility = Instantiate(createFacilitys[_selected], setPosition, Quaternion.identity);
         createFacility.GetComponent<FacilityPrefab>().StartCreate();
         // ボタンの透明化
         setFacilitys[_facilityNo].GetComponent<Image>().color = color;
+
+        // ほかを動かしだす
+        Time.timeScale = 1;
     }
 
     public void Exist()
@@ -97,11 +112,17 @@ public class FacilitySelect : MonoBehaviour
         leftBt.SetActive(false);
         selectBt.SetActive(false);
         exisBt.SetActive(false);
+
+        // ほかを動かしだす
+        Time.timeScale = 1;
     }
 
     public void StartInstance()
     {
         nowInstance = Instantiate(createFacilitys[_selected]);
         _facilityNo = PlayerPrefs.GetInt("FacilityNo", 0);
+
+        // ほかの動きを止める
+        Time.timeScale = 0;
     }
 }

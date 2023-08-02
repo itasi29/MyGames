@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    // ‘Ì—Í
+    // ä½“åŠ›
     int hp;
 
-    // ‹­UŒ‚
+    // å¼·æ”»æ’ƒ
     int gaugeCount;
     const int kGaugeMax = 100;
     int attack;
@@ -17,38 +17,26 @@ public class PlayerControl : MonoBehaviour
         
     }
 
-    void Update()
-    {
-        if (kGaugeMax <= gaugeCount)
-        {
-        }
-    }
-
-    void FixedUpdate()
-    {
-        
-    }
-
-    // HP‚ğŒ¸‚ç‚·ˆ—
+    // HPã‚’æ¸›ã‚‰ã™å‡¦ç†
     public void HpDown(int attack)
     {
-        // “G‚ÌUŒ‚—Í•ªHP‚ğŒ¸‚ç‚·
+        // æ•µã®æ”»æ’ƒåŠ›åˆ†HPã‚’æ¸›ã‚‰ã™
         hp -= attack;
 
-        // HP‚ª0–¢–‚É‚È‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+        // HPãŒ0æœªæº€ã«ãªã‚‰ãªã„ã‚ˆã†ã«ã™ã‚‹
         if (hp <= 0)
         {
             hp = 0;
         }
     }
 
-    // ƒQ[ƒW‚ğ‚½‚ß‚éˆ—
+    // ã‚²ãƒ¼ã‚¸ã‚’ãŸã‚ã‚‹å‡¦ç†
     public void GaugeUp()
     {
-        // ƒQ[ƒW‚ğ‘‚â‚µ‚Ä‚¢‚­
+        // ã‚²ãƒ¼ã‚¸ã‚’å¢—ã‚„ã—ã¦ã„ã
         gaugeCount += 2;
 
-        // Å‘åƒQ[ƒW‚Ü‚Å’™‚Ü‚Á‚½‚ç‚»‚êˆÈã‚¢‚©‚È‚¢‚æ‚¤‚É‚·‚é
+        // æœ€å¤§ã‚²ãƒ¼ã‚¸ã¾ã§è²¯ã¾ã£ãŸã‚‰ãã‚Œä»¥ä¸Šã„ã‹ãªã„ã‚ˆã†ã«ã™ã‚‹
         if (kGaugeMax <= gaugeCount)
         {
             gaugeCount = kGaugeMax;
