@@ -12,6 +12,8 @@ public class FacilityPrefab : MonoBehaviour
     // 生成間隔(秒*50)
     public int updateFrame = 300;
 
+    bool isCreate = false;
+
     void Start()
     {
         createFrame = updateFrame;
@@ -19,13 +21,21 @@ public class FacilityPrefab : MonoBehaviour
 
     void FixedUpdate()
     {
-        createFrame++;
-
-        if (updateFrame <= createFrame)
+        if (isCreate)
         {
-            Instantiate(this.facility, this.transform.position, Quaternion.identity);
+            createFrame++;
 
-            createFrame = 0;
+            if (updateFrame <= createFrame)
+            {
+                Instantiate(this.facility, this.transform.position, Quaternion.identity);
+
+                createFrame = 0;
+            }
         }
+    }
+
+    public void StartCreate()
+    {
+        isCreate= true;
     }
 }

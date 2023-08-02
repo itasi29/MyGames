@@ -10,12 +10,16 @@ public class FacilityCreate : MonoBehaviour
     [SerializeField] GameObject exisBt;
     [SerializeField] GameObject facilitys;
 
+    public int facilityNo = 0;
+
+    FacilitySelect facility;
+
     void Start()
     {
-
+        facility = GameObject.Find("Facilitys").GetComponent<FacilitySelect>();
     }
 
-    public void OnClickThis()
+    public void OnClick()
     {
         Debug.Log("Hit");
 
@@ -24,6 +28,10 @@ public class FacilityCreate : MonoBehaviour
         selectBt.SetActive(true);
         exisBt.SetActive(true);
         facilitys.SetActive(true);
+
+        PlayerPrefs.SetInt("FacilityNo", facilityNo);
+
+        facility.StartInstance();
     }
 
 }

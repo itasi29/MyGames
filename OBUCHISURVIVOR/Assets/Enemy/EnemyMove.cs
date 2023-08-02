@@ -60,7 +60,7 @@ public class EnemyMove : MonoBehaviour
     {
         if (this.hp <= 0)
         {
-            player.GaugeUp();
+            //player.GaugeUp();
             Destroy(this.gameObject);
         }
 
