@@ -12,9 +12,21 @@ public class PlayerControl : MonoBehaviour
     const int kGaugeMax = 100;
     int attack;
 
+    // 生存確認
+    bool isExist;
+
     void Start()
     {
-        
+        isExist = true;
+    }
+
+    void FixedUpdate()
+    {
+        // 死んだ場合
+        if (!isExist)
+        {
+            
+        }
     }
 
     // HPを減らす処理
