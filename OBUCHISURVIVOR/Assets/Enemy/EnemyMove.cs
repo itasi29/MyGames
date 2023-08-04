@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class EnemyMove : MonoBehaviour
 {
+    // ランダム生成するかしないか
+    public bool isRandomCreate = false;
+
+    // 落とす素材数
+    public int dropMaterialMin = 0;
+    public int dropMaterialMax = 2;
+
     // 敵のステータス
     public int hp = 25;
     public int attack = 4;
@@ -34,9 +41,18 @@ public class EnemyMove : MonoBehaviour
     void Start()
     {
         // 位置の初期化
-        posY = Random.Range(-1, 2) * 3.0f;
-        posX = 9.5f;
-        this.transform.position = new Vector2(posX, posY);
+        if (isRandomCreate)
+        {
+            posX = 9.5f;
+            posY = Random.Range(-1, 2) * 3.0f;
+            this.transform.position = new Vector2(posX, posY);
+        }
+        else
+        {
+            posX = 9.5f;
+            posY = this.transform.position.y;
+            this.transform.position = new Vector2(posX, posY);
+        }
 
         // 攻撃間隔の初期化
         waitFrameAttack = 0;
@@ -47,14 +63,18 @@ public class EnemyMove : MonoBehaviour
         waitFreeze = kFreeze;
         isFreeze = false;
 
-        //player = GameObject.Find("PlayerControl").GetComponent<PlayerControl>();
+        player = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
     }
 
     void FixedUpdate()
     {
+        // hpがなくなったら消滅
         if (this.hp <= 0)
         {
-            //player.GaugeUp();
+            // ゲージアップ処理
+            player.GaugeUp();
+            // 素材ドロップ処理
+            player.UpMaterialNum(dropMaterialMin, dropMaterialMax);
             Destroy(this.gameObject);
         }
 
@@ -84,7 +104,7 @@ public class EnemyMove : MonoBehaviour
                 if (waitFrameAttack > 40)
                 {
                     // プレイヤーのHPを減らす
-                    //player.HpDown(this.attack);
+                    player.HpDown(this.attack);
 
                     // 待機時間を初めに戻す
                     waitFrameAttack = 0;
@@ -107,21 +127,21 @@ public class EnemyMove : MonoBehaviour
         Debug.Log(this.hp);
     }
 
-    // アイス攻撃処理
+    /// アイス攻撃処理
     public void Freeze()
     {
         isFreeze = true;
         waitFreeze = 0;
     }
 
-    // スリップダメージ処理
+    /// スリップダメージ処理
     public void SlipDamage(int attack)
     {
         if (kSlipDamage <= waitSlipDamage)
         {
             hp -= attack;
             // 現在のHPをログに流す
-            Debug.Log(this.hp);
+            Debug.Log("[Enemy]" + this.hp);
 
             waitSlipDamage = 0;
         }
