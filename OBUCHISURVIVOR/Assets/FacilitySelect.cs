@@ -22,11 +22,13 @@ public class FacilitySelect : MonoBehaviour
 
     // 現状写しているプレハブ
     GameObject nowInstance;
+    /*
     // プレハブ生成
     GameObject rightInstance;
     GameObject leftInstance;
     GameObject selectInstance;
     GameObject exisInstance;
+    */
 
     // 選択している施設の番号
     int _selected = 0;

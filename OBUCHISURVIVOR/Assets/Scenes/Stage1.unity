@@ -1593,7 +1593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy:
-  - {fileID: 2271500325669773271, guid: 8eae152c8ae1e26498c77820a42f64b8, type: 3}
+  - {fileID: 3835607111078138984, guid: 8eae152c8ae1e26498c77820a42f64b8, type: 3}
   createFrame: 64000000
   createFrameCount: 00000000
   createEnemyMax: 0a000000

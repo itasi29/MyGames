@@ -24,15 +24,9 @@ public class EnemyPrefab : MonoBehaviour
         for (int i = 0; i < createFrameCount.Length; i++)
         {
             createFrameCount[i] = 0;
-        }
 
-        for (int i = 0; i < createCount.Length; i++)
-        {
             createCount[i] = 0;
-        }
 
-        for (int i = 0; i < isCreate.Length; i++)
-        {
             isCreate[i] = true;
         }
     }
@@ -44,11 +38,6 @@ public class EnemyPrefab : MonoBehaviour
             if (!isCreate[i]) continue;
 
             createFrameCount[i]++;
-        }
-
-        for (int i = 0; i < createFrameCount.Length; i++)
-        {
-            if (!isCreate[i]) continue;
 
             // 生成待機時間が経っているか
             if (createFrame[i] <= createFrameCount[i])

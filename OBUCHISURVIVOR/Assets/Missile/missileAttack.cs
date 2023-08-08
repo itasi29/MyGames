@@ -19,7 +19,7 @@ public class missileAttack : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         // 敵にあたったらダメージを与える
         if (collision.gameObject.CompareTag("enemy"))

@@ -16,12 +16,16 @@ public class EnemyMove : MonoBehaviour
     public int attack = 4;
     public float speed = 0.05f;
 
+    // 攻撃のオブジェ
+ //   [SerializeField] GameObject attackObj;
+    GameObject attackInstance;
+
     // 初期位置位置
     float posX;
     float posY;
 
     // 止まる位置
-    float stopPosX = -3.0f;
+    public float stopPosX = -3.0f;
 
     // 攻撃間隔
     int waitFrameAttack;
@@ -98,13 +102,12 @@ public class EnemyMove : MonoBehaviour
             // 攻撃に位置にいるなら一定間隔で攻撃する
             else
             {
-                // どちらのフレームを増やしていくか判定
                 waitFrameAttack++;
 
                 if (waitFrameAttack > 40)
                 {
-                    // プレイヤーのHPを減らす
-                    player.HpDown(this.attack);
+            //        attackInstance = Instantiate(attackObj);
+            //        attackInstance.GetComponent<EnemyAttack>().SetAttack(attack);
 
                     // 待機時間を初めに戻す
                     waitFrameAttack = 0;
