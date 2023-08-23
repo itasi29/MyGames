@@ -17,7 +17,8 @@ public class EnemyMove : MonoBehaviour
     public float speed = 0.05f;
 
     // 攻撃のオブジェ
- //   [SerializeField] GameObject attackObj;
+    //   [SerializeField] GameObject attackObj;
+    public GameObject attackPrefab;
     GameObject attackInstance;
 
     // 初期位置位置
@@ -82,7 +83,7 @@ public class EnemyMove : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        // アイス攻撃を受けていたら
+        // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
             waitFreeze++;
@@ -106,8 +107,10 @@ public class EnemyMove : MonoBehaviour
 
                 if (waitFrameAttack > 40)
                 {
-            //        attackInstance = Instantiate(attackObj);
-            //        attackInstance.GetComponent<EnemyAttack>().SetAttack(attack);
+                    //        attackInstance = Instantiate(attackObj);
+                    //        attackInstance.GetComponent<EnemyAttack>().SetAttack(attack);
+                    attackInstance = Instantiate(attackPrefab);
+                    attackInstance.transform.position = this.transform.position;
 
                     // 待機時間を初めに戻す
                     waitFrameAttack = 0;

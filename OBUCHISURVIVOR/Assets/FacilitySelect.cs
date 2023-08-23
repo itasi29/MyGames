@@ -7,10 +7,15 @@ using UnityEngine.UI;
 public class FacilitySelect : MonoBehaviour
 {
     // ボタンの情報
-    [SerializeField] GameObject rightBt;
-    [SerializeField] GameObject leftBt;
-    [SerializeField] GameObject selectBt;
-    [SerializeField] GameObject exisBt;
+    public GameObject rightBt;
+    public GameObject leftBt;
+    public GameObject selectBt;
+    public GameObject exisBt;
+
+    // レベルアップ処理ボタン
+    public GameObject changeBt;
+    public GameObject levelUpBt;
+    public GameObject levelUpImg;
 
     // 入れる場所
     [SerializeField] GameObject[] setFacilitys;
@@ -18,7 +23,10 @@ public class FacilitySelect : MonoBehaviour
     [SerializeField] GameObject[] createFacilitys;
 
     // 元あった施設破壊用
-    [SerializeField] GameObject deleteObj;
+    public GameObject deleteObj;
+
+    // 施設を建てているかの確認
+    bool[] isCreate = new bool[3] { false, false, false };
 
     // 現状写しているプレハブ
     GameObject nowInstance;
@@ -80,6 +88,9 @@ public class FacilitySelect : MonoBehaviour
 
     public async void SelectFacility()
     {
+        // 作っていることにする
+        isCreate[_facilityNo] = true;
+
         // スクリーン座標をワールド座標に
         setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
         // Z軸がカメラ外のため0に
@@ -110,6 +121,11 @@ public class FacilitySelect : MonoBehaviour
     {
         nowInstance = Instantiate(createFacilitys[_selected]);
         _facilityNo = PlayerPrefs.GetInt("FacilityNo", 0);
+
+        if (isCreate[_facilityNo])
+        {
+            // レベルアップ処理を書く
+        }
 
         /*
         rightInstance = Instantiate(rightBt);

@@ -11,13 +11,11 @@ public class EnemyAttack : MonoBehaviour
     public float powerX = 0;
     public float powerY = 0;
 
-    // プレイヤーの情報
-    [SerializeField] GameObject player;
     PlayerControl playerInf;
 
     void Start()
     {
-        playerInf = player.GetComponent<PlayerControl>();
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
         GetComponent<Rigidbody2D>().AddForce(new Vector2(powerX, powerY), ForceMode2D.Impulse);
     }
 
