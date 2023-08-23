@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class FacilityCreate : MonoBehaviour
 {
-    [SerializeField] GameObject rightBt;
-    [SerializeField] GameObject leftBt;
-    [SerializeField] GameObject selectBt;
-    [SerializeField] GameObject exisBt;
-
     public int facilityNo = 0;
 
     FacilitySelect facility;
@@ -20,11 +15,6 @@ public class FacilityCreate : MonoBehaviour
 
     public void OnClick()
     {
-        rightBt.SetActive(true);
-        leftBt.SetActive(true);
-        selectBt.SetActive(true);
-        exisBt.SetActive(true);
-
         PlayerPrefs.SetInt("FacilityNo", facilityNo);
 
         facility.StartInstance();

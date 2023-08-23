@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PlayerControl : MonoBehaviour
 {
     // 体力
-    int hp;
+    int hp = 100;
 
     // 強攻撃
     int gaugeCount;
@@ -32,6 +32,22 @@ public class PlayerControl : MonoBehaviour
         materialTxt = material.GetComponent<Text>();
 
         materialTxt.text = "Material : " + materialNum.ToString();
+    }
+
+    void Update()
+    {
+#if UNITY_EDITOR
+        // デバッグ用コード
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            // マテリアル数増加
+            if (Input.GetKey(KeyCode.M))
+            {
+                materialNum++;
+                materialTxt.text = "Material : " + materialNum.ToString();
+            }
+        }
+#endif
     }
 
     void FixedUpdate()

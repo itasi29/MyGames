@@ -18,8 +18,16 @@ public class EnemyMove : MonoBehaviour
 
     // 攻撃のオブジェ
     //   [SerializeField] GameObject attackObj;
+    // プレハブから攻撃
     public GameObject attackPrefab;
     GameObject attackInstance;
+    // カメカーはそのまま攻撃
+    public bool isKameka;
+    bool isAttack;
+    Rigidbody2D rigid;
+    Vector2 attackPower = new Vector2(10f, 0);
+    bool isSave = true;
+    Vector2 savePower;
 
     // 初期位置位置
     float posX;
@@ -69,6 +77,12 @@ public class EnemyMove : MonoBehaviour
         isFreeze = false;
 
         player = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
+        if (isKameka)
+        {
+            rigid = GetComponent<Rigidbody2D>();
+            rigid.AddForce(attackPower, ForceMode2D.Impulse);
+        }
     }
 
     void FixedUpdate()
@@ -86,34 +100,59 @@ public class EnemyMove : MonoBehaviour
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
+            if (isSave)
+            {
+                isSave = false;
+                savePower = this.rigid.velocity;
+            }
+
+            this.rigid.velocity = Vector2.zero;
+
             waitFreeze++;
             if (kFreeze <= waitFreeze)
             {
                 isFreeze = false;
+                isSave = true;
+                this.rigid.AddForce(savePower, ForceMode2D.Impulse);
             }
         }
         // 受けていなかったら行動
         else
         {
-            // 攻撃位置にいないなら移動する
-            if (this.transform.position.x > stopPosX)
+            if (isKameka)
             {
-                this.transform.position = new Vector2(this.transform.position.x - speed, this.transform.position.y);
+                if (isAttack)
+                {
+                    if (stopPosX < this.transform.position.x)
+                    {
+                        this.rigid.AddForce(attackPower, ForceMode2D.Impulse);
+                        
+                        isAttack = false;
+                    }
+                }
             }
-            // 攻撃に位置にいるなら一定間隔で攻撃する
             else
             {
-                waitFrameAttack++;
-
-                if (waitFrameAttack > 40)
+                // 攻撃位置にいないなら移動する
+                if (this.transform.position.x > stopPosX)
                 {
-                    //        attackInstance = Instantiate(attackObj);
-                    //        attackInstance.GetComponent<EnemyAttack>().SetAttack(attack);
-                    attackInstance = Instantiate(attackPrefab);
-                    attackInstance.transform.position = this.transform.position;
+                    this.transform.position = new Vector2(this.transform.position.x - speed, this.transform.position.y);
+                }
+                // 攻撃に位置にいるなら一定間隔で攻撃する
+                else
+                {
+                    waitFrameAttack++;
 
-                    // 待機時間を初めに戻す
-                    waitFrameAttack = 0;
+                    if (waitFrameAttack > 40)
+                    {
+                        //        attackInstance = Instantiate(attackObj);
+                        //        attackInstance.GetComponent<EnemyAttack>().SetAttack(attack);
+                        attackInstance = Instantiate(attackPrefab);
+                        attackInstance.transform.position = this.transform.position;
+
+                        // 待機時間を初めに戻す
+                        waitFrameAttack = 0;
+                    }
                 }
             }
         }
@@ -123,6 +162,22 @@ public class EnemyMove : MonoBehaviour
         {
             waitSlipDamage++;
         }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("barrier"))
+        {
+            isAttack = true;
+
+            player.HpDown(attack);
+        }
+    }
+
+    // 攻撃力のセット
+    public int GetAttack()
+    {
+        return this.attack;
     }
 
     // この敵のHPを減らす

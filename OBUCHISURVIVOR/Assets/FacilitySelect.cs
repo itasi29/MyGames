@@ -15,12 +15,13 @@ public class FacilitySelect : MonoBehaviour
     // レベルアップ処理ボタン
     public GameObject changeBt;
     public GameObject levelUpBt;
+    public PlayerControl player;
     public GameObject levelUpImg;
 
     // 入れる場所
-    [SerializeField] GameObject[] setFacilitys;
+    public GameObject[] setFacilitys = new GameObject[3];
     // 元となるもの
-    [SerializeField] GameObject[] createFacilitys;
+    public GameObject[] createFacilitys = new GameObject[12];
 
     // 元あった施設破壊用
     public GameObject deleteObj;
@@ -30,13 +31,6 @@ public class FacilitySelect : MonoBehaviour
 
     // 現状写しているプレハブ
     GameObject nowInstance;
-    /*
-    // プレハブ生成
-    GameObject rightInstance;
-    GameObject leftInstance;
-    GameObject selectInstance;
-    GameObject exisInstance;
-    */
 
     // 選択している施設の番号
     int _selected = 0;
@@ -55,10 +49,12 @@ public class FacilitySelect : MonoBehaviour
     // 元あった施設破壊用
     GameObject delete;
 
+    // 施設変更
+    bool[] isProduct = new bool[3];
+    bool[] isLevelUp = new bool[3];
+
     void Start()
     {
-        _selected = PlayerPrefs.GetInt("FacilitySelect", 0);
-
         cmr = Camera.main;
     }
 
@@ -68,8 +64,16 @@ public class FacilitySelect : MonoBehaviour
         Destroy(nowInstance);
         _selected++;
 
-        if (_selected >= createFacilitys.Length)
-            _selected = 0;
+        if (!isLevelUp[_facilityNo])
+        {
+            if (6 <= _selected)
+                _selected = 0;
+        }
+        else
+        {
+            if (12 <= _selected)
+                _selected = 6;
+        }
         // 次のものを生成
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
@@ -80,8 +84,17 @@ public class FacilitySelect : MonoBehaviour
         Destroy(nowInstance);
         _selected--;
 
-        if (_selected < 0)
-            _selected = createFacilitys.Length - 1;
+        if (!isLevelUp[_facilityNo])
+        {
+            if (_selected < 0)
+                _selected = 5;
+        }
+        else
+        {
+            if (_selected < 6)
+                _selected = 11;
+        }
+        
         // 次のものを生成
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
@@ -90,6 +103,7 @@ public class FacilitySelect : MonoBehaviour
     {
         // 作っていることにする
         isCreate[_facilityNo] = true;
+        isProduct[_facilityNo] = true;
 
         // スクリーン座標をワールド座標に
         setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
@@ -119,39 +133,126 @@ public class FacilitySelect : MonoBehaviour
 
     public void StartInstance()
     {
-        nowInstance = Instantiate(createFacilitys[_selected]);
-        _facilityNo = PlayerPrefs.GetInt("FacilityNo", 0);
-
-        if (isCreate[_facilityNo])
-        {
-            // レベルアップ処理を書く
-        }
-
-        /*
-        rightInstance = Instantiate(rightBt);
-        leftInstance = Instantiate(leftBt);
-        selectInstance = Instantiate(selectBt);
-        exisInstance = Instantiate(exisBt);
-
-        rightInstance.transform.SetParent(rightInstance.transform, false);
-        leftInstance.transform.SetParent(leftInstance.transform, false);
-        selectInstance.transform.SetParent(selectInstance.transform, false);
-        exisInstance.transform.SetParent(exisInstance.transform, false);
-        */
-
         // ほかの動きを止める
         Time.timeScale = 0;
+
+        _facilityNo = PlayerPrefs.GetInt("FacilityNo", 0);
+
+        if (_facilityNo == 0)
+        {
+            _selected = PlayerPrefs.GetInt("FacilitySelect1", 0);
+        }
+        else if (_facilityNo == 1)
+        {
+            _selected = PlayerPrefs.GetInt("FacilitySelect2", 0);
+        }
+        else
+        {
+            _selected = PlayerPrefs.GetInt("FacilitySelect3", 0);
+        }
+
+        nowInstance = Instantiate(createFacilitys[_selected]);
+
+        exisBt.SetActive(true);
+
+        if (isLevelUp[_facilityNo])
+        {
+            rightBt.SetActive(true);
+            leftBt.SetActive(true);
+            selectBt.SetActive(true);
+
+            _selected += 6;
+        }
+        else
+        {
+            if (isCreate[_facilityNo])
+            {
+                // レベルアップ処理を書く
+                changeBt.SetActive(true);
+                levelUpBt.SetActive(true);
+            }
+            else
+            {
+                rightBt.SetActive(true);
+                leftBt.SetActive(true);
+                selectBt.SetActive(true);
+            }
+        }
     }
+
+    public void ChangeSystem()
+    {
+        if (isProduct[_facilityNo])
+        {
+            levelUpBt.SetActive(false);
+
+            rightBt.SetActive(true);
+            leftBt.SetActive(true);
+            selectBt.SetActive(true);
+
+            isProduct[_facilityNo] = false;
+        }
+        else
+        {
+            levelUpBt.SetActive(true);
+
+            rightBt.SetActive(false);
+            leftBt.SetActive(false);
+            selectBt.SetActive(false);
+
+            isProduct[_facilityNo] = true;
+        }
+    }
+
+    public async void LevelUpBt()
+    {
+        if (10 <= player.GetMaterialNum())
+        {
+            isLevelUp[_facilityNo] = true;
+
+            // スクリーン座標をワールド座標に
+            setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
+            // Z軸がカメラ外のため0に
+            setPosition.z = 0;
+
+            // 設置する場所に元々施設があったら消す
+            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
+            Time.timeScale = 1;
+            await Task.Delay(50);
+            Time.timeScale = 0;
+            Destroy(this.delete);
+
+            // プレハブの生成
+            createFacility = Instantiate(createFacilitys[_selected + 6], setPosition, Quaternion.identity);
+            createFacility.GetComponent<FacilityPrefab>().StartCreate();
+
+            End();
+        }
+    }
+
 
     void End()
     {
-        PlayerPrefs.SetInt("FacilitySelect", _selected);
+        if (_facilityNo == 0)
+        {
+            PlayerPrefs.SetInt("FacilitySelect1", _selected);
+        }
+        else if (_facilityNo == 1)
+        {
+            PlayerPrefs.SetInt("FacilitySelect2", _selected);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("FacilitySelect3", _selected);
+        }
 
         Destroy(nowInstance);
         rightBt.SetActive(false);
         leftBt.SetActive(false);
         selectBt.SetActive(false);
         exisBt.SetActive(false);
+        changeBt.SetActive(false);
+        levelUpBt.SetActive(false);
 
         // ほかを動かしだす
         Time.timeScale = 1;

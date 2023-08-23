@@ -12,11 +12,14 @@ public class EnemyAttack : MonoBehaviour
     public float powerY = 0;
 
     PlayerControl playerInf;
+    public EnemyMove enemyInf;
 
     void Start()
     {
         playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
         GetComponent<Rigidbody2D>().AddForce(new Vector2(powerX, powerY), ForceMode2D.Impulse);
+
+        attack = enemyInf.GetComponent<EnemyMove>().GetAttack();
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -25,10 +28,5 @@ public class EnemyAttack : MonoBehaviour
         {
             playerInf.HpDown(attack);
         }
-    }
-
-    public void SetAttack(int setAttack)
-    {
-        attack = setAttack;
     }
 }
