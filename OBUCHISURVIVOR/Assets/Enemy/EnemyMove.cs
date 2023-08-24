@@ -4,8 +4,19 @@ using UnityEngine;
 
 public class EnemyMove : MonoBehaviour
 {
-    // ランダム生成するかしないか
-    public bool isRandomCreate = false;
+    // プレイヤーの情報
+    PlayerControl playerInf;
+
+    AudioSource aud;
+    int seNo;
+    // 攻撃SE
+    public AudioClip[] attackSe;
+    // 死亡SE
+    public AudioClip deathSe1;
+    public AudioClip deathSe2;
+    public AudioClip deathSe3;
+    public AudioClip deathSe4;
+    public AudioClip deathSe5;
 
     // 落とす素材数
     public int dropMaterialMin = 0;
@@ -17,7 +28,6 @@ public class EnemyMove : MonoBehaviour
     public float speed = 0.05f;
 
     // 攻撃のオブジェ
-    //   [SerializeField] GameObject attackObj;
     // プレハブから攻撃
     public GameObject attackPrefab;
     GameObject attackInstance;
@@ -29,14 +39,11 @@ public class EnemyMove : MonoBehaviour
     bool isSave = true;
     Vector2 savePower;
 
-    // 初期位置位置
-    float posX;
-    float posY;
-
     // 止まる位置
     public float stopPosX = -3.0f;
 
     // 攻撃間隔
+    public int attackFrame = 50;
     int waitFrameAttack;
     // スリップダメージ間隔
     int waitSlipDamage;
@@ -48,24 +55,13 @@ public class EnemyMove : MonoBehaviour
     const int kFreeze = 75;
     bool isFreeze;
 
-    // プレイヤーの情報
-    PlayerControl player;
+    
 
     void Start()
     {
-        // 位置の初期化
-        if (isRandomCreate)
-        {
-            posX = 9.5f;
-            posY = Random.Range(-1, 2) * 3.0f;
-            this.transform.position = new Vector2(posX, posY);
-        }
-        else
-        {
-            posX = 9.5f;
-            posY = this.transform.position.y;
-            this.transform.position = new Vector2(posX, posY);
-        }
+        GameObject player = GameObject.Find("PlayerDirector");
+        playerInf = player.GetComponent<PlayerControl>();
+        aud = player.GetComponent<AudioSource>();
 
         // 攻撃間隔の初期化
         waitFrameAttack = 0;
@@ -75,8 +71,6 @@ public class EnemyMove : MonoBehaviour
         // アイス攻撃処理初期化
         waitFreeze = kFreeze;
         isFreeze = false;
-
-        player = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
 
         if (isKameka)
         {
@@ -91,29 +85,55 @@ public class EnemyMove : MonoBehaviour
         if (this.hp <= 0)
         {
             // ゲージアップ処理
-            player.GaugeUp();
+            playerInf.GaugeUp();
             // 素材ドロップ処理
-            player.UpMaterialNum(dropMaterialMin, dropMaterialMax);
+            playerInf.UpMaterialNum(dropMaterialMin, dropMaterialMax);
+
+            switch (Random.Range(0, 5))
+            {
+                case 0:
+                    aud.PlayOneShot(deathSe1);
+                    break;
+                case 1:
+                    aud.PlayOneShot(deathSe2);
+                    break;
+                case 2:
+                    aud.PlayOneShot(deathSe3);
+                    break;
+                case 3:
+                    aud.PlayOneShot(deathSe4);
+                    break;
+                default:
+                    aud.PlayOneShot(deathSe5);
+                    break;
+            }
+
             Destroy(this.gameObject);
         }
 
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
-            if (isSave)
+            if (isKameka)
             {
-                isSave = false;
-                savePower = this.rigid.velocity;
-            }
+                if (isSave)
+                {
+                    isSave = false;
+                    savePower = this.rigid.velocity;
+                }
 
-            this.rigid.velocity = Vector2.zero;
+                this.rigid.velocity = Vector2.zero;
+            }
 
             waitFreeze++;
             if (kFreeze <= waitFreeze)
             {
                 isFreeze = false;
-                isSave = true;
-                this.rigid.AddForce(savePower, ForceMode2D.Impulse);
+                if (isKameka)
+                {
+                    isSave = true;
+                    this.rigid.AddForce(savePower, ForceMode2D.Impulse);
+                }
             }
         }
         // 受けていなかったら行動
@@ -128,6 +148,12 @@ public class EnemyMove : MonoBehaviour
                         this.rigid.AddForce(attackPower, ForceMode2D.Impulse);
                         
                         isAttack = false;
+
+                        seNo = Random.Range(0, attackSe.Length);
+                        if (seNo != attackSe.Length)
+                        {
+                            aud.PlayOneShot(attackSe[seNo]);
+                        }
                     }
                 }
             }
@@ -143,7 +169,7 @@ public class EnemyMove : MonoBehaviour
                 {
                     waitFrameAttack++;
 
-                    if (waitFrameAttack > 40)
+                    if (waitFrameAttack > attackFrame)
                     {
                         //        attackInstance = Instantiate(attackObj);
                         //        attackInstance.GetComponent<EnemyAttack>().SetAttack(attack);
@@ -152,6 +178,13 @@ public class EnemyMove : MonoBehaviour
 
                         // 待機時間を初めに戻す
                         waitFrameAttack = 0;
+
+                        seNo = Random.Range(0, attackSe.Length + 1);
+                        if (seNo != attackSe.Length)
+                        {
+                            aud.PlayOneShot(attackSe[seNo]);
+                        }
+                        
                     }
                 }
             }
@@ -170,7 +203,7 @@ public class EnemyMove : MonoBehaviour
         {
             isAttack = true;
 
-            player.HpDown(attack);
+            playerInf.HpDown(attack);
         }
     }
 

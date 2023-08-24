@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7316394137856849386}
   - component: {fileID: 7316394137856849385}
   - component: {fileID: 8046018676155618043}
-  - component: {fileID: 8808283522400964153}
+  - component: {fileID: -3119632082757392381}
   m_Layer: 0
   m_Name: Rolling
   m_TagString: Untagged
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 720cb0c025255924bb58082976e66cf4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   facility: {fileID: 860103313648663353, guid: d03b34bcbbf55364f9cd723c3f0b883d, type: 3}
   updateFrame: 300
---- !u!61 &8808283522400964153
+--- !u!61 &-3119632082757392381
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

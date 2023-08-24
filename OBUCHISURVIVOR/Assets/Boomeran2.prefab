@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8284372755577117287}
   - component: {fileID: 8284372755577117284}
-  - component: {fileID: 8284372755577117285}
   - component: {fileID: 8284372755577117306}
+  - component: {fileID: -658674445580609682}
   m_Layer: 0
   m_Name: Boomeran2
   m_TagString: Untagged
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: aeb91f01469a54443874ecdc586a88ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -86,7 +86,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &8284372755577117285
+--- !u!114 &8284372755577117306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8284372755577117307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63e2e263df8b6f549b53453e12049dec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  facility: {fileID: 1725275176397965378, guid: 460fc47fccea94a4e983c4e2605f98d7, type: 3}
+  updateFrame: 100
+--- !u!61 &-658674445580609682
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,17 +126,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 13.9, y: 18.54}
   m_EdgeRadius: 0
---- !u!114 &8284372755577117306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8284372755577117307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63e2e263df8b6f549b53453e12049dec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  facility: {fileID: 1725275176397965378, guid: 460fc47fccea94a4e983c4e2605f98d7, type: 3}
-  updateFrame: 100

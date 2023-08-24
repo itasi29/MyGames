@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4466998053763170682}
   - component: {fileID: 2256502151000860973}
   - component: {fileID: 7771133109120397811}
-  - component: {fileID: 3281335686418626358}
+  - component: {fileID: -8440355334068559292}
   m_Layer: 0
   m_Name: Missile
   m_TagString: Untagged
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: d476fc4ac81c4014dab2f20a4b3d12d7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   facility: {fileID: 2080893377772124519, guid: 8699f8a0271478f429e1ef888b24b61d, type: 3}
   updateFrame: 300
---- !u!61 &3281335686418626358
+--- !u!61 &-8440355334068559292
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

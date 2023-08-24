@@ -2,11 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
+    public int stageNo = 1;
+
     // 体力
     int hp = 100;
+    int maxHp = 100;
+
+    public GameObject hpObj;
+    Slider hpSlider;
 
     // 強攻撃
     int gaugeCount;
@@ -25,9 +32,11 @@ public class PlayerControl : MonoBehaviour
 
     void Start()
     {
+        hpSlider = hpObj.GetComponent<Slider>();
+
         isExist = true;
 
-        materialNum = 0;
+        materialNum = 10;
 
         materialTxt = material.GetComponent<Text>();
 
@@ -57,6 +66,14 @@ public class PlayerControl : MonoBehaviour
         {
             hp = 0;
             isExist = false;
+
+            Destroy(this.hpObj);
+
+            // リスタートするときにどのステージ化を確認
+            PlayerPrefs.SetInt("StageNo", stageNo);
+
+            // ゲームオーバーシーンの読み込み
+            SceneManager.LoadScene("GameOver");
         }
     }
 
@@ -68,6 +85,8 @@ public class PlayerControl : MonoBehaviour
 
         // 敵の攻撃力分HPを減らす
         hp -= attack;
+
+        hpSlider.value = (float)hp / maxHp;
 
         // 現在のHPをログに流す
         Debug.Log("[Player]" + this.hp);

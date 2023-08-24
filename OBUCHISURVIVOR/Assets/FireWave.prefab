@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5304817606416379696}
   - component: {fileID: 5304817606416379697}
   - component: {fileID: 5304817606416379698}
-  - component: {fileID: 5304817606416379699}
+  - component: {fileID: -7304009185177700477}
   m_Layer: 0
   m_Name: FireWave
   m_TagString: Untagged
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: bf1ff8ecebdff7b4fa218e22ef0b5efa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -98,9 +98,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63e2e263df8b6f549b53453e12049dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  facility: {fileID: 3388198146565808726, guid: cb5548624b3e260478fab5487dfd6156, type: 3}
+  facility: {fileID: 5053526064060788249, guid: cb5548624b3e260478fab5487dfd6156, type: 3}
   updateFrame: 300
---- !u!61 &5304817606416379699
+--- !u!61 &-7304009185177700477
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -6,6 +6,7 @@ public class RollingControl : MonoBehaviour
 {
     int attack = 40;
     Vector2 speed = new Vector2(3.0f, 0.0f);
+    Vector3 arrow = new Vector3(0f, 0f, 1f);
 
     Rigidbody2D rigid;
 
@@ -16,6 +17,8 @@ public class RollingControl : MonoBehaviour
 
     void FixedUpdate()
     {
+        this.transform.rotation *= Quaternion.AngleAxis(-this.rigid.velocity.x, arrow);
+
         // 徐々に加速
         this.rigid.AddForce(speed);
 

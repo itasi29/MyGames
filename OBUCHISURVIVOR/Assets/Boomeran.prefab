@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2940716746685568930}
   - component: {fileID: 1299736841510647935}
   - component: {fileID: 3968779176690790309}
-  - component: {fileID: 1154377169817887027}
+  - component: {fileID: 7058854231559891338}
   m_Layer: 0
   m_Name: Boomeran
   m_TagString: Untagged
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: eb8d02b9f533d414a8763e95d32b8ade, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   facility: {fileID: 1725275176397965378, guid: 460fc47fccea94a4e983c4e2605f98d7, type: 3}
   updateFrame: 300
---- !u!61 &1154377169817887027
+--- !u!61 &7058854231559891338
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

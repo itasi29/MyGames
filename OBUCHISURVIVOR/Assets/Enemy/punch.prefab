@@ -101,6 +101,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerX: -4
   powerY: 0
+  isBoss: 0
+  enemyInf: {fileID: 3058776240107474027, guid: fc66f60657906e240a660b8dc506ad1a, type: 3}
+  bossInf: {fileID: 0}
 --- !u!61 &2491120736510823771
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -111,7 +114,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

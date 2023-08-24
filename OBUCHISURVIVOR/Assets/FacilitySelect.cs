@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class FacilitySelect : MonoBehaviour
 {
+    GameObject canvas;
+
     // ボタンの情報
     public GameObject rightBt;
     public GameObject leftBt;
@@ -17,6 +19,9 @@ public class FacilitySelect : MonoBehaviour
     public GameObject levelUpBt;
     public PlayerControl player;
     public GameObject levelUpImg;
+
+    public GameObject materialShortageImg;
+    GameObject materialShortageInstance;
 
     // 入れる場所
     public GameObject[] setFacilitys = new GameObject[3];
@@ -55,6 +60,8 @@ public class FacilitySelect : MonoBehaviour
 
     void Start()
     {
+        canvas = GameObject.Find("Canvas");
+
         cmr = Camera.main;
     }
 
@@ -101,29 +108,36 @@ public class FacilitySelect : MonoBehaviour
 
     public async void SelectFacility()
     {
-        // 作っていることにする
-        isCreate[_facilityNo] = true;
-        isProduct[_facilityNo] = true;
+        if (5 <= player.GetMaterialNum())
+        {
+            // 作っていることにする
+            isCreate[_facilityNo] = true;
+            isProduct[_facilityNo] = true;
 
-        // スクリーン座標をワールド座標に
-        setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
-        // Z軸がカメラ外のため0に
-        setPosition.z = 0;
+            // スクリーン座標をワールド座標に
+            setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
+            // Z軸がカメラ外のため0に
+            setPosition.z = 0;
 
-        // 設置する場所に元々施設があったら消す
-        delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-        Time.timeScale = 1;
-        await Task.Delay(50);
-        Time.timeScale = 0;
-        Destroy(this.delete);
+            // 設置する場所に元々施設があったら消す
+            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
+            Time.timeScale = 1;
+            await Task.Delay(50);
+            Time.timeScale = 0;
+            Destroy(this.delete);
 
-        // プレハブの生成
-        createFacility = Instantiate(createFacilitys[_selected], setPosition, Quaternion.identity);
-        createFacility.GetComponent<FacilityPrefab>().StartCreate();
-        // ボタンの透明化
-        setFacilitys[_facilityNo].GetComponent<Image>().color = color;
+            // プレハブの生成
+            createFacility = Instantiate(createFacilitys[_selected], setPosition, Quaternion.identity);
+            createFacility.GetComponent<FacilityPrefab>().StartCreate();
+            // ボタンの透明化
+            setFacilitys[_facilityNo].GetComponent<Image>().color = color;
 
-        End();
+            End();
+        }
+        else
+        {
+            MaterialShortage();
+        }
     }
 
     public void Exist()
@@ -228,8 +242,19 @@ public class FacilitySelect : MonoBehaviour
 
             End();
         }
+        else
+        {
+            MaterialShortage();
+        }
     }
 
+    void MaterialShortage()
+    {
+        if (materialShortageInstance != null)   Destroy(materialShortageInstance);
+
+        materialShortageInstance = Instantiate(materialShortageImg);
+        materialShortageInstance.transform.SetParent(canvas.transform, false);
+    }
 
     void End()
     {
@@ -253,6 +278,8 @@ public class FacilitySelect : MonoBehaviour
         exisBt.SetActive(false);
         changeBt.SetActive(false);
         levelUpBt.SetActive(false);
+
+        if (materialShortageInstance != null) Destroy(materialShortageInstance);
 
         // ほかを動かしだす
         Time.timeScale = 1;

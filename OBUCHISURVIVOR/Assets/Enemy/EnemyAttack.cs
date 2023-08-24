@@ -12,14 +12,24 @@ public class EnemyAttack : MonoBehaviour
     public float powerY = 0;
 
     PlayerControl playerInf;
+    public bool isBoss;
     public EnemyMove enemyInf;
+    public BossHadouken bossInf;
+
 
     void Start()
     {
         playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
         GetComponent<Rigidbody2D>().AddForce(new Vector2(powerX, powerY), ForceMode2D.Impulse);
 
-        attack = enemyInf.GetComponent<EnemyMove>().GetAttack();
+        if (isBoss)
+        {
+            attack = bossInf.GetComponent<BossHadouken>().GetAttack();
+        }
+        else
+        {
+            attack = enemyInf.GetComponent<EnemyMove>().GetAttack();
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -27,6 +37,8 @@ public class EnemyAttack : MonoBehaviour
         if (collision.gameObject.CompareTag("barrier"))
         {
             playerInf.HpDown(attack);
+
+            Destroy(this.gameObject);
         }
     }
 }
