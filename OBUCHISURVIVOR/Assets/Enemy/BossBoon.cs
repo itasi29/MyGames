@@ -27,12 +27,15 @@ public class BossBoon : MonoBehaviour
 
     // アイス攻撃処理
     int waitFreeze = 0;
-    const int kFreeze = 75;
+    const int kFreeze = 25;
     bool isFreeze;
 
     // プレイヤーの情報
     PlayerControl playerInf;
     Rigidbody2D rigid;
+
+    // 2キルボスか確認
+    public bool isKill2 = false;
 
     void Start()
     {
@@ -58,6 +61,15 @@ public class BossBoon : MonoBehaviour
         // hpがなくなったら消滅
         if (this.hp <= 0)
         {
+            if (isKill2)
+            {
+                playerInf.LoadClearSceneBoss2();
+            }
+            else
+            {
+                playerInf.LoadClearScene();
+            }
+
             Destroy(this.gameObject);
         }
 

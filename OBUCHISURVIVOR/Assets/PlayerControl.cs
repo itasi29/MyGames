@@ -30,6 +30,9 @@ public class PlayerControl : MonoBehaviour
     // 上のTextコンポーネント獲得用
     Text materialTxt;
 
+    // ボス二体を倒したか
+    bool isKillBoss = false;
+
     void Start()
     {
         hpSlider = hpObj.GetComponent<Slider>();
@@ -141,5 +144,21 @@ public class PlayerControl : MonoBehaviour
         materialNum -= num;
 
         materialTxt.text = "Material : " + materialNum.ToString();
+    }
+
+    // クリアシーンの読み込み
+    public void LoadClearScene()
+    {
+        SceneManager.LoadScene("Stage" + stageNo.ToString());
+    }
+
+    public void LoadClearSceneBoss2()
+    {
+        if (isKillBoss)
+        {
+            SceneManager.LoadScene("Stage" + stageNo.ToString());
+        }
+
+        isKillBoss = true;
     }
 }

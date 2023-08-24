@@ -20,13 +20,16 @@ public class FacilitySelect : MonoBehaviour
     public PlayerControl player;
     public GameObject levelUpImg;
 
-    public GameObject materialShortageImg;
     GameObject materialShortageInstance;
 
     // 入れる場所
     public GameObject[] setFacilitys = new GameObject[3];
     // 元となるもの
     public GameObject[] createFacilitys = new GameObject[12];
+    // 施設名
+    public GameObject facilityNameTxt;
+    GameObject nameInstance;
+    string[] facilityName = new string[6] { "ブーメラン", "ファイアーウェーブ" , "アイススラッシャー", "ミサイル", "ローリング", "ストーム" };
 
     // 元あった施設破壊用
     public GameObject deleteObj;
@@ -54,6 +57,8 @@ public class FacilitySelect : MonoBehaviour
     // 元あった施設破壊用
     GameObject delete;
 
+    int needMaterialNum = 5;
+
     // 施設変更
     bool[] isProduct = new bool[3];
     bool[] isLevelUp = new bool[3];
@@ -75,12 +80,17 @@ public class FacilitySelect : MonoBehaviour
         {
             if (6 <= _selected)
                 _selected = 0;
+
+            nameInstance.GetComponent<Text>().text = facilityName[_selected];
         }
         else
         {
             if (12 <= _selected)
                 _selected = 6;
+
+            nameInstance.GetComponent<Text>().text = facilityName[_selected - 6];
         }
+
         // 次のものを生成
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
@@ -95,21 +105,27 @@ public class FacilitySelect : MonoBehaviour
         {
             if (_selected < 0)
                 _selected = 5;
+
+            nameInstance.GetComponent<Text>().text = facilityName[_selected];
         }
         else
         {
             if (_selected < 6)
                 _selected = 11;
+
+            nameInstance.GetComponent<Text>().text = facilityName[_selected - 6];
         }
-        
+
         // 次のものを生成
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
 
     public async void SelectFacility()
     {
-        if (5 <= player.GetMaterialNum())
+        if (needMaterialNum <= player.GetMaterialNum())
         {
+            player.DownMaterialNum(needMaterialNum);
+
             // 作っていることにする
             isCreate[_facilityNo] = true;
             isProduct[_facilityNo] = true;
@@ -166,6 +182,8 @@ public class FacilitySelect : MonoBehaviour
         }
 
         nowInstance = Instantiate(createFacilitys[_selected]);
+        nameInstance = Instantiate(facilityNameTxt);
+        nameInstance.transform.SetParent(canvas.transform, false);
 
         exisBt.SetActive(true);
 
@@ -176,6 +194,10 @@ public class FacilitySelect : MonoBehaviour
             selectBt.SetActive(true);
 
             _selected += 6;
+
+            needMaterialNum = 10;
+
+            nameInstance.GetComponent<Text>().text = facilityName[_selected - 6];
         }
         else
         {
@@ -191,6 +213,8 @@ public class FacilitySelect : MonoBehaviour
                 leftBt.SetActive(true);
                 selectBt.SetActive(true);
             }
+
+            nameInstance.GetComponent<Text>().text = facilityName[_selected];
         }
     }
 
@@ -220,8 +244,10 @@ public class FacilitySelect : MonoBehaviour
 
     public async void LevelUpBt()
     {
-        if (10 <= player.GetMaterialNum())
+        if (25 <= player.GetMaterialNum())
         {
+            player.DownMaterialNum(25);
+
             isLevelUp[_facilityNo] = true;
 
             // スクリーン座標をワールド座標に
@@ -252,7 +278,6 @@ public class FacilitySelect : MonoBehaviour
     {
         if (materialShortageInstance != null)   Destroy(materialShortageInstance);
 
-        materialShortageInstance = Instantiate(materialShortageImg);
         materialShortageInstance.transform.SetParent(canvas.transform, false);
     }
 
@@ -272,6 +297,7 @@ public class FacilitySelect : MonoBehaviour
         }
 
         Destroy(nowInstance);
+        Destroy(nameInstance);
         rightBt.SetActive(false);
         leftBt.SetActive(false);
         selectBt.SetActive(false);

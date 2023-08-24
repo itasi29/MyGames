@@ -9,7 +9,7 @@ public class TitleBt : MonoBehaviour
     int stageCheck;
 
     // スタートに使う変数
-    bool isStart = false;
+    // bool isStart = false;
 
     public GameObject stage1Bt;
     public GameObject stage2Bt;

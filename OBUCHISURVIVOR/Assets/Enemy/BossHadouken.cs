@@ -36,10 +36,11 @@ public class BossHadouken : MonoBehaviour
 
     // アイス攻撃処理
     int waitFreeze = 0;
-    const int kFreeze = 75;
+    const int kFreeze = 25;
     bool isFreeze;
 
-
+    // 2キルボスか確認
+    public bool isKill2 = false;
 
     void Start()
     {
@@ -66,6 +67,15 @@ public class BossHadouken : MonoBehaviour
         // hpがなくなったら消滅
         if (this.hp <= 0)
         {
+            if (isKill2)
+            {
+                playerInf.LoadClearSceneBoss2();
+            }
+            else
+            {
+                playerInf.LoadClearScene();
+            }
+
             Destroy(this.gameObject);
         }
 
