@@ -136,6 +136,11 @@ public class PlayerControl : MonoBehaviour
 
                 hp += recoveryHp;
 
+                if (hp < maxHp)
+                {
+                    hp = maxHp;
+                }
+
                 hpSlider.value = (float)hp / maxHp;
             }
         }

@@ -13,8 +13,7 @@ public class EnemyAttack : MonoBehaviour
 
     PlayerControl playerInf;
     public bool isBoss;
-    public EnemyMove enemyInf;
-    public BossHadouken bossInf;
+    public GameObject enemyInf;
 
 
     void Start()
@@ -24,7 +23,7 @@ public class EnemyAttack : MonoBehaviour
 
         if (isBoss)
         {
-            attack = bossInf.GetComponent<BossHadouken>().GetAttack();
+            attack = enemyInf.GetComponent<BossHadouken>().GetAttack();
         }
         else
         {

@@ -7,6 +7,8 @@ public class BossHadouken : MonoBehaviour
     // プレイヤーの情報
     PlayerControl playerInf;
 
+    Animator anime;
+
     AudioSource aud;
     int seNo;
     // 攻撃SE
@@ -46,6 +48,7 @@ public class BossHadouken : MonoBehaviour
     {
         GameObject player = GameObject.Find("PlayerDirector");
         playerInf = player.GetComponent<PlayerControl>();
+        anime = GetComponent<Animator>();
         aud = player.GetComponent<AudioSource>();
 
         // 位置の初期化
@@ -103,6 +106,8 @@ public class BossHadouken : MonoBehaviour
 
                 seNo = Random.Range(0, attackSe.Length);
                 aud.PlayOneShot(attackSe[seNo]);
+
+                anime.SetTrigger("HadoukenTrigger");
 
                 // ボスの場所移動
                 pos.y = Random.Range(-1, 2) * kBasePosY;

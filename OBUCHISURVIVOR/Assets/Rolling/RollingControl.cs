@@ -6,7 +6,7 @@ public class RollingControl : MonoBehaviour
 {
     PlayerControl playerInf;
 
-    int attack = 20;
+    int attack = 16;
     Vector2 speed = new Vector2(3.0f, 0.0f);
     Vector3 arrow = new Vector3(0f, 0f, 1f);
 
@@ -42,5 +42,13 @@ public class RollingControl : MonoBehaviour
         {
             collision.gameObject.GetComponent<EnemyMove>().HpDown(this.attack);
         }
+        else if (collision.gameObject.CompareTag("bossBoon"))
+        {
+            collision.gameObject.GetComponent<BossBoon>().HpDown(this.attack);
+        }
+        else if (collision.gameObject.CompareTag("bossHadouken"))
+        {
+            collision.gameObject.GetComponent<BossHadouken>().HpDown(this.attack);
+        }        
     }
 }

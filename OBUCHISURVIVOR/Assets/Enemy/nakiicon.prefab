@@ -102,8 +102,7 @@ MonoBehaviour:
   powerX: -8
   powerY: 3
   isBoss: 0
-  enemyInf: {fileID: 4470398677100056453, guid: de6c65215ac5014448dc18c5a68ff860, type: 3}
-  bossInf: {fileID: 0}
+  enemyInf: {fileID: 833161057139553381, guid: de6c65215ac5014448dc18c5a68ff860, type: 3}
 --- !u!58 &-8499438369853682016
 CircleCollider2D:
   m_ObjectHideFlags: 0

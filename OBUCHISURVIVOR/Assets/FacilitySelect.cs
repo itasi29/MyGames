@@ -249,7 +249,7 @@ public class FacilitySelect : MonoBehaviour
             }
 
             // プレハブの生成
-            createFacility = Instantiate(createFacilitys[selected + 6], setPosition, Quaternion.identity);
+            createFacility = Instantiate(createFacilitys[selected % 6 + 6], setPosition, Quaternion.identity);
             createFacility.GetComponent<FacilityPrefab>().StartCreate();
         }        
     }

@@ -50,5 +50,13 @@ public class BoomerangCutterControl : MonoBehaviour
         {
             collision.gameObject.GetComponent<EnemyMove>().HpDown(this.attack);
         }
+        else if (collision.gameObject.CompareTag("bossBoon"))
+        {
+            collision.gameObject.GetComponent<BossBoon>().HpDown(this.attack);
+        }
+        else if (collision.gameObject.CompareTag("bossHadouken"))
+        {
+            collision.gameObject.GetComponent<BossHadouken>().HpDown(this.attack);
+        }
     }
 }

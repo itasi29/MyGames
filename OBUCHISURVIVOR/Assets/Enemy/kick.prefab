@@ -102,8 +102,7 @@ MonoBehaviour:
   powerX: -2
   powerY: 0
   isBoss: 0
-  enemyInf: {fileID: 3242562155882712830, guid: bbb5752847d2e4e40909dcfa920f41a8, type: 3}
-  bossInf: {fileID: 0}
+  enemyInf: {fileID: 4381658955809551833, guid: bbb5752847d2e4e40909dcfa920f41a8, type: 3}
 --- !u!61 &6955908750950901783
 BoxCollider2D:
   m_ObjectHideFlags: 0
