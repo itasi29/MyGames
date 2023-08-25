@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ClearBt : MonoBehaviour
 {
+    Fade fade;
+
     bool isStart = false;
 
     float alpha = 1.0f;
 
     void Start()
     {
-        
+        fade = GetComponent<Fade>();
     }
 
     void FixedUpdate()
@@ -23,7 +24,7 @@ public class ClearBt : MonoBehaviour
 
             if (alpha <= 0)
             {
-                SceneManager.LoadScene("Title");
+                fade.StartFadeOut("Title");
             }
         }
     }

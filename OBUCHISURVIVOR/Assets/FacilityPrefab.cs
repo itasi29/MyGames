@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FacilityPrefab : MonoBehaviour
 {
+    PlayerControl playerInf;
+
     // 施設の生成間隔
     public GameObject facility;
 
@@ -16,6 +18,8 @@ public class FacilityPrefab : MonoBehaviour
 
     void Start()
     {
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
         createFrame = updateFrame;
     }
 
@@ -25,7 +29,7 @@ public class FacilityPrefab : MonoBehaviour
         {
             createFrame++;
 
-            if (updateFrame <= createFrame)
+            if (updateFrame - playerInf.GetShortCreateTime() <= createFrame)
             {
                 Instantiate(this.facility, this.transform.position, Quaternion.identity);
 

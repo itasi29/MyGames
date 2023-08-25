@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class RollingControl : MonoBehaviour
 {
-    int attack = 40;
+    PlayerControl playerInf;
+
+    int attack = 20;
     Vector2 speed = new Vector2(3.0f, 0.0f);
     Vector3 arrow = new Vector3(0f, 0f, 1f);
 
@@ -12,6 +14,10 @@ public class RollingControl : MonoBehaviour
 
     void Start()
     {
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
+        attack += playerInf.GetPlusPower();
+
         this.rigid = GetComponent<Rigidbody2D>();
     }
 

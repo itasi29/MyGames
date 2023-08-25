@@ -5,9 +5,18 @@ using UnityEngine;
 
 public class missileAttack : MonoBehaviour
 {
-    int attack = 50;
+    PlayerControl playerInf;
+
+    int attack = 45;
 
     int waitFrame = 0;
+
+    void Start()
+    {
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
+        attack += playerInf.GetPlusPower();
+    }
 
     void FixedUpdate()
     {

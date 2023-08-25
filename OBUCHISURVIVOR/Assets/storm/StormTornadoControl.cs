@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class StormTornadoControl : MonoBehaviour
 {
-    int attack = 10;
+    PlayerControl playerInf;
+
+    int attack = 8;
 
     Rigidbody2D rigid;
 
     void Start()
     {
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
+        attack += playerInf.GetPlusPower();
+
         this.rigid = GetComponent<Rigidbody2D>();
 
         // 初速度のみ与える

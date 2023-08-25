@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   facility: {fileID: 7862265167022714931, guid: f1013a319f213a54295556199621afc6, type: 3}
-  updateFrame: 100
+  updateFrame: 175
 --- !u!61 &4164976954497341983
 BoxCollider2D:
   m_ObjectHideFlags: 0

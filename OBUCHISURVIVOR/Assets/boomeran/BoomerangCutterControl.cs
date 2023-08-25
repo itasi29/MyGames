@@ -7,6 +7,8 @@ using UnityEngine.Windows.Speech;
 
 public class BoomerangCutterControl : MonoBehaviour
 {
+    PlayerControl playerInf;
+
     int attack = 10;
 
     Vector2 speed = new Vector2(7.0f, 0);
@@ -17,6 +19,10 @@ public class BoomerangCutterControl : MonoBehaviour
 
     void Start()
     {
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
+        attack += playerInf.GetPlusPower();
+
         rigid = GetComponent<Rigidbody2D>();
     }
 

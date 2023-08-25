@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
+    Fade fade;
+    FacilitySelect facility;
+
     public int stageNo = 1;
 
     // 体力
-    int hp = 100;
-    int maxHp = 100;
+    int hp = 200;
+    int maxHp = 200;
 
     public GameObject hpObj;
     Slider hpSlider;
@@ -25,6 +27,39 @@ public class PlayerControl : MonoBehaviour
     // 素材
     int materialNum;
 
+    // 回復
+    int recoveryMaterialNum = 4;
+    int recoveryHp = 0;
+    const int kRecoveryFrame = 100;
+    int recoveryFrameCount = 0;
+
+    // 攻撃力の増加
+    int powerMaterialNum = 2;
+    int plusPower = 0;
+
+    // 生成速度短縮
+    int createMaterialNum = 2;
+    int shortCreate = 0;
+
+    // ボタン
+    GameObject canvas;
+    GameObject levelUpBt;
+    public GameObject recoveryBt;
+    public GameObject powerBt;
+    public GameObject shortBt;
+    public GameObject battenBt;
+    public GameObject recoveryTxt;
+    GameObject recoveryIst;
+    public GameObject powerTxt;
+    GameObject powerIst;
+    public GameObject shortTxt;
+    GameObject shortIst;
+
+    GameObject create0;
+    GameObject create1;
+    GameObject create2;
+    GameObject pouse;
+
     // 素材数表示
     [SerializeField] GameObject material;
     // 上のTextコンポーネント獲得用
@@ -35,6 +70,11 @@ public class PlayerControl : MonoBehaviour
 
     void Start()
     {
+        fade = GetComponent<Fade>();
+        facility = GameObject.Find("Facilitys").GetComponent<FacilitySelect>();
+
+        canvas = GameObject.Find("Canvas");
+
         hpSlider = hpObj.GetComponent<Slider>();
 
         isExist = true;
@@ -44,6 +84,13 @@ public class PlayerControl : MonoBehaviour
         materialTxt = material.GetComponent<Text>();
 
         materialTxt.text = "Material : " + materialNum.ToString();
+
+        levelUpBt = GameObject.Find("LevelUpBt");
+
+        create0 = GameObject.Find("Create0");
+        create1 = GameObject.Find("Create1");
+        create2 = GameObject.Find("Create2");
+        pouse = GameObject.Find("PouseBt");
     }
 
     void Update()
@@ -76,7 +123,21 @@ public class PlayerControl : MonoBehaviour
             PlayerPrefs.SetInt("StageNo", stageNo);
 
             // ゲームオーバーシーンの読み込み
-            SceneManager.LoadScene("GameOver");
+            fade.StartFadeOut("GameOver");
+        }
+
+        // 回復処理
+        if (hp < maxHp)
+        {
+            recoveryFrameCount++;
+            if (kRecoveryFrame <= recoveryFrameCount)
+            {
+                recoveryFrameCount = 0;
+
+                hp += recoveryHp;
+
+                hpSlider.value = (float)hp / maxHp;
+            }
         }
     }
 
@@ -110,6 +171,7 @@ public class PlayerControl : MonoBehaviour
             gaugeCount = kGaugeMax;
         }
     }
+
 
     // 強攻撃処理
     public void GaugeAttack()
@@ -146,17 +208,125 @@ public class PlayerControl : MonoBehaviour
         materialTxt.text = "Material : " + materialNum.ToString();
     }
 
+
+    /* ボタン処理 */
+    public void LevelUpBt()
+    {
+        Time.timeScale = 0f;
+
+        levelUpBt.SetActive(false);
+        create0.SetActive(false);
+        create1.SetActive(false);
+        create2.SetActive(false);
+        pouse.SetActive(false);
+
+        recoveryBt.SetActive(true);
+        recoveryIst = Instantiate(recoveryTxt);
+        recoveryIst.transform.SetParent(canvas.transform, false);
+        recoveryIst.GetComponent<Text>().text = "必要数 : " + recoveryMaterialNum.ToString();
+        powerBt.SetActive(true);
+        powerIst = Instantiate(powerTxt);
+        powerIst.transform.SetParent(canvas.transform, false);
+        powerIst.GetComponent<Text>().text = "必要数 : " + powerMaterialNum.ToString();
+        shortBt.SetActive(true);
+        shortIst = Instantiate(shortTxt);
+        shortIst.transform.SetParent(canvas.transform, false);
+        shortIst.GetComponent<Text>().text = "必要数 : " + createMaterialNum.ToString();
+
+        battenBt.SetActive(true);
+    }
+
+    // 回復量の増加
+    public void UpRecoveryBt()
+    {
+        if (recoveryMaterialNum <= materialNum)
+        {
+            recoveryHp++;
+
+            DownMaterialNum(recoveryMaterialNum);
+
+            // レベル上げるごとに2倍
+            recoveryMaterialNum *= 2;
+
+            recoveryIst.GetComponent<Text>().text = "必要数 : " + recoveryMaterialNum.ToString();
+        }
+    }
+
+    // 攻撃力の増加
+    public void PlusPowerBt()
+    {
+        if (powerMaterialNum <= materialNum)
+        {
+            plusPower++;
+
+            DownMaterialNum(powerMaterialNum);
+
+            powerMaterialNum += 4;
+
+            if (powerMaterialNum == 18) facility.LevelUp();
+
+            powerIst.GetComponent<Text>().text = "必要数 : " + powerMaterialNum.ToString();
+        }
+    }
+
+    // 生成速度短縮
+    public void ShortCreateTime()
+    {
+        if (createMaterialNum <= materialNum)
+        {
+            shortCreate -= 5;
+
+            DownMaterialNum(createMaterialNum);
+
+            createMaterialNum += 3;
+
+            shortIst.GetComponent<Text>().text = "必要数 : " + createMaterialNum.ToString();
+        }
+    }
+
+    public void BattenBt()
+    {
+        levelUpBt.SetActive(true);
+        create0.SetActive(true);
+        create1.SetActive(true);
+        create2.SetActive(true);
+        pouse.SetActive(true);
+
+        recoveryBt.SetActive(false);
+        Destroy(recoveryIst);
+        powerBt.SetActive(false);
+        Destroy(powerIst);
+        shortBt.SetActive(false);
+        Destroy(shortIst);
+
+        battenBt.SetActive(false);
+
+        Time.timeScale = 1.0f;
+    }
+
+    /* ボタン処理終了 */
+
+    public int  GetPlusPower()
+    {
+        return plusPower;
+    }
+
+    public int GetShortCreateTime()
+    {
+        return shortCreate;
+    }
+
     // クリアシーンの読み込み
     public void LoadClearScene()
     {
-        SceneManager.LoadScene("Stage" + stageNo.ToString());
+        fade.StartFadeOut("Clear");
     }
 
     public void LoadClearSceneBoss2()
     {
         if (isKillBoss)
         {
-            SceneManager.LoadScene("Stage" + stageNo.ToString());
+            fade.StartFadeOut("Clear");
         }
 
         isKillBoss = true;

@@ -15,11 +15,9 @@ public class FacilitySelect : MonoBehaviour
     public GameObject exisBt;
 
     // レベルアップ処理ボタン
-    public GameObject changeBt;
-    public GameObject levelUpBt;
     public PlayerControl player;
-    public GameObject levelUpImg;
 
+    public GameObject materialShortageTxt;
     GameObject materialShortageInstance;
 
     // 入れる場所
@@ -60,14 +58,19 @@ public class FacilitySelect : MonoBehaviour
     int needMaterialNum = 5;
 
     // 施設変更
-    bool[] isProduct = new bool[3];
-    bool[] isLevelUp = new bool[3];
+    bool isLevelUp = false;
+
+    GameObject levelUp;
+    GameObject pouse;
 
     void Start()
     {
         canvas = GameObject.Find("Canvas");
 
         cmr = Camera.main;
+
+        levelUp = GameObject.Find("LevelUpBt");
+        pouse = GameObject.Find("PouseBt");
     }
 
     public void Right()
@@ -76,7 +79,7 @@ public class FacilitySelect : MonoBehaviour
         Destroy(nowInstance);
         _selected++;
 
-        if (!isLevelUp[_facilityNo])
+        if (!isLevelUp)
         {
             if (6 <= _selected)
                 _selected = 0;
@@ -101,7 +104,7 @@ public class FacilitySelect : MonoBehaviour
         Destroy(nowInstance);
         _selected--;
 
-        if (!isLevelUp[_facilityNo])
+        if (!isLevelUp)
         {
             if (_selected < 0)
                 _selected = 5;
@@ -128,7 +131,6 @@ public class FacilitySelect : MonoBehaviour
 
             // 作っていることにする
             isCreate[_facilityNo] = true;
-            isProduct[_facilityNo] = true;
 
             // スクリーン座標をワールド座標に
             setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
@@ -187,97 +189,76 @@ public class FacilitySelect : MonoBehaviour
 
         exisBt.SetActive(true);
 
-        if (isLevelUp[_facilityNo])
+        if (isLevelUp)
         {
             rightBt.SetActive(true);
             leftBt.SetActive(true);
             selectBt.SetActive(true);
 
-            _selected += 6;
-
-            needMaterialNum = 10;
+            if (_selected < 6) _selected += 6;
 
             nameInstance.GetComponent<Text>().text = facilityName[_selected - 6];
         }
         else
         {
-            if (isCreate[_facilityNo])
-            {
-                // レベルアップ処理を書く
-                changeBt.SetActive(true);
-                levelUpBt.SetActive(true);
-            }
-            else
-            {
-                rightBt.SetActive(true);
-                leftBt.SetActive(true);
-                selectBt.SetActive(true);
-            }
-
-            nameInstance.GetComponent<Text>().text = facilityName[_selected];
-        }
-    }
-
-    public void ChangeSystem()
-    {
-        if (isProduct[_facilityNo])
-        {
-            levelUpBt.SetActive(false);
-
             rightBt.SetActive(true);
             leftBt.SetActive(true);
             selectBt.SetActive(true);
-
-            isProduct[_facilityNo] = false;
+            
+            nameInstance.GetComponent<Text>().text = facilityName[_selected];
         }
-        else
-        {
-            levelUpBt.SetActive(true);
 
-            rightBt.SetActive(false);
-            leftBt.SetActive(false);
-            selectBt.SetActive(false);
-
-            isProduct[_facilityNo] = true;
-        }
+        levelUp.SetActive(false);
+        pouse.SetActive(false);
     }
 
-    public async void LevelUpBt()
-    {
-        if (25 <= player.GetMaterialNum())
-        {
-            player.DownMaterialNum(25);
 
-            isLevelUp[_facilityNo] = true;
+    public async void LevelUp()
+    {
+        isLevelUp = true;
+
+        int selected;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (!isCreate[i]) continue;
 
             // スクリーン座標をワールド座標に
-            setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
+            setPosition = cmr.ScreenToWorldPoint(setFacilitys[i].transform.position);
             // Z軸がカメラ外のため0に
             setPosition.z = 0;
 
             // 設置する場所に元々施設があったら消す
             delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-            Time.timeScale = 1;
+            Time.timeScale = 1.0f;
             await Task.Delay(50);
-            Time.timeScale = 0;
+            Time.timeScale = 0f;
             Destroy(this.delete);
 
-            // プレハブの生成
-            createFacility = Instantiate(createFacilitys[_selected + 6], setPosition, Quaternion.identity);
-            createFacility.GetComponent<FacilityPrefab>().StartCreate();
+            if (i == 0)
+            {
+                selected = PlayerPrefs.GetInt("FacilitySelect1", 0);
+            }
+            else if (i == 1)
+            {
+                selected = PlayerPrefs.GetInt("FacilitySelect2", 0);
+            }
+            else
+            {
+                selected = PlayerPrefs.GetInt("FacilitySelect3", 0);
+            }
 
-            End();
-        }
-        else
-        {
-            MaterialShortage();
-        }
+            // プレハブの生成
+            createFacility = Instantiate(createFacilitys[selected + 6], setPosition, Quaternion.identity);
+            createFacility.GetComponent<FacilityPrefab>().StartCreate();
+        }        
     }
 
     void MaterialShortage()
     {
         if (materialShortageInstance != null)   Destroy(materialShortageInstance);
 
+        materialShortageInstance = Instantiate(materialShortageTxt);
         materialShortageInstance.transform.SetParent(canvas.transform, false);
     }
 
@@ -302,8 +283,9 @@ public class FacilitySelect : MonoBehaviour
         leftBt.SetActive(false);
         selectBt.SetActive(false);
         exisBt.SetActive(false);
-        changeBt.SetActive(false);
-        levelUpBt.SetActive(false);
+
+        levelUp.SetActive(true);
+        pouse.SetActive(true);
 
         if (materialShortageInstance != null) Destroy(materialShortageInstance);
 

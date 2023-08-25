@@ -13,7 +13,7 @@ public class BossHadouken : MonoBehaviour
     public AudioClip[] attackSe;
 
     // 敵のステータス
-    int hp = 25;
+    int hp = 500;
     int attack = 4;
 
     // 攻撃のオブジェ

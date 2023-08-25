@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class TitleBt : MonoBehaviour
 {
     int stageCheck;
+
+    Fade fade;
 
     // スタートに使う変数
     // bool isStart = false;
@@ -40,6 +40,8 @@ public class TitleBt : MonoBehaviour
 
     void Start()
     {
+        fade = GameObject.Find("TitleBackground").GetComponent<Fade>();
+
         aud = GameObject.Find("Main Camera").GetComponent<AudioSource>();
 
         stageCheck = PlayerPrefs.GetInt("Stage", 0b00);
@@ -72,19 +74,19 @@ public class TitleBt : MonoBehaviour
     // ステージ１の開始
     public void Stage1Bt()
     {
-        SceneManager.LoadScene("Stage1");
+        fade.StartFadeOut("Stage1");
     }
 
     // ステージ２の開始
     public void Stage2Bt()
     {
-        SceneManager.LoadScene("Stage2");
+        fade.StartFadeOut("Stage2");
     }
 
     // ステージ３の開始
     public void Stage3Bt()
     {
-        SceneManager.LoadScene("Stage3");
+        fade.StartFadeOut("Stage3");
     }
 
     // 説明ボタンに使う関数

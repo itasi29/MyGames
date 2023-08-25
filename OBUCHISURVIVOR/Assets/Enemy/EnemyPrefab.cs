@@ -8,6 +8,8 @@ public class EnemyPrefab : MonoBehaviour
     // 生成間隔
     public GameObject[] enemy;
     public int[] createFrame;
+    public int[] farstWaitFrame;
+
     // 生成する数
     public int[] createEnemyMax;
 
@@ -17,27 +19,27 @@ public class EnemyPrefab : MonoBehaviour
     public Vector2[] pos = { new Vector2(9.5f, 0) };
 
     // 生成カウント用
-    List<int> createFrameCount = new List<int>();
+    public int[] createFrameCount;
     // 生成した敵のカウント
-    List<int> createCount = new List<int>();
+    public int[] createCount;
     // 生成フラグ
-    List<bool> isCreate = new List<bool>();
+    public bool[] isCreate;
 
     void Start()
     {
         for (int i = 0; i < enemy.Length; i++)
         {
-            createFrameCount.Add(0);
+            createFrameCount[i] = -farstWaitFrame[i];
 
-            createCount.Add(0);
+            createCount[i] = 0;
 
-            isCreate.Add(true);
+            isCreate[i] = true;
 
-            if (createPos[i] == 0b001)
+            if (createPos[i] == 1)
             {
                 pos[i].y = kBasePosY;
             }
-            if (createPos[i] == 0b010)
+            if (createPos[i] == 2)
             {
                 pos[i].y = -kBasePosY;
             }
@@ -62,7 +64,7 @@ public class EnemyPrefab : MonoBehaviour
 
                     createFrameCount[i] = 0;
 
-                    if (createPos[i] == 0b100)
+                    if (createPos[i] == 3)
                     {
                         pos[i].y = kBasePosY * Random.Range(-1, 2);
                     }

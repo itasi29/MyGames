@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FireWaveControl : MonoBehaviour
 {
+    PlayerControl playerInf;
+
     int attack = 5;
 
     int CreateFrame = 0;
@@ -11,6 +13,10 @@ public class FireWaveControl : MonoBehaviour
 
     void Start()
     {
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
+        attack += playerInf.GetPlusPower();
+
         this.transform.position = new Vector2(-1.0f, this.transform.position.y);
     }
 

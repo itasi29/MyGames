@@ -10,7 +10,7 @@ public class BossBoon : MonoBehaviour
     public AudioClip[] attackSe;
 
     // 敵のステータス
-    int hp = 100;
+    int hp = 400;
     int attack = 10;
 
     // 出現位置、停止位置

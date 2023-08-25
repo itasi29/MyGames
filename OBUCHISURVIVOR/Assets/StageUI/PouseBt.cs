@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PouseBt : MonoBehaviour
 {
+    Fade fade;
+
     [SerializeField] GameObject canvas;
 
     [SerializeField] GameObject battenMark;
@@ -19,6 +20,21 @@ public class PouseBt : MonoBehaviour
     [SerializeField] GameObject yesBt;
     [SerializeField] GameObject noBt;
 
+    GameObject create0;
+    GameObject create1;
+    GameObject create2;
+    GameObject levelUp;
+
+    void Start()
+    {
+        fade = GameObject.Find("PlayerDirector").GetComponent<Fade>();
+
+        create0 = GameObject.Find("Create0");
+        create1 = GameObject.Find("Create1");
+        create2 = GameObject.Find("Create2");
+        levelUp = GameObject.Find("LevelUpBt");
+
+    }
 
     public void Pouse()
     {
@@ -30,6 +46,11 @@ public class PouseBt : MonoBehaviour
         TitleBt.SetActive(true);
         nowInstance = Instantiate(pouse);
         nowInstance.transform.SetParent(canvas.transform, false);
+
+        create0.SetActive(false);
+        create1.SetActive(false);
+        create2.SetActive(false);
+        levelUp.SetActive(false);
     }
 
     public void ReturnGameBt()
@@ -39,6 +60,11 @@ public class PouseBt : MonoBehaviour
         this.gameObject.SetActive(true);
         battenMark.SetActive(false);
         TitleBt.SetActive(false);
+
+        create0.SetActive(true);
+        create1.SetActive(true);
+        create2.SetActive(true);
+        levelUp.SetActive(true);
 
         Destroy(nowInstance);
     }
@@ -64,7 +90,7 @@ public class PouseBt : MonoBehaviour
     {
         Time.timeScale = 1.0f;
 
-        SceneManager.LoadScene("Title");
+        fade.StartFadeOut("Title");
     }
     public void NoBt()
     {

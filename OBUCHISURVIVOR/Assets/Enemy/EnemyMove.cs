@@ -108,6 +108,10 @@ public class EnemyMove : MonoBehaviour
                     break;
             }
 
+            // 攻撃を消す
+            Destroy(this.attackInstance);
+
+            // 敵の削除
             Destroy(this.gameObject);
         }
 

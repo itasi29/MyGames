@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour
 {
+    Fade fade;
+
     public GameObject returnGameBt;
     public GameObject returnTitleBt;
 
@@ -16,6 +17,8 @@ public class GameOver : MonoBehaviour
 
     void Start()
     {
+        fade = GetComponent<Fade>();
+
         stageNo = PlayerPrefs.GetInt("StageNo", 1);
     }
 
@@ -30,11 +33,11 @@ public class GameOver : MonoBehaviour
             {
                 if (isGame)
                 {
-                    SceneManager.LoadScene("stage" + stageNo.ToString());
+                    fade.StartFadeOut("stage" + stageNo.ToString());
                 }
                 else
                 {
-                    SceneManager.LoadScene("Title");
+                    fade.StartFadeOut("Title");
                 }
             }
         }

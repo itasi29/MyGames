@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class IceSlasherControl : MonoBehaviour
 {
+    PlayerControl playerInf;
+
     int attack = 3;
 
     float speed = 0.2f;
 
     void Start()
     {
-        
+        playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
+
+        attack += playerInf.GetPlusPower();
     }
 
     void FixedUpdate()
@@ -31,6 +35,8 @@ public class IceSlasherControl : MonoBehaviour
         {
             collision.gameObject.GetComponent<EnemyMove>().HpDown(this.attack);
             collision.gameObject.GetComponent<EnemyMove>().Freeze();
+
+            Destroy(this.gameObject);
         }
     }
 }
