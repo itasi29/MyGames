@@ -108,7 +108,7 @@ MonoBehaviour:
   deathSe3: {fileID: 8300000, guid: cbc602f38cc5f344eb66105caf5b0848, type: 3}
   deathSe4: {fileID: 8300000, guid: 16d927df1386e8947a81b20948d962fc, type: 3}
   deathSe5: {fileID: 8300000, guid: 83f78c502e5fc6847b6979fcc37c39b9, type: 3}
-  dropMaterialMin: 1
+  dropMaterialMin: 2
   dropMaterialMax: 3
   hp: 30
   attack: 8

@@ -28,7 +28,7 @@ public class PlayerControl : MonoBehaviour
     int materialNum;
 
     // 回復
-    int recoveryMaterialNum = 4;
+    int recoveryMaterialNum = 5;
     int recoveryHp = 0;
     const int kRecoveryFrame = 100;
     int recoveryFrameCount = 0;
@@ -245,8 +245,8 @@ public class PlayerControl : MonoBehaviour
 
             DownMaterialNum(recoveryMaterialNum);
 
-            // レベル上げるごとに2倍
-            recoveryMaterialNum *= 2;
+            // レベル上がるごとに＋5
+            recoveryMaterialNum += 5;
 
             recoveryIst.GetComponent<Text>().text = "必要数 : " + recoveryMaterialNum.ToString();
         }
@@ -257,13 +257,14 @@ public class PlayerControl : MonoBehaviour
     {
         if (powerMaterialNum <= materialNum)
         {
-            plusPower++;
+            plusPower += 2;
 
             DownMaterialNum(powerMaterialNum);
 
+            // レベル上がるごとに＋4
             powerMaterialNum += 4;
 
-            if (powerMaterialNum == 18) facility.LevelUp();
+            if (powerMaterialNum == 42) facility.LevelUp();
 
             powerIst.GetComponent<Text>().text = "必要数 : " + powerMaterialNum.ToString();
         }
@@ -274,11 +275,14 @@ public class PlayerControl : MonoBehaviour
     {
         if (createMaterialNum <= materialNum)
         {
-            shortCreate -= 5;
+            shortCreate += 5;
 
             DownMaterialNum(createMaterialNum);
 
+            // レベル上がるごとに＋3
             createMaterialNum += 3;
+
+            if (powerMaterialNum == 32) facility.LevelUp();
 
             shortIst.GetComponent<Text>().text = "必要数 : " + createMaterialNum.ToString();
         }
@@ -319,6 +323,7 @@ public class PlayerControl : MonoBehaviour
     // クリアシーンの読み込み
     public void LoadClearScene()
     {
+        PlayerPrefs.SetInt("Stage", stageNo + 1);
         fade.StartFadeOut("Clear");
     }
 
@@ -326,6 +331,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (isKillBoss)
         {
+            PlayerPrefs.SetInt("Stage", stageNo + 1);
             fade.StartFadeOut("Clear");
         }
 

@@ -107,11 +107,11 @@ MonoBehaviour:
   deathSe3: {fileID: 8300000, guid: cbc602f38cc5f344eb66105caf5b0848, type: 3}
   deathSe4: {fileID: 8300000, guid: 16d927df1386e8947a81b20948d962fc, type: 3}
   deathSe5: {fileID: 8300000, guid: 83f78c502e5fc6847b6979fcc37c39b9, type: 3}
-  dropMaterialMin: 0
+  dropMaterialMin: 1
   dropMaterialMax: 3
   hp: 40
   attack: 3
-  speed: 0.1
+  speed: 0.05
   attackPrefab: {fileID: 281778584964272372, guid: 6021f9dda3c6a7c4295ee1330cab6340, type: 3}
   isKameka: 0
   stopPosX: 0

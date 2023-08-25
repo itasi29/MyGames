@@ -44,7 +44,7 @@ public class TitleBt : MonoBehaviour
 
         aud = GameObject.Find("Main Camera").GetComponent<AudioSource>();
 
-        stageCheck = PlayerPrefs.GetInt("Stage", 0b00);
+        stageCheck = PlayerPrefs.GetInt("Stage", 1);
     }
 
     // スタートボタン
@@ -57,10 +57,10 @@ public class TitleBt : MonoBehaviour
         battenMark.SetActive(true);
         stage1Bt.SetActive(true);
 
-        if (stageCheck >= 0b01)
+        if (stageCheck >= 2)
         {
             stage2Bt.SetActive(true);
-            if (stageCheck >= 0b11)
+            if (stageCheck >= 3)
             {
                 stage3Bt.SetActive(true);
             }

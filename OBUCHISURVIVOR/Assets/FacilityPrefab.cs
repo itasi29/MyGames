@@ -13,6 +13,7 @@ public class FacilityPrefab : MonoBehaviour
     int createFrame = 0;
     // 生成間隔(秒*50)
     public int updateFrame = 300;
+    int updateTime;
 
     bool isCreate = false;
 
@@ -29,7 +30,14 @@ public class FacilityPrefab : MonoBehaviour
         {
             createFrame++;
 
-            if (updateFrame - playerInf.GetShortCreateTime() <= createFrame)
+
+            updateTime = updateFrame - playerInf.GetShortCreateTime();
+            if (updateTime <= 50)
+            {
+                updateTime = 50;
+            }
+
+            if (updateTime <= createFrame)
             {
                 Instantiate(this.facility, this.transform.position, Quaternion.identity);
 

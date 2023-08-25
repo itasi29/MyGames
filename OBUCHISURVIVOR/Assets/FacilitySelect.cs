@@ -197,7 +197,7 @@ public class FacilitySelect : MonoBehaviour
 
             if (_selected < 6) _selected += 6;
 
-            nameInstance.GetComponent<Text>().text = facilityName[_selected - 6];
+            nameInstance.GetComponent<Text>().text = facilityName[_selected % 6];
         }
         else
         {
@@ -205,7 +205,7 @@ public class FacilitySelect : MonoBehaviour
             leftBt.SetActive(true);
             selectBt.SetActive(true);
             
-            nameInstance.GetComponent<Text>().text = facilityName[_selected];
+            nameInstance.GetComponent<Text>().text = facilityName[_selected % 6];
         }
 
         levelUp.SetActive(false);
