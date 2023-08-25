@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2661837496296308556}
   - component: {fileID: 7253310042314141742}
   - component: {fileID: 7260110449815216182}
-  - component: {fileID: 2604548802594097916}
   m_Layer: 0
   m_Name: enemy_kameka-
   m_TagString: enemy
@@ -77,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 99062e1ab653a064dacdb7242470be35, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7529412, b: 0.7529412, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -110,8 +109,8 @@ MonoBehaviour:
   deathSe5: {fileID: 8300000, guid: 83f78c502e5fc6847b6979fcc37c39b9, type: 3}
   dropMaterialMin: 2
   dropMaterialMax: 4
-  hp: 60
-  attack: 10
+  hp: 80
+  attack: 1
   speed: 0.05
   attackPrefab: {fileID: 0}
   isKameka: 1
@@ -143,24 +142,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 16.76, y: 22.332127}
   m_EdgeRadius: 0
---- !u!50 &2604548802594097916
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7597254082200876629}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: 76e77a6f23f7bb44ca66336bccf18633, type: 2}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0

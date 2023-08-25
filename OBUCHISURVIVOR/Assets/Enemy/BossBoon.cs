@@ -10,20 +10,17 @@ public class BossBoon : MonoBehaviour
     public AudioClip[] attackSe;
 
     // 敵のステータス
-    int hp = 400;
-    int attack = 10;
+    int hp = 2000;
+    int attack = 18;
 
     // 出現位置、停止位置
     float posX = 5f;
 
-    // 攻撃間隔
-    int attackFrame = 150;
-    int waitFrameAttack;
     // スリップダメージ間隔
     int waitSlipDamage;
     // スリップダメージの受ける間隔
     const int kSlipDamage = 50;
-    Vector2 attackPower = new Vector2(-10f, 0);
+    float attackPower = 0.5f;
 
     // アイス攻撃処理
     int waitFreeze = 0;
@@ -32,17 +29,20 @@ public class BossBoon : MonoBehaviour
 
     // プレイヤーの情報
     PlayerControl playerInf;
-    Rigidbody2D rigid;
 
     // 2キルボスか確認
     public bool isKill2 = false;
+
+    bool isDamage = false;
+    int damageFrame = 0;
+    float alpha = 0f;
+    Color c = new Color(1f, 0.75f, 0.75f);
+    SpriteRenderer sprite;
 
     void Start()
     {
         this.transform.position = new Vector2(posX, 0);
 
-        // 攻撃間隔の初期化
-        waitFrameAttack = 0;
         // スリップダメージ間隔の初期化
         waitSlipDamage = kSlipDamage;
 
@@ -53,7 +53,8 @@ public class BossBoon : MonoBehaviour
         GameObject player = GameObject.Find("PlayerDirector");
         playerInf = player.GetComponent<PlayerControl>();
         aud = player.GetComponent<AudioSource>();
-        rigid  = GetComponent<Rigidbody2D>();
+
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     void FixedUpdate()
@@ -73,6 +74,29 @@ public class BossBoon : MonoBehaviour
             Destroy(this.gameObject);
         }
 
+        if (isDamage)
+        {
+            damageFrame++;
+
+            if (damageFrame % 8 == 0)
+            {
+                alpha -= 1f;
+                if (alpha < 0f) alpha = 1f;
+
+                c.a = alpha;
+            }
+
+            if (40 <= damageFrame)
+            {
+                alpha = 1f;
+
+                c.a = alpha;
+                isDamage = false;
+            }
+
+            sprite.color = c;
+        }
+
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
@@ -85,22 +109,10 @@ public class BossBoon : MonoBehaviour
         // 受けていなかったら行動
         else
         {
-            waitFrameAttack++;
 
-            if (waitFrameAttack > attackFrame)
-            {
-                rigid.AddForce(attackPower, ForceMode2D.Impulse);
+            if (posX <= this.transform.position.x) attackPower = 0.5f;
 
-                // 待機時間を初めに戻す
-                waitFrameAttack = 0;
-
-                seNo = Random.Range(0, attackSe.Length);
-                aud.PlayOneShot(attackSe[seNo]);
-            }
-            else if (posX < this.transform.position.x)
-            {
-                this.rigid.velocity = Vector2.zero;
-            }
+            this.transform.position = new Vector2(this.transform.position.x - attackPower, this.transform.position.y);
         }
 
         // スリップダメージの受けるターンが貯まっていない場合増加
@@ -114,6 +126,14 @@ public class BossBoon : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("barrier"))
         {
+            attackPower = -0.046875f;
+
+            seNo = Random.Range(0, attackSe.Length);
+            if (seNo != attackSe.Length)
+            {
+                aud.PlayOneShot(attackSe[seNo]);
+            }
+
             playerInf.HpDown(attack);
         }
     }
@@ -122,6 +142,9 @@ public class BossBoon : MonoBehaviour
     // この敵のHPを減らす
     public void HpDown(int attack)
     {
+        isDamage = true;
+        damageFrame = 0;
+
         hp -= attack;
         // 現在のHPをログに流す
         Debug.Log(this.hp);

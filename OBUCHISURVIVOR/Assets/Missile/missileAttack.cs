@@ -15,6 +15,8 @@ public class missileAttack : MonoBehaviour
     {
         playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
 
+        this.transform.position = new Vector2(this.transform.position.x + 0.5f, this.transform.position.y);
+
         attack += playerInf.GetPlusPower();
     }
 

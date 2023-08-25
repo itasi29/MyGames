@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 73d40bc8c9c837e409dc31edcd15d605, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7529412, b: 0.7529412, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -110,13 +110,13 @@ MonoBehaviour:
   deathSe5: {fileID: 8300000, guid: 83f78c502e5fc6847b6979fcc37c39b9, type: 3}
   dropMaterialMin: 2
   dropMaterialMax: 3
-  hp: 30
-  attack: 8
+  hp: 48
+  attack: 6
   speed: 0.04
   attackPrefab: {fileID: 629557399846377752, guid: 559bb723fafcb0842b52919db5ac63ab, type: 3}
   isKameka: 0
   stopPosX: 3
-  attackFrame: 50
+  attackFrame: 100
 --- !u!61 &8290868626142777169
 BoxCollider2D:
   m_ObjectHideFlags: 0

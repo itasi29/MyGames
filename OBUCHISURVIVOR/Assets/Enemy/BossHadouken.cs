@@ -15,8 +15,8 @@ public class BossHadouken : MonoBehaviour
     public AudioClip[] attackSe;
 
     // 敵のステータス
-    int hp = 500;
-    int attack = 4;
+    int hp = 2000;
+    int attack = 24;
 
     // 攻撃のオブジェ
     //   [SerializeField] GameObject attackObj;
@@ -35,6 +35,8 @@ public class BossHadouken : MonoBehaviour
     int waitSlipDamage;
     // スリップダメージの受ける間隔
     const int kSlipDamage = 50;
+    bool isAttack = false;
+    int waitFrame;
 
     // アイス攻撃処理
     int waitFreeze = 0;
@@ -43,6 +45,12 @@ public class BossHadouken : MonoBehaviour
 
     // 2キルボスか確認
     public bool isKill2 = false;
+
+    bool isDamage = false;
+    int damageFrame = 0;
+    float alpha = 0f;
+    Color c = new Color(1f, 0.75f, 0.75f);
+    SpriteRenderer sprite;
 
     void Start()
     {
@@ -63,6 +71,8 @@ public class BossHadouken : MonoBehaviour
         // アイス攻撃処理初期化
         waitFreeze = kFreeze;
         isFreeze = false;
+
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     void FixedUpdate()
@@ -82,6 +92,29 @@ public class BossHadouken : MonoBehaviour
             Destroy(this.gameObject);
         }
 
+        if (isDamage)
+        {
+            damageFrame++;
+
+            if (damageFrame % 8 == 0)
+            {
+                alpha -= 1f;
+                if (alpha < 0f) alpha = 1f;
+
+                c.a = alpha;
+            }
+
+            if (40 <= damageFrame)
+            {
+                alpha = 1f;
+
+                c.a = alpha;
+                isDamage = false;
+            }
+
+            sprite.color = c;
+        }
+
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
@@ -98,8 +131,8 @@ public class BossHadouken : MonoBehaviour
 
             if (waitFrameAttack > attackFrame)
             {
-                attackInstance = Instantiate(attackPrefab);
-                attackInstance.transform.position = this.transform.position;
+                isAttack = true;
+                waitFrame = 0;
 
                 // 待機時間を初めに戻す
                 waitFrameAttack = 0;
@@ -112,6 +145,18 @@ public class BossHadouken : MonoBehaviour
                 // ボスの場所移動
                 pos.y = Random.Range(-1, 2) * kBasePosY;
                 this.transform.position = pos;
+            }
+        }
+
+        if (isAttack)
+        {
+            waitFrame++;
+
+            if (10 <= waitFrame)
+            {
+                isAttack = false;
+                attackInstance = Instantiate(attackPrefab);
+                attackInstance.transform.position = this.transform.position;
             }
         }
 
@@ -139,6 +184,9 @@ public class BossHadouken : MonoBehaviour
     // この敵のHPを減らす
     public void HpDown(int attack)
     {
+        isDamage = true;
+        damageFrame = 0;
+
         hp -= attack;
         // 現在のHPをログに流す
         Debug.Log(this.hp);

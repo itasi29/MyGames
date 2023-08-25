@@ -11,8 +11,8 @@ public class PlayerControl : MonoBehaviour
     public int stageNo = 1;
 
     // 体力
-    int hp = 200;
-    int maxHp = 200;
+    int hp;
+    int maxHp = 300;
 
     public GameObject hpObj;
     Slider hpSlider;
@@ -29,7 +29,7 @@ public class PlayerControl : MonoBehaviour
 
     // 回復
     int recoveryMaterialNum = 5;
-    int recoveryHp = 0;
+    int recoveryHp = 1;
     const int kRecoveryFrame = 100;
     int recoveryFrameCount = 0;
 
@@ -78,6 +78,8 @@ public class PlayerControl : MonoBehaviour
         hpSlider = hpObj.GetComponent<Slider>();
 
         isExist = true;
+
+        hp = maxHp;
 
         materialNum = 10;
 
@@ -136,7 +138,7 @@ public class PlayerControl : MonoBehaviour
 
                 hp += recoveryHp;
 
-                if (hp < maxHp)
+                if (maxHp < hp)
                 {
                     hp = maxHp;
                 }

@@ -34,10 +34,7 @@ public class EnemyMove : MonoBehaviour
     // カメカーはそのまま攻撃
     public bool isKameka;
     bool isAttack;
-    Rigidbody2D rigid;
-    Vector2 attackPower = new Vector2(10f, 0);
-    bool isSave = true;
-    Vector2 savePower;
+    float attackPower = 0.5f;
 
     // 止まる位置
     public float stopPosX = -3.0f;
@@ -55,7 +52,11 @@ public class EnemyMove : MonoBehaviour
     const int kFreeze = 75;
     bool isFreeze;
 
-    
+    bool isDamage = false;
+    int damageFrame = 0;
+    float alpha = 0f;
+    Color c = new Color(1f, 0.75f, 0.75f);
+    SpriteRenderer sprite;
 
     void Start()
     {
@@ -72,11 +73,7 @@ public class EnemyMove : MonoBehaviour
         waitFreeze = kFreeze;
         isFreeze = false;
 
-        if (isKameka)
-        {
-            rigid = GetComponent<Rigidbody2D>();
-            rigid.AddForce(attackPower, ForceMode2D.Impulse);
-        }
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     void FixedUpdate()
@@ -115,29 +112,37 @@ public class EnemyMove : MonoBehaviour
             Destroy(this.gameObject);
         }
 
+        if (isDamage)
+        {
+            damageFrame++;
+
+            if (damageFrame % 8 == 0)
+            {
+                alpha -= 1f;
+                if (alpha < 0f) alpha = 1f;
+
+                c.a = alpha;
+            }
+
+            if (40 <= damageFrame)
+            {
+                alpha = 1f;
+
+                c.a = alpha;
+                isDamage = false;
+            }
+
+            sprite.color = c;
+        }
+
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
-            if (isKameka)
-            {
-                if (isSave)
-                {
-                    isSave = false;
-                    savePower = this.rigid.velocity;
-                }
-
-                this.rigid.velocity = Vector2.zero;
-            }
 
             waitFreeze++;
             if (kFreeze <= waitFreeze)
             {
                 isFreeze = false;
-                if (isKameka)
-                {
-                    isSave = true;
-                    this.rigid.AddForce(savePower, ForceMode2D.Impulse);
-                }
             }
         }
         // 受けていなかったら行動
@@ -145,21 +150,9 @@ public class EnemyMove : MonoBehaviour
         {
             if (isKameka)
             {
-                if (isAttack)
-                {
-                    if (stopPosX < this.transform.position.x)
-                    {
-                        this.rigid.AddForce(attackPower, ForceMode2D.Impulse);
-                        
-                        isAttack = false;
+                if (stopPosX <= this.transform.position.x) attackPower = 0.5f;
 
-                        seNo = Random.Range(0, attackSe.Length);
-                        if (seNo != attackSe.Length)
-                        {
-                            aud.PlayOneShot(attackSe[seNo]);
-                        }
-                    }
-                }
+                this.transform.position = new Vector2(this.transform.position.x - attackPower, this.transform.position.y);
             }
             else
             {
@@ -205,9 +198,29 @@ public class EnemyMove : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("barrier"))
         {
-            isAttack = true;
-
             playerInf.HpDown(attack);
+
+            if (isKameka)
+            {
+                attackPower = -0.03125f;
+
+                seNo = Random.Range(0, attackSe.Length);
+                if (seNo != attackSe.Length)
+                {
+                    aud.PlayOneShot(attackSe[seNo]);
+                }
+            }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isKameka)
+        {
+            if (collision.gameObject.CompareTag("attack"))
+            {
+                Destroy(collision.gameObject);
+            }
         }
     }
 
@@ -220,9 +233,12 @@ public class EnemyMove : MonoBehaviour
     // この敵のHPを減らす
     public void HpDown(int attack)
     {
+        isDamage = true;
+        damageFrame = 0;
+
         hp -= attack;
         // 現在のHPをログに流す
-        Debug.Log(this.hp);
+        Debug.Log("[enemy] : " + this.hp);
     }
 
     /// アイス攻撃処理

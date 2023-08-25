@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 0d3443f78602f254aa1324c36a8ea17e, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7529412, b: 0.7529412, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
   speed: 0.05
   attackPrefab: {fileID: 281778584964272372, guid: 6021f9dda3c6a7c4295ee1330cab6340, type: 3}
   isKameka: 0
-  stopPosX: 0
+  stopPosX: 0.5
   attackFrame: 50
 --- !u!61 &2397850121567220213
 BoxCollider2D:

@@ -62,6 +62,9 @@ public class FacilitySelect : MonoBehaviour
 
     GameObject levelUp;
     GameObject pouse;
+    GameObject create0;
+    GameObject create1;
+    GameObject create2;
 
     void Start()
     {
@@ -69,6 +72,9 @@ public class FacilitySelect : MonoBehaviour
 
         cmr = Camera.main;
 
+        create0 = GameObject.Find("Create0");
+        create1 = GameObject.Find("Create1");
+        create2 = GameObject.Find("Create2");
         levelUp = GameObject.Find("LevelUpBt");
         pouse = GameObject.Find("PouseBt");
     }
@@ -208,6 +214,9 @@ public class FacilitySelect : MonoBehaviour
             nameInstance.GetComponent<Text>().text = facilityName[_selected % 6];
         }
 
+        create0.SetActive(false);
+        create1.SetActive(false);
+        create2.SetActive(false);
         levelUp.SetActive(false);
         pouse.SetActive(false);
     }
@@ -215,6 +224,8 @@ public class FacilitySelect : MonoBehaviour
 
     public async void LevelUp()
     {
+        if (isLevelUp) return;
+
         isLevelUp = true;
 
         int selected;
@@ -284,6 +295,9 @@ public class FacilitySelect : MonoBehaviour
         selectBt.SetActive(false);
         exisBt.SetActive(false);
 
+        create0.SetActive(true);
+        create1.SetActive(true);
+        create2.SetActive(true);
         levelUp.SetActive(true);
         pouse.SetActive(true);
 

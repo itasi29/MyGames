@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 979225321505860237}
   - component: {fileID: 979225321505860236}
   - component: {fileID: 979225321505860239}
-  - component: {fileID: 979225321505860238}
   - component: {fileID: 979225321505860241}
   - component: {fileID: 979225321505860240}
   m_Layer: 0
@@ -78,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: a65389972c7c63945a0b26e0feb19e6c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7529412, b: 0.7529412, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -105,27 +104,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 56a72e923aa0aad4eab0a3ff57fe28e1, type: 3}
   - {fileID: 8300000, guid: 728cc32b074b15840b6a6f6cba48c635, type: 3}
   isKill2: 0
---- !u!50 &979225321505860238
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 979225321505860243}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: 76e77a6f23f7bb44ca66336bccf18633, type: 2}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 0
 --- !u!61 &979225321505860241
 BoxCollider2D:
   m_ObjectHideFlags: 0

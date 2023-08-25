@@ -8,6 +8,7 @@ TagManager:
   - barrier
   - bossBoon
   - bossHadouken
+  - attack
   layers:
   - Default
   - TransparentFX

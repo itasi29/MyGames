@@ -42,15 +42,11 @@ public class IceSlasherControl : MonoBehaviour
         {
             collision.gameObject.GetComponent<BossBoon>().HpDown(this.attack);
             collision.GetComponent<BossBoon>().Freeze();
-
-            Destroy(this.gameObject);
         }
         else if (collision.gameObject.CompareTag("bossHadouken"))
         {
             collision.gameObject.GetComponent<BossHadouken>().HpDown(this.attack);
             collision.gameObject.GetComponent<BossHadouken>().Freeze();
-
-            Destroy(this.gameObject);
         }
     }
 }

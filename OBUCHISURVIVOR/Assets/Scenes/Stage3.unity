@@ -905,6 +905,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &686749747 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5920150659145704402, guid: 4e8327a289596064a95dc8c8c06e1fe8, type: 3}
+  m_PrefabInstance: {fileID: 1501063727}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &686749751
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 686749747}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &709400855 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 109069229883843002, guid: b5beba7ef36ea2948ab9b2393e62fa60, type: 3}
@@ -2055,16 +2081,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89b3202a69558744daf85a45c74dd3ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: []
-  createFrame: 
-  farstWaitFrame: 
-  createEnemyMax: 
-  createPos: 
+  enemy:
+  - {fileID: 1702976404822622864, guid: fc66f60657906e240a660b8dc506ad1a, type: 3}
+  - {fileID: 1702976404822622864, guid: fc66f60657906e240a660b8dc506ad1a, type: 3}
+  - {fileID: 1702976404822622864, guid: fc66f60657906e240a660b8dc506ad1a, type: 3}
+  - {fileID: 4381658955809551833, guid: bbb5752847d2e4e40909dcfa920f41a8, type: 3}
+  - {fileID: 4381658955809551833, guid: bbb5752847d2e4e40909dcfa920f41a8, type: 3}
+  - {fileID: 4381658955809551833, guid: bbb5752847d2e4e40909dcfa920f41a8, type: 3}
+  - {fileID: 833161057139553381, guid: de6c65215ac5014448dc18c5a68ff860, type: 3}
+  - {fileID: 833161057139553381, guid: de6c65215ac5014448dc18c5a68ff860, type: 3}
+  - {fileID: 833161057139553381, guid: de6c65215ac5014448dc18c5a68ff860, type: 3}
+  - {fileID: 1052797734966596965, guid: 3983c1b79a92ec040a9cf83c235149ce, type: 3}
+  - {fileID: 1052797734966596965, guid: 3983c1b79a92ec040a9cf83c235149ce, type: 3}
+  - {fileID: 1052797734966596965, guid: 3983c1b79a92ec040a9cf83c235149ce, type: 3}
+  - {fileID: 7597254082200876629, guid: e0abbf45376713448a338d871fb04edc, type: 3}
+  - {fileID: 7597254082200876629, guid: e0abbf45376713448a338d871fb04edc, type: 3}
+  - {fileID: 7597254082200876629, guid: e0abbf45376713448a338d871fb04edc, type: 3}
+  - {fileID: 4381658955809551833, guid: bbb5752847d2e4e40909dcfa920f41a8, type: 3}
+  - {fileID: 7597254082200876629, guid: e0abbf45376713448a338d871fb04edc, type: 3}
+  - {fileID: 6493188925851802941, guid: 4c789c0fc3d01e64f91d7f7f64a83ede, type: 3}
+  - {fileID: 236613825022258923, guid: dde087da846cc3646987695a9e09285b, type: 3}
+  - {fileID: 1702976404822622864, guid: fc66f60657906e240a660b8dc506ad1a, type: 3}
+  createFrame: 820000007d00000087000000af000000b9000000b4000000a5000000aa000000af0000002c010000270100003101000027010000310100002c0100000a0000004b00000000000000000000000a000000
+  farstWaitFrame: 00000000140000000a0000009e070000b00400009808000004a600000c12000084120000d51b00002a1c0000581b00004218000070170000ed170000241300004c1d0000e02e0000e02e0000ee020000
+  createEnemyMax: 78000000800000007c00000070000000660000006c0000005b0000004c00000042000000180000001c0000001a0000002800000020000000240000000a00000014000000010000000100000008000000
+  createPos: 0000000001000000020000000000000001000000020000000000000001000000020000000000000001000000020000000000000001000000020000000300000003000000000000000000000003000000
   pos:
   - {x: 9.5, y: 0}
-  createFrameCount: 
-  createCount: 
-  isCreate: 
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  - {x: 9.5, y: 0}
+  createFrameCount: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  createCount: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  isCreate: 0000000000000000000000000000000000000000
 --- !u!4 &1499020846
 Transform:
   m_ObjectHideFlags: 0
@@ -3016,7 +3081,7 @@ MonoBehaviour:
   selectBt: {fileID: 709400855}
   exisBt: {fileID: 458848871}
   player: {fileID: 1841341672}
-  materialShortageTxt: {fileID: 0}
+  materialShortageTxt: {fileID: 5626575418537710148, guid: 70175acffbff922458602b79d2a60cd7, type: 3}
   setFacilitys:
   - {fileID: 96606984}
   - {fileID: 1104477089}
