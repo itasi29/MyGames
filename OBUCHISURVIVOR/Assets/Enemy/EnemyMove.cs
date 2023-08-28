@@ -142,7 +142,7 @@ public class EnemyMove : MonoBehaviour
             waitSlipDamage++;
 
             // スリップダメージの受けるターンが貯まっていない場合増加
-            if (waitSlipDamage <= kSlipDamage)
+            if (kSlipDamage <= waitSlipDamage)
             {
                 isSlip = false;
             }

@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 8729244257173179723}
   - component: {fileID: 5322760955706696807}
   - component: {fileID: 632184138545806105}
-  - component: {fileID: 2805402594474410577}
   - component: {fileID: 5764545418295015422}
   - component: {fileID: 7091208697556336326}
-  - component: {fileID: 2455468221510654872}
+  - component: {fileID: -667579340995929673}
+  - component: {fileID: -7185691195907300360}
   m_Layer: 0
   m_Name: FireWave
   m_TagString: Untagged
@@ -99,7 +99,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -115,18 +115,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 5, y: 2}
   m_EdgeRadius: 0
---- !u!114 &2805402594474410577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5053526064060788249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3e6189a8205a4b478aabed8420685ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!198 &5764545418295015422
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4906,7 +4894,7 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!50 &2455468221510654872
+--- !u!50 &-667579340995929673
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -4927,3 +4915,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-7185691195907300360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5053526064060788249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3e6189a8205a4b478aabed8420685ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

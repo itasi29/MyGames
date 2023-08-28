@@ -13,6 +13,8 @@ public class FireWaveControl : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("[FireWave] : Create");
+
         playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
 
         attack += playerInf.GetPlusPower();
@@ -31,8 +33,7 @@ public class FireWaveControl : MonoBehaviour
     }
 
     // ぶつかっている間
-    //void OnTriggerStay2D(Collider2D collision)
-    void OnCollisionEnter2D(Collider collision)
+    void OnTriggerStay2D(Collider2D collision)
     {
         Debug.Log("[SlipDamage] : HitCheck");
 
