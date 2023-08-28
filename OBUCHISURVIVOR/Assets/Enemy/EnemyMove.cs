@@ -69,7 +69,7 @@ public class EnemyMove : MonoBehaviour
         // 攻撃間隔の初期化
         waitFrameAttack = 0;
         // スリップダメージ間隔の初期化
-        waitSlipDamage = kSlipDamage;
+        waitSlipDamage = 0;
 
         // アイス攻撃処理初期化
         waitFreeze = kFreeze;
@@ -147,12 +147,13 @@ public class EnemyMove : MonoBehaviour
                 isSlip = false;
             }
 
-            if (waitSlipDamage % 24 == 0)
+            if (waitSlipDamage % 32 == 0)
             {
+                Debug.Log("[FireWave] : attack");
                 hp -= slipAttack;
 
                 // 現在のHPをログに流す
-                Debug.Log("[Enemy]" + this.hp);
+                Debug.Log("[FireWave] : enemyHp." + this.hp);
 
                 isDamage = true;
             }
