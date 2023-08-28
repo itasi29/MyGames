@@ -31,7 +31,8 @@ public class FireWaveControl : MonoBehaviour
     }
 
     // ぶつかっている間
-    void OnTriggerStay2D(Collider2D collision)
+    //void OnTriggerStay2D(Collider2D collision)
+    void OnCollisionEnter2D(Collider collision)
     {
         Debug.Log("[SlipDamage] : HitCheck");
 
