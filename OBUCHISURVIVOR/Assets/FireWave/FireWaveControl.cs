@@ -33,6 +33,8 @@ public class FireWaveControl : MonoBehaviour
     // ぶつかっている間
     void OnTriggerStay2D(Collider2D collision)
     {
+        Debug.Log("[SlipDamage] : HitCheck");
+
         // 敵にあたったらダメージを与える
         if (collision.gameObject.CompareTag("enemy"))
         {

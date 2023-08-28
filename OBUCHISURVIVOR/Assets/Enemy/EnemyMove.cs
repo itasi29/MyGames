@@ -46,6 +46,8 @@ public class EnemyMove : MonoBehaviour
     int waitSlipDamage;
     // スリップダメージの受ける間隔
     const int kSlipDamage = 50;
+    bool isSlip = false;
+    int slipAttack = 0;
 
     // アイス攻撃処理
     int waitFreeze = 0;
@@ -135,6 +137,28 @@ public class EnemyMove : MonoBehaviour
             sprite.color = c;
         }
 
+        if (isSlip)
+        {
+            waitSlipDamage++;
+
+            // スリップダメージの受けるターンが貯まっていない場合増加
+            if (waitSlipDamage <= kSlipDamage)
+            {
+                isSlip = false;
+            }
+
+            if (waitSlipDamage % 24 == 0)
+            {
+                hp -= slipAttack;
+
+                // 現在のHPをログに流す
+                Debug.Log("[Enemy]" + this.hp);
+
+                isDamage = true;
+            }
+        }
+        
+
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
@@ -185,12 +209,6 @@ public class EnemyMove : MonoBehaviour
                     }
                 }
             }
-        }
-
-        // スリップダメージの受けるターンが貯まっていない場合増加
-        if (waitSlipDamage <= kSlipDamage)
-        {
-            waitSlipDamage++;
         }
     }
 
@@ -251,11 +269,15 @@ public class EnemyMove : MonoBehaviour
     /// スリップダメージ処理
     public void SlipDamage(int attack)
     {
-        if (kSlipDamage <= waitSlipDamage)
+        Debug.Log("[SlipDamage] : HitEnemy");
+
+        if (!isSlip)
         {
-            hp -= attack;
-            // 現在のHPをログに流す
-            Debug.Log("[Enemy]" + this.hp);
+            Debug.Log("[SlipDamage] : DamageStart");
+
+            slipAttack = attack;
+
+            isSlip = true;
 
             waitSlipDamage = 0;
         }
