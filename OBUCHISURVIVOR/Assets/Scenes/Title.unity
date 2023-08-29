@@ -1923,8 +1923,9 @@ MonoBehaviour:
   quitBt: {fileID: 31573066}
   canvas: {fileID: 730871235}
   battenMark: {fileID: 1620291352}
-  Guide1: {fileID: 0}
-  Guide2: {fileID: 0}
+  Guide:
+  - {fileID: 7404563688817254874, guid: 32e4df5efd3c4cf489eca3ed5cc7d06f, type: 3}
+  - {fileID: 7978164584719031935, guid: abf94ef47fedf4a4087355ea3755d25f, type: 3}
   rightBt: {fileID: 1344620313}
   leftBt: {fileID: 808355998}
   checkImg: {fileID: 8817157573891190967, guid: 5acbc3b54bd40f648ba995cd6e4328be, type: 3}

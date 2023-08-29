@@ -23,11 +23,11 @@ public class TitleBt : MonoBehaviour
     // 説明ボタンに使う変数
     public GameObject canvas;
     public GameObject battenMark;
-    public GameObject Guide1;
-    public GameObject Guide2;
+    public GameObject[] Guide;
     public GameObject rightBt;
     public GameObject leftBt;
     GameObject nowInstance;
+    int guideNo = 0;
 
     // 終了用に使う変数
     public GameObject checkImg;
@@ -100,7 +100,7 @@ public class TitleBt : MonoBehaviour
 
         rightBt.SetActive(true);
         leftBt.SetActive(true);
-        nowInstance = Instantiate(Guide1);
+        nowInstance = Instantiate(Guide[guideNo]);
         nowInstance.transform.SetParent(canvas.transform, false);
     }
 
@@ -138,8 +138,11 @@ public class TitleBt : MonoBehaviour
         // 現在のものを削除
         Destroy(nowInstance);
 
+        guideNo++;
+        if (1 < guideNo) guideNo = 0;
+
         // 次のものを生成
-        nowInstance = Instantiate(Guide2);
+        nowInstance = Instantiate(Guide[guideNo]);
         nowInstance.transform.SetParent(canvas.transform, false);
     }
 
@@ -148,8 +151,11 @@ public class TitleBt : MonoBehaviour
         // 現在のものを削除
         Destroy(nowInstance);
 
+        guideNo--;
+        if (guideNo < 0) guideNo = 1;
+
         // 次のものを生成
-        nowInstance = Instantiate(Guide1);
+        nowInstance = Instantiate(Guide[guideNo]);
         nowInstance.transform.SetParent(canvas.transform, false);
     }
 
