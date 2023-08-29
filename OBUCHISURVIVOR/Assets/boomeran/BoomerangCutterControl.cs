@@ -9,7 +9,7 @@ public class BoomerangCutterControl : MonoBehaviour
 {
     PlayerControl playerInf;
 
-    int attack = 10;
+    int attack = 18;
 
     Vector2 speed = new Vector2(7.0f, 0);
     Rigidbody2D rigid;

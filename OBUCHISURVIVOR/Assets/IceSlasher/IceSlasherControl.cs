@@ -10,6 +10,8 @@ public class IceSlasherControl : MonoBehaviour
 
     float speed = 0.2f;
 
+    int hitNum = 0;
+
     void Start()
     {
         playerInf = GameObject.Find("PlayerDirector").GetComponent<PlayerControl>();
@@ -26,6 +28,11 @@ public class IceSlasherControl : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
+        if (4 <= hitNum)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -36,17 +43,21 @@ public class IceSlasherControl : MonoBehaviour
             collision.gameObject.GetComponent<EnemyMove>().HpDown(this.attack);
             collision.gameObject.GetComponent<EnemyMove>().Freeze();
 
-            Destroy(this.gameObject);
+            hitNum++;
         }
         else if (collision.gameObject.CompareTag("bossBoon"))
         {
             collision.gameObject.GetComponent<BossBoon>().HpDown(this.attack);
             collision.GetComponent<BossBoon>().Freeze();
+
+            hitNum++;
         }
         else if (collision.gameObject.CompareTag("bossHadouken"))
         {
             collision.gameObject.GetComponent<BossHadouken>().HpDown(this.attack);
             collision.gameObject.GetComponent<BossHadouken>().Freeze();
+
+            hitNum++;
         }
     }
 }

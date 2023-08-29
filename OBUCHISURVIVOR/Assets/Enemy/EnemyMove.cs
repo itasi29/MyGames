@@ -57,7 +57,8 @@ public class EnemyMove : MonoBehaviour
     bool isDamage = false;
     int damageFrame = 0;
     float alpha = 0f;
-    Color c = new Color(1f, 0.75f, 0.75f);
+    Color cDamage = new Color(1f, 0.75f, 0.75f);
+    Color cFreeze = new Color(0f, 0.75f, 0.75f);
     SpriteRenderer sprite;
 
     void Start()
@@ -114,7 +115,7 @@ public class EnemyMove : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        if (isDamage)
+        if (isDamage && !isFreeze)
         {
             damageFrame++;
 
@@ -123,18 +124,18 @@ public class EnemyMove : MonoBehaviour
                 alpha -= 1f;
                 if (alpha < 0f) alpha = 1f;
 
-                c.a = alpha;
+                cDamage.a = alpha;
             }
 
             if (40 <= damageFrame)
             {
                 alpha = 1f;
 
-                c.a = alpha;
+                cDamage.a = alpha;
                 isDamage = false;
             }
 
-            sprite.color = c;
+            sprite.color = cDamage;
         }
 
         if (isSlip)
@@ -163,11 +164,19 @@ public class EnemyMove : MonoBehaviour
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
-
             waitFreeze++;
+            cFreeze.a = cDamage.a;
+
+            sprite.color = cFreeze;
+
             if (kFreeze <= waitFreeze)
             {
                 isFreeze = false;
+
+                if (!isDamage)
+                {
+                    sprite.color = cDamage;
+                }
             }
         }
         // 受けていなかったら行動

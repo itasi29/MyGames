@@ -37,5 +37,17 @@ public class missileControl : MonoBehaviour
 
             Destroy(this.gameObject);
         }
+        else if (collision.gameObject.CompareTag("bossBoon"))
+        {
+            Instantiate(this.attack, this.transform.position, Quaternion.identity);
+
+            Destroy(this.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("bossHadouken"))
+        {
+            Instantiate(this.attack, this.transform.position, Quaternion.identity);
+
+            Destroy(this.gameObject);
+        }
     }
 }

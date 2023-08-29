@@ -21,6 +21,8 @@ public class BossBoon : MonoBehaviour
     // スリップダメージの受ける間隔
     const int kSlipDamage = 50;
     float attackPower = 0.5f;
+    bool isSlip = false;
+    int slipAttack = 0;
 
     // アイス攻撃処理
     int waitFreeze = 0;
@@ -97,6 +99,28 @@ public class BossBoon : MonoBehaviour
             sprite.color = c;
         }
 
+        if (isSlip)
+        {
+            waitSlipDamage++;
+
+            // スリップダメージの受けるターンが貯まっていない場合増加
+            if (kSlipDamage <= waitSlipDamage)
+            {
+                isSlip = false;
+            }
+
+            if (waitSlipDamage % 32 == 0)
+            {
+                Debug.Log("[FireWave] : attack");
+                hp -= slipAttack;
+
+                // 現在のHPをログに流す
+                Debug.Log("[FireWave] : enemyHp." + this.hp);
+
+                isDamage = true;
+            }
+        }
+
         // アイス攻撃を受けていたら停止
         if (isFreeze)
         {
@@ -160,11 +184,15 @@ public class BossBoon : MonoBehaviour
     /// スリップダメージ処理
     public void SlipDamage(int attack)
     {
-        if (kSlipDamage <= waitSlipDamage)
+        Debug.Log("[SlipDamage] : HitEnemy");
+
+        if (!isSlip)
         {
-            hp -= attack;
-            // 現在のHPをログに流す
-            Debug.Log("[Enemy]" + this.hp);
+            Debug.Log("[SlipDamage] : DamageStart");
+
+            slipAttack = attack;
+
+            isSlip = true;
 
             waitSlipDamage = 0;
         }
