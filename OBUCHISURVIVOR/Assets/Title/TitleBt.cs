@@ -94,6 +94,8 @@ public class TitleBt : MonoBehaviour
     {
         Debug.Log("GuidePush");
 
+        isStageSelect = false;
+
         quitBt.SetActive(false);
 
         battenMark.SetActive(true);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Windows.Speech;
 
 public class BoomerangCutterControl : MonoBehaviour
 {

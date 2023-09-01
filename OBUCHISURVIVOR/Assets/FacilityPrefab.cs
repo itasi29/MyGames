@@ -46,11 +46,6 @@ public class FacilityPrefab : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        Destroy(this.gameObject);
-    }
-
     public void StartCreate()
     {
         isCreate= true;

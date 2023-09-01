@@ -129,11 +129,14 @@ public class FacilitySelect : MonoBehaviour
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
 
-    public async void SelectFacility()
+    public void SelectFacility()
     {
         if (needMaterialNum <= player.GetMaterialNum())
         {
             player.DownMaterialNum(needMaterialNum);
+
+            // 設置する場所に元々施設があったら消す
+            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
 
             // 作っていることにする
             isCreate[_facilityNo] = true;
@@ -143,12 +146,7 @@ public class FacilitySelect : MonoBehaviour
             // Z軸がカメラ外のため0に
             setPosition.z = 0;
 
-            // 設置する場所に元々施設があったら消す
-            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-            Time.timeScale = 1;
-            await Task.Delay(50);
-            Time.timeScale = 0;
-            Destroy(this.delete);
+            //^^^^^^^^^^^^^//
 
             // プレハブの生成
             createFacility = Instantiate(createFacilitys[_selected], setPosition, Quaternion.identity);
@@ -222,7 +220,7 @@ public class FacilitySelect : MonoBehaviour
     }
 
 
-    public async void LevelUp()
+    public void LevelUp()
     {
         if (isLevelUp) return;
 
@@ -241,10 +239,8 @@ public class FacilitySelect : MonoBehaviour
 
             // 設置する場所に元々施設があったら消す
             delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-            Time.timeScale = 1.0f;
-            await Task.Delay(50);
-            Time.timeScale = 0f;
-            Destroy(this.delete);
+
+            //^^^^^^^^^^^^^//
 
             if (i == 0)
             {
@@ -263,6 +259,11 @@ public class FacilitySelect : MonoBehaviour
             createFacility = Instantiate(createFacilitys[selected % 6 + 6], setPosition, Quaternion.identity);
             createFacility.GetComponent<FacilityPrefab>().StartCreate();
         }        
+    }
+
+    public bool IsCreate()
+    {
+        return isCreate[_facilityNo];
     }
 
     void MaterialShortage()
