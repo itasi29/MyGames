@@ -47,7 +47,7 @@ public class BossBoon : MonoBehaviour
         this.transform.position = new Vector2(posX, 0);
 
         // スリップダメージ間隔の初期化
-        waitSlipDamage = kSlipDamage;
+        waitSlipDamage = 0;
 
         // アイス攻撃処理初期化
         waitFreeze = kFreeze;
@@ -150,11 +150,6 @@ public class BossBoon : MonoBehaviour
             this.transform.position = new Vector2(this.transform.position.x - attackPower, this.transform.position.y);
         }
 
-        // スリップダメージの受けるターンが貯まっていない場合増加
-        if (waitSlipDamage <= kSlipDamage)
-        {
-            waitSlipDamage++;
-        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)

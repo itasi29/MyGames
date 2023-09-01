@@ -330,7 +330,10 @@ public class PlayerControl : MonoBehaviour
     // クリアシーンの読み込み
     public void LoadClearScene()
     {
-        PlayerPrefs.SetInt("Stage", stageNo + 1);
+        if (PlayerPrefs.GetInt("Stage", 0) <= stageNo)
+        {
+            PlayerPrefs.SetInt("Stage", stageNo + 1);
+        }
         fade.StartFadeOut("Clear");
     }
 
@@ -338,7 +341,10 @@ public class PlayerControl : MonoBehaviour
     {
         if (isKillBoss)
         {
-            PlayerPrefs.SetInt("Stage", stageNo + 1);
+            if (PlayerPrefs.GetInt("Stage", 0) <= stageNo)
+            {
+                PlayerPrefs.SetInt("Stage", stageNo + 1);
+            }
             fade.StartFadeOut("Clear");
         }
 
