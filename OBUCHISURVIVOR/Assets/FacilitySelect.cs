@@ -135,24 +135,23 @@ public class FacilitySelect : MonoBehaviour
         {
             player.DownMaterialNum(needMaterialNum);
 
-            // 設置する場所に元々施設があったら消す
-            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-
-            // 作っていることにする
-            isCreate[_facilityNo] = true;
 
             // スクリーン座標をワールド座標に
             setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
             // Z軸がカメラ外のため0に
             setPosition.z = 0;
 
-            //^^^^^^^^^^^^^//
+            // 設置する場所に元々施設があったら消す
+            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
 
             // プレハブの生成
             createFacility = Instantiate(createFacilitys[_selected], setPosition, Quaternion.identity);
             createFacility.GetComponent<FacilityPrefab>().StartCreate();
             // ボタンの透明化
             setFacilitys[_facilityNo].GetComponent<Image>().color = color;
+
+            // 作っていることにする
+            isCreate[_facilityNo] = true;
 
             End();
         }
@@ -239,8 +238,6 @@ public class FacilitySelect : MonoBehaviour
 
             // 設置する場所に元々施設があったら消す
             delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-
-            //^^^^^^^^^^^^^//
 
             if (i == 0)
             {
