@@ -711,7 +711,6 @@ MonoBehaviour:
   - {fileID: 4102064995536922558, guid: 79ef0b2de1c44564f8ca5c30ae5c75e8, type: 3}
   - {fileID: 4340885873083930418, guid: 9e253f311f5f86748b24be48a76c37d7, type: 3}
   facilityNameTxt: {fileID: 4577209314922091585, guid: 2538eb2e15317ca4f962873b0375cba3, type: 3}
-  deleteObj: {fileID: 4447107740422361088, guid: 64408ee8a48daea44b34abca6374f3bf, type: 3}
 --- !u!1001 &1206898309
 PrefabInstance:
   m_ObjectHideFlags: 0

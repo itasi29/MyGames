@@ -29,9 +29,6 @@ public class FacilitySelect : MonoBehaviour
     GameObject nameInstance;
     string[] facilityName = new string[6] { "ブーメラン", "ファイアーウェーブ" , "アイススラッシャー", "ミサイル", "ローリング", "ストーム" };
 
-    // 元あった施設破壊用
-    public GameObject deleteObj;
-
     // 施設を建てているかの確認
     bool[] isCreate = new bool[3] { false, false, false };
 
@@ -51,9 +48,7 @@ public class FacilitySelect : MonoBehaviour
     Camera cmr;
 
     // 生成した施設
-    GameObject createFacility;
-    // 元あった施設破壊用
-    GameObject delete;
+    GameObject[] createFacility = new GameObject[3];
 
     int needMaterialNum = 5;
 
@@ -129,38 +124,6 @@ public class FacilitySelect : MonoBehaviour
         nowInstance = Instantiate(createFacilitys[_selected]);
     }
 
-    public void SelectFacility()
-    {
-        if (needMaterialNum <= player.GetMaterialNum())
-        {
-            player.DownMaterialNum(needMaterialNum);
-
-
-            // スクリーン座標をワールド座標に
-            setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
-            // Z軸がカメラ外のため0に
-            setPosition.z = 0;
-
-            // 設置する場所に元々施設があったら消す
-            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-
-            // プレハブの生成
-            createFacility = Instantiate(createFacilitys[_selected], setPosition, Quaternion.identity);
-            createFacility.GetComponent<FacilityPrefab>().StartCreate();
-            // ボタンの透明化
-            setFacilitys[_facilityNo].GetComponent<Image>().color = color;
-
-            // 作っていることにする
-            isCreate[_facilityNo] = true;
-
-            End();
-        }
-        else
-        {
-            MaterialShortage();
-        }
-    }
-
     public void Exist()
     {
         End();
@@ -218,6 +181,39 @@ public class FacilitySelect : MonoBehaviour
         pouse.SetActive(false);
     }
 
+    public void SelectFacility()
+    {
+        if (needMaterialNum <= player.GetMaterialNum())
+        {
+            // 設置する場所に元々施設があったら消す
+            if (isCreate[_facilityNo])
+            {
+                Debug.Log("[Facility]消してます");
+                Destroy(createFacility[_facilityNo].gameObject);
+            }
+
+            player.DownMaterialNum(needMaterialNum);
+
+            // スクリーン座標をワールド座標に
+            setPosition = cmr.ScreenToWorldPoint(setFacilitys[_facilityNo].transform.position);
+            // Z軸がカメラ外のため0に
+            setPosition.z = 0;
+
+            // プレハブの生成
+            createFacility[_facilityNo] = Instantiate(createFacilitys[_selected], setPosition, Quaternion.identity);
+            createFacility[_facilityNo].GetComponent<FacilityPrefab>().StartCreate();
+            // ボタンの透明化
+            setFacilitys[_facilityNo].GetComponent<Image>().color = color;
+
+            isCreate[_facilityNo] = true;
+
+            End();
+        }
+        else
+        {
+            MaterialShortage();
+        }
+    }
 
     public void LevelUp()
     {
@@ -231,36 +227,35 @@ public class FacilitySelect : MonoBehaviour
         {
             if (!isCreate[i]) continue;
 
+            Debug.Log("[Facility]"+i +"のLevelUp処理します");
+
             // スクリーン座標をワールド座標に
             setPosition = cmr.ScreenToWorldPoint(setFacilitys[i].transform.position);
             // Z軸がカメラ外のため0に
             setPosition.z = 0;
 
-            // 設置する場所に元々施設があったら消す
-            delete = Instantiate(deleteObj, setPosition, Quaternion.identity);
-
             if (i == 0)
             {
-                selected = PlayerPrefs.GetInt("FacilitySelect1", 0);
+                selected = PlayerPrefs.GetInt("FacilitySelect1", 0) % 6 + 6;
             }
             else if (i == 1)
             {
-                selected = PlayerPrefs.GetInt("FacilitySelect2", 0);
+                selected = PlayerPrefs.GetInt("FacilitySelect2", 0) % 6 + 6;
             }
             else
             {
-                selected = PlayerPrefs.GetInt("FacilitySelect3", 0);
+                selected = PlayerPrefs.GetInt("FacilitySelect3", 0) % 6 + 6;
             }
 
-            // プレハブの生成
-            createFacility = Instantiate(createFacilitys[selected % 6 + 6], setPosition, Quaternion.identity);
-            createFacility.GetComponent<FacilityPrefab>().StartCreate();
-        }        
-    }
+            // 設置する場所にあった施設を消す
+            Destroy(createFacility[i].gameObject);
+            Debug.Log("[Facility]" + i + "にあった施設を消しました");
 
-    public bool IsCreate()
-    {
-        return isCreate[_facilityNo];
+            // プレハブの生成
+            createFacility[i] = Instantiate(createFacilitys[selected], setPosition, Quaternion.identity);
+            createFacility[i].GetComponent<FacilityPrefab>().StartCreate();
+            Debug.Log("[Facility]" + i + "にあった施設を置きなおしました");
+        }        
     }
 
     void MaterialShortage()

@@ -15,7 +15,7 @@ public class EnemyPrefab : MonoBehaviour
 
     // 生成位置
     public int[] createPos;
-    const float kBasePosY = 3f;
+    const float kBasePosY = 3.5f;
     public Vector2[] pos = { new Vector2(9.5f, 0) };
 
     // 生成カウント用
