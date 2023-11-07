@@ -9,7 +9,6 @@ public:
     virtual void Draw();
 
 private:
-    int m_handle;
     int m_frame;
 
     // メンバ関数ポインタの宣言

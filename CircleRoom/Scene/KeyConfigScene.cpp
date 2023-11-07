@@ -3,7 +3,7 @@
 #include "../Input.h"
 #include "../Application.h"
 #include "SceneManager.h"
-#include "../StringUtility.h"
+//#include "../StringUtility.h"
 
 namespace
 {
@@ -108,8 +108,8 @@ void KeyConfigScene::DrawCommandList()
 
 	for (const auto& cmd : m_keyCommandTable)
 	{
-		std::wstring cmdName = StringUtility::StringToWString(cmd.first);
-		DrawFormatString(x, y, 0xffffff, L"%s", cmdName.c_str());
+		//std::wstring cmdName = StringUtility::StringToWString(cmd.first);
+		DrawFormatString(x, y, 0xffffff, L"%s", cmd.first.c_str());
 		y += 20;
 	}
 }

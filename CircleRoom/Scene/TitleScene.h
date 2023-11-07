@@ -13,7 +13,6 @@ public:
 	virtual void Draw();
 
 private:
-	int  m_handle = 0;
 	int m_frame = 0;
 
 	// 更新メンバ関数ポインタ

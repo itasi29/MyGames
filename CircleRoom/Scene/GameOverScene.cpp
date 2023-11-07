@@ -8,8 +8,6 @@
 GameOverScene::GameOverScene(SceneManager& mgr) :
 	Scene(mgr)
 {
-	m_handle = LoadGraph(L"./Image/gameOver.png");
-	assert(m_handle >= 0);
 	m_frame = 60;
 	m_updateFunc = &GameOverScene::FadeInUpdate;
 	m_drawFunc = &GameOverScene::FadeDraw;
@@ -17,7 +15,6 @@ GameOverScene::GameOverScene(SceneManager& mgr) :
 
 GameOverScene::~GameOverScene()
 {
-	DeleteGraph(m_handle);
 }
 
 void GameOverScene::Update(Input& input)
@@ -61,7 +58,6 @@ void GameOverScene::FadeOutUpdate(Input&)
 void GameOverScene::FadeDraw()
 {
 	DrawString(10, 100, L"GameOverScene", 0xffffff);
-	DrawGraph(100, 100, m_handle, true);
 
 	int alpha = 255 * (static_cast<float>(m_frame) / 60.0f);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
@@ -72,5 +68,4 @@ void GameOverScene::FadeDraw()
 void GameOverScene::NormalDraw()
 {
 	DrawString(10, 100, L"GameOverScene", 0xffffff);
-	DrawGraph(100, 100, m_handle, true);
 }

@@ -8,8 +8,6 @@
 TitleScene::TitleScene(SceneManager& manager) :
 	Scene(manager)
 {
-	m_handle = LoadGraph(L"./Image/title.png");
-	assert(m_handle >= 0);
 	m_frame = 60;
 	m_updateFunc = &TitleScene::FadeInUpdate;
 	m_drawFunc = &TitleScene::FadeDraw;
@@ -18,7 +16,6 @@ TitleScene::TitleScene(SceneManager& manager) :
 TitleScene::~TitleScene()
 {
 	OutputDebugString(L"タイトルシーンがdeleteされました\n");
-	DeleteGraph(m_handle);
 }
 
 void TitleScene::Update(Input& input)
@@ -65,7 +62,6 @@ void TitleScene::FadeDraw()
 {
 	// 通常の描画
 	DrawString(10, 100, L"TitleScene", 0xffffff);
-	DrawGraph(100, 100, m_handle, true);
 
 	// フェード暗幕
 	int alpha = 255 * (static_cast<float>(m_frame) / 60.0f);
@@ -77,5 +73,4 @@ void TitleScene::FadeDraw()
 void TitleScene::NormalDraw()
 {
 	DrawString(10, 100, L"TitleScene", 0xffffff);
-	DrawGraph(100, 100, m_handle, true);
 }

@@ -9,7 +9,6 @@ public:
     virtual void Draw();
 
 private:
-    int m_handle = 0;
     int m_frame = 0;
     float m_fps = 0.0f;
 

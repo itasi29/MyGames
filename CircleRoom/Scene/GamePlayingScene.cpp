@@ -9,8 +9,6 @@
 GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 	Scene(manager)
 {
-	m_handle = LoadGraph(L"./Image/game.png");
-	assert(m_handle >= 0);
 	m_frame = 60;
 	m_updateFunc = &GamePlayingScene::FadeInUpdate;
 	m_drawFunc = &GamePlayingScene::FadeDraw;
@@ -18,7 +16,6 @@ GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 
 GamePlayingScene::~GamePlayingScene()
 {
-	DeleteGraph(m_handle);
 }
 
 void GamePlayingScene::Update(Input& input)
@@ -67,7 +64,6 @@ void GamePlayingScene::FadeOutUpdate(Input& input)
 void GamePlayingScene::FadeDraw()
 {
 	DrawString(10, 100, L"GamePlayingScene", 0xffffff);
-	DrawGraph(100, 100, m_handle, true);
 
 	int alpha = 255 * (static_cast<float>(m_frame) / 60.0f);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
@@ -78,6 +74,5 @@ void GamePlayingScene::FadeDraw()
 void GamePlayingScene::NormalDraw()
 {
 	DrawString(10, 100, L"GamePlayingScene", 0xffffff);
-	DrawGraph(100, 100, m_handle, true);
 	DrawFormatString(10, 10, 0xffffff, L"fps = %2.2f", m_fps);
 }
