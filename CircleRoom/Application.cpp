@@ -33,7 +33,7 @@ bool Application::Init()
 {
     ChangeWindowMode(true); // ウィンドウモードにします
     SetGraphMode(m_windowSize.w, m_windowSize.h, 1);
-    SetWindowText(L"ごっついアクションゲーム");
+    SetWindowText(L"CircleRoom");
     if (DxLib_Init() == -1)
     {
         return false;
