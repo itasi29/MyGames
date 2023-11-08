@@ -31,7 +31,9 @@ void Application::Terminate()
 
 bool Application::Init()
 {
+#ifdef _DEBUG
     ChangeWindowMode(true); // ウィンドウモードにします
+#endif
     SetGraphMode(m_windowSize.w, m_windowSize.h, 1);
     SetWindowText(L"CircleRoom");
     if (DxLib_Init() == -1)

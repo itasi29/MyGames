@@ -76,7 +76,7 @@ void KeyConfigScene::ExpandDraw()
 	int centerY = size.h / 2;
 
 	float rate = static_cast<float>(m_frame) / kAppeaInterval;	// Œ»İ‚ÌŠÔ‚ÌŠ„‡(0.0`1.0)
-	int currentHalfHeight = rate * halfHeight;
+	int currentHalfHeight = static_cast<int>(rate * halfHeight);
 
 	// ‚¿‚å‚Á‚ÆˆÃ‚¢‹éŒ`‚ğ•`‰æ
 	DrawBox(kMenuMargin, centerY - currentHalfHeight, size.w - kMenuMargin, centerY + currentHalfHeight,

@@ -18,7 +18,7 @@ std::wstring StringUtility::StringToWString(const std::string& str)
         CP_ACP,     // 基の文字列のコードページを書きます(ACPはANSI文字列=ShitfJIS)
         0,          // 変換オプションですが、今回は特に指定なしですので0
         str.data(), // 元の文字列の先頭ポインタ
-        str.size(), // 元の文字列の文字列数
+        static_cast<int>(str.size()), // 元の文字列の文字列数
         nullptr,    // out, optionalなので、nullptrを渡しておく
         0);         // ここでは意味ないので0にしておく
 
@@ -31,9 +31,9 @@ std::wstring StringUtility::StringToWString(const std::string& str)
         CP_ACP,     // 元のコードページ
         0,          // オプション
         str.data(), // 元の文字列へのアドレス
-        str.size(), // 元文字列の文字数
+        static_cast<int>(str.size()), // 元文字列の文字数
         ret.data(), // 変換後文字列のアドレス
-        ret.size());// 変換後の文字列数
+        static_cast<int>(ret.size()));// 変換後の文字列数
 
     return ret;
 }

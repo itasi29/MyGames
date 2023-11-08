@@ -14,6 +14,8 @@ public:
 
 private:
 	int m_frame = 0;
+	// メニュー選択カーソル位置
+	int m_currentLinePos = 0;
 
 	// 更新メンバ関数ポインタ
 	void(TitleScene::* m_updateFunc)(Input& input);
