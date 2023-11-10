@@ -43,5 +43,11 @@ public:
 	/// <param name="command">コマンド文字列</param>
 	/// <returns>true:押された瞬間 / false:押されていないか押しっぱ</returns>
 	bool IsTriggered(const char* command) const;
+	/// <summary>
+	/// 指定のコマンドが押されているか
+	/// </summary>
+	/// <param name="command">コマンド文字列</param>
+	/// <returns>true:押されている / false:押されていない</returns>
+	bool IsPress(const char* command) const;
 };
 

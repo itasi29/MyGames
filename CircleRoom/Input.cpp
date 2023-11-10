@@ -19,7 +19,9 @@ const InputTable_t Input::GetCommandTable() const
 Input::Input()
 {
     m_commandTable["OK"] = { {InputType::keybd, KEY_INPUT_RETURN} ,
-                             {InputType::pad,   PAD_INPUT_A} };     // 
+                             {InputType::pad,   PAD_INPUT_A} };    
+    m_commandTable["cancel"] = { {InputType::keybd, KEY_INPUT_ESCAPE} ,
+                             {InputType::pad,   PAD_INPUT_B} };     // 
     m_commandTable["pause"] = { {InputType::keybd,  KEY_INPUT_P},
                                 {InputType::pad,    PAD_INPUT_R} }; // スタートボタン
     m_commandTable["keyconf"] = { {InputType::keybd,  KEY_INPUT_K},
@@ -83,4 +85,12 @@ bool Input::IsTriggered(const char* command) const
 
     return m_inputDate.at(command) && !m_lastInputDate.at(command);
 
+}
+
+bool Input::IsPress(const char* command) const
+{
+    auto it = m_inputDate.find(command);
+    if (it == m_inputDate.end()) return false;
+
+    return m_inputDate.at(command);
 }

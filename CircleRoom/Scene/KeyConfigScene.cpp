@@ -18,6 +18,14 @@ KeyConfigScene::KeyConfigScene(SceneManager& mgr, Input& input) :
 	m_keyCommandTable = input.GetCommandTable();
 	m_updateFunc = &KeyConfigScene::AppearUpdate;
 	m_drawFunc = &KeyConfigScene::ExpandDraw;
+
+	// メニューに並ぶ順を作る
+	m_menuItems = {
+		"OK",		// 選択or確定
+		"cancel",	// キャンセル
+		"pause",	// ポーズボタン
+		"keyconf"	// キーコンフィグボタン
+	};
 }
 
 KeyConfigScene::~KeyConfigScene()
@@ -46,15 +54,72 @@ void KeyConfigScene::AppearUpdate(Input&)
 
 void KeyConfigScene::NormalUpdate(Input& input)
 {
+	// トグル処理
+	if (input.IsTriggered("OK"))
+	{
+		if (m_currentLineIndex < m_keyCommandTable.size())
+		{
+			m_isEditingNow = !m_isEditingNow;
+			m_updateFunc = &KeyConfigScene::EditUpdate;
+		}
+		else // 確定
+		{
+			CommitCurrenKeySetting();
+
+			m_updateFunc = &KeyConfigScene::DisappearUpdate;
+			m_drawFunc = &KeyConfigScene::ExpandDraw;
+			m_frame = kAppeaInterval;
+		}
+
+		return;
+	}
+
 	if (input.IsTriggered("keyconf"))
 	{
 		m_updateFunc = &KeyConfigScene::DisappearUpdate;
 		m_drawFunc = &KeyConfigScene::ExpandDraw;
 		m_frame = kAppeaInterval;
 	}
-	else if (input.IsTriggered("keyconf"))
-	{
 
+	auto size = m_keyCommandTable.size() + 1;
+	if (input.IsTriggered("up"))
+	{
+		m_currentLineIndex = (m_currentLineIndex + size - 1) % size;
+	}
+	if (input.IsTriggered("down"))
+	{
+		m_currentLineIndex = (m_currentLineIndex + 1) % size;
+	}
+}
+
+void KeyConfigScene::EditUpdate(Input& input)
+{
+	// トグル処理
+	if (input.IsTriggered("OK"))
+	{
+		m_isEditingNow = !m_isEditingNow;
+		m_updateFunc = &KeyConfigScene::NormalUpdate;
+
+		return;
+	}
+
+	char keystate[256];
+	GetHitKeyStateAll(keystate);
+	int padstate = GetJoypadInputState(DX_INPUT_PAD1);
+
+	auto strItem = m_menuItems[m_currentLineIndex];
+	auto& cmd = m_keyCommandTable[strItem];
+	for (int i = 0; i < 256; i++)
+	{
+		if (keystate[i])
+		{
+			cmd[InputType::keybd] = i;
+			break;
+		}
+	}
+	if (padstate)
+	{
+		cmd[InputType::pad] = padstate;
 	}
 }
 
@@ -103,14 +168,50 @@ void KeyConfigScene::NormalDraw()
 
 void KeyConfigScene::DrawCommandList()
 {
-	int x = kMenuMargin + 50;
+	constexpr int kLineHeight = 30;
 	int y = kMenuMargin + 50 + 10;
+	int idx = 0;
+	constexpr unsigned int kDefaultColor = 0xffffff;
+	for (const auto& item : m_menuItems)
+	{
+		auto& cmd = m_keyCommandTable[item];
+		unsigned int lineColor = kDefaultColor;
+		int x = kMenuMargin + 50;
+		std::wstring cmdName = StringUtility::StringToWString(item);
+		if (idx == m_currentLineIndex)
+		{
+			DrawString(x - 20, y, L"⇒", 0xff0000);
+			x += 10;
+			if (m_isEditingNow)
+			{
+				lineColor = 0xffaa00;
+				x += 5;
+			}
+		}
+		DrawFormatString(x, y, lineColor, L"%s : keybd=%02x , pad=%03x",
+										cmdName.c_str(), // コマンド名
+										cmd.at(InputType::keybd),	// キーボードの値
+										cmd.at(InputType::pad));		// パッドの値
+		y += 20;
+		idx++;
+	}
+	y += kLineHeight;
+	int x = kMenuMargin + 200;
+	unsigned int lineColor = kDefaultColor;
+	if (m_currentLineIndex == m_keyCommandTable.size())
+	{
+		x += 10;
+		DrawString(x - 20, y, L"⇒", 0xff0000);
+	}
+	DrawString(x, y, L"確定", lineColor);
+}
 
+void KeyConfigScene::CommitCurrenKeySetting()
+{
+	// input本体のキー情報を書き換えています。
 	for (const auto& cmd : m_keyCommandTable)
 	{
-		std::wstring cmdName = StringUtility::StringToWString(cmd.first);
-		DrawFormatString(x, y, 0xffffff, L"%s", cmdName.c_str());
-		y += 20;
+		m_input.m_commandTable[cmd.first] = cmd.second;
 	}
 }
 

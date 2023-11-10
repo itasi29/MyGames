@@ -57,6 +57,12 @@ void Application::Run()
         manager.Update(input);
         manager.Draw();
         ScreenFlip();
+
+        // エスケープキーが押されたら終了する
+        if (CheckHitKey(KEY_INPUT_ESCAPE))
+        {
+            break;
+        }
     }
     Terminate();
 }
