@@ -1,17 +1,29 @@
 #include <DxLib.h>
 #include <cassert>
-#include "../Input.h"
+#include "../Common/Input.h"
+#include "../Application.h"
+
 #include "SceneManager.h"
 #include "GamePlayingScene.h"
 #include "GameOverScene.h"
 #include "PauseScene.h"
 
+#include "../Player/Player.h"
+
+namespace
+{
+	// フェードのフレーム時間
+	constexpr int kFadeFrame = 60;
+}
+
 GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 	Scene(manager)
 {
-	m_frame = 60;
+	// フレームの時間
+	m_frame = kFadeFrame;
 	m_updateFunc = &GamePlayingScene::FadeInUpdate;
 	m_drawFunc = &GamePlayingScene::FadeDraw;
+	m_player = std::make_shared<Player>(m_manager.GetApp());
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -50,12 +62,14 @@ void GamePlayingScene::NormalUpdate(Input& input)
 		m_manager.PushScene(std::make_shared<PauseScene>(m_manager));
 	}
 	m_fps = GetFPS();
+
+	m_player->Update(input);
 }
 
 void GamePlayingScene::FadeOutUpdate(Input& input)
 {
 	m_frame++;
-	if (60 <= m_frame)
+	if (m_frame >= kFadeFrame)
 	{
 		m_manager.ChangeScene(std::make_shared<GameOverScene>(m_manager));
 	}
@@ -75,4 +89,6 @@ void GamePlayingScene::NormalDraw()
 {
 	DrawString(10, 100, L"GamePlayingScene", 0xffffff);
 	DrawFormatString(10, 10, 0xffffff, L"fps = %2.2f", m_fps);
+
+	m_player->Draw();
 }

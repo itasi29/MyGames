@@ -1,6 +1,6 @@
 #include "KeyConfigScene.h"
 #include <DxLib.h>
-#include "../Input.h"
+#include "../Common/Input.h"
 #include "../Application.h"
 #include "SceneManager.h"
 #include "../StringUtility.h"
@@ -81,7 +81,7 @@ void KeyConfigScene::NormalUpdate(Input& input)
 		m_frame = kAppeaInterval;
 	}
 
-	auto size = m_keyCommandTable.size() + 1;
+	int size = static_cast<int>(m_keyCommandTable.size()) + 1;
 	if (input.IsTriggered("up"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + size - 1) % size;

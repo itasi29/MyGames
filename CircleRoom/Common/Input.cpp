@@ -1,5 +1,6 @@
 #include "Input.h"
 #include <DxLib.h>
+#include <cassert>
 #include <string>
 #include <algorithm>
 
@@ -81,7 +82,11 @@ void Input::Update()
 bool Input::IsTriggered(const char* command) const
 {
     auto it = m_inputDate.find(command);
-    if (it == m_inputDate.end()) return false;
+    if (it == m_inputDate.end())
+    {
+        assert(false);
+        return false;
+    }
 
     return m_inputDate.at(command) && !m_lastInputDate.at(command);
 
@@ -90,7 +95,11 @@ bool Input::IsTriggered(const char* command) const
 bool Input::IsPress(const char* command) const
 {
     auto it = m_inputDate.find(command);
-    if (it == m_inputDate.end()) return false;
+    if (it == m_inputDate.end())
+    {
+        assert(false);
+        return false;
+    }
 
     return m_inputDate.at(command);
 }

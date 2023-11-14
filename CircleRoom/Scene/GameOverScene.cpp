@@ -1,6 +1,6 @@
 #include <DxLib.h>
 #include <cassert>
-#include "../Input.h"
+#include "../Common/Input.h"
 #include "SceneManager.h"
 #include "GameOverScene.h"
 #include "TitleScene.h"

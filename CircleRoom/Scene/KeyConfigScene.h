@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include <unordered_map>
-#include "../Input.h"
+#include "../Common/Input.h"
 /// <summary>
 /// キーコンフィグのシーン
 /// </summary>

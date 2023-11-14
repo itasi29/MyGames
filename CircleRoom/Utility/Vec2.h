@@ -21,6 +21,11 @@ public:
 	{
 	}
 
+	static Vec2 zero()
+	{
+		return Vec2{ 0, 0 };
+	}
+
 	/// ’P€‰‰Zq+
 	Vec2 operator +() const
 	{

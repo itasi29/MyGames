@@ -1,5 +1,9 @@
 #pragma once
 #include "Scene.h"
+#include <memory>
+
+class Player;
+
 class GamePlayingScene : public Scene
 {
 public:
@@ -9,7 +13,12 @@ public:
     virtual void Draw();
 
 private:
+    // プレイヤー
+    std::shared_ptr<Player> m_player;
+
+    // 経過フレーム
     int m_frame = 0;
+    // Debug用fps表示
     float m_fps = 0.0f;
 
     // メンバ関数ポインタの宣言

@@ -1,6 +1,11 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
+SceneManager::SceneManager(Application& app) :
+	m_app(app)
+{
+}
+
 SceneManager::~SceneManager()
 {
 }

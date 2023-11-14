@@ -1,15 +1,15 @@
 #include "Application.h"
 #include "Scene/SceneManager.h"
 #include "Scene/TitleScene.h"
-#include "Input.h"
+#include "Common/Input.h"
 
 #include <DxLib.h>
 #include <cassert>
 
 namespace 
 {
-    constexpr int kScreenWidth = 640;
-    constexpr int kScreenHeight = 480;
+    constexpr int kScreenWidth = 1280;
+    constexpr int kScreenHeight = 720;
 }
 
 int MyLoadGraph(const wchar_t* path)
@@ -47,7 +47,7 @@ bool Application::Init()
 
 void Application::Run()
 {
-    SceneManager manager;
+    SceneManager manager(this->GetInstance());
     manager.ChangeScene(std::make_shared<TitleScene>(manager));
     Input input;
     while (ProcessMessage() != -1)

@@ -1,13 +1,21 @@
 #pragma once
 #include "../Utility/Vec2.h"
 #include "../Utility/Rect.h"
+
 class Input;
+class Application;
+class Size;
+
 class Player
 {
 public:
-	Player();
+	Player(Application& app);
 	~Player();
 
+	/// <summary>
+	/// プレイヤーの位置、方向の初期化
+	/// </summary>
+	void Init();
 	void Update(Input& input);
 	void Draw();
 
@@ -29,8 +37,20 @@ public:
 	float GetColRadius() const { return m_colRaidus; }
 
 private:
+	// アプリケーションクラス
+	Application& m_app;
+	// Windowsのサイズ
+	Size& m_size;
+
 	// 中心座標
 	Vec2 m_pos;
+	// 前座標
+	Vec2 m_frontPos;
+	// 右後ろ座標
+	Vec2 m_rightPos;
+	// 左後ろ座標
+	Vec2 m_leftPos;
+
 	// 移動ベクトル
 	Vec2 m_vec;
 
@@ -42,6 +62,10 @@ private:
 	// 生存しているか
 	bool m_isExsit;
 
-	void Move();
+	/// <summary>
+	/// プレイヤーの移動
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	void Move(Input& input);
 };
 
