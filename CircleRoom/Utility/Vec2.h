@@ -21,9 +21,15 @@ public:
 	{
 	}
 
-	static Vec2 zero()
+	static Vec2 Zero()
 	{
-		return Vec2{ 0, 0 };
+		static Vec2 zero{ 0.0f, 0.0f };
+		return zero;
+	}
+	static Vec2 Up()
+	{
+		static Vec2 up{ 0.0f, -1.0f };
+		return up;
 	}
 
 	/// ’P€‰‰Zq+

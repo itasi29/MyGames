@@ -8,8 +8,12 @@
 
 namespace 
 {
+    // 画面サイズ
     constexpr int kScreenWidth = 1280;
     constexpr int kScreenHeight = 720;
+
+    // FPS固定値
+    constexpr int kFpsFrame = 16667;
 }
 
 int MyLoadGraph(const wchar_t* path)
@@ -34,7 +38,7 @@ bool Application::Init()
 #ifdef _DEBUG
     ChangeWindowMode(true); // ウィンドウモードにします
 #endif
-    SetGraphMode(m_windowSize.w, m_windowSize.h, 1);
+    SetGraphMode(m_windowSize.w, m_windowSize.h, 16);
     SetWindowText(L"CircleRoom");
     if (DxLib_Init() == -1)
     {
@@ -52,6 +56,9 @@ void Application::Run()
     Input input;
     while (ProcessMessage() != -1)
     {
+        // 新しいゲームループを始めた時間を記憶
+        m_time = GetNowHiPerformanceCount();
+
         ClearDrawScreen();
         input.Update(); // 入力を更新
         manager.Update(input);
@@ -63,6 +70,8 @@ void Application::Run()
         {
             break;
         }
+
+        while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
     }
     Terminate();
 }

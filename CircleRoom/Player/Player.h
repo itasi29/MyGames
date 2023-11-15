@@ -4,7 +4,7 @@
 
 class Input;
 class Application;
-class Size;
+struct Size;
 
 class Player
 {
@@ -12,10 +12,6 @@ public:
 	Player(Application& app);
 	~Player();
 
-	/// <summary>
-	/// プレイヤーの位置、方向の初期化
-	/// </summary>
-	void Init();
 	void Update(Input& input);
 	void Draw();
 
@@ -40,16 +36,17 @@ private:
 	// アプリケーションクラス
 	Application& m_app;
 	// Windowsのサイズ
-	Size& m_size;
+	const Size& m_size;
 
 	// 中心座標
 	Vec2 m_pos;
-	// 前座標
-	Vec2 m_frontPos;
-	// 右後ろ座標
-	Vec2 m_rightPos;
-	// 左後ろ座標
-	Vec2 m_leftPos;
+	// 正面方向
+	Vec2 m_front;
+	// 現在の正面方向
+	Vec2 m_nowFront;
+	// 線形補間用
+	Vec2 m_lineInterpolate;
+	int m_lineInterpolateFrame;
 
 	// 移動ベクトル
 	Vec2 m_vec;

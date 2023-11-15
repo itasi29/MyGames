@@ -14,6 +14,8 @@ class Application
 {
 private:
 	Size m_windowSize;
+	// FPS固定用
+	long long m_time;
 
 	Application();	// シングルトンのためにprivateに
 	// コピー＆代入の禁止
@@ -39,6 +41,5 @@ public:
 	void Run();
 
 	const Size& GetWindowSize() const;
-
 };
 

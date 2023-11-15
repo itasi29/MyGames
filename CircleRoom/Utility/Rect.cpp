@@ -13,7 +13,7 @@ Rect::~Rect()
 
 void Rect::Draw(unsigned int color, bool isFill) const
 {
-	DrawCircle(m_pos.x, m_pos.y, m_radius, 
+	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(m_radius),
 		color, isFill);
 }
 
