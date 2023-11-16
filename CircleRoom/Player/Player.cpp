@@ -1,8 +1,7 @@
-#include "Player.h"
 #include <DxLib.h>
-#include "../Common/Input.h"
 #include "../Application.h"
-
+#include "Player.h"
+#include "../Common/Input.h"
 #include "../Utility/Matrix3x3.h"
 
 namespace
@@ -14,17 +13,25 @@ namespace
 	constexpr float kDistanceVertex = 24.0f;
 	// プレイヤーのスピード
 	constexpr float kSpeed = 4.0f;
+	// ダッシュ時のスピード倍率
+	constexpr float kDashAdd = 2.0f;
+	// ダッシュ可能時間
+	constexpr int kDashFrame = 50;
+	// ダッシュ待機時間
+	constexpr int kDashWaitFrame = 25;
 
 	// 回転の合成行列(60度)
 	Matrix3x3 kMatAngle;
 	// 線形補間を行うフレーム
-	constexpr int kLinearInterpolationFrame = 10;
+	constexpr int kInterpolatedFrame = 4;
 }
 
 Player::Player(Application& app) :
 	m_app(app),
 	m_size(m_app.GetWindowSize()),
-	m_lineInterpolateFrame(0),
+	m_interpolatedFrame(0),
+	m_dashFrame(0),
+	m_dashWaitFrame(0),
 	m_colRaidus(kColRadius),
 	m_isExsit(false)
 {
@@ -43,20 +50,19 @@ Player::~Player()
 void Player::Update(Input& input)
 {
 	Move(input);
+	Dash(input);
 
 	// 線形補間の間は処理を行う
-	if (m_lineInterpolateFrame > 0)
+	if (m_interpolatedFrame > 0)
 	{
-		m_lineInterpolateFrame--;
-		m_nowFront += m_lineInterpolate;
+		m_interpolatedFrame--;
+		m_nowFront += m_interpolatedValue;
 	}
 }
 
 void Player::Draw()
 {
-	// 現状デバッグ用で円の描画
-//	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 8, 0xffffff, true);
-
+	// プレイヤーを三角形で描画
 	// 上から順に正面、左、右
 	Vec2 right = kMatAngle * m_nowFront;
 	Vec2 left = kMatAngle * right;
@@ -72,6 +78,8 @@ void Player::Move(Input& input)
 {
 	// ゼロベクトルに戻す
 	m_vec = Vec2::Zero();
+
+	m_vec = input.GetStickDate();
 
 	if (input.IsPress("up"))
 	{
@@ -99,12 +107,27 @@ void Player::Move(Input& input)
 	// 方向の更新
 	m_front = m_vec * kDistanceVertex;
 	// 変わった向きまでの線形補間を作成
-	m_lineInterpolate = (m_front - m_nowFront) / kLinearInterpolationFrame;
-	m_lineInterpolateFrame = kLinearInterpolationFrame;
+	m_interpolatedValue = (m_front - m_nowFront) / kInterpolatedFrame;
+	m_interpolatedFrame = kInterpolatedFrame;
 
-	// スピードに変更
 	m_vec *= kSpeed;
 
 	// 座標に移動ベクトルを足す
 	m_pos += m_vec;
+}
+
+void Player::Dash(Input& input)
+{
+	// todo:ダッシュの連続使用不可とフレームの更新をやって
+
+	if (m_dashFrame > 0 && input.IsPress("dash"))
+	{
+		m_dashFrame--;
+		m_vec *= kDashAdd;
+	}
+	// 離されたときか時間経過したとき
+	else
+	{
+
+	}
 }

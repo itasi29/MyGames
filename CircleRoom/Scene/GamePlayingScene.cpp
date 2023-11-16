@@ -52,15 +52,15 @@ void GamePlayingScene::FadeInUpdate(Input& input)
 
 void GamePlayingScene::NormalUpdate(Input& input)
 {
-	if (input.IsTriggered("OK"))
-	{
-		m_updateFunc = &GamePlayingScene::FadeOutUpdate;
-		m_drawFunc = &GamePlayingScene::FadeDraw;
-	}
-	else if (input.IsTriggered("pause"))
-	{
-		m_manager.PushScene(std::make_shared<PauseScene>(m_manager));
-	}
+	//if (input.IsTriggered("OK"))
+	//{
+	//	m_updateFunc = &GamePlayingScene::FadeOutUpdate;
+	//	m_drawFunc = &GamePlayingScene::FadeDraw;
+	//}
+	//else if (input.IsTriggered("pause"))
+	//{
+	//	m_manager.PushScene(std::make_shared<PauseScene>(m_manager));
+	//}
 	m_fps = GetFPS();
 
 	m_player->Update(input);

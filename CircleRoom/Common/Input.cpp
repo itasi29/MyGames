@@ -19,6 +19,7 @@ const InputTable_t Input::GetCommandTable() const
 
 Input::Input()
 {
+    // メニュー関連
     m_commandTable["OK"] = { {InputType::keybd, KEY_INPUT_RETURN} ,
                              {InputType::pad,   PAD_INPUT_A} };    
     m_commandTable["cancel"] = { {InputType::keybd, KEY_INPUT_ESCAPE} ,
@@ -28,6 +29,12 @@ Input::Input()
     m_commandTable["keyconf"] = { {InputType::keybd,  KEY_INPUT_K},
                                 {InputType::pad,    PAD_INPUT_L} }; // キーコンフィグ
 
+    // ゲーム中関連
+    // 見せるもの
+    m_commandTable["dash"] = { {InputType::keybd,  KEY_INPUT_SPACE},
+                                {InputType::pad,    PAD_INPUT_A} }; // キーコンフィグ
+
+    // 見せないもの
     m_commandTable["up"] = { {InputType::keybd,  KEY_INPUT_UP},
                              {InputType::pad,    PAD_INPUT_UP} };
     m_commandTable["down"] = { {InputType::keybd,  KEY_INPUT_DOWN},
@@ -44,11 +51,19 @@ void Input::Update()
 {
     m_lastInputDate = m_inputDate;  // 直前入力をコピーしておく
 
-    // ハードウェア入力チェック
-    char keystate[256]; // キーボード用
+    /* ハードウェア入力チェック */
+    // キーボード用
+    char keystate[256]; 
     GetHitKeyStateAll(keystate);   // 現在のキーボード入力を取得
-    int padstate = GetJoypadInputState(DX_INPUT_PAD1);  // パッド情報の取得
+    // パッド情報の取得
+    int padstate = GetJoypadInputState(DX_INPUT_PAD1);  
+    // スティック情報の取得
+    int stickX, stickY;
+    GetJoypadAnalogInput(&stickX, &stickY, DX_INPUT_PAD1);
+    m_inputStickDate.x = static_cast<float>(stickX);
+    m_inputStickDate.y = static_cast<float>(stickY);
 
+    /*情報更新*/
     // 登録された情報とハードの情報を照らし合わせながら、
     // m_inputDataの内容を更新していく
     for (const auto& cmd : m_commandTable)
@@ -102,4 +117,16 @@ bool Input::IsPress(const char* command) const
     }
 
     return m_inputDate.at(command);
+}
+
+bool Input::IsReleased(const char* command) const
+{
+    auto it = m_inputDate.find(command);
+    if (it == m_inputDate.end())
+    {
+        assert(false);
+        return false;
+    }
+
+    return !m_inputDate.at(command) && m_lastInputDate.at(command);
 }

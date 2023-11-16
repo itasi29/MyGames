@@ -45,11 +45,15 @@ private:
 	// 現在の正面方向
 	Vec2 m_nowFront;
 	// 線形補間用
-	Vec2 m_lineInterpolate;
-	int m_lineInterpolateFrame;
+	Vec2 m_interpolatedValue;
+	int m_interpolatedFrame;
 
 	// 移動ベクトル
 	Vec2 m_vec;
+	// ダッシュするフレーム
+	int m_dashFrame;
+	// ダッシュ再利用可能までのフレーム
+	int m_dashWaitFrame;
 
 	// 当たり判定
 	Rect m_colRect;
@@ -64,5 +68,6 @@ private:
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	void Move(Input& input);
+	void Dash(Input& input);
 };
 

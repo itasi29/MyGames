@@ -1,10 +1,14 @@
 #include "Application.h"
 #include "Scene/SceneManager.h"
-#include "Scene/TitleScene.h"
 #include "Common/Input.h"
 
 #include <DxLib.h>
 #include <cassert>
+
+//現状は初めからゲームシーンにいってほしいから一時的にゲームシーンに飛ぶようにする
+#include "Scene/GamePlayingScene.h"
+#include "Scene/TitleScene.h"
+
 
 namespace 
 {
@@ -52,7 +56,10 @@ bool Application::Init()
 void Application::Run()
 {
     SceneManager manager(this->GetInstance());
-    manager.ChangeScene(std::make_shared<TitleScene>(manager));
+    // 一時的にゲームシーンスタートに
+//    manager.ChangeScene(std::make_shared<TitleScene>(manager));
+    manager.ChangeScene(std::make_shared<GamePlayingScene>(manager));
+
     Input input;
     while (ProcessMessage() != -1)
     {
