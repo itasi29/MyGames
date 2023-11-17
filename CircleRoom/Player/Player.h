@@ -40,8 +40,13 @@ private:
 
 	// 中心座標
 	Vec2 m_pos;
-	// 正面方向
-	Vec2 m_front;
+	// 正面ベクトル
+	Vec2 m_frontVec;
+	// 右ベクトル
+	Vec2 m_rightVec;
+	// 左ベクトル
+	Vec2 m_leftVec;
+
 	// 現在の正面方向
 	Vec2 m_nowFront;
 	// 線形補間用
@@ -54,6 +59,8 @@ private:
 	int m_dashFrame;
 	// ダッシュ再利用可能までのフレーム
 	int m_dashWaitFrame;
+	// ダッシュ判定
+	bool m_isDash;
 
 	// 当たり判定
 	Rect m_colRect;
@@ -68,6 +75,16 @@ private:
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	void Move(Input& input);
+	/// <summary>
+	/// ダッシュ処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
 	void Dash(Input& input);
+	/// <summary>
+	/// 線形補間
+	/// </summary>
+	void Lerp();
+
+	void Complex();
 };
 

@@ -23,13 +23,11 @@ public:
 
 	static Vec2 Zero()
 	{
-		static Vec2 zero{ 0.0f, 0.0f };
-		return zero;
+		return Vec2{ 0, 0 };
 	}
 	static Vec2 Up()
 	{
-		static Vec2 up{ 0.0f, -1.0f };
-		return up;
+		return Vec2{ 0.0f, -1.0f };
 	}
 
 	/// ’P€‰‰ŽZŽq+
@@ -91,6 +89,30 @@ public:
 		x /= scale;
 		y /= scale;
 		return *this;
+	}
+
+	Vec2 operator *(Vec2 left) const
+	{
+		Vec2 temp;
+
+		temp.x = x * left.x - y * left.y;
+		temp.y = x * left.y + y * left.x;
+
+		return temp;
+	}
+	Vec2 operator *=(Vec2 left)
+	{
+		Vec2 temp = this->GetNormalized();
+
+		x = temp.x * left.x - temp.y * left.y;
+		y = temp.x * left.y + temp.y * left.x;
+
+		return *this;		
+	}
+
+	bool operator !=(Vec2 left)
+	{
+		return x != left.x && y != left.y;
 	}
 
 	/// <summary>

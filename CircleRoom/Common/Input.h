@@ -65,5 +65,7 @@ public:
 	/// </summary>
 	/// <returns>スティック情報</returns>
 	Vec2 GetStickDate() const { return m_inputStickDate; }
+
+	float GetStickTilt() const { return m_inputStickDate.Length(); }
 };
 
