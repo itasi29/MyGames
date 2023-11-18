@@ -29,6 +29,16 @@ public:
 	{
 		return Vec2{ 0.0f, -1.0f };
 	}
+	// 自身から-90度したベクトル
+	Vec2 Right() const
+	{
+		return Vec2{ y, -x };
+	}
+	// 自身から90度したベクトル
+	Vec2 Left() const
+	{
+		return Vec2{ -y, x };
+	}
 
 	/// 単項演算子+
 	Vec2 operator +() const
@@ -110,9 +120,13 @@ public:
 		return *this;		
 	}
 
+	bool operator ==(Vec2 left)
+	{
+		return x == left.x && y == left.y;
+	}
 	bool operator !=(Vec2 left)
 	{
-		return x != left.x && y != left.y;
+		return !(*this == left);
 	}
 
 	/// <summary>

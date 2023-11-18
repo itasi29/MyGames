@@ -46,12 +46,16 @@ private:
 	Vec2 m_rightVec;
 	// 左ベクトル
 	Vec2 m_leftVec;
-
 	// 現在の正面方向
 	Vec2 m_nowFront;
+
 	// 線形補間用
-	Vec2 m_interpolatedValue;
 	int m_interpolatedFrame;
+	int m_interpolatedFrameNum;
+	// 補間前のベクトルを入れるよう
+	Vec2 m_firstChangeVec;
+	// 補間後のベクトルを入れるよう
+	Vec2 m_lastChangeVec;
 
 	// 移動ベクトル
 	Vec2 m_vec;
@@ -70,21 +74,20 @@ private:
 	// 生存しているか
 	bool m_isExsit;
 
+private:
 	/// <summary>
 	/// プレイヤーの移動
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	void Move(Input& input);
 	/// <summary>
+	/// 線形補間
+	/// </summary>
+	void Lerp();
+	/// <summary>
 	/// ダッシュ処理
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	void Dash(Input& input);
-	/// <summary>
-	/// 線形補間
-	/// </summary>
-	void Lerp();
-
-	void Complex();
 };
 
