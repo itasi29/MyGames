@@ -6,12 +6,15 @@
 namespace
 {
 	// 当たり判定の半径の大きさ
-	constexpr float kColRadius = 2.0f;
+	constexpr float kColRadius = 10.0f;
 
 	// プレイヤーの大きさ
 	constexpr float kSize = 24.0f;
 	// プレイヤーのスピード
 	constexpr float kSpeed = 4.0f;
+	// プレイヤーの中心から判定をどのくらい動かすか
+	constexpr float kColShift = kSize * 0.32f;
+
 	// ダッシュ時のスピード倍率
 	constexpr float kDashSpeed = 4.0f;
 	// ダッシュ可能時間
@@ -23,25 +26,23 @@ namespace
 	constexpr int kInterpolatedFrame = 50;
 }
 
-Player::Player(Application& app) :
-	m_app(app),
-	m_size(m_app.GetWindowSize()),
-	m_interpolatedFrame(-1),
-	m_interpolatedFrameNum(0),
+Player::Player(const Size& windowSize, float fieldSize) :
+	m_windowSize(windowSize),
+	m_fieldSize(fieldSize),
 	m_dashFrame(-1),
 	m_dashWaitFrame(-1),
 	m_isDash(false),
 	m_colRaidus(kColRadius),
 	m_isExsit(false)
 {
-	m_pos = Vec2{ m_size.w / 2.0f, m_size.h - 100.0f };
+	m_pos = Vec2{ m_windowSize.w / 2.0f, m_windowSize.h - fieldSize };
 
 	m_nowFront = Vec2::Up();
 	m_frontVec = m_nowFront * kSize;
 	m_rightVec = m_nowFront.Right() * kSize * 0.5f;
 	m_leftVec = m_nowFront.Left() * kSize * 0.5f;
 
-	m_lastChangeVec = m_nowFront;
+	m_colPos.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
 }
 
 Player::~Player()
@@ -51,6 +52,10 @@ Player::~Player()
 void Player::Update(Input& input)
 {
 	Move(input);
+	InRange();
+
+	// 当たり判定の更新
+	m_colPos.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
 }
 
 void Player::Draw()
@@ -62,25 +67,13 @@ void Player::Draw()
 		static_cast<int>(m_rightVec.x + m_pos.x), static_cast<int>(m_rightVec.y + m_pos.y),
 		0xffffff, true);
 
-	// プレイヤーの中心を表示
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 3, 0xff00ff, true);
+	/*以下デバッグ用*/
+#ifdef _DEBUG
+	// 当たり判定描画
+	//m_colPos.Draw(0xff0000, false);
 
 	DrawFormatString(32, 32, 0xffffff, L"pos;%.2f, %.2f", m_pos.x, m_pos.y);
-	DrawFormatString(32, 32+16, 0xff0000, L"vec:%.2f, %.2f", m_vec.x, m_vec.y);
-	DrawFormatString(32, 32+32, 0xff0000, L"now:%.2f, %.2f", m_nowFront.x, m_nowFront.y);
-
-	int centerX = m_size.w * 0.5f;
-	int centerY = m_size.h * 0.5f;
-	int lineLong = 30;
-	DrawLine(centerX, centerY,
-		centerX + m_lastChangeVec.x * lineLong, centerY + m_lastChangeVec.y * lineLong,
-		0x0000ff, 2);
-	DrawLine(centerX, centerY,
-		centerX + m_firstChangeVec.x * lineLong, centerY + m_firstChangeVec.y * lineLong,
-		0xff0000, 2);
-	DrawLine(centerX, centerY,
-		centerX + m_nowFront.x * lineLong, centerY + m_nowFront.y * lineLong,
-		0x00ff00, 2);
+#endif
 }
 
 void Player::Move(Input& input)
@@ -110,9 +103,6 @@ void Player::Move(Input& input)
 	// 移動ベクトルを正規化
 	m_vec.Normalize();
 
-#if true
-	Lerp();
-#else
 	if (m_vec.SqLength() > 0)
 	{
 		m_nowFront = m_vec;
@@ -120,7 +110,6 @@ void Player::Move(Input& input)
 		m_rightVec = m_nowFront.Right() * kSize * 0.5f;
 		m_leftVec = m_nowFront.Left() * kSize * 0.5f;
 	}
-#endif
 
 	m_vec *= kSpeed;
 
@@ -128,43 +117,6 @@ void Player::Move(Input& input)
 
 	// 座標に移動ベクトルを足す
 	m_pos += m_vec;
-}
-
-void Player::Lerp()
-{
-	// 動いていたら線形補間を更新する
-	if (m_vec != m_lastChangeVec && m_vec.SqLength() > 0)
-	{
-#if false
-		// 二点間の差＋2を補間にかかる時間とする
-		int num = abs(m_vec.x - m_nowFront.x + m_vec.y - m_nowFront.y)*5 + 2;
-		// 補間の時間＋元からあった補間の時間を入れる
-		m_interpolatedFrameNum = num + m_interpolatedFrame;
-		// 補間の時間を入れる
-		m_interpolatedFrame = num;
-#else
-		m_interpolatedFrameNum = kInterpolatedFrame;
-		m_interpolatedFrame = kInterpolatedFrame;
-#endif
-
-		m_firstChangeVec = m_nowFront;
-		m_lastChangeVec = m_vec;
-	}
-
-	// 線形補間をしない場合は補間処理しない
-	if (m_interpolatedFrame < 0) return;
-	// 現在の正面方向の更新
-	float rate = static_cast<float>(m_interpolatedFrame) / static_cast<float>(m_interpolatedFrameNum);
-	m_nowFront = m_lastChangeVec * (1.0f - rate) + m_firstChangeVec * (rate);
-
-	m_nowFront.Normalize();
-
-	m_frontVec = m_nowFront * kSize;
-	m_rightVec = m_nowFront.Right() * kSize * 0.5f;
-	m_leftVec = m_nowFront.Left() * kSize * 0.5f;
-
-	// 線形補間時間の更新
-	m_interpolatedFrame--;
 }
 
 void Player::Dash(Input& input)
@@ -185,19 +137,49 @@ void Player::Dash(Input& input)
 		m_dashFrame = kDashFrame;
 	}
 
-	// 現在ダッシュ中なら
-	if (m_isDash)
+	// 現在ダッシュ中でないなら処理終了
+	if (!m_isDash) return;
+	
+	// 移動ベクトルに現在向いている方向の単位ベクトル*スピードしたものを足す
+	m_vec += m_nowFront * kDashSpeed;
+	// 使用時間を減らす
+	m_dashFrame--;
+	// ダッシュを一定時間押し続けるか離したら終了
+	if (m_dashFrame <= 0 || input.IsReleased("dash"))
 	{
-		// 移動ベクトルに現在向いている方向の単位ベクトル*スピードしたものを足す
-		m_vec += m_nowFront * kDashSpeed;
-		// 使用時間を減らす
-		m_dashFrame--;
-		// ダッシュを一定時間押し続けるか離したら終了
-		if (m_dashFrame <= 0 || input.IsReleased("dash"))
-		{
-			m_isDash = false;
-			// 待機時間の初期化
-			m_dashWaitFrame = kDashWaitFrame;
-		}
+		m_isDash = false;
+		// 待機時間の初期化
+		m_dashWaitFrame = kDashWaitFrame;
+	}
+}
+
+void Player::InRange()
+{
+	float centerX = m_windowSize.w *0.5f;
+	float centerY = m_windowSize.h * 0.5f;
+
+	// 左処理
+	// 現在の位置から正面方向側の向きに中心をずらし(当たり判定の位置に持っていく)
+	// 当たり判定の半径分ずらした位置が場外で位置をずらす
+	if (m_pos.x + m_nowFront.x * kColShift - kColRadius < centerX - m_fieldSize)
+	{
+		// 場外の端から当たり判定の位置分ずらし
+		// 半径分右にずらす
+		m_pos.x = centerX - m_fieldSize - m_nowFront.x * kColShift + kColRadius;
+	}
+	// 右処理
+	if (m_pos.x + m_nowFront.x * kColShift + kColRadius > centerX + m_fieldSize)
+	{
+		m_pos.x = centerX + m_fieldSize - m_nowFront.x * kColShift - kColRadius;
+	}
+	// 上処理
+	if (m_pos.y + m_nowFront.y * kColShift - kColRadius < centerY - m_fieldSize)
+	{
+		m_pos.y = centerY - m_fieldSize - m_nowFront.y * kColShift + kColRadius;
+	}
+	// 下処理
+	if (m_pos.y + m_nowFront.y * kColShift + kColRadius> centerY + m_fieldSize)
+	{
+		m_pos.y = centerY + m_fieldSize - m_nowFront.y * kColShift - kColRadius;
 	}
 }

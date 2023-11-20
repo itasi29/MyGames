@@ -22,7 +22,9 @@ public:
 	/// </summary>
 	/// <param name="pos">中心地</param>
 	/// <param name="radius">半径</param>
-	void SetCenter(Vec2 pos, float radius);
+	/// <param name="shiftX">X方向に中心からどれくらい動いているか</param>
+	/// <param name="shiftY">Y方向に中心からどれくらい動いているか</param>
+	void SetCenter(Vec2 pos, float radius, float shiftX = 0.0f, float shiftY = 0.0f);
 
 	// 必要な情報を取得する
 	float GetRadius() const;

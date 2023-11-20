@@ -9,7 +9,7 @@ struct Size;
 class Player
 {
 public:
-	Player(Application& app);
+	Player(const Size& windowSize, float fieldSize);
 	~Player();
 
 	void Update(Input& input);
@@ -33,10 +33,10 @@ public:
 	float GetColRadius() const { return m_colRaidus; }
 
 private:
-	// アプリケーションクラス
-	Application& m_app;
-	// Windowsのサイズ
-	const Size& m_size;
+	// スクリーンサイズ
+	const Size& m_windowSize;
+	// フィールドのサイズ
+	float m_fieldSize;
 
 	// 中心座標
 	Vec2 m_pos;
@@ -49,13 +49,8 @@ private:
 	// 現在の正面方向
 	Vec2 m_nowFront;
 
-	// 線形補間用
-	int m_interpolatedFrame;
-	int m_interpolatedFrameNum;
-	// 補間前のベクトルを入れるよう
-	Vec2 m_firstChangeVec;
-	// 補間後のベクトルを入れるよう
-	Vec2 m_lastChangeVec;
+	// 当たり判定
+	Rect m_colPos;
 
 	// 移動ベクトル
 	Vec2 m_vec;
@@ -81,13 +76,13 @@ private:
 	/// <param name="input">入力情報</param>
 	void Move(Input& input);
 	/// <summary>
-	/// 線形補間
-	/// </summary>
-	void Lerp();
-	/// <summary>
 	/// ダッシュ処理
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	void Dash(Input& input);
+	/// <summary>
+	/// 場外判定処理
+	/// </summary>
+	void InRange();
 };
 

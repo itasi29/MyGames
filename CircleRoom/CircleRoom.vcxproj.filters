@@ -37,6 +37,12 @@
     <Filter Include="ヘッダー ファイル\Common">
       <UniqueIdentifier>{e16a548a-80cc-4460-9e55-c817dbe138b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Enemy">
+      <UniqueIdentifier>{c0b9b33d-1502-4dfe-ae64-81f10376e2d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Enemy">
+      <UniqueIdentifier>{f4effb51-0a68-4924-9a3c-679e3a9658aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -81,8 +87,8 @@
     <ClCompile Include="Player\Player.cpp">
       <Filter>ソース ファイル\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\Matrix3x3.cpp">
-      <Filter>ソース ファイル\Utility</Filter>
+    <ClCompile Include="Enemy\EnemyBase.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,8 +131,8 @@
     <ClInclude Include="Player\Player.h">
       <Filter>ヘッダー ファイル\Player</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Matrix3x3.h">
-      <Filter>ヘッダー ファイル\Utility</Filter>
+    <ClInclude Include="Enemy\EnemyBase.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

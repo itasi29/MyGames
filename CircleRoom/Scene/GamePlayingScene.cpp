@@ -17,13 +17,15 @@ namespace
 }
 
 GamePlayingScene::GamePlayingScene(SceneManager& manager) :
-	Scene(manager)
+	Scene(manager),
+	m_windowSize(m_manager.GetApp().GetWindowSize()),
+	m_fieldSize(m_windowSize.h / 3.0f)
 {
 	// フレームの時間
 	m_frame = kFadeFrame;
 	m_updateFunc = &GamePlayingScene::FadeInUpdate;
 	m_drawFunc = &GamePlayingScene::FadeDraw;
-	m_player = std::make_shared<Player>(m_manager.GetApp());
+	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -89,6 +91,27 @@ void GamePlayingScene::NormalDraw()
 {
 	DrawString(10, 100, L"GamePlayingScene", 0xffffff);
 	DrawFormatString(10, 10, 0xffffff, L"fps = %2.2f", m_fps);
+
+	float centerX = m_windowSize.w * 0.5f;
+	float centerY = m_windowSize.h * 0.5f;
+	// フィールドの端描画
+	// 色は仮
+	// 左
+	DrawLine(centerX - m_fieldSize, centerY - m_fieldSize,
+		centerX - m_fieldSize, centerY + m_fieldSize, 
+		0x00ff00);
+	// 右
+	DrawLine(centerX + m_fieldSize, centerY - m_fieldSize,
+		centerX + m_fieldSize, centerY + m_fieldSize,
+		0x00ff00);
+	// 上
+	DrawLine(centerX - m_fieldSize, centerY - m_fieldSize,
+		centerX + m_fieldSize, centerY - m_fieldSize,
+		0x00ff00);
+	// 下
+	DrawLine(centerX - m_fieldSize, centerY + m_fieldSize,
+		centerX + m_fieldSize, centerY + m_fieldSize,
+		0x00ff00);
 
 	m_player->Draw();
 }

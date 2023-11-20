@@ -17,9 +17,11 @@ void Rect::Draw(unsigned int color, bool isFill) const
 		color, isFill);
 }
 
-void Rect::SetCenter(Vec2 pos, float radius)
+void Rect::SetCenter(Vec2 pos, float radius, float shiftX, float shiftY)
 {
 	m_pos = pos;
+	m_pos.x += shiftX;
+	m_pos.y += shiftY;
 	m_radius = radius;
 }
 

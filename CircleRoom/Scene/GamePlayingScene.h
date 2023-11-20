@@ -3,6 +3,7 @@
 #include <memory>
 
 class Player;
+class Size;
 
 class GamePlayingScene : public Scene
 {
@@ -13,6 +14,11 @@ public:
     virtual void Draw();
 
 private:
+    // Windowサイズ
+    const Size& m_windowSize;
+    // フィールドサイズ
+    float m_fieldSize;
+
     // プレイヤー
     std::shared_ptr<Player> m_player;
 
