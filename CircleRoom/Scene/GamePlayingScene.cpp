@@ -9,6 +9,7 @@
 #include "PauseScene.h"
 
 #include "../Player/Player.h"
+#include "../Enemy/EnemyNormal.h"
 
 namespace
 {
@@ -26,6 +27,16 @@ GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 	m_updateFunc = &GamePlayingScene::FadeInUpdate;
 	m_drawFunc = &GamePlayingScene::FadeDraw;
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
+	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+
+	float centerX = m_windowSize.w * 0.5f;
+	float centerY = m_windowSize.h * 0.5f;
+	Vec2 center{centerX, centerY};
+
+	for (const auto& enemy : m_enemy)
+	{
+		enemy->Init(center);
+	}
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -66,6 +77,10 @@ void GamePlayingScene::NormalUpdate(Input& input)
 	m_fps = GetFPS();
 
 	m_player->Update(input);
+	for (const auto& enemy : m_enemy)
+	{
+		enemy->Update();
+	}
 }
 
 void GamePlayingScene::FadeOutUpdate(Input& input)
@@ -97,21 +112,25 @@ void GamePlayingScene::NormalDraw()
 	// フィールドの端描画
 	// 色は仮
 	// 左
-	DrawLine(centerX - m_fieldSize, centerY - m_fieldSize,
-		centerX - m_fieldSize, centerY + m_fieldSize, 
+	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+		static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize), 
 		0x00ff00);
 	// 右
-	DrawLine(centerX + m_fieldSize, centerY - m_fieldSize,
-		centerX + m_fieldSize, centerY + m_fieldSize,
+	DrawLine(static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		0x00ff00);
 	// 上
-	DrawLine(centerX - m_fieldSize, centerY - m_fieldSize,
-		centerX + m_fieldSize, centerY - m_fieldSize,
+	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
 		0x00ff00);
 	// 下
-	DrawLine(centerX - m_fieldSize, centerY + m_fieldSize,
-		centerX + m_fieldSize, centerY + m_fieldSize,
+	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
+		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		0x00ff00);
 
 	m_player->Draw();
+	for (const auto& enemy : m_enemy)
+	{
+		enemy->Draw();
+	}
 }

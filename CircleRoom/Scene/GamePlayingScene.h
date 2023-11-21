@@ -1,9 +1,11 @@
 #pragma once
 #include "Scene.h"
 #include <memory>
+#include <vector>
 
+struct Size;
 class Player;
-class Size;
+class EnemyBase;
 
 class GamePlayingScene : public Scene
 {
@@ -21,6 +23,8 @@ private:
 
     // プレイヤー
     std::shared_ptr<Player> m_player;
+    // 敵
+    std::vector<std::shared_ptr<EnemyBase>> m_enemy;
 
     // 経過フレーム
     int m_frame = 0;

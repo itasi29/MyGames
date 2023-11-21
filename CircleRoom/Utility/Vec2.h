@@ -176,4 +176,14 @@ public:
 
 		return Vec2{ x / len, y / len };
 	}
+
+	/// <summary>
+	/// “àÏ‚ğæ“¾‚·‚é
+	/// </summary>
+	/// <param name="vec2">‹‚ß‚é‘Šè‚ÌƒxƒNƒgƒ‹</param>
+	/// <returns>“àÏ</returns>
+	float Dot(Vec2 vec2) const
+	{
+		return x * vec2.x + y * vec2.y;
+	}
 };
