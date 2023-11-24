@@ -15,6 +15,9 @@ namespace
 {
 	// フェードのフレーム時間
 	constexpr int kFadeFrame = 60;
+
+	// 敵生成間隔フレーム
+	constexpr int kCreateFrame = 60 * 5;
 }
 
 GamePlayingScene::GamePlayingScene(SceneManager& manager) :
@@ -33,10 +36,7 @@ GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 	float centerY = m_windowSize.h * 0.5f;
 	Vec2 center{centerX, centerY};
 
-	for (const auto& enemy : m_enemy)
-	{
-		enemy->Init(center);
-	}
+	m_enemy[0]->Init(center);
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -60,6 +60,7 @@ void GamePlayingScene::FadeInUpdate(Input& input)
 	{
 		m_updateFunc = &GamePlayingScene::NormalUpdate;
 		m_drawFunc = &GamePlayingScene::NormalDraw;
+		m_frame = 0;
 	}
 }
 
@@ -69,17 +70,28 @@ void GamePlayingScene::NormalUpdate(Input& input)
 	//{
 	//	m_updateFunc = &GamePlayingScene::FadeOutUpdate;
 	//	m_drawFunc = &GamePlayingScene::FadeDraw;
+	//  m_frame = 0;
 	//}
 	//else if (input.IsTriggered("pause"))
 	//{
 	//	m_manager.PushScene(std::make_shared<PauseScene>(m_manager));
-	//}
+	//}+
+	m_frame++;
 	m_fps = GetFPS();
 
 	m_player->Update(input);
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Update();
+	}
+
+	if (m_frame > kCreateFrame)
+	{
+		m_frame = 0;
+		m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+		float centerX = m_windowSize.w * 0.5f;
+		float centerY = m_windowSize.h * 0.5f;
+		m_enemy.back()->Init(Vec2{centerX, centerY});
 	}
 }
 
@@ -133,4 +145,6 @@ void GamePlayingScene::NormalDraw()
 	{
 		enemy->Draw();
 	}
+
+	DrawFormatString(10, 116, 0xffff00, L"frame = %d", m_frame);
 }

@@ -10,7 +10,7 @@ namespace
 	constexpr float kRadius = 16.0f;
 
 	// 初めの実体化するまでのフレーム
-	constexpr int kApeearFrame = 30;
+	constexpr int kApeearFrame = 60;
 }
 
 EnemyNormal::EnemyNormal(const Size& windowSize, float fieldSize) :
@@ -33,8 +33,10 @@ void EnemyNormal::Init(Vec2 pos)
 	m_frame = 0;
 
 	// 撃つ方向をランダムで決める
-	float moveX = (GetRand(8) - 4) * 0.25f;
-	float moveY = (GetRand(8) - 4) * 0.25f;
+	/*float moveX = (GetRand(8) - 4) * 0.25f;
+	float moveY = (GetRand(8) - 4) * 0.25f;*/
+	float moveX = (GetRand(16) - 8) * 0.125f;
+	float moveY = (GetRand(16) - 8) * 0.125f;
 	m_vec = Vec2{ moveX, moveY };
 	// 正規化してスピードを調整
 	m_vec.Normalize();
@@ -55,12 +57,15 @@ void EnemyNormal::NormalUpdate()
 {
 	m_pos += m_vec;
 	Reflection();
+
+	m_colPos.SetCenter(m_pos, m_radius);
 }
 
 void EnemyNormal::StartDraw()
 {
-	int alpha = 255 * (m_frame / kApeearFrame);
-	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
+	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
+	int alpha = static_cast<int>(255 * rate);
+	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), 0xff0000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

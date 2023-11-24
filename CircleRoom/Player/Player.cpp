@@ -70,7 +70,7 @@ void Player::Draw()
 	/*以下デバッグ用*/
 #ifdef _DEBUG
 	// 当たり判定描画
-	m_colPos.Draw(0xff0000, false);
+	m_colPos.Draw(0x0000ff, false);
 
 	DrawFormatString(32, 32, 0xffffff, L"pos;%.2f, %.2f", m_pos.x, m_pos.y);
 #endif

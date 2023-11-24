@@ -56,6 +56,7 @@ protected:
 	/// 反射させる計算
 	/// </summary>
 	void ReflectionCal(Vec2 norVec);
+	void ShiftReflection(Vec2 shift);
 
 protected:
 	// メンバ関数ポインタ

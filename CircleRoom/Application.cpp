@@ -27,7 +27,8 @@ int MyLoadGraph(const wchar_t* path)
     return handle;
 }
 
-Application::Application()
+Application::Application() :
+    m_time(0)
 {
     m_windowSize = Size{kScreenWidth, kScreenHeight};
 }
@@ -42,6 +43,13 @@ bool Application::Init()
 #ifdef _DEBUG
     ChangeWindowMode(true); // ウィンドウモードにします
 #endif
+
+    // スコープ内を使うと一時的に例外が発生しにくくなったため入れておく、どういうことかはわからない
+    {
+        SetUseDirect3DVersion(DX_DIRECT3D_9EX);
+        SetEnableXAudioFlag(TRUE);
+    }
+
     SetGraphMode(m_windowSize.w, m_windowSize.h, 16);
     SetWindowText(L"CircleRoom");
     if (DxLib_Init() == -1)
@@ -55,30 +63,32 @@ bool Application::Init()
 
 void Application::Run()
 {
-    SceneManager manager(this->GetInstance());
-    // 一時的にゲームシーンスタートに
-//    manager.ChangeScene(std::make_shared<TitleScene>(manager));
-    manager.ChangeScene(std::make_shared<GamePlayingScene>(manager));
-
-    Input input;
-    while (ProcessMessage() != -1)
     {
-        // 新しいゲームループを始めた時間を記憶
-        m_time = GetNowHiPerformanceCount();
+        SceneManager manager(this->GetInstance());
+        // 一時的にゲームシーンスタートに
+    //    manager.ChangeScene(std::make_shared<TitleScene>(manager));
+        manager.ChangeScene(std::make_shared<GamePlayingScene>(manager));
 
-        ClearDrawScreen();
-        input.Update(); // 入力を更新
-        manager.Update(input);
-        manager.Draw();
-        ScreenFlip();
-
-        // エスケープキーが押されたら終了する
-        if (CheckHitKey(KEY_INPUT_ESCAPE))
+        Input input;
+        while (ProcessMessage() != -1)
         {
-            break;
-        }
+            // 新しいゲームループを始めた時間を記憶
+            m_time = GetNowHiPerformanceCount();
 
-        while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
+            ClearDrawScreen();
+            input.Update(); // 入力を更新
+            manager.Update(input);
+            manager.Draw();
+            ScreenFlip();
+
+            // エスケープキーが押されたら終了する
+            if (CheckHitKey(KEY_INPUT_ESCAPE))
+            {
+                break;
+            }
+
+            while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
+        }
     }
     Terminate();
 }
