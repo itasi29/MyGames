@@ -1,7 +1,7 @@
 #include <DxLib.h>
-#include "../Application.h"
+#include "Application.h"
+#include "Common/Input.h"
 #include "Player.h"
-#include "../Common/Input.h"
 
 namespace
 {
@@ -29,24 +29,36 @@ namespace
 Player::Player(const Size& windowSize, float fieldSize) :
 	m_windowSize(windowSize),
 	m_fieldSize(fieldSize),
-	m_dashFrame(-1),
-	m_dashWaitFrame(-1),
+	m_dashFrame(0),
+	m_dashWaitFrame(0),
 	m_isDash(false),
-	m_colRaidus(kColRadius),
 	m_isExsit(false)
 {
-	m_pos = Vec2{ m_windowSize.w / 2.0f, m_windowSize.h - fieldSize };
+}
 
+Player::~Player()
+{
+}
+
+void Player::Init()
+{
+	// 初期化処理
+	m_dashFrame = 0;
+	m_dashWaitFrame = 0;
+	m_isDash = false;
+	m_isExsit = true;
+
+	// 位置の設定
+	m_pos = Vec2{ m_windowSize.w / 2.0f, m_windowSize.h - m_fieldSize };
+
+	// 方向の設定
 	m_nowFront = Vec2::Up();
 	m_frontVec = m_nowFront * kSize;
 	m_rightVec = m_nowFront.Right() * kSize * 0.5f;
 	m_leftVec = m_nowFront.Left() * kSize * 0.5f;
 
-	m_colPos.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
-}
-
-Player::~Player()
-{
+	// 当たり判定の更新
+	m_rect.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
 }
 
 void Player::Update(Input& input)
@@ -55,25 +67,39 @@ void Player::Update(Input& input)
 	InRange();
 
 	// 当たり判定の更新
-	m_colPos.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
+	m_rect.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
 }
 
 void Player::Draw()
 {
 	// プレイヤーを三角形で描画
 	// 上から順に正面、左、右
-	DrawTriangle(static_cast<int>(m_frontVec.x + m_pos.x), static_cast<int>(m_frontVec.y + m_pos.y),
-		static_cast<int>(m_leftVec.x + m_pos.x), static_cast<int>(m_leftVec.y + m_pos.y),
-		static_cast<int>(m_rightVec.x + m_pos.x), static_cast<int>(m_rightVec.y + m_pos.y),
-		0xffffff, true);
+	// 生きていたら白
+	if (m_isExsit)
+	{
+		DrawTriangle(static_cast<int>(m_frontVec.x + m_pos.x), static_cast<int>(m_frontVec.y + m_pos.y),
+			static_cast<int>(m_leftVec.x + m_pos.x), static_cast<int>(m_leftVec.y + m_pos.y),
+			static_cast<int>(m_rightVec.x + m_pos.x), static_cast<int>(m_rightVec.y + m_pos.y),
+			0xffffff, true);
+	}
+	// 死んでいたら赤
+	else
+	{
+		DrawTriangle(static_cast<int>(m_frontVec.x + m_pos.x), static_cast<int>(m_frontVec.y + m_pos.y),
+			static_cast<int>(m_leftVec.x + m_pos.x), static_cast<int>(m_leftVec.y + m_pos.y),
+			static_cast<int>(m_rightVec.x + m_pos.x), static_cast<int>(m_rightVec.y + m_pos.y),
+			0xff0000, true);
+	}
 
-	/*以下デバッグ用*/
 #ifdef _DEBUG
-	// 当たり判定描画
-	m_colPos.Draw(0x0000ff, false);
-
-	DrawFormatString(32, 32, 0xffffff, L"pos;%.2f, %.2f", m_pos.x, m_pos.y);
+	// 当たり判定の描画
+	m_rect.Draw(0xff0000, false);
 #endif
+}
+
+void Player::Death()
+{
+	m_isExsit = false;
 }
 
 void Player::Move(Input& input)

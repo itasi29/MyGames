@@ -3,7 +3,7 @@
 #include <map>
 #include <unordered_map>
 #include <string>
-#include "../Utility/Vec2.h"
+#include "Vec2.h"
 
 enum class InputType
 {

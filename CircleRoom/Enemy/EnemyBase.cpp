@@ -1,5 +1,5 @@
 #include <DxLib.h>
-#include "../Application.h"
+#include "Application.h"
 #include "EnemyBase.h"
 
 namespace

@@ -27,15 +27,15 @@ public:
 	void SetCenter(Vec2 pos, float radius, float shiftX = 0.0f, float shiftY = 0.0f);
 
 	// 必要な情報を取得する
-	float GetRadius() const;
-	Vec2 GetCenter() const;		// 矩形の中心座標
+	float GetRadius() const { return m_radius; }
+	Vec2 GetCenter() const { return m_pos; }
 
 	/// <summary>
 	/// 矩形同士の当たり判定
 	/// </summary>
 	/// <param name="target">判定側</param>
 	/// <returns>true : 当たった, false : 当たってない</returns>
-	bool IsCollsion(const Rect& target);
+	bool IsCollsion(const Rect& target) const;
 
 private:
 	// 中心座標

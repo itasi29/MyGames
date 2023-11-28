@@ -1,9 +1,9 @@
 #include "KeyConfigScene.h"
 #include <DxLib.h>
-#include "../Common/Input.h"
-#include "../Application.h"
+#include "Common/Input.h"
+#include "Application.h"
 #include "SceneManager.h"
-#include "../StringUtility.h"
+#include "StringUtility.h"
 
 namespace
 {

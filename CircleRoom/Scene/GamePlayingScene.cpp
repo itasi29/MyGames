@@ -1,42 +1,40 @@
 #include <DxLib.h>
 #include <cassert>
-#include "../Common/Input.h"
-#include "../Application.h"
+#include "Input.h"
+#include "Application.h"
 
 #include "SceneManager.h"
 #include "GamePlayingScene.h"
 #include "GameOverScene.h"
 #include "PauseScene.h"
 
-#include "../Player/Player.h"
-#include "../Enemy/EnemyNormal.h"
+#include "Stage/StageManager.h"
+#include "Stage/Stage1_1.h"
 
 namespace
 {
+	// フィールドサイズの倍率
+	// フィールドはwindowsizeの縦幅に倍率をかけたものとする
+	constexpr float kSizeScale = 0.4f;
+
 	// フェードのフレーム時間
 	constexpr int kFadeFrame = 60;
-
-	// 敵生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 5;
 }
 
 GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 	Scene(manager),
 	m_windowSize(m_manager.GetApp().GetWindowSize()),
-	m_fieldSize(m_windowSize.h / 3.0f)
+	m_fieldSize(m_windowSize.h * kSizeScale),
+	m_screenHandle(0),
+	m_frame(kFadeFrame)
 {
-	// フレームの時間
-	m_frame = kFadeFrame;
-	m_updateFunc = &GamePlayingScene::FadeInUpdate;
-	m_drawFunc = &GamePlayingScene::FadeDraw;
-	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	// メンバ関数ポインタの設定
+	m_updateFunc = &GamePlayingScene::UpdateFadeIn;
+	m_drawFunc = &GamePlayingScene::DrawFade;
 
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
-	Vec2 center{centerX, centerY};
-
-	m_enemy[0]->Init(center);
+	// ステージの設定
+	m_stage = std::make_shared<StageManager>();
+	m_stage->ChangeStage(std::make_shared<Stage1_1>(m_stage, m_windowSize, m_fieldSize));
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -53,49 +51,18 @@ void GamePlayingScene::Draw()
 	(this->*m_drawFunc)();
 }
 
-void GamePlayingScene::FadeInUpdate(Input& input)
+void GamePlayingScene::UpdateFadeIn(Input& input)
 {
 	m_frame--;
 	if (m_frame <= 0)
 	{
-		m_updateFunc = &GamePlayingScene::NormalUpdate;
-		m_drawFunc = &GamePlayingScene::NormalDraw;
+		m_updateFunc = &GamePlayingScene::UpdateNormal;
+		m_drawFunc = &GamePlayingScene::DrawNormal;
 		m_frame = 0;
 	}
 }
 
-void GamePlayingScene::NormalUpdate(Input& input)
-{
-	//if (input.IsTriggered("OK"))
-	//{
-	//	m_updateFunc = &GamePlayingScene::FadeOutUpdate;
-	//	m_drawFunc = &GamePlayingScene::FadeDraw;
-	//  m_frame = 0;
-	//}
-	//else if (input.IsTriggered("pause"))
-	//{
-	//	m_manager.PushScene(std::make_shared<PauseScene>(m_manager));
-	//}+
-	m_frame++;
-	m_fps = GetFPS();
-
-	m_player->Update(input);
-	for (const auto& enemy : m_enemy)
-	{
-		enemy->Update();
-	}
-
-	if (m_frame > kCreateFrame)
-	{
-		m_frame = 0;
-		m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
-		float centerX = m_windowSize.w * 0.5f;
-		float centerY = m_windowSize.h * 0.5f;
-		m_enemy.back()->Init(Vec2{centerX, centerY});
-	}
-}
-
-void GamePlayingScene::FadeOutUpdate(Input& input)
+void GamePlayingScene::UpdateFadeOut(Input& input)
 {
 	m_frame++;
 	if (m_frame >= kFadeFrame)
@@ -104,9 +71,19 @@ void GamePlayingScene::FadeOutUpdate(Input& input)
 	}
 }
 
-void GamePlayingScene::FadeDraw()
+void GamePlayingScene::UpdateNormal(Input& input)
 {
-	DrawString(10, 100, L"GamePlayingScene", 0xffffff);
+	m_stage->Update(input);
+}
+
+void GamePlayingScene::UpdateChangeStage(Input& input)
+{
+}
+
+void GamePlayingScene::DrawFade()
+{
+	DrawWall();
+	m_stage->Draw();
 
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
@@ -114,18 +91,26 @@ void GamePlayingScene::FadeDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void GamePlayingScene::NormalDraw()
+void GamePlayingScene::DrawNormal()
 {
-	DrawString(10, 100, L"GamePlayingScene", 0xffffff);
-	DrawFormatString(10, 10, 0xffffff, L"fps = %2.2f", m_fps);
+	DrawWall();
 
+	m_stage->Draw();
+}
+
+void GamePlayingScene::DrawChangeStage()
+{
+}
+
+void GamePlayingScene::DrawWall()
+{
 	float centerX = m_windowSize.w * 0.5f;
 	float centerY = m_windowSize.h * 0.5f;
-	// フィールドの端描画
+
 	// 色は仮
 	// 左
 	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize), 
+		static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		0x00ff00);
 	// 右
 	DrawLine(static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
@@ -139,12 +124,5 @@ void GamePlayingScene::NormalDraw()
 	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		0x00ff00);
-
-	m_player->Draw();
-	for (const auto& enemy : m_enemy)
-	{
-		enemy->Draw();
-	}
-
-	DrawFormatString(10, 116, 0xffff00, L"frame = %d", m_frame);
 }
+

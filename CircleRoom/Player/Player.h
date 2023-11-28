@@ -1,6 +1,6 @@
 #pragma once
-#include "../Utility/Vec2.h"
-#include "../Utility/Rect.h"
+#include "Vec2.h"
+#include "Rect.h"
 
 class Input;
 class Application;
@@ -12,6 +12,10 @@ public:
 	Player(const Size& windowSize, float fieldSize);
 	~Player();
 
+	/// <summary>
+	/// 初期化処理
+	/// </summary>
+	void Init();
 	void Update(Input& input);
 	void Draw();
 
@@ -25,12 +29,18 @@ public:
 	/// 当たり判定の中心座標を取得
 	/// </summary>
 	/// <returns>当たり判定の中心座標</returns>
-	Rect GetColPos() const { return m_colRect; }
+	Rect GetRect() const { return m_rect; }
+	bool IsDash() const { return m_isDash; }
 	/// <summary>
-	/// 当たり判定の半径を取得
+	/// 生存しているか
 	/// </summary>
-	/// <returns>当たり判定の半径</returns>
-	float GetColRadius() const { return m_colRaidus; }
+	/// <returns>生存判定</returns>
+	bool IsExsit() const { return m_isExsit; }
+
+	/// <summary>
+	/// 死亡処理
+	/// </summary>
+	void Death();
 
 private:
 	// スクリーンサイズ
@@ -48,23 +58,18 @@ private:
 	Vec2 m_leftVec;
 	// 現在の正面方向
 	Vec2 m_nowFront;
-
-	// 当たり判定
-	Rect m_colPos;
-
 	// 移動ベクトル
 	Vec2 m_vec;
+
+	// 当たり判定
+	Rect m_rect;
+
 	// ダッシュするフレーム
 	int m_dashFrame;
 	// ダッシュ再利用可能までのフレーム
 	int m_dashWaitFrame;
 	// ダッシュ判定
 	bool m_isDash;
-
-	// 当たり判定
-	Rect m_colRect;
-	// 当たり判定の半径
-	float m_colRaidus;
 
 	// 生存しているか
 	bool m_isExsit;

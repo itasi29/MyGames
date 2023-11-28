@@ -25,15 +25,13 @@ void Rect::SetCenter(Vec2 pos, float radius, float shiftX, float shiftY)
 	m_radius = radius;
 }
 
-Vec2 Rect::GetCenter() const
-{
-	return m_pos;
-}
-
-bool Rect::IsCollsion(const Rect& target)
+bool Rect::IsCollsion(const Rect& target) const
 {
 	// ‚»‚ê‚¼‚ê‚Ì”¼Œa‚Ì2æ‚Ì‘«‚µZ‚ª
 	// ’†S’n“¯m‚Ì’·‚³‚Ì2æ‚æ‚è’Z‚¯‚ê‚Î
 	// “–‚½‚Á‚Ä‚¢‚é‚±‚Æ‚É‚·‚é
-	return (m_radius * m_radius + target.m_radius * target.m_radius) < (target.m_pos - m_pos).SqLength();
+	float dis = (target.m_pos - m_pos).SqLength();
+	float sumRadius = (m_radius * m_radius + target.m_radius * target.m_radius);
+
+	return (sumRadius > dis);
 }
