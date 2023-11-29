@@ -43,10 +43,10 @@
     <Filter Include="ヘッダー ファイル\Enemy">
       <UniqueIdentifier>{f4effb51-0a68-4924-9a3c-679e3a9658aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Scene\Stage">
+    <Filter Include="ソース ファイル\Stage">
       <UniqueIdentifier>{fbcfbe92-1cad-4f35-bf1d-3d87fc20006a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Scene\Stage">
+    <Filter Include="ヘッダー ファイル\Stage">
       <UniqueIdentifier>{8b3fcc70-0116-4310-a403-10f940e54d48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -100,16 +100,16 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Stage\StageBase.cpp">
-      <Filter>ソース ファイル\Scene\Stage</Filter>
+      <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Stage\Stage1_1.cpp">
-      <Filter>ソース ファイル\Scene\Stage</Filter>
-    </ClCompile>
-    <ClCompile Include="Stage\StageManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Stage\Stage1_2.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage\StageManager.cpp">
+      <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -159,16 +159,16 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Stage\StageBase.h">
-      <Filter>ヘッダー ファイル\Scene\Stage</Filter>
+      <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Stage\Stage1_1.h">
-      <Filter>ヘッダー ファイル\Scene\Stage</Filter>
-    </ClInclude>
-    <ClInclude Include="Stage\StageManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Stage\Stage1_2.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage\StageManager.h">
+      <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

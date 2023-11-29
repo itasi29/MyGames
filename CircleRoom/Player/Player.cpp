@@ -18,7 +18,7 @@ namespace
 	// ダッシュ時のスピード倍率
 	constexpr float kDashSpeed = 4.0f;
 	// ダッシュ可能時間
-	constexpr int kDashFrame = 50;
+	constexpr int kDashFrame = 25;
 	// ダッシュ待機時間
 	constexpr int kDashWaitFrame = 25;
 
@@ -34,6 +34,8 @@ Player::Player(const Size& windowSize, float fieldSize) :
 	m_isDash(false),
 	m_isExsit(false)
 {
+	Init();
+	m_isExsit = false;
 }
 
 Player::~Player()

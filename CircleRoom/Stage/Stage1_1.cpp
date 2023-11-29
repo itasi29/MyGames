@@ -19,9 +19,9 @@ Stage1_1::Stage1_1(std::shared_ptr<StageManager> mgr, const Size& windowSize, fl
 	StageBase(mgr, windowSize, fieldSize),
 	m_createFrame(0)
 {
+	m_stageName = L"Stage1-1";
+
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
-	
-	Init();
 }
 
 Stage1_1::~Stage1_1()
@@ -74,6 +74,15 @@ void Stage1_1::ChangeStage(Input& input)
 
 	if (input.IsPress("left"))
 	{
+		// todo:ƒ[ƒJƒ‹•Ï”‚Å‚â‚Á‚Ä‚¢‚é‚©‚çƒƒ“ƒo•Ï”‚Ö
+		int screenHandle;
+		screenHandle = MakeScreen(m_windowSize.w, m_windowSize.h, true);
+		SetDrawScreen(screenHandle);
+		Draw();
+		SetDrawScreen(DX_SCREEN_BACK);
+
+		m_mgr->StartMove({-1.0f, 0.0f}, screenHandle);
+
 		m_mgr->ChangeStage(std::make_shared<Stage1_2>(m_mgr, m_windowSize, m_fieldSize));
 	}
 }

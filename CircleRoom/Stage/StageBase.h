@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <string>
 
 class StageManager;
 class Player;
@@ -17,7 +18,17 @@ public:
 	void Update(Input& input);
 	void Draw();
 
+	/// <summary>
+	/// ステージ条件の描画
+	/// </summary>
+	virtual void DrawStageConditions();
+	/// <summary>
+	/// 各ステージの初期化処理
+	/// </summary>
 	virtual void Init() = 0;
+	/// <summary>
+	/// 敵の生成
+	/// </summary>
 	virtual void CreateEnemy() = 0;
 
 	/// <summary>
@@ -35,6 +46,9 @@ protected:
 	// フィールドサイズ
 	float m_fieldSize;
 
+	// ステージ名
+	std::wstring m_stageName;
+
 	// プレイヤー
 	std::shared_ptr<Player> m_player;
 	// 敵
@@ -46,6 +60,9 @@ protected:
 protected:
 	using UpdateFunc_t = void (StageBase::*)(Input&);
 	using DrawFunc_t = void (StageBase::*)();
+
+	UpdateFunc_t m_updateFunc;
+	DrawFunc_t m_drawFunc;
 
 	/// <summary>
 	/// 選択中の更新処理
@@ -66,8 +83,5 @@ protected:
 	/// プレイ中の描画処理
 	/// </summary>
 	void DrawPlaying();
-
-	UpdateFunc_t m_updateFunc;
-	DrawFunc_t m_drawFunc;
 };
 

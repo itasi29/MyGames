@@ -1,3 +1,4 @@
+#include <DxLib.h>
 #include "Application.h"
 #include "Input.h"
 
@@ -12,6 +13,8 @@ Stage1_2::Stage1_2(std::shared_ptr<StageManager> mgr, const Size& windowSize, fl
 	StageBase(mgr, windowSize, fieldSize),
 	m_createFrame(0)
 {
+	m_stageName = L"Stage1-2";
+
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
 }
 
@@ -33,8 +36,8 @@ void Stage1_2::Init()
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
 
 	// スタート位置の設定
-	float centerX = m_windowSize.w * 0.5f + 100;
-	float centerY = m_windowSize.h * 0.5f + 100;
+	float centerX = m_windowSize.w * 0.5f;
+	float centerY = m_windowSize.h * 0.5f;
 	Vec2 center{ centerX, centerY };
 
 	m_enemy.back()->Init(center);

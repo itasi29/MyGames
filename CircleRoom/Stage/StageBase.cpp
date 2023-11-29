@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "Application.h"
+#include "Input.h"
 
 #include "StageBase.h"
 #include "StageManager.h"
@@ -31,6 +32,10 @@ void StageBase::Draw()
 	(this->*m_drawFunc)();
 }
 
+void StageBase::DrawStageConditions()
+{
+}
+
 void StageBase::UpdateSelect(Input& input)
 {
 	// エネミーだけ動く処理繰り返す
@@ -39,7 +44,15 @@ void StageBase::UpdateSelect(Input& input)
 		enemy->Update();
 	}
 
-	// todo:AボタンかBボタンを押されたらプレイ中に移行するようにする
+	if (input.IsPress("OK"))
+	{
+		// メンバ関数ポインタの更新
+		m_updateFunc = &StageBase::UpdatePlaying;
+		m_drawFunc = &StageBase::DrawPlaying;
+
+		// 各種初期化処理
+		Init();
+	}
 }
 
 void StageBase::UpdatePlaying(Input& input)
@@ -81,11 +94,14 @@ void StageBase::DrawSelect()
 		enemy->Draw();
 	}
 
+	// ステージ名の描画
+	DrawFormatString(128, 16, 0xffffff, L"%s", m_stageName.c_str());
 	// 時間の描画
-	int minSec = (m_frame * 100 / 60) % 100;
-	int sec = (m_frame / 60) % 60;
-	int min = m_frame / 3600;
-	DrawFormatString(m_windowSize.w / 2 - 32, 32, 0xffffff, L"%02d:%02d.%02d", min, sec, minSec);
+	DrawFormatString(128, 32, 0xffffff, L"00:00.000");
+	// ステージ条件の描画
+	/*一時的に条件とだけ描画*/
+	//DrawStageConditions();
+	DrawString(128, 48, L"条件", 0xffffff);
 }
 
 void StageBase::DrawPlaying()
@@ -97,8 +113,8 @@ void StageBase::DrawPlaying()
 	}
 
 	// 時間の描画
-	int minSec = (m_frame * 100 / 60) % 100;
+	int minSec = (m_frame * 1000 / 60) % 1000;
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
-	DrawFormatString(m_windowSize.w / 2 - 32, 32, 0xffffff, L"%02d:%02d.%02d", min, sec, minSec);
+	DrawFormatString(128, 32, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
 }
