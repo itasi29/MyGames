@@ -14,7 +14,7 @@ public:
 	EnemyBase(const Size& windowSize, float fieldSize);
 	virtual ~EnemyBase();
 
-	virtual void Init(Vec2 pos) = 0;
+	virtual void Init(Vec2&) = 0;
 	void Update();
 	void Draw();
 
@@ -28,7 +28,7 @@ protected:
 	/// <summary>
 	/// •Ç‚É“–‚½‚Á‚½‚ç”½ŽË‚³‚¹‚é
 	/// </summary>
-	virtual void Reflection();
+	virtual void Reflection(bool isShift = true);
 	/// <summary>
 	/// ”½ŽË‚³‚¹‚éŒvŽZ
 	/// </summary>

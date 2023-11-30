@@ -8,6 +8,7 @@
 
 #include "Player/Player.h"
 #include "Enemy/EnemyNormal.h"
+#include "Enemy/EnemyMoveWall.h"
 
 namespace
 {
@@ -38,15 +39,28 @@ void Stage1_1::Init()
 
 	// 敵の配列を初期化
 	m_enemy.clear();
+
+	// 壁動く敵の作成
+	Vec2 vec;
+	// 上側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.x = 0;
+	vec.y = -1;
+	m_enemy.back()->Init(vec);
+	//// 下側
+	//m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	//vec.y = 1;
+	//m_enemy.back()->Init(vec);
+
 	// 敵を一体追加
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
 
 	// スタート位置の設定
 	float centerX = m_windowSize.w * 0.5f;
 	float centerY = m_windowSize.h * 0.5f;
-	Vec2 center{ centerX, centerY };
+	vec = { centerX, centerY };
 
-	m_enemy.back()->Init(center);
+	m_enemy.back()->Init(vec);
 }
 
 void Stage1_1::CreateEnemy()
@@ -61,9 +75,8 @@ void Stage1_1::CreateEnemy()
 		// 配列の最後に敵を追加
 		m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
 		// そいつに初期化処理
-		float centerX = m_windowSize.w * 0.5f;
-		float centerY = m_windowSize.h * 0.5f;
-		m_enemy.back()->Init(Vec2{ centerX, centerY });
+		Vec2 center(m_windowSize.w * 0.5f, m_windowSize.h * 0.5f);
+		m_enemy.back()->Init(center);
 	}
 }
 
@@ -74,15 +87,43 @@ void Stage1_1::ChangeStage(Input& input)
 
 	if (input.IsPress("left"))
 	{
-		// todo:ローカル変数でやっているからメンバ変数へ
-		int screenHandle;
-		screenHandle = MakeScreen(m_windowSize.w, m_windowSize.h, true);
-		SetDrawScreen(screenHandle);
+		// FIXME:ここで作った奴を後から関数化する
+
+		// 初めに次のステージを作成する
+		std::shared_ptr<Stage1_2> nextStage;
+		nextStage = std::make_shared<Stage1_2>(m_mgr, m_windowSize, m_fieldSize);
+
+		// FIXME:今からくそコード書くから後で直して /**/があるところまで
+		
+		// 現在の画面を保存するよう
+		int nowScreenHandle;
+		nowScreenHandle = MakeScreen(m_windowSize.w, m_windowSize.h, true);
+		SetDrawScreen(nowScreenHandle);
+		// 現在の画面を描画
 		Draw();
+
+		// 送る用の描画先を作成する
+		int sendScreenHandle;
+		sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h, true);
+		// 描画先を作ったスクリーンにする
+		SetDrawScreen(sendScreenHandle);
+		// 次のステージの選択画面を描画
+		nextStage->Draw();
+		// ずらして保存した現在の画面を描画
+		DrawGraph(m_windowSize.w, 0, nowScreenHandle, true);
+		// 描画先を元の場所に戻す
 		SetDrawScreen(DX_SCREEN_BACK);
 
-		m_mgr->StartMove({-1.0f, 0.0f}, screenHandle);
+		// 現在の画面を保存したハンドルは宙づりになるのでここで消す
+		// 送る方は送ったほうで消すため考えない
+		DeleteGraph(nowScreenHandle);
 
-		m_mgr->ChangeStage(std::make_shared<Stage1_2>(m_mgr, m_windowSize, m_fieldSize));
+		// 画面を動かす処理を実行する
+		m_mgr->StartMove(StageManager::kDirLeft, sendScreenHandle);
+
+		/**/
+
+		// 次のステージに変更する
+		m_mgr->ChangeStage(nextStage);
 	}
 }

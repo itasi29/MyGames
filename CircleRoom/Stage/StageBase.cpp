@@ -62,6 +62,7 @@ void StageBase::UpdatePlaying(Input& input)
 	bool playerIsExsit = m_player->IsExsit();
 	const Rect playerRect = m_player->GetRect();
 
+	CreateEnemy();
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Update();
@@ -88,6 +89,8 @@ void StageBase::DrawSelect()
 {
 	// todo:ï`âÊÇÕç°ÇÃÇ∆Ç±ÇÎìØÇ∂ÇæÇ™ÅAç°å„ÇÕïœÇ¶ÇÈÇÊÇ§Ç…Ç∑ÇÈ
 
+	DrawWall();
+
 	m_player->Draw();
 	for (const auto& enemy : m_enemy)
 	{
@@ -106,6 +109,8 @@ void StageBase::DrawSelect()
 
 void StageBase::DrawPlaying()
 {
+	DrawWall();
+
 	m_player->Draw();
 	for (const auto& enemy : m_enemy)
 	{
@@ -117,4 +122,28 @@ void StageBase::DrawPlaying()
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
 	DrawFormatString(128, 32, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
+}
+
+void StageBase::DrawWall()
+{
+	float centerX = m_windowSize.w * 0.5f;
+	float centerY = m_windowSize.h * 0.5f;
+
+	// êFÇÕâº
+	// ç∂
+	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+		static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
+		0x00ff00);
+	// âE
+	DrawLine(static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
+		0x00ff00);
+	// è„
+	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+		0x00ff00);
+	// â∫
+	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
+		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
+		0x00ff00);
 }

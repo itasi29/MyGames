@@ -1,18 +1,16 @@
 #pragma once
-
 #include "EnemyBase.h"
-
-class EnemyNormal : public EnemyBase
+class EnemyMoveWall : public EnemyBase
 {
 public:
-	EnemyNormal(const Size& windowSize, float fieldSize);
-	virtual ~EnemyNormal();
+	EnemyMoveWall(const Size& windowSize, float fieldSize);
+	virtual ~EnemyMoveWall();
 
 	/// <summary>
 	/// ‰Šú‰»ˆ—
 	/// </summary>
-	/// <param name="pos">‰ŠúˆÊ’u</param>
-	void Init(Vec2& pos) override;
+	/// <param name="vec">Œ‚‚Â•ûŒü (ãor‰º)</param>
+	void Init(Vec2& vec) override;
 
 private:
 	// XVŠÖ”

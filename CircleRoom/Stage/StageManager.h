@@ -11,6 +11,15 @@ class StageBase;
 class StageManager
 {
 public:
+	// FIXME:名前は変える
+	enum MoveDir
+	{
+		kDirLeft,
+		kDirRight,
+		kDirUp,
+		kDirDown,
+	};
+
 	StageManager();
 	~StageManager();
 
@@ -29,7 +38,7 @@ public:
 	/// </summary>
 	/// <param name="pos">動かすベクトル</param>
 	/// <param name="handle">画像ハンドル</param>
-	void StartMove(const Vec2& vec, int handle);
+	void StartMove(MoveDir dir, int handle);
 
 private:
 	std::shared_ptr<StageBase> m_stage;

@@ -104,25 +104,6 @@ void GamePlayingScene::DrawChangeStage()
 
 void GamePlayingScene::DrawWall()
 {
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
-
-	// êFÇÕâº
-	// ç∂
-	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0x00ff00);
-	// âE
-	DrawLine(static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0x00ff00);
-	// è„
-	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		0x00ff00);
-	// â∫
-	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0x00ff00);
+	
 }
 

@@ -39,12 +39,12 @@ void EnemyBase::Draw()
 	(this->*m_drawFunc)();
 }
 
-void EnemyBase::Reflection()
+void EnemyBase::Reflection(bool isShift)
 {
 	float centerX = m_windowSize.w * 0.5f;
 	float centerY = m_windowSize.h * 0.5f;
 
-	// 壁に当たったら反時計回りに90度回転
+#if false
 	// 左
 	if (m_pos.x - m_radius < centerX - m_fieldSize)
 	{
@@ -73,6 +73,36 @@ void EnemyBase::Reflection()
 		ReflectionCal(kNorVecDown);
 		ShiftReflection(kShiftVert);
 	}
+#else
+	// 左
+	if (m_pos.x < centerX - m_fieldSize)
+	{
+		m_pos.x = centerX - m_fieldSize;
+		ReflectionCal(kNorVecLeft);
+		ShiftReflection(kShiftSide);
+	}
+	// 右
+	if (m_pos.x > centerX + m_fieldSize)
+	{
+		m_pos.x = centerX + m_fieldSize;
+		ReflectionCal(kNorVecRight);
+		ShiftReflection(kShiftSide);
+	}
+	// 上
+	if (m_pos.y < centerY - m_fieldSize)
+	{
+		m_pos.y = centerY - m_fieldSize;
+		ReflectionCal(kNorVecUp);
+		ShiftReflection(kShiftVert);
+	}
+	// 下
+	if (m_pos.y > centerY + m_fieldSize)
+	{
+		m_pos.y = centerY + m_fieldSize;
+		ReflectionCal(kNorVecDown);
+		ShiftReflection(kShiftVert);
+	}
+#endif
 }
 
 void EnemyBase::ReflectionCal(Vec2 norVec)
@@ -83,6 +113,8 @@ void EnemyBase::ReflectionCal(Vec2 norVec)
 
 void EnemyBase::ShiftReflection(Vec2 shift)
 {
+	// FIXME:現状はこれでいいけど、できたら参考元にできるように
+
 	Vec2 temp = m_vec;
 	
 	// 進んでいる方向にshift分進ませる

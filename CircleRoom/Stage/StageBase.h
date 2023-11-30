@@ -83,5 +83,11 @@ protected:
 	/// ƒvƒŒƒC’†‚Ì•`‰æˆ—
 	/// </summary>
 	void DrawPlaying();
+
+private:
+	/// <summary>
+	/// •Ç‚Ì•`‰æ
+	/// </summary>
+	void DrawWall();
 };
 

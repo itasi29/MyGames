@@ -54,6 +54,31 @@ void Stage1_2::ChangeStage(Input& input)
 
 	if (input.IsPress("right"))
 	{
-		m_mgr->ChangeStage(std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize));
+		// 初めに次のステージを作成する
+		std::shared_ptr<Stage1_1> nextStage;
+		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
+
+		// 新しい描画先を作成する
+		int nowScreenHandle;
+		nowScreenHandle = MakeScreen(m_windowSize.w, m_windowSize.h, true);
+		// 描画先を作ったスクリーンにする
+		SetDrawScreen(nowScreenHandle);
+		// 次のステージの選択画面を描画
+		nextStage->Draw();
+
+		int sendScreenHandle;
+		sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
+		SetDrawScreen(sendScreenHandle);
+		Draw();
+		DrawGraph(m_windowSize.w, 0, nowScreenHandle, true);
+
+		// 描画先を元の場所に戻す
+		SetDrawScreen(DX_SCREEN_BACK);
+
+		// 画面を動かす処理を実行する
+		m_mgr->StartMove(StageManager::kDirRight, sendScreenHandle);
+
+		// 次のステージに変更する
+		m_mgr->ChangeStage(nextStage);
 	}
 }

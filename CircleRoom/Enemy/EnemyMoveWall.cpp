@@ -1,6 +1,6 @@
+#include "EnemyMoveWall.h"
 #include <DxLib.h>
 #include "Application.h"
-#include "EnemyNormal.h"
 
 namespace
 {
@@ -16,47 +16,35 @@ namespace
 	constexpr int kColor = 0xffffff;
 }
 
-EnemyNormal::EnemyNormal(const Size& windowSize, float fieldSize) :
+EnemyMoveWall::EnemyMoveWall(const Size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 }
 
-EnemyNormal::~EnemyNormal()
+EnemyMoveWall::~EnemyMoveWall()
 {
 }
 
-void EnemyNormal::Init(Vec2& pos)
+void EnemyMoveWall::Init(Vec2& vec)
 {
-	// 引数で渡された位置を初期位置に
-	m_pos = pos;
-	m_radius = kRadius;
-
 	// フレームの初期化
 	m_frame = 0;
 
-	// 撃つ方向をランダムで決める
-	float moveX = (GetRand(16) - 8) * 0.125f;
-	float moveY = (GetRand(16) - 8) * 0.125f;
-	m_vec = Vec2{ moveX, moveY };
+	// 半径の設定
+	m_radius = kRadius;
 
-	// ゼロベクトルでないなら正規化
-	if (m_vec.SqLength() > 0)
-	{
-		m_vec.Normalize();
-	}
-	// ゼロベクトルなら方向を真横にする
-	else
-	{
-		m_vec = Vec2{ 1.0f, 0.0f };
-	}
+	float centerX = m_windowSize.w * 0.5f;
+	float centerY = m_windowSize.h * 0.5f;
 
-	// スピードを調整
-	m_vec *= kSpeed;
+	m_pos = Vec2{centerX + m_fieldSize * -vec.y, centerY};
+
+	m_vec = vec * kSpeed;
 }
 
-void EnemyNormal::StartUpdate()
+void EnemyMoveWall::StartUpdate()
 {
 	m_frame++;
+	m_pos += m_vec;
 
 	if (m_frame > kApeearFrame)
 	{
@@ -67,15 +55,15 @@ void EnemyNormal::StartUpdate()
 	}
 }
 
-void EnemyNormal::NormalUpdate()
+void EnemyMoveWall::NormalUpdate()
 {
 	m_pos += m_vec;
-	Reflection();
+	Reflection(false);
 
 	m_rect.SetCenter(m_pos, m_radius);
 }
 
-void EnemyNormal::StartDraw()
+void EnemyMoveWall::StartDraw()
 {
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
 	int alpha = static_cast<int>(255 * rate);
@@ -85,7 +73,7 @@ void EnemyNormal::StartDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void EnemyNormal::NormalDraw()
+void EnemyMoveWall::NormalDraw()
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), kColor, true);
@@ -94,5 +82,4 @@ void EnemyNormal::NormalDraw()
 	// 当たり判定の描画
 	m_rect.Draw(0xff0000, false);
 #endif
-
 }
