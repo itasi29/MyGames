@@ -53,14 +53,14 @@ void StageManager::StartMove(MoveDir dir, int handle)
 	switch (dir)
 	{
 	case StageManager::kDirLeft:
-		m_pos.x = -1280;
+		m_pos.x = 0;
 		m_pos.y = 0;
 
 		m_vec.x = 1280 / kStageMoveFrame;
 		m_vec.y = 0;
 		break;
 	case StageManager::kDirRight:
-		m_pos.x = 0;
+		m_pos.x = 1280;
 		m_pos.y = 0;
 
 		m_vec.x = -1280 / kStageMoveFrame;
@@ -105,7 +105,7 @@ void StageManager::DrawMove()
 	auto& app = Application::GetInstance();
 	const auto& size = app.GetWindowSize();
 	
-	DrawGraph(m_pos.x, m_pos.y,
+	DrawRectGraph(0, 0, m_pos.x, m_pos.y, size.w, size.h,
 		m_stageHandle, true);
 	//DrawGraph(-1280, 0, m_stageHandle, true);
 
