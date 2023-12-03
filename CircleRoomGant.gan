@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2023-11-20" view-index="0" gantt-divider-location="351" resource-divider-location="300" version="3.2.3247" locale="ja_JP">
+    <description/>
+    <view zooming-state="default:1" id="gantt-chart">
+        <field id="tpd3" name="名前" width="200" order="0"/>
+        <field id="tpd4" name="開始日" width="75" order="1"/>
+        <field id="tpd5" name="終了日" width="75" order="2"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="color.recent">
+            <![CDATA[#333333 #ff3333 #ff9900]]>
+        </option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="名前" width="210" order="0"/>
+        <field id="1" name="デフォルトの役割" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" name="プロトタイプ" color="#ff9900" meeting="false" start="2023-11-20" duration="15" complete="64" thirdDate="2023-12-04" thirdDate-constraint="0" expand="true">
+            <task id="1" name="プレイヤー" color="#8cb6ce" meeting="false" start="2023-11-20" duration="5" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" expand="false">
+                <task id="2" name="移動" color="#8cb6ce" meeting="false" start="2023-11-20" duration="1" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" priority="4" expand="true"/>
+                <task id="4" name="場外処理" color="#8cb6ce" meeting="false" start="2023-11-20" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
+                <task id="3" name="ダッシュ" color="#8cb6ce" meeting="false" start="2023-11-20" duration="1" complete="100" thirdDate="2023-11-16" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[現状は初めから持っているが後に後から持つように]]>
+                    </notes>
+                </task>
+                <task id="5" name="判定場所更新" color="#8cb6ce" meeting="false" start="2023-11-21" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
+                <task id="6" name="判定処理" color="#8cb6ce" meeting="false" start="2023-11-21" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
+                <task id="7" name="方向指定" color="#8cb6ce" meeting="false" start="2023-11-22" duration="3" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[先頭方向
+右方向
+左方向]]>
+                    </notes>
+                </task>
+            </task>
+            <task id="8" name="敵(雑魚)" color="#8cb6ce" meeting="false" start="2023-11-21" duration="3" complete="100" thirdDate="2023-11-09" thirdDate-constraint="0" expand="false">
+                <task id="9" name="移動" color="#8cb6ce" meeting="false" start="2023-11-21" duration="1" complete="100" thirdDate="2023-11-09" thirdDate-constraint="0" expand="true"/>
+                <task id="10" name="反射" color="#8cb6ce" meeting="false" start="2023-11-21" duration="2" complete="100" thirdDate="2023-11-08" thirdDate-constraint="0" expand="true"/>
+                <task id="11" name="場外処理" color="#8cb6ce" meeting="false" start="2023-11-22" duration="1" complete="100" thirdDate="2023-11-10" thirdDate-constraint="0" expand="true"/>
+                <task id="12" name="判定場所更新" color="#8cb6ce" meeting="false" start="2023-11-23" duration="1" complete="100" thirdDate="2023-11-13" thirdDate-constraint="0" expand="true"/>
+                <task id="13" name="判定処理" color="#8cb6ce" meeting="false" start="2023-11-23" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
+            </task>
+            <task id="14" name="プレイ中" color="#8cb6ce" meeting="false" start="2023-11-27" duration="10" complete="58" thirdDate="2023-11-15" thirdDate-constraint="0" expand="false">
+                <task id="15" name="壁生成" color="#8cb6ce" meeting="false" start="2023-11-27" duration="1" complete="100" thirdDate="2023-11-15" thirdDate-constraint="0" expand="true"/>
+                <task id="16" name="タイム表記" color="#8cb6ce" meeting="false" start="2023-11-27" duration="1" complete="100" thirdDate="2023-11-16" thirdDate-constraint="0" expand="true"/>
+                <task id="25" name="プレイヤー更新・描画" color="#8cb6ce" meeting="false" start="2023-11-28" duration="1" complete="100" thirdDate="2023-11-21" thirdDate-constraint="0" expand="true"/>
+                <task id="26" name="敵更新・描画" color="#8cb6ce" meeting="false" start="2023-11-28" duration="1" complete="100" thirdDate="2023-11-21" thirdDate-constraint="0" expand="true"/>
+                <task id="28" name="敵生成" color="#8cb6ce" meeting="false" start="2023-11-29" duration="3" complete="100" thirdDate="2023-11-27" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[とりあえず同じで]]>
+                    </notes>
+                </task>
+                <task id="17" name="クリア条件表記" color="#8cb6ce" meeting="false" start="2023-12-05" duration="2" complete="0" thirdDate="2023-11-16" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[現状は仮]]>
+                    </notes>
+                </task>
+                <task id="27" name="クリア条件処理" color="#8cb6ce" meeting="false" start="2023-12-06" duration="3" complete="0" thirdDate="2023-11-23" thirdDate-constraint="0" expand="true"/>
+            </task>
+            <task id="19" name="ステージ選択" color="#8cb6ce" meeting="false" start="2023-11-28" duration="9" complete="39" thirdDate="2023-11-17" thirdDate-constraint="0" expand="false">
+                <task id="22" name="タイム表記" color="#8cb6ce" meeting="false" start="2023-11-28" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
+                <task id="21" name="コース名表記" color="#8cb6ce" meeting="false" start="2023-11-29" duration="1" complete="100" thirdDate="2023-11-17" thirdDate-constraint="0" expand="true"/>
+                <task id="20" name="画面移動" color="#8cb6ce" meeting="false" start="2023-11-29" duration="7" complete="50" thirdDate="2023-11-17" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[スライドのするやつ]]>
+                    </notes>
+                </task>
+                <task id="23" name="クリア条件" color="#8cb6ce" meeting="false" start="2023-12-06" duration="3" complete="0" thirdDate="2023-11-13" thirdDate-constraint="0" expand="true"/>
+                <task id="24" name="矢印描画" color="#8cb6ce" meeting="false" start="2023-12-07" duration="2" complete="0" thirdDate="2023-11-22" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[クリアしていないところへは薄色
+しているところへは濃ゆい色]]>
+                    </notes>
+                </task>
+            </task>
+            <task id="29" name="ﾀｲﾄﾙ" color="#000000" meeting="false" start="2023-12-08" duration="1" complete="0" thirdDate="2023-12-11" thirdDate-constraint="0" expand="false">
+                <notes>
+                    <![CDATA[なぜか9日にできないから8にしている
+ステージ選択の矢印も同様]]>
+                </notes>
+                <task id="30" name="スタート" color="#8cb6ce" meeting="false" start="2023-12-08" duration="1" complete="0" thirdDate="2023-11-17" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[ボタン押したら選択画面に映るだけ]]>
+                    </notes>
+                </task>
+            </task>
+        </task>
+        <task id="31" name="アルファ" color="#ff3333" meeting="false" start="2023-12-11" duration="23" complete="0" thirdDate="2023-11-20" thirdDate-constraint="0" expand="false">
+            <task id="32" name="敵(雑魚)" color="#8cb6ce" meeting="false" start="2023-12-11" duration="3" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="false">
+                <task id="33" name="ダッシュ" color="#8cb6ce" meeting="false" start="2023-12-11" duration="3" complete="0" thirdDate="2023-11-23" thirdDate-constraint="0" expand="true"/>
+                <task id="34" name="分裂" color="#8cb6ce" meeting="false" start="2023-12-11" duration="3" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[４方向に分裂]]>
+                    </notes>
+                </task>
+                <task id="35" name="複製" color="#8cb6ce" meeting="false" start="2023-12-11" duration="3" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[その場に一定時間小さい敵当たり判定を生成する
+一定時間たつと消えるようにする]]>
+                    </notes>
+                </task>
+            </task>
+            <task id="36" name="敵(ボス)" color="#8cb6ce" meeting="false" start="2023-12-14" duration="5" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="false">
+                <task id="37" name="移動" color="#8cb6ce" meeting="false" start="2023-12-14" duration="1" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="true"/>
+                <task id="38" name="場外処理" color="#8cb6ce" meeting="false" start="2023-12-14" duration="1" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="true"/>
+                <task id="39" name="判定場所更新" color="#8cb6ce" meeting="false" start="2023-12-14" duration="1" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="true"/>
+                <task id="40" name="HP管理" color="#8cb6ce" meeting="false" start="2023-12-15" duration="3" complete="0" thirdDate="2023-11-28" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[体力表記
+減少]]>
+                    </notes>
+                </task>
+                <task id="41" name="死亡処理" color="#8cb6ce" meeting="false" start="2023-12-19" duration="2" complete="0" thirdDate="2023-12-05" thirdDate-constraint="0" expand="true"/>
+            </task>
+            <task id="42" name="タイトル" color="#8cb6ce" meeting="false" start="2023-12-20" duration="4" complete="0" thirdDate="2023-12-05" thirdDate-constraint="0" expand="false">
+                <task id="43" name="BGM" color="#8cb6ce" meeting="false" start="2023-12-20" duration="3" complete="0" thirdDate="2023-12-05" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[仮BGMでもいいから流せるように]]>
+                    </notes>
+                </task>
+                <task id="44" name="SE" color="#8cb6ce" meeting="false" start="2023-12-21" duration="3" complete="0" thirdDate="2023-12-05" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[仮でもいいから流れるように]]>
+                    </notes>
+                </task>
+                <task id="45" name="終了" color="#8cb6ce" meeting="false" start="2023-12-22" duration="2" complete="0" thirdDate="2023-12-05" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[ゲームを終わらせる]]>
+                    </notes>
+                </task>
+            </task>
+            <task id="46" name="ステージ" color="#8cb6ce" meeting="false" start="2023-12-26" duration="10" complete="0" thirdDate="2023-11-30" thirdDate-constraint="0" expand="false">
+                <task id="47" name="通常ステージ作成" color="#8cb6ce" meeting="false" start="2023-12-26" duration="10" complete="0" thirdDate="2023-11-30" thirdDate-constraint="0" expand="true"/>
+                <task id="49" name="チュートリアル" color="#8cb6ce" meeting="false" start="2024-01-02" duration="5" complete="0" thirdDate="2023-12-11" thirdDate-constraint="0" expand="true"/>
+                <task id="48" name="ボスステージ作成" color="#8cb6ce" meeting="false" start="2024-01-05" duration="2" complete="0" thirdDate="2023-12-18" thirdDate-constraint="0" expand="true"/>
+            </task>
+            <task id="50" name="外部&amp;オプション" color="#8cb6ce" meeting="false" start="2023-12-26" duration="12" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
+                <task id="51" name="音量設定" color="#8cb6ce" meeting="false" start="2023-12-26" duration="3" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="true"/>
+                <task id="52" name="キー設定" color="#8cb6ce" meeting="false" start="2023-12-27" duration="2" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="true"/>
+                <task id="53" name="セーブ" color="#8cb6ce" meeting="false" start="2023-12-28" duration="5" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="true"/>
+                <task id="54" name="ロード" color="#8cb6ce" meeting="false" start="2024-01-04" duration="5" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="true"/>
+            </task>
+        </task>
+        <task id="55" name="ベータ" color="#8cb6ce" meeting="false" start="2024-01-11" duration="17" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
+            <task id="56" name="エフェクト" color="#8cb6ce" meeting="false" start="2024-01-11" duration="9" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
+                <task id="57" name="プレイヤー死亡" color="#8cb6ce" meeting="false" start="2024-01-11" duration="3" complete="0" thirdDate="2023-12-15" thirdDate-constraint="0" expand="true"/>
+                <task id="58" name="壁反射" color="#8cb6ce" meeting="false" start="2024-01-16" duration="3" complete="0" thirdDate="2023-12-15" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[敵が壁にぶつかったとき]]>
+                    </notes>
+                </task>
+                <task id="59" name="選択時" color="#8cb6ce" meeting="false" start="2024-01-19" duration="3" complete="0" thirdDate="2023-12-25" thirdDate-constraint="0" expand="true"/>
+            </task>
+            <task id="60" name="調整" color="#8cb6ce" meeting="false" start="2024-01-22" duration="10" complete="0" thirdDate="2024-01-09" thirdDate-constraint="0" expand="false">
+                <task id="61" name="足りないもの" color="#8cb6ce" meeting="false" start="2024-01-22" duration="10" complete="0" thirdDate="2024-01-09" thirdDate-constraint="0" expand="true">
+                    <notes>
+                        <![CDATA[出て来次第細分化
+長めの時間をとって余裕をもっておく]]>
+                    </notes>
+                </task>
+            </task>
+        </task>
+        <task id="62" name="マスタ" color="#333333" meeting="false" start="2024-02-05" duration="5" complete="0" thirdDate="2024-01-24" thirdDate-constraint="0" expand="false">
+            <task id="63" name="バグ取り" color="#8cb6ce" meeting="false" start="2024-02-05" duration="5" complete="0" thirdDate="2024-01-24" thirdDate-constraint="0" expand="true"/>
+        </task>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+    <roles roleset-name="SoftwareDevelopment"/>
+</project>
