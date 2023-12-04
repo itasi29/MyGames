@@ -39,6 +39,7 @@ GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 
 GamePlayingScene::~GamePlayingScene()
 {
+	m_stage->Save("stg.inf");
 }
 
 void GamePlayingScene::Update(Input& input)

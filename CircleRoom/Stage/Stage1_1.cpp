@@ -5,6 +5,7 @@
 #include "StageManager.h"
 #include "Stage1_1.h"
 #include "Stage1_2.h"
+#include "Stage1_3.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyNormal.h"
@@ -14,6 +15,11 @@ namespace
 {
 	// 敵生成間隔フレーム
 	constexpr int kCreateFrame = 60 * 5;
+
+	// 左クリア条件　生存時間
+	constexpr int kLeftExsitTime = 10;
+	// 上クリア条件　生存時間
+	constexpr int kUpExsitTime = 15;
 }
 
 Stage1_1::Stage1_1(std::shared_ptr<StageManager> mgr, const Size& windowSize, float fieldSize) :
@@ -23,14 +29,55 @@ Stage1_1::Stage1_1(std::shared_ptr<StageManager> mgr, const Size& windowSize, fl
 	m_stageName = L"Stage1-1";
 
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
+
+	m_mgr->GetClearInf("1-1", m_isClear);
 }
 
 Stage1_1::~Stage1_1()
 {
+	m_mgr->SaveClearInf("1-1", m_isClear);
+}
+
+void Stage1_1::CheckStageConditions()
+{
+	// 左をまだクリアしていない場合
+	if (!m_isClear[0])
+	{
+		// 条件確認
+		if (m_frame > kLeftExsitTime * 60)
+		{
+			m_isClear[0] = true;
+		}
+	}
+	// 上をまだクリアしていない場合
+	if (!m_isClear[1])
+	{
+		if (m_frame > kUpExsitTime * 60)
+		{
+			m_isClear[1] = true;
+		}
+	}
+}
+
+void Stage1_1::DrawStageConditions(bool isPlaying)
+{
+	if (isPlaying)
+	{
+		DrawFormatString(128, 64, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)", kLeftExsitTime, m_bestTime / 60, kLeftExsitTime);
+		DrawFormatString(128, 96, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)", kUpExsitTime, m_bestTime / 60, kUpExsitTime);
+	}
+	else
+	{
+		DrawFormatString(128, 48, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)", kLeftExsitTime, m_bestTime / 60, kLeftExsitTime);
+		DrawFormatString(128, 80, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)", kUpExsitTime, m_bestTime / 60, kUpExsitTime);
+	}
 }
 
 void Stage1_1::Init()
 {
+	// 経過時間の初期化
+	m_frame = 0;
+
 	// 生成フレームの初期化
 	m_createFrame = 0;
 
@@ -47,10 +94,10 @@ void Stage1_1::Init()
 	vec.x = 0;
 	vec.y = -1;
 	m_enemy.back()->Init(vec);
-	//// 下側
-	//m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
-	//vec.y = 1;
-	//m_enemy.back()->Init(vec);
+	// 下側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.y = 1;
+	m_enemy.back()->Init(vec);
 
 	// 敵を一体追加
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
@@ -85,45 +132,26 @@ void Stage1_1::ChangeStage(Input& input)
 	// プレイヤーが生存している間は変わらないようにする
 	if (m_player->IsExsit()) return;
 
-	if (input.IsPress("left"))
-	{
-		// FIXME:ここで作った奴を後から関数化する
+	// 死亡直後は変わらないようにする
+	if (m_waitFrame < kWaitChangeFrame) return;
 
+	if (m_isClear[0] && input.IsPress("left"))
+	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_2> nextStage;
 		nextStage = std::make_shared<Stage1_2>(m_mgr, m_windowSize, m_fieldSize);
 
-		// FIXME:今からくそコード書くから後で直して /**/があるところまで
+		SlideLeft(nextStage);
 		
-		// 現在の画面を保存するよう
-		int nowScreenHandle;
-		nowScreenHandle = MakeScreen(m_windowSize.w, m_windowSize.h, true);
-		SetDrawScreen(nowScreenHandle);
-		// 現在の画面を描画
-		Draw();
+		return;
+	}
+	if (m_isClear[1] && input.IsPress("up"))
+	{
+		std::shared_ptr<Stage1_3> nextStage;
+		nextStage = std::make_shared<Stage1_3>(m_mgr, m_windowSize, m_fieldSize);
 
-		// 送る用の描画先を作成する
-		int sendScreenHandle;
-		sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h, true);
-		// 描画先を作ったスクリーンにする
-		SetDrawScreen(sendScreenHandle);
-		// 次のステージの選択画面を描画
-		nextStage->Draw();
-		// ずらして保存した現在の画面を描画
-		DrawGraph(m_windowSize.w, 0, nowScreenHandle, true);
-		// 描画先を元の場所に戻す
-		SetDrawScreen(DX_SCREEN_BACK);
+		SlideUp(nextStage);
 
-		// 現在の画面を保存したハンドルは宙づりになるのでここで消す
-		// 送る方は送ったほうで消すため考えない
-		DeleteGraph(nowScreenHandle);
-
-		// 画面を動かす処理を実行する
-		m_mgr->StartMove(StageManager::kDirLeft, sendScreenHandle);
-
-		/**/
-
-		// 次のステージに変更する
-		m_mgr->ChangeStage(nextStage);
+		return;
 	}
 }

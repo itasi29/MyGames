@@ -19,9 +19,14 @@ public:
 	void Draw();
 
 	/// <summary>
+	/// ステージのクリア確認
+	/// </summary>
+	virtual void CheckStageConditions() = 0;
+	/// <summary>
 	/// ステージ条件の描画
 	/// </summary>
-	virtual void DrawStageConditions();
+	/// <param name = "isPlaying">true:プレイ中, false:選択中</param>
+	virtual void DrawStageConditions(bool isPlaying = false) = 0;
 	/// <summary>
 	/// 各ステージの初期化処理
 	/// </summary>
@@ -39,6 +44,9 @@ public:
 	virtual void ChangeStage(Input& input) = 0;
 
 protected:
+	// ステージ変更可能までの待機時間
+	const int kWaitChangeFrame = 30;
+
 	std::shared_ptr<StageManager> m_mgr;
 
 	// Windowサイズ
@@ -56,6 +64,11 @@ protected:
 
 	// 経過時間
 	int m_frame;
+	// ベストタイム
+	int m_bestTime;
+	
+	// 待機時間
+	int m_waitFrame;
 
 protected:
 	using UpdateFunc_t = void (StageBase::*)(Input&);
@@ -84,10 +97,33 @@ protected:
 	/// </summary>
 	void DrawPlaying();
 
+	/// <summary>
+	/// 左に画面をスライドする処理
+	/// </summary>
+	/// <param name="nextStage">次のステージのshared_ptr</param>
+	void SlideLeft(std::shared_ptr<StageBase> nextStage);
+	/// <summary>
+	/// 右に画面をスライドする処理
+	/// </summary>
+	/// <param name="nextStage">次のステージのshared_ptr</param>
+	void SlideRight(std::shared_ptr<StageBase> nextStage);
+	/// <summary>
+	/// 上に画面をスライドする処理
+	/// </summary>
+	/// <param name="nextStage">次のステージのshared_ptr</param>
+	void SlideUp(std::shared_ptr<StageBase> nextStage);
+	/// <summary>
+	/// 下に画面をスライドする処理
+	/// </summary>
+	/// <param name="nextStage">次のステージのshared_ptr</param>
+	void SlideDown(std::shared_ptr<StageBase> nextStage);
+
 private:
 	/// <summary>
 	/// 壁の描画
 	/// </summary>
 	void DrawWall();
+
+	void SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage);
 };
 

@@ -78,29 +78,57 @@ void EnemyBase::Reflection(bool isShift)
 	if (m_pos.x < centerX - m_fieldSize)
 	{
 		m_pos.x = centerX - m_fieldSize;
-		ReflectionCal(kNorVecLeft);
-		ShiftReflection(kShiftSide);
+		if (isShift)
+		{
+			ReflectionCal(kNorVecLeft);
+			ShiftReflection(kShiftSide);
+		}
+		else
+		{
+			m_vec = { m_vec.y, -m_vec.x};
+		}
 	}
 	// âE
 	if (m_pos.x > centerX + m_fieldSize)
 	{
 		m_pos.x = centerX + m_fieldSize;
-		ReflectionCal(kNorVecRight);
-		ShiftReflection(kShiftSide);
+		if (isShift)
+		{
+			ReflectionCal(kNorVecRight);
+			ShiftReflection(kShiftSide);
+		}
+		else
+		{
+			m_vec = { m_vec.y, -m_vec.x };
+		}
 	}
 	// è„
 	if (m_pos.y < centerY - m_fieldSize)
 	{
 		m_pos.y = centerY - m_fieldSize;
-		ReflectionCal(kNorVecUp);
-		ShiftReflection(kShiftVert);
+		if (isShift)
+		{
+			ReflectionCal(kNorVecUp);
+			ShiftReflection(kShiftVert);
+		}
+		else
+		{
+			m_vec = { m_vec.y, -m_vec.x };
+		}
 	}
 	// â∫
 	if (m_pos.y > centerY + m_fieldSize)
 	{
 		m_pos.y = centerY + m_fieldSize;
-		ReflectionCal(kNorVecDown);
-		ShiftReflection(kShiftVert);
+		if (isShift)
+		{
+			ReflectionCal(kNorVecDown);
+			ShiftReflection(kShiftVert);
+		}
+		else
+		{
+			m_vec = { m_vec.y, -m_vec.x };
+		}
 	}
 #endif
 }

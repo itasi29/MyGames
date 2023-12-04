@@ -1,11 +1,10 @@
 #pragma once
 #include "StageBase.h"
-
-class Stage1_2 : public StageBase
+class Stage1_3 : public StageBase
 {
 public:
-	Stage1_2(std::shared_ptr<StageManager> mgr, const Size& windowSize, float fieldSize);
-	~Stage1_2();
+	Stage1_3(std::shared_ptr<StageManager> mgr, const Size& windowSize, float fieldSize);
+	~Stage1_3();
 
 	void CheckStageConditions() override;
 	void DrawStageConditions(bool isPlaying = false) override;
@@ -18,3 +17,4 @@ private:
 	// ìGê∂ê¨éûä‘
 	int m_createFrame;
 };
+

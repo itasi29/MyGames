@@ -24,6 +24,10 @@
     <ClCompile Include="Enemy\EnemyBase.cpp" />
     <ClCompile Include="Enemy\EnemyMoveWall.cpp" />
     <ClCompile Include="Enemy\EnemyNormal.cpp" />
+    <ClCompile Include="FileSystem\File.cpp" />
+    <ClCompile Include="FileSystem\FileManager.cpp" />
+    <ClCompile Include="FileSystem\ImageFile.cpp" />
+    <ClCompile Include="FileSystem\SoundFile.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Scene\GameOverScene.cpp" />
@@ -34,6 +38,7 @@
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Stage\Stage1_1.cpp" />
     <ClCompile Include="Stage\Stage1_2.cpp" />
+    <ClCompile Include="Stage\Stage1_3.cpp" />
     <ClCompile Include="Stage\StageBase.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage\StageManager.cpp" />
@@ -47,6 +52,10 @@
     <ClInclude Include="Enemy\EnemyBase.h" />
     <ClInclude Include="Enemy\EnemyMoveWall.h" />
     <ClInclude Include="Enemy\EnemyNormal.h" />
+    <ClInclude Include="FileSystem\File.h" />
+    <ClInclude Include="FileSystem\FileManager.h" />
+    <ClInclude Include="FileSystem\ImageFile.h" />
+    <ClInclude Include="FileSystem\SoundFile.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Scene\GameOverScene.h" />
     <ClInclude Include="Scene\GamePlayingScene.h" />
@@ -56,6 +65,7 @@
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Stage\Stage1_1.h" />
     <ClInclude Include="Stage\Stage1_2.h" />
+    <ClInclude Include="Stage\Stage1_3.h" />
     <ClInclude Include="Stage\StageBase.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage\StageManager.h" />

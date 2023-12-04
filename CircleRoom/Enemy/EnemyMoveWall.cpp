@@ -7,7 +7,7 @@ namespace
 	// 動くスピード
 	constexpr float kSpeed = 4.0f;
 	// 半径
-	constexpr float kRadius = 16.0f;
+	constexpr float kRadius = 24.0f;
 
 	// 初めの実体化するまでのフレーム
 	constexpr int kApeearFrame = 60;

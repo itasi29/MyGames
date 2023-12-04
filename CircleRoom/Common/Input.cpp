@@ -71,27 +71,6 @@ void Input::Update()
         // コマンドの名前から入力データを作る
         auto& input = m_inputDate[cmd.first];
 
-        //if (cmd.first == "up" && stickY < 0)
-        //{
-        //    input = true;
-        //    continue;
-        //}
-        //if (cmd.first == "down" && stickY > 0)
-        //{
-        //    input = true;
-        //    continue;
-        //}
-        //if (cmd.first == "left" && stickX < 0)
-        //{
-        //    input = true;
-        //    continue;
-        //}
-        //if (cmd.first == "right" && stickX > 0)
-        //{
-        //    input = true;
-        //    continue;
-        //}
-
         for (const auto& hardIO : cmd.second)
         {
             input = false;
