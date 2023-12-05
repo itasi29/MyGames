@@ -11,8 +11,8 @@ struct Size;
 
 struct StageData
 {
-	bool isClear;
-	int data;
+	int bestTime;
+	std::vector<bool> isClears;
 };
 
 /// <summary>
@@ -77,16 +77,23 @@ public:
 	/// クリア情報の部分保存
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>
-	/// <param name="inf">クリア情報の配列</param>
-	void SaveClearInf(const std::string& stgName, const std::vector<StageData>& inf);
+	/// <param name="data">ステージデータ</param>
+	void SaveClearInf(const std::string& stgName, const StageData& data);
 
 	/// <summary>
 	/// クリア情報を持ってくる
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>
-	/// <param name="inf">クリア情報の配列</param>
+	/// <param name="data">ステージデータ</param>
 	/// <returns>true:取得できた / false:取得できなかった</returns>
-	bool GetClearInf(const std::string& stgName, std::vector<StageData>& inf);
+	bool GetClearInf(const std::string& stgName, StageData& data);
+
+	/// <summary>
+	/// ステージ名に対応するベストクリアタイムを持ってくる
+	/// </summary>
+	/// <param name="stgName">ステージ名</param>
+	/// <returns>ベストタイム</returns>
+	int GetBestTime(const std::string& stgName) const;
 
 	/// <summary>
 	/// プレイヤーを殺した敵の種類数を返す
@@ -103,7 +110,7 @@ public:
 
 private:
 	// ステージのクリア情報群
-	std::unordered_map<std::string, std::vector<StageData>> m_stageClearTable;
+	std::unordered_map<std::string, StageData> m_stageSaveData;
 	// 殺された敵の情報群
 	std::vector<std::string> m_killedEnemyNameTable;
 	// プレイヤー殺した種類の数

@@ -21,9 +21,9 @@ Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
 
 	// クリアデータの初期化
-	m_clearDataTable[StageManager::kStageDown] = {false, 0};
+	m_clearData.isClears[StageManager::kStageDown] = false;
 
-	m_mgr.GetClearInf("1^3", m_clearDataTable);
+	m_mgr.GetClearInf("1^3", m_clearData);
 }
 
 Stage1_3::~Stage1_3()
@@ -34,11 +34,11 @@ Stage1_3::~Stage1_3()
 void Stage1_3::CheckStageConditions()
 {
 	// 下をまだクリアしていない場合
-	if (!m_clearDataTable[StageManager::kStageDown].isClear)
+	if (!m_clearData.isClears[StageManager::kStageDown])
 	{
 		if (m_frame > kDownExsitTime * 60)
 		{
-			m_clearDataTable[StageManager::kStageDown].isClear = true;
+			m_clearData.isClears[StageManager::kStageDown] = true;
 		}
 	}
 }
@@ -47,11 +47,11 @@ void Stage1_3::DrawStageConditions(bool isPlaying)
 {
 	if (isPlaying)
 	{
-		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearDataTable[StageManager::kStageDown].data / 60, kDownExsitTime);
+		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearData.bestTime / 60, kDownExsitTime);
 	}
 	else
 	{
-		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearDataTable[StageManager::kStageDown].data / 60, kDownExsitTime);
+		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearData.bestTime / 60, kDownExsitTime);
 	}
 }
 
@@ -95,7 +95,7 @@ void Stage1_3::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_clearDataTable[StageManager::kStageDown].isClear && input.IsPress("down"))
+	if (m_clearData.isClears[StageManager::kStageDown] && input.IsPress("down"))
 	{
 		std::shared_ptr<Stage1_1> nextStage;
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
@@ -106,5 +106,5 @@ void Stage1_3::ChangeStage(Input& input)
 
 void Stage1_3::SaveInf() const
 {
-	m_mgr.SaveClearInf("1-3", m_clearDataTable);
+	m_mgr.SaveClearInf("1-3", m_clearData);
 }

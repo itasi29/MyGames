@@ -18,7 +18,6 @@ StageBase::StageBase(StageManager& mgr, const Size& windowSize, float fieldSize)
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
 
-	m_clearDataTable.resize(StageManager::kStageMax);
 }
 
 StageBase::~StageBase()
@@ -86,12 +85,9 @@ void StageBase::UpdatePlaying(Input& input)
 			CheckStageConditions();
 
 			// ベストタイムの更新
-			for (auto& table : m_clearDataTable)
+			if (m_clearData.bestTime < m_frame)
 			{
-				if (table.data < m_frame)
-				{
-					table.data = m_frame;
-				}
+				m_clearData.bestTime = m_frame;
 			}
 
 			// 殺したことがある敵情報の更新
@@ -320,5 +316,5 @@ void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>
 
 void StageBase::ChangeClearData(int dir, int dirInversion, std::shared_ptr<StageBase>& nextStage) const
 {
-	nextStage->m_clearDataTable[dirInversion] = m_clearDataTable[dir];
+	nextStage->m_clearData.isClears[dirInversion] = m_clearData.isClears[dir];
 }

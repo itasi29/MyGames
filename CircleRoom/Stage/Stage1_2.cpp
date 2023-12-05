@@ -21,9 +21,9 @@ Stage1_2::Stage1_2(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	m_stageName = L"Stage1-2";
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
 
-	m_clearDataTable[StageManager::kStageRight] = {false, 0};
+	m_clearData.isClears[StageManager::kStageRight] = false;
 
-	m_mgr.GetClearInf("1-2", m_clearDataTable);
+	m_mgr.GetClearInf("1-2", m_clearData);
 }
 
 Stage1_2::~Stage1_2()
@@ -34,12 +34,12 @@ Stage1_2::~Stage1_2()
 void Stage1_2::CheckStageConditions()
 {
 	// 右をまだクリアしていない場合
-	if (!m_clearDataTable[StageManager::kStageRight].isClear)
+	if (!m_clearData.isClears[StageManager::kStageRight])
 	{
 		// 条件確認
 		if (m_frame > kRightExsitTime * 60)
 		{
-			m_clearDataTable[StageManager::kStageRight].isClear = true;
+			m_clearData.isClears[StageManager::kStageRight] = true;
 		}
 	}
 }
@@ -48,11 +48,11 @@ void Stage1_2::DrawStageConditions(bool isPlaying)
 {
 	if (isPlaying)
 	{
-		DrawFormatString(128, 64, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)", kRightExsitTime, m_clearDataTable[StageManager::kStageRight].data / 60, kRightExsitTime);
+		DrawFormatString(128, 64, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)", kRightExsitTime, m_clearData.bestTime / 60, kRightExsitTime);
 	}
 	else
 	{
-		DrawFormatString(128, 48, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)", kRightExsitTime, m_clearDataTable[StageManager::kStageRight].data / 60, kRightExsitTime);
+		DrawFormatString(128, 48, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)", kRightExsitTime, m_clearData.bestTime / 60, kRightExsitTime);
 	}
 }
 
@@ -92,7 +92,7 @@ void Stage1_2::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_clearDataTable[StageManager::kStageRight].isClear && input.IsPress("right"))
+	if (m_clearData.isClears[StageManager::kStageRight] && input.IsPress("right"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;
@@ -104,5 +104,5 @@ void Stage1_2::ChangeStage(Input& input)
 
 void Stage1_2::SaveInf() const
 {
-	m_mgr.SaveClearInf("1-2", m_clearDataTable);
+	m_mgr.SaveClearInf("1-2", m_clearData);
 }

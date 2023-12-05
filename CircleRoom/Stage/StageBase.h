@@ -55,9 +55,6 @@ protected:
 
 	StageManager& m_mgr;
 
-	// クリアデータテーブル
-	std::vector<StageData> m_clearDataTable;
-
 	// Windowサイズ
 	const Size& m_windowSize;
 	// フィールドサイズ

@@ -28,6 +28,7 @@ StageManager::StageManager() :
 	m_size(Application::GetInstance().GetWindowSize())
 {
 	// 初期化(読み込みに失敗した場合は初プレイと同じとする)
+	m_stageSaveData.clear();
 	m_killedEnemyNameTable.clear();
 	m_killedEnemyCount = 0;
 
@@ -212,30 +213,34 @@ void StageManager::Save(const std::string& path)
 	}
 	// ヘッダの書き込み
 	StageInfHeader header;
-	header.dataCount = m_stageClearTable.size();
+	header.dataCount = m_stageSaveData.size();
 	fwrite(&header, sizeof(header), 1, fp);
 
 	// クリアデータの書き込み
-	for (const auto& stg : m_stageClearTable)
+	for (const auto& stage : m_stageSaveData)
 	{
-		const auto& stageStr = stg.first; // ステージ名文字列
-		size_t size = stageStr.size();   // ステージ名文字列のサイズを取得
-		fwrite(&size, sizeof(size), 1, fp); // ステージ名文字列のバイト数を書き込む
-		fwrite(stageStr.data(), stageStr.size(), 1, fp);    // 文字列の書き込み
+		// ステージ名文字列のサイズを取得
+		const auto& stageStr = stage.first; 
+		uint8_t size = stageStr.size();
+		// ステージ名文字列のバイト数を書き込む
+		fwrite(&size, sizeof(size), 1, fp); 
+		// 文字列の書き込み
+		fwrite(stageStr.data(), stageStr.size(), 1, fp);    
 
-		size_t tableSize = stg.second.size();	// 配列の数を取得
-		fwrite(&tableSize, sizeof(tableSize), 1, fp);	// 配列数を書き込み
-		for (const auto& table : stg.second)
+		// データ群の参照
+		auto& data = stage.second;
+		// ベストタイムの書き込み
+		fwrite(&data.bestTime, sizeof(data.bestTime), 1, fp);
+		// 配列数を書き込み
+		uint8_t dataSize = data.isClears.size();
+		fwrite(&dataSize, sizeof(dataSize), 1, fp);
+		for (const auto& isClear : data.isClears)
 		{
-			bool inf = table.isClear;
-			int time = table.data;
-
-			fwrite(&inf, sizeof(inf), 1, fp);	// クリア情報を書き込む
-			fwrite(&time, sizeof(time), 1, fp);	// クリアタイムを読み込む
+			// クリア情報を書き込む
+			fwrite(&isClear, sizeof(isClear), 1, fp);
 		}
 	}
 
-#if false
 	// データ本体を書き込んでいく
 	// 殺された敵の種類数の書き込み
 	fwrite(&m_killedEnemyCount, sizeof(m_killedEnemyCount), 1, fp);
@@ -243,13 +248,12 @@ void StageManager::Save(const std::string& path)
 	for (const auto& name : m_killedEnemyNameTable)
 	{
 		// 名前の文字列数を取得
-		size_t nameSize = name.size();
+		uint8_t nameSize = name.size();
 		// 文字列数を書き込み
 		fwrite(&nameSize, sizeof(nameSize), 1, fp);
 		// 文字列の書き込み
 		fwrite(name.data(), name.size(), 1, fp);
 	}
-#endif
 
 	fclose(fp);
 }
@@ -281,32 +285,28 @@ void StageManager::Load(const std::wstring& path)
 		FileRead_read(stgStr.data(), stgStr.size() * sizeof(char), handle);
 
 		// ステージクリアテーブルから情報群のvector<StageData>の参照を取得
-		auto& table = m_stageClearTable[stgStr];
+		auto& data = m_stageSaveData[stgStr];
 
-		// vectorのサイズを入れる変数
-		uint8_t tableSize;
-		// vectroのサイズを取得する
-		FileRead_read(&tableSize, sizeof(tableSize), handle);
+		// ベストタイム読み込み
+		FileRead_read(&data.bestTime, sizeof(data.bestTime), handle);
 
-		// vectorのサイズでリサイズする
-		table.resize(tableSize);
+		// 配列数読み込み
+		uint8_t dataSize;
+		FileRead_read(&dataSize, sizeof(dataSize), handle);
 
-		for (int j = 0; j < tableSize; j++)
+		// vectorのリサイズ
+		data.isClears.resize(dataSize);
+		for (int j = 0; j < dataSize; j++)
 		{
-			// boolの情報を取得する
-			bool inf;
-			// intの情報を取得する
-			int time;
+			// クリア情報の取得
+			bool isClear;
 
-			FileRead_read(&inf, sizeof(inf), handle);
-			FileRead_read(&time, sizeof(time), handle);
+			FileRead_read(&isClear, sizeof(isClear), handle);
 
-			table[j].isClear = inf;
-			table[j].data = time;
+			data.isClears[j] = isClear;
 		}
 	}
 
-#if false
 	// 殺された敵の種類数の取得
 	FileRead_read(&m_killedEnemyCount, sizeof(m_killedEnemyCount), handle);
 	// 名前情報群の数を種類数でリサイズ
@@ -325,43 +325,52 @@ void StageManager::Load(const std::wstring& path)
 		FileRead_read(name.data(), name.size() * sizeof(char), handle);
 		;
 	}
-#endif
 
 	// ファイルは閉じる
 	FileRead_close(handle);
 }
 
-void StageManager::SaveClearInf(const std::string& stgName, const std::vector<StageData>& datas)
+void StageManager::SaveClearInf(const std::string& stgName, const StageData& data)
 {
-	auto& table = m_stageClearTable[stgName];
+	auto& saveData = m_stageSaveData[stgName];
 
-	table.resize(datas.size());
+	saveData.bestTime = data.bestTime;
 
-	for (int i = 0; i < datas.size(); i++)
+	saveData.isClears.resize(data.isClears.size());
+
+	for (int i = 0; i < data.isClears.size(); i++)
 	{
-		table[i] = datas[i];
+		saveData.isClears[i] = data.isClears[i];
 	}
 }
 
-bool StageManager::GetClearInf(const std::string& stgName, std::vector<StageData>& datas)
+bool StageManager::GetClearInf(const std::string& stgName, StageData& data)
 {
-	auto it = m_stageClearTable.find(stgName);
+	auto it = m_stageSaveData.find(stgName);
 	// 要素がない場合はfalseを返す何もせずに終了する
-	if (it == m_stageClearTable.end())
+	if (it == m_stageSaveData.end())
 	{
 		return false;
 	}
 
-	const auto& table = m_stageClearTable[stgName];
+	data = m_stageSaveData[stgName];
 
-	datas.resize(table.size());
-
-	for (int i = 0; i < table.size(); i++)
-	{
-		datas[i] = table[i];
-	}
 	// ここまで来たら保存できた
 	return true;
+}
+
+int StageManager::GetBestTime(const std::string& stgName) const
+{
+	auto it = m_stageSaveData.find(stgName);
+	// ステージを見つけられなかったら0を返す
+	if (it == m_stageSaveData.end())
+	{
+		assert(false);
+		return 0;
+	}
+
+	// 見つかったらベストタイムを返す
+	return m_stageSaveData.at(stgName).bestTime;
 }
 
 int StageManager::GetKilledEnemyCount() const

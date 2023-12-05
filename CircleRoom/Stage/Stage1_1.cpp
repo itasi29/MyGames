@@ -30,11 +30,11 @@ Stage1_1::Stage1_1(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
 
 	// クリアデータの初期化(読み込みに失敗した時でも問題ないように)
-	m_clearDataTable[StageManager::kStageLeft] = {false, 0};
-	m_clearDataTable[StageManager::kMoveDirUp] = {false, 0};
+	m_clearData.isClears[StageManager::kStageLeft] = false;
+	m_clearData.isClears[StageManager::kMoveDirUp] = false;
 
 	// クリアデータの読み込み
-	m_mgr.GetClearInf("1-1", m_clearDataTable);
+	m_mgr.GetClearInf("1-1", m_clearData);
 }
 
 Stage1_1::~Stage1_1()
@@ -45,20 +45,20 @@ Stage1_1::~Stage1_1()
 void Stage1_1::CheckStageConditions()
 {
 	// 左をまだクリアしていない場合
-	if (!m_clearDataTable[StageManager::kMoveDirLeft].isClear)
+	if (!m_clearData.isClears[StageManager::kMoveDirLeft])
 	{
 		// 条件確認
 		if (m_frame > kLeftExsitTime * 60)
 		{
-			m_clearDataTable[StageManager::kStageLeft].isClear = true;
+			m_clearData.isClears[StageManager::kMoveDirLeft] = true;
 		}
 	}
 	// 上をまだクリアしていない場合
-	if (!m_clearDataTable[StageManager::kStageUp].isClear)
+	if (!m_clearData.isClears[StageManager::kMoveDirRight])
 	{
 		if (m_frame > kUpExsitTime * 60)
 		{
-			m_clearDataTable[StageManager::kStageUp].isClear = true;
+			m_clearData.isClears[StageManager::kMoveDirRight] = true;
 		}
 	}
 }
@@ -67,13 +67,13 @@ void Stage1_1::DrawStageConditions(bool isPlaying)
 {
 	if (isPlaying)
 	{
-		DrawFormatString(128, 64, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)", kLeftExsitTime, m_clearDataTable[StageManager::kStageLeft].data / 60, kLeftExsitTime);
-		DrawFormatString(128, 96, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)", kUpExsitTime, m_clearDataTable[StageManager::kStageUp].data / 60, kUpExsitTime);
+		DrawFormatString(128, 64, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)", kLeftExsitTime, m_clearData.bestTime / 60, kLeftExsitTime);
+		DrawFormatString(128, 96, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)", kUpExsitTime, m_clearData.bestTime / 60, kUpExsitTime);
 	}
 	else
 	{
-		DrawFormatString(128, 48, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)", kLeftExsitTime, m_clearDataTable[StageManager::kStageLeft].data / 60, kLeftExsitTime);
-		DrawFormatString(128, 80, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)", kUpExsitTime, m_clearDataTable[StageManager::kStageUp].data / 60, kUpExsitTime);
+		DrawFormatString(128, 48, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)", kLeftExsitTime, m_clearData.bestTime / 60, kLeftExsitTime);
+		DrawFormatString(128, 80, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)", m_clearData.bestTime / 60, kUpExsitTime);
 		DrawFormatString(128, 128, 0xffffff, L"殺されたがある敵の数%d", m_mgr.GetKilledEnemyCount());
 	}
 }
@@ -140,7 +140,7 @@ void Stage1_1::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_clearDataTable[StageManager::kStageLeft].isClear && input.IsPress("left"))
+	if (m_clearData.isClears[StageManager::kMoveDirLeft] && input.IsPress("left"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_2> nextStage;
@@ -150,7 +150,7 @@ void Stage1_1::ChangeStage(Input& input)
 		
 		return;
 	}
-	if (m_clearDataTable[StageManager::kStageUp].isClear && input.IsPress("up"))
+	if (m_clearData.isClears[StageManager::kMoveDirRight] && input.IsPress("up"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
 		nextStage = std::make_shared<Stage1_3>(m_mgr, m_windowSize, m_fieldSize);
@@ -163,5 +163,5 @@ void Stage1_1::ChangeStage(Input& input)
 
 void Stage1_1::SaveInf() const
 {
-	m_mgr.SaveClearInf("1-1", m_clearDataTable);
+	m_mgr.SaveClearInf("1-1", m_clearData);
 }
