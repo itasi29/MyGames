@@ -9,7 +9,7 @@ class ScneManager;
 class PauseScene : public Scene
 {
 public:
-	PauseScene(SceneManager& mgr);
+	PauseScene(SceneManager& scnMgr, StageManager& stgMgr);
 
 	void Update(Input& input);
 	void Draw();

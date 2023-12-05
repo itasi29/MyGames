@@ -11,7 +11,8 @@ namespace
 	constexpr int kMenuMargin = 50;
 }
 
-PauseScene::PauseScene(SceneManager& mgr) : Scene(mgr)
+PauseScene::PauseScene(SceneManager& scnMgr, StageManager& stgMgr) :
+	Scene(scnMgr, stgMgr)
 {
 	m_updateFunc = &PauseScene::AppearUpdate;
 	m_drawFunc = &PauseScene::ExpandDraw;
@@ -46,7 +47,7 @@ void PauseScene::NormalUpdate(Input& input)
 	}
 	else if (input.IsTriggered("keyconf"))
 	{
-		m_manager.PushScene(std::make_shared<KeyConfigScene>(m_manager, input));
+		m_scnMgr.PushScene(std::make_shared<KeyConfigScene>(m_scnMgr, m_stgMgr, input));
 	}
 }
 
@@ -55,7 +56,7 @@ void PauseScene::DisappearUpdate(Input&)
 	m_frame--;
 	if (m_frame == 0)
 	{
-		m_manager.PopScene();
+		m_scnMgr.PopScene();
 	}
 }
 

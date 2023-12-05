@@ -5,8 +5,8 @@
 #include "TitleScene.h"
 #include "GamePlayingScene.h"
 
-TitleScene::TitleScene(SceneManager& manager) :
-	Scene(manager)
+TitleScene::TitleScene(SceneManager& scnMgr, StageManager& stgMgr) :
+	Scene(scnMgr, stgMgr)
 {
 	m_frame = 60;
 	m_updateFunc = &TitleScene::FadeInUpdate;
@@ -54,7 +54,7 @@ void TitleScene::FadeOutUpdate(Input&)
 	m_frame++;
 	if (60 <= m_frame)
 	{
-		m_manager.ChangeScene(std::make_shared<GamePlayingScene>(m_manager));
+		m_scnMgr.ChangeScene(std::make_shared<GamePlayingScene>(m_scnMgr, m_stgMgr));
 	}
 }
 

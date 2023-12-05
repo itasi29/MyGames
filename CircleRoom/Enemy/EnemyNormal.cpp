@@ -19,6 +19,7 @@ namespace
 EnemyNormal::EnemyNormal(const Size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
+	m_name = "Normal";
 }
 
 EnemyNormal::~EnemyNormal()

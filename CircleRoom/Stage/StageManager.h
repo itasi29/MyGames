@@ -9,6 +9,12 @@ class Input;
 class StageBase;
 struct Size;
 
+struct StageData
+{
+	bool isClear;
+	int data;
+};
+
 /// <summary>
 /// ステージの遷移をコントロール
 /// </summary>
@@ -18,10 +24,18 @@ public:
 	// FIXME:名前は変える
 	enum MoveDir
 	{
-		kDirLeft,
-		kDirRight,
-		kDirUp,
-		kDirDown,
+		kMoveDirLeft,
+		kMoveDirRight,
+		kMoveDirUp,
+		kMoveDirDown,
+	};
+	enum StageDir
+	{
+		kStageLeft,
+		kStageRight,
+		kStageUp,
+		kStageDown,
+		kStageMax,
 	};
 
 	StageManager();
@@ -59,8 +73,12 @@ public:
 	/// <param name="path">パス</param>
 	void Load(const std::wstring& path);
 
-
-	void SaveClearInf(const std::string& stgName, const std::vector<bool>& inf);
+	/// <summary>
+	/// クリア情報の部分保存
+	/// </summary>
+	/// <param name="stgName">ステージ名</param>
+	/// <param name="inf">クリア情報の配列</param>
+	void SaveClearInf(const std::string& stgName, const std::vector<StageData>& inf);
 
 	/// <summary>
 	/// クリア情報を持ってくる
@@ -68,11 +86,28 @@ public:
 	/// <param name="stgName">ステージ名</param>
 	/// <param name="inf">クリア情報の配列</param>
 	/// <returns>true:取得できた / false:取得できなかった</returns>
-	bool GetClearInf(const std::string& stgName, std::vector<bool>& inf);
+	bool GetClearInf(const std::string& stgName, std::vector<StageData>& inf);
+
+	/// <summary>
+	/// プレイヤーを殺した敵の種類数を返す
+	/// </summary>
+	/// <returns>種類数</returns>
+	int GetKilledEnemyCount() const;
+
+	/// <summary>
+	/// プレイヤーを殺した敵がすでに殺したことがあるかの確認
+	/// もし、殺したことがなければ名前を保存し、種類数カウントを増やす
+	/// </summary>
+	/// <param name="name">敵の名前</param>
+	void UpdateKilledEnemy(std::string name);
 
 private:
 	// ステージのクリア情報群
-	std::unordered_map<std::string, std::vector<bool>> m_stageClearTable;
+	std::unordered_map<std::string, std::vector<StageData>> m_stageClearTable;
+	// 殺された敵の情報群
+	std::vector<std::string> m_killedEnemyNameTable;
+	// プレイヤー殺した種類の数
+	int m_killedEnemyCount;
 
 	// ステージのポインタ
 	std::shared_ptr<StageBase> m_stage;

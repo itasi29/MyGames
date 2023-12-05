@@ -7,7 +7,7 @@
 class TitleScene : public Scene
 {
 public:
-	TitleScene(SceneManager& manager);
+	TitleScene(SceneManager& scnMgr, StageManager& stgMgr);
 	~TitleScene();
 	virtual void Update(Input& input);
 	virtual void Draw();

@@ -8,7 +8,7 @@
 class KeyConfigScene : public Scene
 {
 public:
-	KeyConfigScene(SceneManager& mgr, Input& input);
+	KeyConfigScene(SceneManager& scnMgr, StageManager& stgMgr, Input& input);
 	~KeyConfigScene();
 
 	void Update(Input& input);

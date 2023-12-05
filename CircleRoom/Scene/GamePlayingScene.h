@@ -2,16 +2,16 @@
 #include "Scene.h"
 #include <memory>
 #include <vector>
+#include "Stage/StageManager.h"
 
 struct Size;
 class Player;
 class EnemyBase;
-class StageManager;
 
 class GamePlayingScene : public Scene
 {
 public:
-    GamePlayingScene(SceneManager& manager);
+    GamePlayingScene(SceneManager& scnMgr, StageManager& stgMgr);
     ~GamePlayingScene();
     virtual void Update(Input& input);
     virtual void Draw();
@@ -39,11 +39,6 @@ private:
     /// </summary>
     /// <param name="input">入力情報</param>
     void UpdateNormal(Input& input);
-    /// <summary>
-    /// ステージを動かすときの更新処理
-    /// </summary>
-    /// <param name="input">入力情報</param>
-    void UpdateChangeStage(Input& input);
 
     /* 描画関数 */
     /// <summary>
@@ -54,15 +49,6 @@ private:
     /// 通常時の描画
     /// </summary>
     void DrawNormal();
-    /// <summary>
-    /// ステージを動かすときの描画
-    /// </summary>
-    void DrawChangeStage();
-
-    /// <summary>
-    /// 壁の描画
-    /// </summary>
-    void DrawWall();
 
 private:
     // Windowサイズ
@@ -70,9 +56,6 @@ private:
     // フィールドサイズ
     // なおここでは2倍をしたらちょうどのサイズになるようにする
     float m_fieldSize;
-
-    // ステージ
-    std::shared_ptr<StageManager> m_stage;
 
     // ステージを動かすときの画面のハンドル
     int m_screenHandle;

@@ -5,8 +5,8 @@
 #include "GameOverScene.h"
 #include "TitleScene.h"
 
-GameOverScene::GameOverScene(SceneManager& mgr) :
-	Scene(mgr)
+GameOverScene::GameOverScene(SceneManager& scnMgr, StageManager& stgMgr) :
+	Scene(scnMgr, stgMgr)
 {
 	m_frame = 60;
 	m_updateFunc = &GameOverScene::FadeInUpdate;
@@ -51,7 +51,7 @@ void GameOverScene::FadeOutUpdate(Input&)
 	m_frame++;
 	if (60 <= m_frame)
 	{
-		m_manager.ChangeScene(std::make_shared<TitleScene>(m_manager));
+		m_scnMgr.ChangeScene(std::make_shared<TitleScene>(m_scnMgr, m_stgMgr));
 	}
 }
 

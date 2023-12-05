@@ -19,6 +19,7 @@ namespace
 EnemyMoveWall::EnemyMoveWall(const Size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
+	m_name = "MoveWall";
 }
 
 EnemyMoveWall::~EnemyMoveWall()

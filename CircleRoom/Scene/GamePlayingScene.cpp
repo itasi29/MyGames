@@ -21,9 +21,9 @@ namespace
 	constexpr int kFadeFrame = 60;
 }
 
-GamePlayingScene::GamePlayingScene(SceneManager& manager) :
-	Scene(manager),
-	m_windowSize(m_manager.GetApp().GetWindowSize()),
+GamePlayingScene::GamePlayingScene(SceneManager& scnMgr, StageManager& stgMgr) :
+	Scene(scnMgr, stgMgr),
+	m_windowSize(m_scnMgr.GetApp().GetWindowSize()),
 	m_fieldSize(m_windowSize.h * kSizeScale),
 	m_screenHandle(0),
 	m_frame(kFadeFrame)
@@ -33,13 +33,11 @@ GamePlayingScene::GamePlayingScene(SceneManager& manager) :
 	m_drawFunc = &GamePlayingScene::DrawFade;
 
 	// ステージの設定
-	m_stage = std::make_shared<StageManager>();
-	m_stage->ChangeStage(std::make_shared<Stage1_1>(m_stage, m_windowSize, m_fieldSize));
+	m_stgMgr.ChangeStage(std::make_shared<Stage1_1>(m_stgMgr, m_windowSize, m_fieldSize));
 }
 
 GamePlayingScene::~GamePlayingScene()
 {
-	m_stage->Save("stg.inf");
 }
 
 void GamePlayingScene::Update(Input& input)
@@ -68,23 +66,18 @@ void GamePlayingScene::UpdateFadeOut(Input& input)
 	m_frame++;
 	if (m_frame >= kFadeFrame)
 	{
-		m_manager.ChangeScene(std::make_shared<GameOverScene>(m_manager));
+		m_scnMgr.ChangeScene(std::make_shared<GameOverScene>(m_scnMgr, m_stgMgr));
 	}
 }
 
 void GamePlayingScene::UpdateNormal(Input& input)
 {
-	m_stage->Update(input);
-}
-
-void GamePlayingScene::UpdateChangeStage(Input& input)
-{
+	m_stgMgr.Update(input);
 }
 
 void GamePlayingScene::DrawFade()
 {
-	DrawWall();
-	m_stage->Draw();
+	m_stgMgr.Draw();
 
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
@@ -94,17 +87,6 @@ void GamePlayingScene::DrawFade()
 
 void GamePlayingScene::DrawNormal()
 {
-	DrawWall();
-
-	m_stage->Draw();
-}
-
-void GamePlayingScene::DrawChangeStage()
-{
-}
-
-void GamePlayingScene::DrawWall()
-{
-	
+	m_stgMgr.Draw();
 }
 

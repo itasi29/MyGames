@@ -11,8 +11,8 @@ namespace
 	constexpr int kMenuMargin = 60;
 }
 
-KeyConfigScene::KeyConfigScene(SceneManager& mgr, Input& input) : 
-	Scene(mgr),
+KeyConfigScene::KeyConfigScene(SceneManager& scnMgr, StageManager& stgMgr, Input& input) :
+	Scene(scnMgr, stgMgr),
 	m_input(input)
 {
 	m_keyCommandTable = input.GetCommandTable();
@@ -128,7 +128,7 @@ void KeyConfigScene::DisappearUpdate(Input&)
 	m_frame--;
 	if (m_frame == 0)
 	{
-		m_manager.PopScene();
+		m_scnMgr.PopScene();
 	}
 }
 

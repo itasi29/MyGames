@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Scene/SceneManager.h"
+#include "Stage/StageManager.h"
 #include "Common/Input.h"
 
 #include <DxLib.h>
@@ -64,10 +65,11 @@ bool Application::Init()
 void Application::Run()
 {
     {
-        SceneManager manager(this->GetInstance());
+        StageManager stageManager;
+        SceneManager sceneManager(this->GetInstance());
         // 一時的にゲームシーンスタートに
     //    manager.ChangeScene(std::make_shared<TitleScene>(manager));
-        manager.ChangeScene(std::make_shared<GamePlayingScene>(manager));
+        sceneManager.ChangeScene(std::make_shared<GamePlayingScene>(sceneManager, stageManager));
 
         Input input;
         while (ProcessMessage() != -1)
@@ -77,8 +79,8 @@ void Application::Run()
 
             ClearDrawScreen();
             input.Update(); // 入力を更新
-            manager.Update(input);
-            manager.Draw();
+            sceneManager.Update(input);
+            sceneManager.Draw();
             ScreenFlip();
 
             // エスケープキーが押されたら終了する

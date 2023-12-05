@@ -4,7 +4,7 @@
 class Stage1_1 : public StageBase
 {
 public:
-	Stage1_1(std::shared_ptr<StageManager> mgr, const Size& windowSize, float fieldSize);
+	Stage1_1(StageManager& mgr, const Size& windowSize, float fieldSize);
 	~Stage1_1();
 
 	void CheckStageConditions() override;
@@ -13,12 +13,10 @@ public:
 	void CreateEnemy() override;
 
 	void ChangeStage(Input& input) override;
+	void SaveInf() const override;
 
 private:
 	// “G¶¬ŠÔ
 	int m_createFrame;
-
-	// ƒNƒŠƒAğŒ
-	std::vector<bool> m_isClear;
 };
 

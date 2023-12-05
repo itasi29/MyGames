@@ -1,32 +1,58 @@
 #include <DxLib.h>
 #include "Input.h"
 
+#include "StageManager.h"
 #include "Stage1_3.h"
 #include "Stage1_1.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyMoveWall.h"
 
-Stage1_3::Stage1_3(std::shared_ptr<StageManager> mgr, const Size& windowSize, float fieldSize) :
+namespace
+{
+	constexpr int kDownExsitTime = 15;
+}
+
+Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	StageBase(mgr, windowSize, fieldSize),
 	m_createFrame(0)
 {
 	m_stageName = L"Stage1-3";
-
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
+
+	// クリアデータの初期化
+	m_clearDataTable[StageManager::kStageDown] = {false, 0};
+
+	m_mgr.GetClearInf("1^3", m_clearDataTable);
 }
 
 Stage1_3::~Stage1_3()
 {
+	SaveInf();
 }
 
 void Stage1_3::CheckStageConditions()
 {
+	// 下をまだクリアしていない場合
+	if (!m_clearDataTable[StageManager::kStageDown].isClear)
+	{
+		if (m_frame > kDownExsitTime * 60)
+		{
+			m_clearDataTable[StageManager::kStageDown].isClear = true;
+		}
+	}
 }
 
 void Stage1_3::DrawStageConditions(bool isPlaying)
 {
-	DrawFormatString(128, 48, 0xffffff, L"条件");
+	if (isPlaying)
+	{
+		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearDataTable[StageManager::kStageDown].data / 60, kDownExsitTime);
+	}
+	else
+	{
+		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearDataTable[StageManager::kStageDown].data / 60, kDownExsitTime);
+	}
 }
 
 void Stage1_3::Init()
@@ -69,11 +95,16 @@ void Stage1_3::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (input.IsPress("down"))
+	if (m_clearDataTable[StageManager::kStageDown].isClear && input.IsPress("down"))
 	{
 		std::shared_ptr<Stage1_1> nextStage;
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
 
 		SlideDown(nextStage);
 	}
+}
+
+void Stage1_3::SaveInf() const
+{
+	m_mgr.SaveClearInf("1-3", m_clearDataTable);
 }

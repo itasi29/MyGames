@@ -9,26 +9,51 @@
 #include "Player/Player.h"
 #include "Enemy/EnemyNormal.h"
 
-Stage1_2::Stage1_2(std::shared_ptr<StageManager> mgr, const Size& windowSize, float fieldSize) :
+namespace
+{
+	constexpr int kRightExsitTime = 10;
+}
+
+Stage1_2::Stage1_2(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	StageBase(mgr, windowSize, fieldSize),
 	m_createFrame(0)
 {
 	m_stageName = L"Stage1-2";
-
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
+
+	m_clearDataTable[StageManager::kStageRight] = {false, 0};
+
+	m_mgr.GetClearInf("1-2", m_clearDataTable);
 }
 
 Stage1_2::~Stage1_2()
 {
+	SaveInf();
 }
 
 void Stage1_2::CheckStageConditions()
 {
+	// 右をまだクリアしていない場合
+	if (!m_clearDataTable[StageManager::kStageRight].isClear)
+	{
+		// 条件確認
+		if (m_frame > kRightExsitTime * 60)
+		{
+			m_clearDataTable[StageManager::kStageRight].isClear = true;
+		}
+	}
 }
 
 void Stage1_2::DrawStageConditions(bool isPlaying)
 {
-	DrawFormatString(128, 48, 0xffffff, L"条件");
+	if (isPlaying)
+	{
+		DrawFormatString(128, 64, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)", kRightExsitTime, m_clearDataTable[StageManager::kStageRight].data / 60, kRightExsitTime);
+	}
+	else
+	{
+		DrawFormatString(128, 48, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)", kRightExsitTime, m_clearDataTable[StageManager::kStageRight].data / 60, kRightExsitTime);
+	}
 }
 
 void Stage1_2::Init()
@@ -67,7 +92,7 @@ void Stage1_2::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (input.IsPress("right"))
+	if (m_clearDataTable[StageManager::kStageRight].isClear && input.IsPress("right"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;
@@ -75,4 +100,9 @@ void Stage1_2::ChangeStage(Input& input)
 
 		SlideRight(nextStage);
 	}
+}
+
+void Stage1_2::SaveInf() const
+{
+	m_mgr.SaveClearInf("1-2", m_clearDataTable);
 }

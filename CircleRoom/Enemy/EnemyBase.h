@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "Vec2.h"
 #include "Rect.h"
 
@@ -23,6 +24,12 @@ public:
 	/// </summary>
 	/// <returns>当たり判定の中心座標</returns>
 	Rect GetRect() const { return m_rect; }
+
+	/// <summary>
+	/// 敵の名前を返す
+	/// </summary>
+	/// <returns>名前</returns>
+	std::string GetName() const { return m_name; }
 
 protected:
 	/// <summary>
@@ -59,6 +66,9 @@ protected:
 	const Size& m_windowSize;
 	// フィールドのサイズ
 	float m_fieldSize;
+
+	// 敵の名前
+	std::string m_name;
 
 	// 中心座標
 	Vec2 m_pos;
