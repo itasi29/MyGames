@@ -9,6 +9,7 @@ class EnemyBase;
 class Input;
 struct Size;
 struct StageData;
+enum class StageDir;
 
 class StageBase
 {
@@ -45,9 +46,10 @@ public:
 	virtual void ChangeStage(Input& input) = 0;
 
 	/// <summary>
-	/// 現在のデータを保存する
+	/// ステージ名を取得する
 	/// </summary>
-	virtual void SaveInf() const = 0;
+	/// <returns>ステージ名</returns>
+	std::string GetStageName() const { return m_stageName; }
 
 protected:
 	// ステージ変更可能までの待機時間
@@ -61,7 +63,7 @@ protected:
 	float m_fieldSize;
 
 	// ステージ名
-	std::wstring m_stageName;
+	std::string m_stageName;
 
 	// プレイヤー
 	std::shared_ptr<Player> m_player;
@@ -139,9 +141,8 @@ private:
 	/// <summary>
 	/// 進む方向先のクリア情報もクリアしているとする
 	/// </summary>
-	/// <param name="dir">進む方向</param>
 	/// <param name="dir">進む方向の反対</param>
 	/// /// <param name="nextStage">次のステージのポインタ</param>
-	void ChangeClearData(int dir, int dirInversion, std::shared_ptr<StageBase>& nextStage) const;
+	void ChangeClearData(int dir, const std::string& name) const;
 };
 

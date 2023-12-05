@@ -17,28 +17,25 @@ Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	StageBase(mgr, windowSize, fieldSize),
 	m_createFrame(0)
 {
-	m_stageName = L"Stage1-3";
+	m_stageName = "Stage1-3";
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
 
-	// クリアデータの初期化
-	m_clearData.isClears[StageManager::kStageDown] = false;
-
-	m_mgr.GetClearInf("1^3", m_clearData);
+	// データの生成
+	m_mgr.CreateData(m_stageName);
 }
 
 Stage1_3::~Stage1_3()
 {
-	SaveInf();
 }
 
 void Stage1_3::CheckStageConditions()
 {
 	// 下をまだクリアしていない場合
-	if (!m_clearData.isClears[StageManager::kStageDown])
+	if (!m_mgr.IsClear(m_stageName, StageManager::kStageDown))
 	{
 		if (m_frame > kDownExsitTime * 60)
 		{
-			m_clearData.isClears[StageManager::kStageDown] = true;
+			m_mgr.SaveClear(m_stageName, StageManager::kStageDown);
 		}
 	}
 }
@@ -47,11 +44,13 @@ void Stage1_3::DrawStageConditions(bool isPlaying)
 {
 	if (isPlaying)
 	{
-		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearData.bestTime / 60, kDownExsitTime);
+		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
+			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
 	}
 	else
 	{
-		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", kDownExsitTime, m_clearData.bestTime / 60, kDownExsitTime);
+		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
+			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
 	}
 }
 
@@ -95,16 +94,11 @@ void Stage1_3::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_clearData.isClears[StageManager::kStageDown] && input.IsPress("down"))
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageDown) && input.IsPress("down"))
 	{
 		std::shared_ptr<Stage1_1> nextStage;
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
 
 		SlideDown(nextStage);
 	}
-}
-
-void Stage1_3::SaveInf() const
-{
-	m_mgr.SaveClearInf("1-3", m_clearData);
 }

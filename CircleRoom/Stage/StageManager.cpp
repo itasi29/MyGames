@@ -37,7 +37,6 @@ StageManager::StageManager() :
 
 StageManager::~StageManager()
 {
-	m_stage->SaveInf();
 	Save("stg.inf");
 }
 
@@ -65,14 +64,14 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 	m_stage = nextStage;
 }
 
-void StageManager::StartMove(MoveDir dir, int handle)
+void StageManager::StartMove(StageDir dir, int handle)
 {
 	m_isStageMove = true;
 	m_frame = 0;
 
 	switch (dir)
 	{
-	case StageManager::kMoveDirLeft:
+	case StageManager::kStageLeft:
 		// 位置を調整する
 		// 除算の割る方を+1しているのは1280まで余りを出せるようにするため
 		m_pos.x = static_cast<float>((static_cast<int>(m_pos.x) + m_size.w) % (m_size.w + 1));
@@ -80,19 +79,19 @@ void StageManager::StartMove(MoveDir dir, int handle)
 		m_vec.x = (0 - m_pos.x) / kStageMoveFrame;
 		ResetVecY();
 		break;
-	case StageManager::kMoveDirRight:
+	case StageManager::kStageRight:
 		// こちらは位置を調整しない
 
 		m_vec.x = static_cast<float>((m_size.w - static_cast<int>(m_pos.x)) % (m_size.w + 1) / kStageMoveFrame);
 		ResetVecY();
 		break;
-	case StageManager::kMoveDirUp:
+	case StageManager::kStageUp:
 		m_pos.y = static_cast<float>((static_cast<int>(m_pos.y) + m_size.h) % (m_size.h + 1));
 		
 		m_vec.y = (0 - m_pos.y) / kStageMoveFrame;
 		ResetVecX();
 		break;
-	case StageManager::kMoveDirDown:
+	case StageManager::kStageDown:
 
 		m_vec.y = static_cast<float>((m_size.h - static_cast<int>(m_pos.y)) % (m_size.h + 1) / kStageMoveFrame);
 		ResetVecX();
@@ -110,13 +109,13 @@ void StageManager::StartMove(MoveDir dir, int handle)
 	m_stageHandle = handle;
 }
 
-int StageManager::GetSlideVolumeX(MoveDir dir) const
+int StageManager::GetSlideVolumeX(StageDir dir) const
 {
-	if (dir == kMoveDirRight && m_vec.x > 0.0f)
+	if (dir == kStageRight && m_vec.x > 0.0f)
 	{
 		return static_cast<int>(m_size.w);
 	}
-	if (dir == kMoveDirLeft && m_vec.x < 0.0f)
+	if (dir == kStageLeft && m_vec.x < 0.0f)
 	{
 		return static_cast<int>(m_size.w);
 	}
@@ -124,13 +123,13 @@ int StageManager::GetSlideVolumeX(MoveDir dir) const
 	return 0;
 }
 
-int StageManager::GetSlideVolumeY(MoveDir dir) const
+int StageManager::GetSlideVolumeY(StageDir dir) const
 {
-	if (dir == kMoveDirDown && m_vec.y > 0.0f)
+	if (dir == kStageDown && m_vec.y > 0.0f)
 	{
 		return static_cast<int>(m_size.h);
 	}
-	if (dir == kMoveDirUp && m_vec.y < 0.0f)
+	if (dir == kStageUp && m_vec.y < 0.0f)
 	{
 		return static_cast<int>(m_size.h);
 	}
@@ -330,33 +329,53 @@ void StageManager::Load(const std::wstring& path)
 	FileRead_close(handle);
 }
 
-void StageManager::SaveClearInf(const std::string& stgName, const StageData& data)
+void StageManager::CreateData(const std::string& stgName)
 {
-	auto& saveData = m_stageSaveData[stgName];
+	auto it = m_stageSaveData.find(stgName);
+	// ステージを見つけたら何もしない
+	if (it != m_stageSaveData.end())
+	{
+		return;
+	}
 
-	saveData.bestTime = data.bestTime;
+	// なければ作成する
+	auto& data = m_stageSaveData[stgName];
 
-	saveData.isClears.resize(data.isClears.size());
-
+	// 情報の初期化
+	data.bestTime = 0;
+	data.isClears.resize(kStageMax);
 	for (int i = 0; i < data.isClears.size(); i++)
 	{
-		saveData.isClears[i] = data.isClears[i];
+		data.isClears[i] = false;
 	}
 }
 
-bool StageManager::GetClearInf(const std::string& stgName, StageData& data)
+bool StageManager::IsClear(const std::string& stgName, StageDir dir) const
 {
 	auto it = m_stageSaveData.find(stgName);
-	// 要素がない場合はfalseを返す何もせずに終了する
+	// ステージを見つけられなかったら0を返す
 	if (it == m_stageSaveData.end())
 	{
+		assert(false);
 		return false;
 	}
 
-	data = m_stageSaveData[stgName];
+	// 見つかったらクリア情報を返す
+	return m_stageSaveData.at(stgName).isClears[dir];
+}
 
-	// ここまで来たら保存できた
-	return true;
+void StageManager::SaveClear(const std::string& stgName, int dir)
+{
+	auto it = m_stageSaveData.find(stgName);
+	// ステージを見つけられなかったら何もしない
+	if (it == m_stageSaveData.end())
+	{
+		assert(false);
+		return;
+	}
+
+	// 指定のものをクリアとする
+	m_stageSaveData[stgName].isClears[dir] = true;
 }
 
 int StageManager::GetBestTime(const std::string& stgName) const
@@ -371,6 +390,28 @@ int StageManager::GetBestTime(const std::string& stgName) const
 
 	// 見つかったらベストタイムを返す
 	return m_stageSaveData.at(stgName).bestTime;
+}
+
+void StageManager::UpdateBestTime(const std::string& stgName, int bestTime)
+{
+	auto it = m_stageSaveData.find(stgName);
+	// ステージを見つけられなかったら何もしない
+	if (it == m_stageSaveData.end())
+	{
+		assert(false);
+		return;
+	}
+
+	auto& time = m_stageSaveData[stgName].bestTime;
+
+	// 現在保存されているタイムが更新タイムより大きければ更新は行わない
+	if (time > bestTime)
+	{
+		return;
+	}
+
+	// タイムの更新
+	time = bestTime;
 }
 
 int StageManager::GetKilledEnemyCount() const

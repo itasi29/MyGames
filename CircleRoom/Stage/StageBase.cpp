@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "Application.h"
 #include "Input.h"
+#include "StringUtility.h"
 
 #include "StageBase.h"
 #include "StageManager.h"
@@ -85,10 +86,7 @@ void StageBase::UpdatePlaying(Input& input)
 			CheckStageConditions();
 
 			// ベストタイムの更新
-			if (m_clearData.bestTime < m_frame)
-			{
-				m_clearData.bestTime = m_frame;
-			}
+			m_mgr.UpdateBestTime(m_stageName, m_frame);
 
 			// 殺したことがある敵情報の更新
 			m_mgr.UpdateKilledEnemy(enemy->GetName());
@@ -112,8 +110,9 @@ void StageBase::DrawSelect()
 		enemy->Draw();
 	}
 
+	auto name = StringUtility::StringToWString(m_stageName);
 	// ステージ名の描画
-	DrawFormatString(128, 16, 0xffffff, L"%s", m_stageName.c_str());
+	DrawFormatString(128, 16, 0xffffff, L"%s", name.c_str());
 	// 時間の描画
 	int minSec = (m_frame * 1000 / 60) % 1000;
 	int sec = (m_frame / 60) % 60;
@@ -149,8 +148,7 @@ void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kMoveDirLeft, 
-		StageManager::kMoveDirRight, nextStage);
+	ChangeClearData(StageManager::kStageRight, nextStage->GetStageName());
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -161,9 +159,9 @@ void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
 	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
 	// 次のステージを下に動いていたらずらす
-	DrawGraph(0, m_mgr.GetSlideVolumeY(StageManager::kMoveDirDown), nextScreenHandle, true);
+	DrawGraph(0, m_mgr.GetSlideVolumeY(StageManager::kStageDown), nextScreenHandle, true);
 	// 現在の画像を上に動いていたらずらす
-	DrawGraph(m_windowSize.w, m_mgr.GetSlideVolumeY(StageManager::kMoveDirUp), nowScreenHandle, true);
+	DrawGraph(m_windowSize.w, m_mgr.GetSlideVolumeY(StageManager::kStageUp), nowScreenHandle, true);
 
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -174,7 +172,7 @@ void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kMoveDirLeft, sendScreenHandle);
+	m_mgr.StartMove(StageManager::kStageLeft, sendScreenHandle);
 
 	// 次のステージに変更する
 	m_mgr.ChangeStage(nextStage);
@@ -184,8 +182,7 @@ void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXEME: クソコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kMoveDirRight,
-		StageManager::kMoveDirLeft, nextStage);
+	ChangeClearData(StageManager::kStageLeft, nextStage->GetStageName());
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -194,8 +191,8 @@ void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
 	int sendScreenHandle;
 	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
-	DrawGraph(0, m_mgr.GetSlideVolumeY(StageManager::kMoveDirUp), nowScreenHandle, true);
-	DrawGraph(m_windowSize.w, m_mgr.GetSlideVolumeY(StageManager::kMoveDirDown), nextScreenHandle, true);
+	DrawGraph(0, m_mgr.GetSlideVolumeY(StageManager::kStageUp), nowScreenHandle, true);
+	DrawGraph(m_windowSize.w, m_mgr.GetSlideVolumeY(StageManager::kStageDown), nextScreenHandle, true);
 
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -205,7 +202,7 @@ void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 	
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kMoveDirRight, sendScreenHandle);
+	m_mgr.StartMove(StageManager::kStageRight, sendScreenHandle);
 
 	// 次のステージに変更する
 	m_mgr.ChangeStage(nextStage);
@@ -215,8 +212,7 @@ void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kMoveDirUp,
-		StageManager::kMoveDirDown, nextStage);
+	ChangeClearData(StageManager::kStageDown, nextStage->GetStageName());
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -227,8 +223,8 @@ void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
 	int sendScreenHandle;
 	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kMoveDirRight), 0, nextScreenHandle, true);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kMoveDirLeft), m_windowSize.h, nowScreenHandle, true);
+	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageRight), 0, nextScreenHandle, true);
+	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageLeft), m_windowSize.h, nowScreenHandle, true);
 	
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -238,7 +234,7 @@ void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kMoveDirUp, sendScreenHandle);
+	m_mgr.StartMove(StageManager::kStageUp, sendScreenHandle);
 
 	// 次のステージに変更する
 	m_mgr.ChangeStage(nextStage);
@@ -248,8 +244,7 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kMoveDirDown,
-		StageManager::kMoveDirUp, nextStage);
+	ChangeClearData(StageManager::kStageUp, nextStage->GetStageName());
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -259,8 +254,8 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 	int sendScreenHandle;
 	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kMoveDirLeft), 0, nowScreenHandle, true);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kMoveDirRight), m_windowSize.h, nextScreenHandle, true);
+	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageLeft), 0, nowScreenHandle, true);
+	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageRight), m_windowSize.h, nextScreenHandle, true);
 
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -270,7 +265,7 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kMoveDirDown, sendScreenHandle);
+	m_mgr.StartMove(StageManager::kStageDown, sendScreenHandle);
 
 	// 次のステージに変更する
 	m_mgr.ChangeStage(nextStage);
@@ -314,7 +309,7 @@ void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>
 	nextStage->Draw();
 }
 
-void StageBase::ChangeClearData(int dir, int dirInversion, std::shared_ptr<StageBase>& nextStage) const
+void StageBase::ChangeClearData(int dir, const std::string& name) const
 {
-	nextStage->m_clearData.isClears[dirInversion] = m_clearData.isClears[dir];
+	m_mgr.SaveClear(name, dir);
 }

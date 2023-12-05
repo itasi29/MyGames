@@ -13,7 +13,6 @@ public:
 	void CreateEnemy() override;
 
 	void ChangeStage(Input& input) override;
-	void SaveInf() const override;
 
 private:
 	// “G¶¬ŠÔ

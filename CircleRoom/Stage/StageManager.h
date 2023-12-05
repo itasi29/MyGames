@@ -22,13 +22,6 @@ class StageManager
 {
 public:
 	// FIXME:名前は変える
-	enum MoveDir
-	{
-		kMoveDirLeft,
-		kMoveDirRight,
-		kMoveDirUp,
-		kMoveDirDown,
-	};
 	enum StageDir
 	{
 		kStageLeft,
@@ -56,10 +49,10 @@ public:
 	/// </summary>
 	/// <param name="pos">動かすベクトル</param>
 	/// <param name="handle">画像ハンドル</param>
-	void StartMove(MoveDir dir, int handle);
+	void StartMove(StageDir dir, int handle);
 
-	int GetSlideVolumeX(MoveDir dir) const;
-	int GetSlideVolumeY(MoveDir dir) const;
+	int GetSlideVolumeX(StageDir dir) const;
+	int GetSlideVolumeY(StageDir dir) const;
 
 	/// <summary>
 	/// クリア情報を保存する
@@ -74,19 +67,26 @@ public:
 	void Load(const std::wstring& path);
 
 	/// <summary>
-	/// クリア情報の部分保存
+	/// そのステージ名のステージデータがない場合作成する
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>
-	/// <param name="data">ステージデータ</param>
-	void SaveClearInf(const std::string& stgName, const StageData& data);
+	void CreateData(const std::string& stgName);
 
 	/// <summary>
-	/// クリア情報を持ってくる
+	/// クリア情報
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>
-	/// <param name="data">ステージデータ</param>
-	/// <returns>true:取得できた / false:取得できなかった</returns>
-	bool GetClearInf(const std::string& stgName, StageData& data);
+	/// <param name="dir">確認するステージの方向</param>
+	/// <returns>true:クリア済み / false:未クリア</returns>
+	bool IsClear(const std::string& stgName, StageDir dir) const;
+
+	/// <summary>
+	/// クリア情報の保存
+	/// クリア済みとする
+	/// </summary>
+	/// <param name="stgName">ステージ名</param>
+	/// <param name="dir">保存するステージ方向</param>
+	void SaveClear(const std::string& stgName, int dir);
 
 	/// <summary>
 	/// ステージ名に対応するベストクリアタイムを持ってくる
@@ -94,6 +94,13 @@ public:
 	/// <param name="stgName">ステージ名</param>
 	/// <returns>ベストタイム</returns>
 	int GetBestTime(const std::string& stgName) const;
+
+	/// <summary>
+	/// ステージ名に対応するベストタイムの更新
+	/// </summary>
+	/// <param name="stgName">ステージ名</param>
+	/// <param name="bestTime">更新タイム</param>
+	void UpdateBestTime(const std::string& stgName, int bestTime);
 
 	/// <summary>
 	/// プレイヤーを殺した敵の種類数を返す
