@@ -12,7 +12,7 @@ struct Size;
 struct StageData
 {
 	int bestTime = 0;
-	std::vector<bool> isClears = {false};
+	std::vector<bool> isClears;
 };
 
 /// <summary>
