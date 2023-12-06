@@ -28,32 +28,6 @@ Stage1_3::~Stage1_3()
 {
 }
 
-void Stage1_3::CheckStageConditions()
-{
-	// 下をまだクリアしていない場合
-	if (!m_mgr.IsClear(m_stageName, StageManager::kStageDown))
-	{
-		if (m_frame > kDownExsitTime * 60)
-		{
-			m_mgr.SaveClear(m_stageName, StageManager::kStageDown);
-		}
-	}
-}
-
-void Stage1_3::DrawStageConditions(bool isPlaying)
-{
-	if (isPlaying)
-	{
-		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
-			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
-	}
-	else
-	{
-		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
-			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
-	}
-}
-
 void Stage1_3::Init()
 {
 	// 経過時間の初期化
@@ -81,11 +55,6 @@ void Stage1_3::Init()
 	m_enemy.back()->Init(vec);
 }
 
-void Stage1_3::CreateEnemy()
-{
-	// とりあえずなにも生成しない
-}
-
 void Stage1_3::ChangeStage(Input& input)
 {
 	// プレイヤーが生存している間は変わらないようにする
@@ -101,4 +70,39 @@ void Stage1_3::ChangeStage(Input& input)
 
 		SlideDown(nextStage);
 	}
+}
+
+void Stage1_3::CheckStageConditions()
+{
+	// 下をまだクリアしていない場合
+	if (!m_mgr.IsClear(m_stageName, StageManager::kStageDown))
+	{
+		if (m_frame > kDownExsitTime * 60)
+		{
+			m_mgr.SaveClear(m_stageName, StageManager::kStageDown);
+		}
+	}
+}
+
+void Stage1_3::DrawStageConditions(bool isPlaying)
+{
+	if (isPlaying)
+	{
+		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
+			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
+	}
+	else
+	{
+		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
+			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
+	}
+}
+
+void Stage1_3::DrawArrow() const
+{
+}
+
+void Stage1_3::CreateEnemy()
+{
+	// とりあえずなにも生成しない
 }

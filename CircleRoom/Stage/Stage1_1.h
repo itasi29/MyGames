@@ -7,12 +7,13 @@ public:
 	Stage1_1(StageManager& mgr, const Size& windowSize, float fieldSize);
 	~Stage1_1();
 
+	void Init() override;
+	void ChangeStage(Input& input) override;
 	void CheckStageConditions() override;
 	void DrawStageConditions(bool isPlaying = false) override;
-	void Init() override;
+	void DrawArrow() const override;
 	void CreateEnemy() override;
 
-	void ChangeStage(Input& input) override;
 
 private:
 	// ìGê∂ê¨éûä‘

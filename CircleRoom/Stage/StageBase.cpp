@@ -100,8 +100,6 @@ void StageBase::UpdatePlaying(Input& input)
 
 void StageBase::DrawSelect()
 {
-	// todo:描画は今のところ同じだが、今後は変えるようにする
-
 	DrawWall();
 
 	m_player->Draw();
@@ -120,6 +118,8 @@ void StageBase::DrawSelect()
 	DrawFormatString(128, 32, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
 	// ステージ条件の描画
 	DrawStageConditions();
+	// 矢印の描画
+	DrawArrow();
 }
 
 void StageBase::DrawPlaying()

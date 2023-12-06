@@ -21,22 +21,9 @@ public:
 	void Draw();
 
 	/// <summary>
-	/// ステージのクリア確認
-	/// </summary>
-	virtual void CheckStageConditions() = 0;
-	/// <summary>
-	/// ステージ条件の描画
-	/// </summary>
-	/// <param name = "isPlaying">true:プレイ中, false:選択中</param>
-	virtual void DrawStageConditions(bool isPlaying = false) = 0;
-	/// <summary>
 	/// 各ステージの初期化処理
 	/// </summary>
 	virtual void Init() = 0;
-	/// <summary>
-	/// 敵の生成
-	/// </summary>
-	virtual void CreateEnemy() = 0;
 
 	/// <summary>
 	/// ステージを変更する
@@ -82,6 +69,25 @@ protected:
 
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
+
+	/// <summary>
+	/// ステージのクリア確認
+	/// </summary>
+	virtual void CheckStageConditions() = 0;
+	/// <summary>
+	/// ステージ条件の描画
+	/// </summary>
+	/// <param name = "isPlaying">true:プレイ中, false:選択中</param>
+	virtual void DrawStageConditions(bool isPlaying = false) = 0;
+	/// <summary>
+	/// ステージの矢印描画
+	/// </summary>
+	virtual void DrawArrow() const = 0;
+
+	/// <summary>
+	/// 敵の生成
+	/// </summary>
+	virtual void CreateEnemy() = 0;
 
 	/// <summary>
 	/// 選択中の更新処理
