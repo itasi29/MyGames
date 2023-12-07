@@ -5,21 +5,19 @@
 namespace
 {
 	// 動くスピード
-	constexpr float kSpeed = 4.0f;
+	constexpr float kSpeed = 12.0f;
 	// 半径
 	constexpr float kRadius = 24.0f;
 
-	// 初めの実体化するまでのフレーム
-	constexpr int kApeearFrame = 60;
-
 	// カラー
-	constexpr int kColor = 0xffffff;
+	constexpr int kColor = 0x888888;
 }
 
 EnemyMoveWall::EnemyMoveWall(const Size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "MoveWall";
+	m_color = kColor;
 }
 
 EnemyMoveWall::~EnemyMoveWall()
@@ -46,6 +44,7 @@ void EnemyMoveWall::StartUpdate()
 {
 	m_frame++;
 	m_pos += m_vec;
+	Reflection(false);
 
 	if (m_frame > kApeearFrame)
 	{
@@ -62,25 +61,4 @@ void EnemyMoveWall::NormalUpdate()
 	Reflection(false);
 
 	m_rect.SetCenter(m_pos, m_radius);
-}
-
-void EnemyMoveWall::StartDraw()
-{
-	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
-	int alpha = static_cast<int>(255 * rate);
-	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), kColor, true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-}
-
-void EnemyMoveWall::NormalDraw()
-{
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), kColor, true);
-
-#ifdef _DEBUG
-	// 当たり判定の描画
-	m_rect.Draw(0xff0000, false);
-#endif
 }

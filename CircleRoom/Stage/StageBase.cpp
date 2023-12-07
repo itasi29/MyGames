@@ -35,6 +35,11 @@ void StageBase::Draw()
 	(this->*m_drawFunc)();
 }
 
+void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
+{
+	m_enemy.push_back(enemy);
+}
+
 void StageBase::UpdateSelect(Input& input)
 {
 	// エネミーだけ動く処理繰り返す
@@ -82,16 +87,22 @@ void StageBase::UpdatePlaying(Input& input)
 
 			// フレームの初期化
 			m_waitFrame = 0;
-			// クリアしているかの確認
-			CheckStageConditions();
 
 			// ベストタイムの更新
 			m_mgr.UpdateBestTime(m_stageName, m_frame);
-
 			// 殺したことがある敵情報の更新
 			m_mgr.UpdateKilledEnemy(enemy->GetName());
+
+			// クリアしているかの確認
+			CheckStageConditions();
 		}
 	}
+
+	// 死亡した敵は消す
+	//m_enemy.remove_if([](const EnemyBase& enemy)
+	//	{
+	//		return enemy.IsExsit();
+	//	});
 
 	// 経過時間の更新
 	m_frame++;

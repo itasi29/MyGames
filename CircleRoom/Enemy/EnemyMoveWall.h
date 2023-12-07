@@ -20,9 +20,5 @@ private:
 	// XVŠÖ”
 	void StartUpdate() override;
 	void NormalUpdate() override;
-
-	// •`‰æŠÖ”
-	void StartDraw() override;
-	void NormalDraw() override;
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <list>
 #include <memory>
 #include <string>
 
@@ -33,6 +34,11 @@ public:
 	virtual void ChangeStage(Input& input) = 0;
 
 	/// <summary>
+	/// 敵本体から生成する
+	/// </summary>
+	void GenericEnemy(const std::shared_ptr<EnemyBase>& enemy);
+
+	/// <summary>
 	/// ステージ名を取得する
 	/// </summary>
 	/// <returns>ステージ名</returns>
@@ -55,7 +61,7 @@ protected:
 	// プレイヤー
 	std::shared_ptr<Player> m_player;
 	// 敵
-	std::vector<std::shared_ptr<EnemyBase>> m_enemy;
+	std::list<std::shared_ptr<EnemyBase>> m_enemy;
 
 	// 経過時間
 	int m_frame;

@@ -31,11 +31,17 @@ public:
 	/// <returns>名前</returns>
 	std::string GetName() const { return m_name; }
 
+	/// <summary>
+	/// 生存判定
+	/// </summary>
+	/// <returns>true: 生きてる / false:死んでる</returns>
+	bool IsExsit() const { return m_isExsit; }
+
 protected:
 	/// <summary>
 	/// 壁に当たったら反射させる
 	/// </summary>
-	virtual void Reflection(bool isShift = true);
+	virtual bool Reflection(bool isShift = true);
 	/// <summary>
 	/// 反射させる計算
 	/// </summary>
@@ -58,10 +64,13 @@ protected:
 	virtual void NormalUpdate() = 0;
 
 	// 描画関数
-	virtual void StartDraw() = 0; 
-	virtual void NormalDraw() = 0;
+	virtual void StartDraw(); 
+	virtual void NormalDraw();
 
 protected:
+	// 実体化するまでの時間
+	static const int kApeearFrame = 60;
+
 	// スクリーンサイズ
 	const Size& m_windowSize;
 	// フィールドのサイズ
@@ -69,6 +78,8 @@ protected:
 
 	// 敵の名前
 	std::string m_name;
+	// 敵のカラー(グラフに変えたら消えるやつ)
+	unsigned int m_color;
 
 	// 中心座標
 	Vec2 m_pos;
@@ -78,6 +89,9 @@ protected:
 	Rect m_rect;
 	// 半径
 	float m_radius;
+
+	// 生存判定
+	bool m_isExsit;
 
 	// フレーム
 	int m_frame;

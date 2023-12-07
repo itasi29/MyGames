@@ -109,7 +109,7 @@ void Stage1_1::CheckStageConditions()
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
 	{
 		// 条件確認
-		if (m_frame > kLeftExsitTime * 60)
+		if (m_mgr.GetBestTime(m_stageName) > kLeftExsitTime * 60)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageLeft);
 		}
@@ -117,7 +117,7 @@ void Stage1_1::CheckStageConditions()
 	// 上をまだクリアしていない場合
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageUp))
 	{
-		if (m_frame > kUpExsitTime * 60)
+		if (m_mgr.GetBestTime(m_stageName) > kUpExsitTime * 60)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageUp);
 		}

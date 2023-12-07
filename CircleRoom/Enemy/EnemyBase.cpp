@@ -19,6 +19,7 @@ EnemyBase::EnemyBase(const Size& windowSize, float fieldSize) :
 	m_windowSize(windowSize),
 	m_fieldSize(fieldSize),
 	m_radius(0),
+	m_isExsit(true),
 	m_frame(0)
 {
 	m_updateFunc = &EnemyBase::StartUpdate;
@@ -39,41 +40,11 @@ void EnemyBase::Draw()
 	(this->*m_drawFunc)();
 }
 
-void EnemyBase::Reflection(bool isShift)
+bool EnemyBase::Reflection(bool isShift)
 {
 	float centerX = m_windowSize.w * 0.5f;
 	float centerY = m_windowSize.h * 0.5f;
 
-#if false
-	// ç∂
-	if (m_pos.x - m_radius < centerX - m_fieldSize)
-	{
-		m_pos.x = centerX - m_fieldSize + m_radius;
-		ReflectionCal(kNorVecLeft);
-		ShiftReflection(kShiftSide);
-	}
-	// âE
-	if (m_pos.x + m_radius > centerX + m_fieldSize)
-	{
-		m_pos.x = centerX + m_fieldSize - m_radius;
-		ReflectionCal(kNorVecRight);
-		ShiftReflection(kShiftSide);
-	}
-	// è„
-	if (m_pos.y - m_radius < centerY - m_fieldSize)
-	{
-		m_pos.y = centerY - m_fieldSize + m_radius;
-		ReflectionCal(kNorVecUp);
-		ShiftReflection(kShiftVert);
-	}
-	// â∫
-	if (m_pos.y + m_radius > centerY + m_fieldSize)
-	{
-		m_pos.y = centerY + m_fieldSize - m_radius;
-		ReflectionCal(kNorVecDown);
-		ShiftReflection(kShiftVert);
-	}
-#else
 	// ç∂
 	if (m_pos.x < centerX - m_fieldSize)
 	{
@@ -87,6 +58,8 @@ void EnemyBase::Reflection(bool isShift)
 		{
 			m_vec = { m_vec.y, -m_vec.x};
 		}
+
+		return true;
 	}
 	// âE
 	if (m_pos.x > centerX + m_fieldSize)
@@ -101,6 +74,8 @@ void EnemyBase::Reflection(bool isShift)
 		{
 			m_vec = { m_vec.y, -m_vec.x };
 		}
+
+		return true;
 	}
 	// è„
 	if (m_pos.y < centerY - m_fieldSize)
@@ -115,6 +90,8 @@ void EnemyBase::Reflection(bool isShift)
 		{
 			m_vec = { m_vec.y, -m_vec.x };
 		}
+
+		return true;
 	}
 	// â∫
 	if (m_pos.y > centerY + m_fieldSize)
@@ -129,8 +106,11 @@ void EnemyBase::Reflection(bool isShift)
 		{
 			m_vec = { m_vec.y, -m_vec.x };
 		}
+
+		return true;
 	}
-#endif
+
+	return false;
 }
 
 void EnemyBase::ReflectionCal(Vec2 norVec)
@@ -171,4 +151,25 @@ void EnemyBase::ChangeNormalFunc()
 {
 	m_updateFunc = &EnemyBase::NormalUpdate;
 	m_drawFunc = &EnemyBase::NormalDraw;
+}
+
+void EnemyBase::StartDraw()
+{
+	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
+	int alpha = static_cast<int>(255 * rate);
+	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);
+	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
+		static_cast<int>(m_radius), m_color, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+void EnemyBase::NormalDraw()
+{
+	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
+		static_cast<int>(m_radius), m_color, true);
+
+#ifdef _DEBUG
+	// ìñÇΩÇËîªíËÇÃï`âÊ
+	m_rect.Draw(0xff0000, false);
+#endif
 }

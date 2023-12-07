@@ -1,15 +1,16 @@
 #pragma once
-
 #include "EnemyBase.h"
 
+class StageBase;
+
 /// <summary>
-/// ’Êí‚Ì“G
+/// EnemyChild‚ğ¶¬‚µ‚Ä‚¢‚­“G
 /// </summary>
-class EnemyNormal : public EnemyBase
+class EnemyCreate : public EnemyBase
 {
 public:
-	EnemyNormal(const Size& windowSize, float fieldSize);
-	virtual ~EnemyNormal();
+	EnemyCreate(const Size& windowSize, float fieldSize, StageBase* stage);
+	virtual ~EnemyCreate();
 
 	/// <summary>
 	/// ‰Šú‰»ˆ—
@@ -21,5 +22,11 @@ private:
 	// XVŠÖ”
 	void StartUpdate() override;
 	void NormalUpdate() override;
+
+private:
+	StageBase* m_stage;
+
+	// Šp“x
+	float m_radian;
 };
 

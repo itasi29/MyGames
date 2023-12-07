@@ -1,16 +1,20 @@
 #include <DxLib.h>
+#include "Application.h"
 #include "Input.h"
 
 #include "StageManager.h"
 #include "Stage1_3.h"
 #include "Stage1_1.h"
+#include "Stage1_4.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyMoveWall.h"
+#include "Enemy/EnemyCreate.h"
 
 namespace
 {
 	constexpr int kDownExsitTime = 15;
+	constexpr int kLeftExsitTime = 15;
 }
 
 Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
@@ -53,6 +57,13 @@ void Stage1_3::Init()
 	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
 	vec.y = 1;
 	m_enemy.back()->Init(vec);
+
+	// スタート位置の設定
+	float centerX = m_windowSize.w * 0.5f;
+	float centerY = m_windowSize.h * 0.5f;
+	vec = { centerX, centerY };
+	m_enemy.push_back(std::make_shared<EnemyCreate>(m_windowSize, m_fieldSize, this));
+	m_enemy.back()->Init(vec);
 }
 
 void Stage1_3::ChangeStage(Input& input)
@@ -69,6 +80,16 @@ void Stage1_3::ChangeStage(Input& input)
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
 
 		SlideDown(nextStage);
+		return;
+	}
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageLeft) && input.IsPress("left"))
+	{
+		std::shared_ptr<Stage1_4> nextStage;
+		nextStage = std::make_shared<Stage1_4>(m_mgr, m_windowSize, m_fieldSize);
+
+		SlideLeft(nextStage);
+
+		return;
 	}
 }
 
@@ -77,9 +98,17 @@ void Stage1_3::CheckStageConditions()
 	// 下をまだクリアしていない場合
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageDown))
 	{
-		if (m_frame > kDownExsitTime * 60)
+		if (m_mgr.GetBestTime(m_stageName) > kDownExsitTime * 60)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageDown);
+		}
+	}
+	// 左をまだクリアしていない場合
+	if (!m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
+	{
+		if (m_mgr.GetBestTime(m_stageName) > kLeftExsitTime * 60)
+		{
+			m_mgr.SaveClear(m_stageName, StageManager::kStageLeft);
 		}
 	}
 }

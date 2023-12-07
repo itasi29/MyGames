@@ -10,6 +10,8 @@
 #include "Enemy/EnemyMoveWall.h"
 #include "Enemy/EnemyLarge.h"
 
+#include "Enemy/EnemyDash.h"
+
 namespace
 {
 	constexpr int kRightExsitTime = 10;
@@ -44,7 +46,7 @@ void Stage1_2::Init()
 	// 敵の配列を初期化
 	m_enemy.clear();
 	// 敵を一体追加
-	m_enemy.push_back(std::make_shared<EnemyLarge>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyDash>(m_windowSize, m_fieldSize, m_player));
 
 	// スタート位置の設定
 	float centerX = m_windowSize.w * 0.5f;
@@ -78,7 +80,7 @@ void Stage1_2::CheckStageConditions()
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageRight))
 	{
 		// 条件確認
-		if (m_frame > kRightExsitTime * 60)
+		if (m_mgr.GetBestTime(m_stageName) > kRightExsitTime * 60)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageRight);
 		}

@@ -5,12 +5,9 @@
 namespace
 {
 	// 動くスピード
-	constexpr float kSpeed = 4.0f;
+	constexpr float kSpeed = 5.0f;
 	// 半径
-	constexpr float kRadius = 20.0f;
-
-	// 初めの実体化するまでのフレーム
-	constexpr int kApeearFrame = 60;
+	constexpr float kRadius = 24.0f;
 
 	// カラー
 	constexpr int kColor = 0xffffff;
@@ -20,6 +17,7 @@ EnemyNormal::EnemyNormal(const Size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Normal";
+	m_color = kColor;
 }
 
 EnemyNormal::~EnemyNormal()
@@ -74,25 +72,4 @@ void EnemyNormal::NormalUpdate()
 	Reflection();
 
 	m_rect.SetCenter(m_pos, m_radius);
-}
-
-void EnemyNormal::StartDraw()
-{
-	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
-	int alpha = static_cast<int>(255 * rate);
-	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), kColor, true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-}
-
-void EnemyNormal::NormalDraw()
-{
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), kColor, true);
-
-#ifdef _DEBUG
-	// 当たり判定の描画
-	m_rect.Draw(0xff0000, false);
-#endif
 }

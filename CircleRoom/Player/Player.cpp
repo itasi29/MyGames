@@ -15,8 +15,8 @@ namespace
 	// プレイヤーの中心から判定をどのくらい動かすか
 	constexpr float kColShift = kSize * 0.32f;
 
-	// ダッシュ時のスピード倍率
-	constexpr float kDashSpeed = 4.0f;
+	// ダッシュ時のスピード
+	constexpr float kDashSpeed = 12.0f;
 	// ダッシュ可能時間
 	constexpr int kDashFrame = 25;
 	// ダッシュ待機時間
@@ -66,6 +66,7 @@ void Player::Init()
 void Player::Update(Input& input)
 {
 	Move(input);
+	Dash(input);
 	InRange();
 
 	// 当たり判定の更新
@@ -94,8 +95,11 @@ void Player::Draw()
 	}
 
 #ifdef _DEBUG
-	// 当たり判定の描画
-	m_rect.Draw(0xff0000, false);
+	// 走っていない場合当たり判定の描画
+	if (!m_isDash)
+	{
+		m_rect.Draw(0xff0000, false);
+	}
 #endif
 }
 
@@ -141,8 +145,6 @@ void Player::Move(Input& input)
 
 	m_vec *= kSpeed;
 
-	Dash(input);
-
 	// 座標に移動ベクトルを足す
 	m_pos += m_vec;
 }
@@ -168,8 +170,11 @@ void Player::Dash(Input& input)
 	// 現在ダッシュ中でないなら処理終了
 	if (!m_isDash) return;
 	
+	// その前に現在の移動ベクトル分マイナスする(移動中と移動してない時で変わらないように)
+	m_pos -= m_vec;
 	// 移動ベクトルに現在向いている方向の単位ベクトル*スピードしたものを足す
-	m_vec += m_nowFront * kDashSpeed;
+	m_pos += m_nowFront * kDashSpeed;
+
 	// 使用時間を減らす
 	m_dashFrame--;
 	// ダッシュを一定時間押し続けるか離したら終了

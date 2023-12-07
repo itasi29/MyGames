@@ -1,15 +1,15 @@
 #pragma once
-
 #include "EnemyBase.h"
 
 /// <summary>
-/// ’Êí‚Ì“G
+/// ©g‚Ì‘«Œ³‚É‘Ò‹@‚³‚¹‚é“G
+/// “®‚©‚¸ŠÔŒo‰ß‚ÅÁ‚¦‚és
 /// </summary>
-class EnemyNormal : public EnemyBase
+class EnemyChild : public EnemyBase
 {
 public:
-	EnemyNormal(const Size& windowSize, float fieldSize);
-	virtual ~EnemyNormal();
+	EnemyChild(const Size& windowSize, float fieldSize);
+	virtual ~EnemyChild();
 
 	/// <summary>
 	/// ‰Šú‰»ˆ—
@@ -22,4 +22,3 @@ private:
 	void StartUpdate() override;
 	void NormalUpdate() override;
 };
-
