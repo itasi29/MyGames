@@ -1,13 +1,13 @@
 #include <DxLib.h>
-#include "Application.h"
-#include "EnemyNormal.h"
+
+#include "EnemyLarge.h"
 
 namespace
 {
 	// 動くスピード
 	constexpr float kSpeed = 4.0f;
 	// 半径
-	constexpr float kRadius = 20.0f;
+	constexpr float kRadius = 40.0f;
 
 	// 初めの実体化するまでのフレーム
 	constexpr int kApeearFrame = 60;
@@ -16,17 +16,17 @@ namespace
 	constexpr int kColor = 0xffffff;
 }
 
-EnemyNormal::EnemyNormal(const Size& windowSize, float fieldSize) :
+EnemyLarge::EnemyLarge(const Size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
-	m_name = "Normal";
+	m_name = "Large";
 }
 
-EnemyNormal::~EnemyNormal()
+EnemyLarge::~EnemyLarge()
 {
 }
 
-void EnemyNormal::Init(Vec2& pos)
+void EnemyLarge::Init(Vec2& pos)
 {
 	// 引数で渡された位置を初期位置に
 	m_pos = pos;
@@ -55,7 +55,7 @@ void EnemyNormal::Init(Vec2& pos)
 	m_vec *= kSpeed;
 }
 
-void EnemyNormal::StartUpdate()
+void EnemyLarge::StartUpdate()
 {
 	m_frame++;
 
@@ -68,7 +68,7 @@ void EnemyNormal::StartUpdate()
 	}
 }
 
-void EnemyNormal::NormalUpdate()
+void EnemyLarge::NormalUpdate()
 {
 	m_pos += m_vec;
 	Reflection();
@@ -76,7 +76,7 @@ void EnemyNormal::NormalUpdate()
 	m_rect.SetCenter(m_pos, m_radius);
 }
 
-void EnemyNormal::StartDraw()
+void EnemyLarge::StartDraw()
 {
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
 	int alpha = static_cast<int>(255 * rate);
@@ -86,7 +86,7 @@ void EnemyNormal::StartDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void EnemyNormal::NormalDraw()
+void EnemyLarge::NormalDraw()
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), kColor, true);

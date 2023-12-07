@@ -1,9 +1,20 @@
 #include <DxLib.h>
 #include <cassert>
+#include "Application.h"
 #include "Common/Input.h"
 #include "SceneManager.h"
 #include "TitleScene.h"
 #include "GamePlayingScene.h"
+
+namespace
+{
+	// メニューラインの数
+	constexpr int kMenuLineNum = 3;
+	// ライン間隔
+	constexpr float kMenuLineInterval = 64;
+	// ラインの長さ
+	constexpr int kMenuLength = 256;
+}
 
 TitleScene::TitleScene(SceneManager& scnMgr, StageManager& stgMgr) :
 	Scene(scnMgr, stgMgr)
@@ -41,11 +52,36 @@ void TitleScene::FadeInUpdate(Input&)
 
 void TitleScene::NormalUpdate(Input& input)
 {
+	if (input.IsTriggered("up"))
+	{
+		// 現在のラインの位置をメニューのラインの数で繰り返す
+		m_currentLinePos = (kMenuLineNum + m_currentLinePos - 1) % kMenuLineNum;
+	}
+	if (input.IsTriggered("down"))
+	{
+		m_currentLinePos = (m_currentLinePos + 1) % kMenuLineNum;
+	}
+
 	if (input.IsTriggered("OK"))
 	{
-		m_updateFunc = &TitleScene::FadeOutUpdate;
-		m_drawFunc = &TitleScene::FadeDraw;
-		m_frame = 0;
+		// 0番目のときはスタート処理
+		if (m_currentLinePos == 0)
+		{
+			m_updateFunc = &TitleScene::FadeOutUpdate;
+			m_drawFunc = &TitleScene::FadeDraw;
+			m_frame = 0;
+			return;
+		}
+		// 1番目のときはオプション処理
+		if (m_currentLinePos == 1)
+		{
+			// TODO:オプション画面を開く処理
+		}
+		// 2番目のときは終了処理
+		if (m_currentLinePos == 2)
+		{
+			// TODO:終了を伝える処理
+		}
 	}
 }
 
@@ -60,17 +96,42 @@ void TitleScene::FadeOutUpdate(Input&)
 
 void TitleScene::FadeDraw()
 {
-	// 通常の描画
-	DrawString(10, 100, L"TitleScene", 0xffffff);
+	// 通常の方の描画
+	NormalDraw();
 
-	// フェード暗幕
+	const auto& size = Application::GetInstance().GetWindowSize();
+	// その後にフェード暗幕を描画
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
-	DrawBox(0, 0, 640, 480, 0x000000, true);
+	DrawBox(0, 0, size.w, size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void TitleScene::NormalDraw()
 {
-	DrawString(10, 100, L"TitleScene", 0xffffff);
+	// FIXME:マジックナンバーは後で直す
+	// FIXME:書く順番考える
+
+	const auto& size = Application::GetInstance().GetWindowSize();
+	auto defX = size.w / 2;
+		
+	// タイトル名の描画
+	std::wstring title = L"CircleRoom";
+	float strLen = static_cast<float>(title.size());
+	DrawExtendString(defX - (strLen / 2) * 16, 100,
+		2, 2, 
+		title.data(), 0xffffff);
+
+	int y = 200 + m_currentLinePos * kMenuLineInterval;
+	// メニューラインの描画
+	DrawLine(defX, y,
+		defX + kMenuLength, y, 
+		0xff0808);
+
+	// スタート
+	DrawString(defX, 200-16, L"START", 0xffffff);
+	// オプション
+	DrawString(defX, 264-16, L"OPTION", 0xffffff);
+	// 終了
+	DrawString(defX, 328-16, L"END", 0xffffff);
 }

@@ -6,8 +6,6 @@
 #include <DxLib.h>
 #include <cassert>
 
-//現状は初めからゲームシーンにいってほしいから一時的にゲームシーンに飛ぶようにする
-#include "Scene/GamePlayingScene.h"
 #include "Scene/TitleScene.h"
 
 
@@ -49,6 +47,7 @@ bool Application::Init()
     {
         SetUseDirect3DVersion(DX_DIRECT3D_9EX);
         SetEnableXAudioFlag(TRUE);
+        ChangeFont(L"ＭＳ Ｐゴシック");
     }
 
     SetGraphMode(m_windowSize.w, m_windowSize.h, 16);
@@ -67,9 +66,7 @@ void Application::Run()
     {
         StageManager stageManager;
         SceneManager sceneManager(this->GetInstance());
-        // 一時的にゲームシーンスタートに
-    //    manager.ChangeScene(std::make_shared<TitleScene>(manager));
-        sceneManager.ChangeScene(std::make_shared<GamePlayingScene>(sceneManager, stageManager));
+        sceneManager.ChangeScene(std::make_shared<TitleScene>(sceneManager, stageManager));
 
         Input input;
         while (ProcessMessage() != -1)

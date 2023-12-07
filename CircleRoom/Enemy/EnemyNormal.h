@@ -2,6 +2,9 @@
 
 #include "EnemyBase.h"
 
+/// <summary>
+/// ’Êí‚Ì“G
+/// </summary>
 class EnemyNormal : public EnemyBase
 {
 public:

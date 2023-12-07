@@ -3,11 +3,12 @@
 #include "Input.h"
 
 #include "StageManager.h"
-#include "Stage1_2.h"
 #include "Stage1_1.h"
+#include "Stage1_2.h"
 
 #include "Player/Player.h"
-#include "Enemy/EnemyNormal.h"
+#include "Enemy/EnemyMoveWall.h"
+#include "Enemy/EnemyLarge.h"
 
 namespace
 {
@@ -43,7 +44,7 @@ void Stage1_2::Init()
 	// 敵の配列を初期化
 	m_enemy.clear();
 	// 敵を一体追加
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyLarge>(m_windowSize, m_fieldSize));
 
 	// スタート位置の設定
 	float centerX = m_windowSize.w * 0.5f;

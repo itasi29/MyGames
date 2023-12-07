@@ -2,19 +2,19 @@
 #include "EnemyBase.h"
 
 /// <summary>
-/// 壁に沿って動く敵
+/// 通常より大きいサイズの敵
 /// </summary>
-class EnemyMoveWall : public EnemyBase
+class EnemyLarge : public EnemyBase
 {
 public:
-	EnemyMoveWall(const Size& windowSize, float fieldSize);
-	virtual ~EnemyMoveWall();
+	EnemyLarge(const Size& windowSize, float fieldSize);
+	virtual ~EnemyLarge();
 
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
-	/// <param name="vec">撃つ方向 (上or下)</param>
-	void Init(Vec2& vec) override;
+	/// <param name="pos">初期位置</param>
+	void Init(Vec2& pos) override;
 
 private:
 	// 更新関数

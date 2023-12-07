@@ -79,9 +79,10 @@ void GamePlayingScene::DrawFade()
 {
 	m_stgMgr.Draw();
 
+	const auto& size = Application::GetInstance().GetWindowSize();
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
-	DrawBox(0, 0, 640, 480, 0x000000, true);
+	DrawBox(0, 0, size.w, size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 

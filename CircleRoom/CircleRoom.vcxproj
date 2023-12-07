@@ -22,6 +22,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Common\Input.cpp" />
     <ClCompile Include="Enemy\EnemyBase.cpp" />
+    <ClCompile Include="Enemy\EnemyLarge.cpp" />
     <ClCompile Include="Enemy\EnemyMoveWall.cpp" />
     <ClCompile Include="Enemy\EnemyNormal.cpp" />
     <ClCompile Include="FileSystem\File.cpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Common\Input.h" />
     <ClInclude Include="Enemy\EnemyBase.h" />
+    <ClInclude Include="Enemy\EnemyLarge.h" />
     <ClInclude Include="Enemy\EnemyMoveWall.h" />
     <ClInclude Include="Enemy\EnemyNormal.h" />
     <ClInclude Include="FileSystem\File.h" />

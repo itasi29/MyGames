@@ -58,7 +58,7 @@ protected:
 	virtual void NormalUpdate() = 0;
 
 	// ï`âÊä÷êî
-	virtual void StartDraw() = 0;
+	virtual void StartDraw() = 0; 
 	virtual void NormalDraw() = 0;
 
 protected:
