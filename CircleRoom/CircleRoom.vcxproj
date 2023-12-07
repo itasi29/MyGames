@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Common\Input.cpp" />
+    <ClCompile Include="Enemy\EnemySplit.cpp" />
     <ClCompile Include="Enemy\EnemyBase.cpp" />
     <ClCompile Include="Enemy\EnemyChild.cpp" />
     <ClCompile Include="Enemy\EnemyCreate.cpp" />
     <ClCompile Include="Enemy\EnemyDash.cpp" />
+    <ClCompile Include="Enemy\EnemyDivision.cpp" />
     <ClCompile Include="Enemy\EnemyLarge.cpp" />
     <ClCompile Include="Enemy\EnemyMoveWall.cpp" />
     <ClCompile Include="Enemy\EnemyNormal.cpp" />
@@ -54,10 +56,12 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Common\Input.h" />
+    <ClInclude Include="Enemy\EnemySplit.h" />
     <ClInclude Include="Enemy\EnemyBase.h" />
     <ClInclude Include="Enemy\EnemyChild.h" />
     <ClInclude Include="Enemy\EnemyCreate.h" />
     <ClInclude Include="Enemy\EnemyDash.h" />
+    <ClInclude Include="Enemy\EnemyDivision.h" />
     <ClInclude Include="Enemy\EnemyLarge.h" />
     <ClInclude Include="Enemy\EnemyMoveWall.h" />
     <ClInclude Include="Enemy\EnemyNormal.h" />

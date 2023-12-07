@@ -48,6 +48,12 @@ void StageBase::UpdateSelect(Input& input)
 		enemy->Update();
 	}
 
+	m_enemy.remove_if(
+		[](const std::shared_ptr<EnemyBase>& enemy)
+		{
+			return !enemy->IsExsit();
+		});
+
 	if (input.IsPress("OK"))
 	{
 		// メンバ関数ポインタの更新
@@ -99,10 +105,11 @@ void StageBase::UpdatePlaying(Input& input)
 	}
 
 	// 死亡した敵は消す
-	//m_enemy.remove_if([](const EnemyBase& enemy)
-	//	{
-	//		return enemy.IsExsit();
-	//	});
+	m_enemy.remove_if(
+		[](const std::shared_ptr<EnemyBase>& enemy)
+		{
+			return !enemy->IsExsit();
+		});
 
 	// 経過時間の更新
 	m_frame++;

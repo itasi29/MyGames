@@ -7,7 +7,7 @@
 #include "Stage1_3.h"
 
 #include "Player/Player.h"
-#include "Enemy/EnemyNormal.h"
+#include "Enemy/EnemyDivision.h"
 
 namespace
 {
@@ -49,7 +49,7 @@ void Stage1_4::Init()
 	float centerX = m_windowSize.w * 0.5f;
 	float centerY = m_windowSize.h * 0.5f;
 	vec = { centerX, centerY };
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyDivision>(m_windowSize, m_fieldSize, this));
 	m_enemy.back()->Init(vec);
 }
 

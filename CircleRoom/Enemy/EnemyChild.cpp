@@ -9,7 +9,7 @@ namespace
 	constexpr int kColor = 0xf0f008;
 
 	// Á‚¦‚é‚Ü‚Å‚ÌƒtƒŒ[ƒ€
-	constexpr int kDeleteFrame = 60 * 3;
+	constexpr int kDeleteFrame = 60 * 2;
 }
 
 EnemyChild::EnemyChild(const Size& windowSize, float fieldSize) :

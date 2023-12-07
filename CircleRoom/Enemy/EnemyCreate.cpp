@@ -26,7 +26,7 @@ namespace
 	constexpr float kSwingHeight = 2.0f;
 
 	// ê∂ê¨ä‘äu
-	constexpr int kCreateFrame = 30;
+	constexpr int kCreateFrame = 15;
 }
 
 EnemyCreate::EnemyCreate(const Size& windowSize, float fieldSize, StageBase* stage) :

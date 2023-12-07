@@ -49,6 +49,12 @@
     <Filter Include="ヘッダー ファイル\Stage">
       <UniqueIdentifier>{8b3fcc70-0116-4310-a403-10f940e54d48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\FileSystem">
+      <UniqueIdentifier>{3bbd04c9-88f1-46af-9681-b3bc7c0a033f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\FileSystem">
+      <UniqueIdentifier>{00a524a8-e3dc-4966-bdea-44dfa2fa2c0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -96,9 +102,6 @@
     <ClCompile Include="Enemy\EnemyBase.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\EnemyNormal.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Stage\StageBase.cpp">
       <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
@@ -111,37 +114,46 @@
     <ClCompile Include="Stage\StageManager.cpp">
       <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\EnemyMoveWall.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Stage\Stage1_3.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="FileSystem\File.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="FileSystem\FileManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="FileSystem\ImageFile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="FileSystem\SoundFile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy\EnemyLarge.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy\EnemyDash.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Enemy\EnemyChild.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Enemy\EnemyCreate.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy\EnemyDash.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy\EnemyLarge.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy\EnemyMoveWall.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy\EnemyNormal.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Stage\Stage1_4.cpp">
+      <Filter>ソース ファイル\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage\Stage1_3.cpp">
+      <Filter>ソース ファイル\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\File.cpp">
+      <Filter>ソース ファイル\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\FileManager.cpp">
+      <Filter>ソース ファイル\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\ImageFile.cpp">
+      <Filter>ソース ファイル\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem\SoundFile.cpp">
+      <Filter>ソース ファイル\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy\EnemyDivision.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy\EnemySplit.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,9 +200,6 @@
     <ClInclude Include="Enemy\EnemyBase.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\EnemyNormal.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Stage\StageBase.h">
       <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
@@ -203,37 +212,46 @@
     <ClInclude Include="Stage\StageManager.h">
       <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\EnemyMoveWall.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Stage\Stage1_3.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="FileSystem\File.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="FileSystem\FileManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="FileSystem\ImageFile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="FileSystem\SoundFile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy\EnemyLarge.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy\EnemyDash.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Enemy\EnemyChild.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\EnemyCreate.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy\EnemyDash.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy\EnemyLarge.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy\EnemyMoveWall.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy\EnemyNormal.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\File.h">
+      <Filter>ヘッダー ファイル\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\FileManager.h">
+      <Filter>ヘッダー ファイル\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\ImageFile.h">
+      <Filter>ヘッダー ファイル\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem\SoundFile.h">
+      <Filter>ヘッダー ファイル\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage\Stage1_3.h">
+      <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Stage\Stage1_4.h">
+      <Filter>ヘッダー ファイル\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy\EnemyDivision.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy\EnemySplit.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
