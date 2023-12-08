@@ -17,7 +17,7 @@ public:
 	/// <param name="pos">‰ŠúˆÊ’u</param>
 	void Init(Vec2& pos) override;
 
-private:
+protected:
 	// XVŠÖ”
 	void StartUpdate() override;
 	void NormalUpdate() override;

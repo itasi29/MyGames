@@ -14,7 +14,7 @@
 namespace
 {
 	constexpr int kDownExsitTime = 15;
-	constexpr int kLeftExsitTime = 15;
+	constexpr int kLeftKilledNum = 3;
 }
 
 Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
@@ -26,6 +26,9 @@ Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
 
 	// データの生成
 	m_mgr.CreateData(m_stageName);
+
+	m_isDownClear = m_mgr.IsClear(m_stageName, StageManager::kStageDown);
+	m_isLeftClear = m_mgr.IsClear(m_stageName, StageManager::kStageLeft);
 }
 
 Stage1_3::~Stage1_3()
@@ -74,14 +77,6 @@ void Stage1_3::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageDown) && input.IsPress("down"))
-	{
-		std::shared_ptr<Stage1_1> nextStage;
-		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
-
-		SlideDown(nextStage);
-		return;
-	}
 	if (m_mgr.IsClear(m_stageName, StageManager::kStageLeft) && input.IsPress("left"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
@@ -91,10 +86,27 @@ void Stage1_3::ChangeStage(Input& input)
 
 		return;
 	}
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageDown) && input.IsPress("down"))
+	{
+		std::shared_ptr<Stage1_1> nextStage;
+		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
+
+		SlideDown(nextStage);
+
+		return;
+	}
 }
 
 void Stage1_3::CheckStageConditions()
 {
+	// 左をまだクリアしていない場合
+	if (!m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
+	{
+		if (m_mgr.GetKilledEnemyCount() >= kLeftKilledNum)
+		{
+			m_mgr.SaveClear(m_stageName, StageManager::kStageLeft);
+		}
+	}
 	// 下をまだクリアしていない場合
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageDown))
 	{
@@ -103,32 +115,28 @@ void Stage1_3::CheckStageConditions()
 			m_mgr.SaveClear(m_stageName, StageManager::kStageDown);
 		}
 	}
-	// 左をまだクリアしていない場合
-	if (!m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
-	{
-		if (m_mgr.GetBestTime(m_stageName) > kLeftExsitTime * 60)
-		{
-			m_mgr.SaveClear(m_stageName, StageManager::kStageLeft);
-		}
-	}
 }
 
-void Stage1_3::DrawStageConditions(bool isPlaying)
+void Stage1_3::DrawStageConditions(int drawY)
 {
-	if (isPlaying)
+	if (!m_isLeftClear)
 	{
-		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
-			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
+		DrawFormatString(128, drawY, 0xffffff, L"左　%dの種類で死ぬ\n(%d / %d)",
+			kLeftKilledNum, m_mgr.GetKilledEnemyCount(), kLeftKilledNum);
+
+		drawY += 32;
 	}
-	else
+	if (!m_isDownClear)
 	{
-		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
+		DrawFormatString(128, drawY, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)", 
 			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
 	}
 }
 
 void Stage1_3::DrawArrow() const
 {
+	DrawLeftArrow();
+	DrawDownArrow();
 }
 
 void Stage1_3::CreateEnemy()

@@ -159,7 +159,77 @@ void StageBase::DrawPlaying()
 		0xffffff, // 色
 		L"%02d:%02d.%03d", min, sec, minSec);	// 文字列
 	// 条件の描画
-	DrawStageConditions(true);
+	DrawStageConditions(64);
+}
+
+void StageBase::DrawLeftArrow() const
+{
+	unsigned int color = 0;
+	// クリアしている場合は濃いめで
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
+	{
+		color = 0xffffff;
+	}
+	// クリアしていない場合は薄めで
+	else
+	{
+		color = 0x808080;
+	}
+	DrawTriangle(100, m_windowSize.h / 2,
+		150, m_windowSize.h / 2 + 25,
+		150, m_windowSize.h / 2 - 25,
+		color, true);
+}
+
+void StageBase::DrawRightArrow() const
+{
+	unsigned int color = 0;
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageRight))
+	{
+		color = 0xffffff;
+	}
+	else
+	{
+		color = 0x808080;
+	}
+	DrawTriangle(m_windowSize.w - 100, m_windowSize.h / 2,
+		m_windowSize.w - 150, m_windowSize.h / 2 + 25,
+		m_windowSize.w - 150, m_windowSize.h / 2 - 25,
+		color, true);
+}
+
+void StageBase::DrawUpArrow() const
+{
+	unsigned int color = 0;
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageUp))
+	{
+		color = 0xffffff;
+	}
+	else
+	{
+		color = 0x808080;
+	}
+	DrawTriangle(m_windowSize.w / 2, 100,
+		m_windowSize.w / 2 + 25, 150,
+		m_windowSize.w / 2 - 25, 150,
+		color, true);
+}
+
+void StageBase::DrawDownArrow() const
+{
+	unsigned int color;
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageDown))
+	{
+		color = 0xffffff;
+	}
+	else
+	{
+		color = 0x808080;
+	}
+	DrawTriangle(m_windowSize.w / 2, m_windowSize.h - 100,
+		m_windowSize.w / 2 + 25, m_windowSize.h - 150,
+		m_windowSize.w / 2 - 25, m_windowSize.h - 150,
+		color, true);
 }
 
 void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)

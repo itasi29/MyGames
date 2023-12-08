@@ -220,7 +220,7 @@ void StageManager::Save(const std::string& path)
 	{
 		// ステージ名文字列のサイズを取得
 		const auto& stageStr = stage.first; 
-		uint8_t size = stageStr.size();
+		uint8_t size = static_cast<uint8_t>(stageStr.size());
 		// ステージ名文字列のバイト数を書き込む
 		fwrite(&size, sizeof(size), 1, fp); 
 		// 文字列の書き込み
@@ -231,7 +231,7 @@ void StageManager::Save(const std::string& path)
 		// ベストタイムの書き込み
 		fwrite(&data.bestTime, sizeof(data.bestTime), 1, fp);
 		// 配列数を書き込み
-		uint8_t dataSize = data.isClears.size();
+		uint8_t dataSize = static_cast<uint8_t>(data.isClears.size());
 		fwrite(&dataSize, sizeof(dataSize), 1, fp);
 		for (const auto& isClear : data.isClears)
 		{
@@ -247,7 +247,7 @@ void StageManager::Save(const std::string& path)
 	for (const auto& name : m_killedEnemyNameTable)
 	{
 		// 名前の文字列数を取得
-		uint8_t nameSize = name.size();
+		uint8_t nameSize = static_cast<uint8_t>(name.size());
 		// 文字列数を書き込み
 		fwrite(&nameSize, sizeof(nameSize), 1, fp);
 		// 文字列の書き込み
@@ -281,7 +281,7 @@ void StageManager::Load(const std::wstring& path)
 		// ステージ名文字列サイズでリサイズ
 		stgStr.resize(stgStrSize);
 		// ステージ名読み込み
-		FileRead_read(stgStr.data(), stgStr.size() * sizeof(char), handle);
+		FileRead_read(stgStr.data(), static_cast<int>(stgStr.size() * sizeof(char)), handle);
 
 		// ステージクリアテーブルから情報群のvector<StageData>の参照を取得
 		auto& data = m_stageSaveData[stgStr];
@@ -321,7 +321,7 @@ void StageManager::Load(const std::wstring& path)
 		// サイズで文字列をリサイズ
 		name.resize(nameSize);
 		// 文字列の読み込み
-		FileRead_read(name.data(), name.size() * sizeof(char), handle);
+		FileRead_read(name.data(), static_cast<int>(name.size() * sizeof(char)), handle);
 		;
 	}
 

@@ -26,6 +26,8 @@ Stage1_2::Stage1_2(StageManager& mgr, const Size& windowSize, float fieldSize) :
 
 	// データの生成
 	m_mgr.CreateData(m_stageName);
+
+	m_isRightClear = m_mgr.IsClear(m_stageName, StageManager::kStageRight);
 }
 
 Stage1_2::~Stage1_2()
@@ -71,6 +73,8 @@ void Stage1_2::ChangeStage(Input& input)
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
 
 		SlideRight(nextStage);
+
+		return;
 	}
 }
 
@@ -87,22 +91,18 @@ void Stage1_2::CheckStageConditions()
 	}
 }
 
-void Stage1_2::DrawStageConditions(bool isPlaying)
+void Stage1_2::DrawStageConditions(int drawY)
 {
-	if (isPlaying)
+	if (!m_isRightClear)
 	{
-		DrawFormatString(128, 64, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)",
-			kRightExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kRightExsitTime);
-	}
-	else
-	{
-		DrawFormatString(128, 48, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)",
+		DrawFormatString(128, drawY, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)",
 			kRightExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kRightExsitTime);
 	}
 }
 
 void Stage1_2::DrawArrow() const
 {
+	DrawRightArrow();
 }
 
 void Stage1_2::CreateEnemy()

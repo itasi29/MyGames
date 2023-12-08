@@ -18,6 +18,7 @@ namespace
 EnemyBase::EnemyBase(const Size& windowSize, float fieldSize) :
 	m_windowSize(windowSize),
 	m_fieldSize(fieldSize),
+	m_color(0),
 	m_radius(0),
 	m_isExsit(true),
 	m_frame(0)

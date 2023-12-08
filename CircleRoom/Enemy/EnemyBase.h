@@ -74,7 +74,7 @@ protected:
 	// スクリーンサイズ
 	const Size& m_windowSize;
 	// フィールドのサイズ
-	float m_fieldSize;
+	const float m_fieldSize;
 
 	// 敵の名前
 	std::string m_name;

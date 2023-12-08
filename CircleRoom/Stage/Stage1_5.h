@@ -1,10 +1,10 @@
 #pragma once
 #include "StageBase.h"
-class Stage1_4 : public StageBase
+class Stage1_5 : public StageBase
 {
 public:
-	Stage1_4(StageManager& mgr, const Size& windowSize, float fieldSize);
-	~Stage1_4();
+	Stage1_5(StageManager& mgr, const Size& windowSize, float fieldSize);
+	~Stage1_5();
 
 	void Init() override;
 	void ChangeStage(Input& input) override;
@@ -18,7 +18,6 @@ private:
 	int m_createFrame;
 
 	// ステージに入った時点でのクリア情報を保持
-	bool m_isRightClear;
-	bool m_isUpClear;
+	bool m_isDownClear;
 };
 

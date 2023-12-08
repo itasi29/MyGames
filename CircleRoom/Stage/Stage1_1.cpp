@@ -31,6 +31,9 @@ Stage1_1::Stage1_1(StageManager& mgr, const Size& windowSize, float fieldSize) :
 
 	// データの生成
 	m_mgr.CreateData(m_stageName);
+
+	m_isLeftClear = m_mgr.IsClear(m_stageName, StageManager::kStageLeft);
+	m_isUpClear = m_mgr.IsClear(m_stageName, StageManager::kStageUp);
 }
 
 Stage1_1::~Stage1_1()
@@ -124,58 +127,27 @@ void Stage1_1::CheckStageConditions()
 	}
 }
 
-void Stage1_1::DrawStageConditions(bool isPlaying)
+void Stage1_1::DrawStageConditions(int drawY)
 {
-	if (isPlaying)
+	if (!m_isLeftClear)
 	{
-		DrawFormatString(128, 64, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)",
+		DrawFormatString(128, drawY, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)",
 			kLeftExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kLeftExsitTime);
-		DrawFormatString(128, 96, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)",
-			kUpExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kUpExsitTime);
+
+		drawY += 32;
 	}
-	else
+	if (!m_isUpClear)
 	{
-		DrawFormatString(128, 48, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)",
-			kLeftExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kLeftExsitTime);
-		DrawFormatString(128, 80, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)",
+		DrawFormatString(128, drawY, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)",
 			kUpExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kUpExsitTime);
-		DrawFormatString(128, 128, 0xffffff, L"殺されたがある敵の数%d",
-			m_mgr.GetKilledEnemyCount());
 	}
 }
 
 void Stage1_1::DrawArrow() const
 {
-	unsigned int color = 0;
-	// 左の描画
-	// クリアしている場合は濃いめで
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
-	{
-		color = 0xffffff;
-	}
-	// クリアしていない場合は薄めで
-	else
-	{
-		color = 0x808080;
-	}
-	DrawTriangle(100, m_windowSize.h / 2,
-		150, m_windowSize.h / 2 + 25,
-		150, m_windowSize.h / 2 - 25,
-		color, true);
+	DrawLeftArrow();
 
-	// 上の描画
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageUp))
-	{
-		color = 0xffffff;
-	}
-	else
-	{
-		color = 0x808080;
-	}
-	DrawTriangle(m_windowSize.w / 2, 100,
-		m_windowSize.w / 2 + 25, 150,
-		m_windowSize.w / 2 - 25, 150,
-		color, true);
+	DrawUpArrow();
 }
 
 void Stage1_1::CreateEnemy()

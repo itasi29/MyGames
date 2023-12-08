@@ -83,8 +83,8 @@ protected:
 	/// <summary>
 	/// ステージ条件の描画
 	/// </summary>
-	/// <param name = "isPlaying">true:プレイ中, false:選択中</param>
-	virtual void DrawStageConditions(bool isPlaying = false) = 0;
+	/// <param name="drawY">描画する位置 書かなければ48が初期位置</param>
+	virtual void DrawStageConditions(int drawY = 48) = 0;
 	/// <summary>
 	/// ステージの矢印描画
 	/// </summary>
@@ -114,6 +114,23 @@ protected:
 	/// プレイ中の描画処理
 	/// </summary>
 	void DrawPlaying();
+
+	/// <summary>
+	/// 左矢印の描画
+	/// </summary>
+	void DrawLeftArrow() const;
+	/// <summary>
+	/// 右矢印の描画
+	/// </summary>
+	void DrawRightArrow() const;
+	/// <summary>
+	/// 上矢印の描画
+	/// </summary>
+	void DrawUpArrow() const;
+	/// <summary>
+	/// 下矢印の描画
+	/// </summary>
+	void DrawDownArrow() const;
 
 	/// <summary>
 	/// 左に画面をスライドする処理

@@ -5,13 +5,15 @@
 #include "StageManager.h"
 #include "Stage1_4.h"
 #include "Stage1_3.h"
+#include "Stage1_5.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyDivision.h"
 
 namespace
 {
-	constexpr int kDownExsitTime = 15;
+	constexpr int kRightKilledNum = 3;
+	constexpr int kUpKilledNum = 5;
 }
 
 Stage1_4::Stage1_4(StageManager& mgr, const Size& windowSize, float fieldSize) :
@@ -23,6 +25,9 @@ Stage1_4::Stage1_4(StageManager& mgr, const Size& windowSize, float fieldSize) :
 
 	// データの生成
 	m_mgr.CreateData(m_stageName);
+
+	m_isRightClear = m_mgr.IsClear(m_stageName, StageManager::kStageRight);
+	m_isUpClear = m_mgr.IsClear(m_stageName, StageManager::kStageUp);
 }
 
 Stage1_4::~Stage1_4()
@@ -67,6 +72,17 @@ void Stage1_4::ChangeStage(Input& input)
 		nextStage = std::make_shared<Stage1_3>(m_mgr, m_windowSize, m_fieldSize);
 
 		SlideRight(nextStage);
+
+		return;
+	}
+	if (m_mgr.IsClear(m_stageName, StageManager::kStageUp) && input.IsPress("up"))
+	{
+		std::shared_ptr<Stage1_5> nextStage;
+		nextStage = std::make_shared<Stage1_5>(m_mgr, m_windowSize, m_fieldSize);
+
+		SlideUp(nextStage);
+
+		return;
 	}
 }
 
@@ -75,29 +91,40 @@ void Stage1_4::CheckStageConditions()
 	// 右をまだクリアしていない場合
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageRight))
 	{
-		if (m_mgr.GetBestTime(m_stageName) > kDownExsitTime * 60)
+		if (m_mgr.GetKilledEnemyCount() >= kRightKilledNum)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageRight);
 		}
 	}
+	if (!m_mgr.IsClear(m_stageName, StageManager::kStageUp))
+	{
+		if (m_mgr.GetKilledEnemyCount() >= kUpKilledNum)
+		{
+			m_mgr.SaveClear(m_stageName, StageManager::kStageUp);
+		}
+	}
 }
 
-void Stage1_4::DrawStageConditions(bool isPlaying)
+void Stage1_4::DrawStageConditions(int drawY)
 {
-	if (isPlaying)
+	if (!m_isRightClear)
 	{
-		DrawFormatString(128, 96, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)",
-			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
+		DrawFormatString(128, drawY, 0xffffff, L"右　%dの種類で死ぬ\n(%d / %d)",
+			kRightKilledNum, m_mgr.GetKilledEnemyCount(), kRightKilledNum);
+
+		drawY += 32;
 	}
-	else
+	if (!m_isUpClear)
 	{
-		DrawFormatString(128, 80, 0xffffff, L"下　%d秒間生き残る\n(%d / %d)",
-			kDownExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kDownExsitTime);
+		DrawFormatString(128, drawY, 0xffffff, L"上　%dの種類で死ぬ\n(%d / %d)",
+			kUpKilledNum, m_mgr.GetKilledEnemyCount(), kUpKilledNum);
 	}
 }
 
 void Stage1_4::DrawArrow() const
 {
+	DrawRightArrow();
+	DrawUpArrow();
 }
 
 void Stage1_4::CreateEnemy()

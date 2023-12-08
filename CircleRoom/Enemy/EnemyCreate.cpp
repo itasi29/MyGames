@@ -10,7 +10,7 @@
 namespace
 {
 	// FIXME:確かDxLibでπが定義されてたはずだけど忘れたから自分で定義しておく
-	constexpr float kPai = 3.1415926535;
+	constexpr float kPai = 3.1415926535f;
 
 	// 動くスピード
 	constexpr float kSpeed = 5.0f;
