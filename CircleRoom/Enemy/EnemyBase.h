@@ -23,7 +23,7 @@ public:
 	/// 当たり判定の中心座標を取得
 	/// </summary>
 	/// <returns>当たり判定の中心座標</returns>
-	Rect GetRect() const { return m_rect; }
+	Collision GetRect() const { return m_col; }
 
 	/// <summary>
 	/// 敵の名前を返す
@@ -45,10 +45,12 @@ protected:
 	/// <summary>
 	/// 反射させる計算
 	/// </summary>
-	void ReflectionCal(Vec2 norVec);
-	void ShiftReflection(Vec2 shift);
+	void ReflectionCal(const Vec2& norVec);
+	void ShiftReflection(const Vec2& shift);
 
-	// normal関数に変更する関数
+	/// <summary>
+	/// normal関数に変更する
+	/// </summary>
 	void ChangeNormalFunc();
 
 protected:
@@ -86,7 +88,7 @@ protected:
 	// 移動ベクトル
 	Vec2 m_vec;
 	// 当たり判定
-	Rect m_rect;
+	Collision m_col;
 	// 半径
 	float m_radius;
 

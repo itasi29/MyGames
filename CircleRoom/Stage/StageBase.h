@@ -7,6 +7,7 @@
 class StageManager;
 class Player;
 class EnemyBase;
+class BossBase;
 class Input;
 struct Size;
 struct StageData;
@@ -62,6 +63,8 @@ protected:
 	std::shared_ptr<Player> m_player;
 	// 敵
 	std::list<std::shared_ptr<EnemyBase>> m_enemy;
+	// ボス
+	std::shared_ptr<BossBase> m_boss;
 
 	// 経過時間
 	int m_frame;
@@ -155,11 +158,6 @@ protected:
 
 private:
 	/// <summary>
-	/// 壁の描画
-	/// </summary>
-	void DrawWall();
-
-	/// <summary>
 	/// スライド処理の全体共通処理
 	/// </summary>
 	/// <param name="now">現在の画面を保存するための画面「ハンドル</param>
@@ -173,5 +171,10 @@ private:
 	/// <param name="dir">進む方向の反対</param>
 	/// /// <param name="nextStage">次のステージのポインタ</param>
 	void ChangeClearData(int dir, const std::string& name) const;
+
+	/// <summary>
+	/// 壁の描画
+	/// </summary>
+	void DrawWall();
 };
 

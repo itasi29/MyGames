@@ -113,16 +113,16 @@ void TitleScene::NormalDraw()
 	// FIXME:書く順番考える
 
 	const auto& size = Application::GetInstance().GetWindowSize();
-	auto defX = size.w / 2;
+	int defX = size.w / 2;
 		
 	// タイトル名の描画
 	std::wstring title = L"CircleRoom";
 	float strLen = static_cast<float>(title.size());
-	DrawExtendString(defX - (strLen / 2) * 16, 100,
+	DrawExtendString(static_cast<int>(defX - (strLen / 2)) * 16, 100,
 		2, 2, 
 		title.data(), 0xffffff);
 
-	int y = 200 + m_currentLinePos * kMenuLineInterval;
+	int y = static_cast<int>(200 + m_currentLinePos * kMenuLineInterval);
 	// メニューラインの描画
 	DrawLine(defX, y,
 		defX + kMenuLength, y, 

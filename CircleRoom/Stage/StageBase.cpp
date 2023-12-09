@@ -8,6 +8,7 @@
 
 #include "Player/Player.h"
 #include "Enemy/EnemyBase.h"
+#include "Boss/BossBase.h"
 
 StageBase::StageBase(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	m_mgr(mgr),
@@ -18,7 +19,6 @@ StageBase::StageBase(StageManager& mgr, const Size& windowSize, float fieldSize)
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
-
 }
 
 StageBase::~StageBase()
@@ -42,7 +42,7 @@ void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 
 void StageBase::UpdateSelect(Input& input)
 {
-	// エネミーだけ動く処理繰り返す
+	// 敵側だけ動く処理繰り返す
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Update();
@@ -53,6 +53,10 @@ void StageBase::UpdateSelect(Input& input)
 		{
 			return !enemy->IsExsit();
 		});
+	if (m_boss)
+	{
+		m_boss->Update();
+	}
 
 	if (input.IsPress("OK"))
 	{
@@ -70,10 +74,12 @@ void StageBase::UpdateSelect(Input& input)
 
 void StageBase::UpdatePlaying(Input& input)
 {
+	m_player->Update(input);
+
 	// プレイヤーの情報を抜き取る
 	bool playerIsDash = m_player->IsDash();
 	bool playerIsExsit = m_player->IsExsit();
-	const Rect playerRect = m_player->GetRect();
+	const Collision playerRect = m_player->GetRect();
 
 	CreateEnemy();
 	for (const auto& enemy : m_enemy)
@@ -101,6 +107,8 @@ void StageBase::UpdatePlaying(Input& input)
 
 			// クリアしているかの確認
 			CheckStageConditions();
+
+			return;
 		}
 	}
 
@@ -111,9 +119,36 @@ void StageBase::UpdatePlaying(Input& input)
 			return !enemy->IsExsit();
 		});
 
+	if (m_boss)
+	{
+		m_boss->Update();
+
+		if (!playerIsDash && playerRect.IsCollsion(m_boss->GetRect()))
+		{
+			// プレイヤーの死亡処理
+			m_player->Death();
+
+			// メンバ関数ポインタを選択の方に戻す
+			m_updateFunc = &StageBase::UpdateSelect;
+			m_drawFunc = &StageBase::DrawSelect;
+
+			// フレームの初期化
+			m_waitFrame = 0;
+
+			// ベストタイムの更新
+			m_mgr.UpdateBestTime(m_stageName, m_frame);
+			// 殺したことがある敵情報の更新
+			m_mgr.UpdateKilledEnemy(m_boss->GetName());
+
+			// クリアしているかの確認
+			CheckStageConditions();
+
+			return;
+		}
+	}
+
 	// 経過時間の更新
 	m_frame++;
-	m_player->Update(input);
 }
 
 void StageBase::DrawSelect()
@@ -124,6 +159,10 @@ void StageBase::DrawSelect()
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Draw();
+	}
+	if (m_boss)
+	{
+		m_boss->Draw();
 	}
 
 	auto name = StringUtility::StringToWString(m_stageName);
@@ -148,6 +187,10 @@ void StageBase::DrawPlaying()
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Draw();
+	}
+	if (m_boss)
+	{
+		m_boss->Draw();
 	}
 
 	// 時間の描画

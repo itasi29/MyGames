@@ -26,6 +26,9 @@ private:
 private:
 	StageBase* m_stage;
 
+	// 変換後の移動ベクトル
+	Vec2 m_conversionVec;
+
 	// 角度
 	float m_radian;
 };

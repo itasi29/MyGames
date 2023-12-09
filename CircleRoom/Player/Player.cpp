@@ -60,7 +60,7 @@ void Player::Init()
 	m_leftVec = m_nowFront.Left() * kSize * 0.5f;
 
 	// 当たり判定の更新
-	m_rect.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
+	m_col.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
 }
 
 void Player::Update(Input& input)
@@ -70,7 +70,7 @@ void Player::Update(Input& input)
 	InRange();
 
 	// 当たり判定の更新
-	m_rect.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
+	m_col.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
 }
 
 void Player::Draw()
@@ -98,7 +98,7 @@ void Player::Draw()
 	// 走っていない場合当たり判定の描画
 	if (!m_isDash)
 	{
-		m_rect.Draw(0xff0000, false);
+		m_col.Draw(0xff0000, false);
 	}
 #endif
 }

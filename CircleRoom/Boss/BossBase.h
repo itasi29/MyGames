@@ -8,19 +8,51 @@ struct Size;
 class BossBase
 {
 public:
-	BossBase(const Size& windowSize, float fieldSize, int hp);
+	BossBase(const Size& windowSize, float fieldSize, int maxHp);
 	virtual ~BossBase();
 
 	virtual void Init(Vec2& pos) = 0;
 	void Update();
 	void Draw();
 
-	Rect GetRect() const { return m_rect; }
+	/// <summary>
+	/// 当たり判定の中心座標を取得
+	/// </summary>
+	/// <returns>当たり判定の中心座標</returns>
+	Collision GetRect() const { return m_col; }
+
+	/// <summary>
+	/// 敵の名前を返す
+	/// </summary>
+	/// <returns>名前</returns>
+	std::string GetName() const { return m_name; }
+
+	/// <summary>
+	/// 生存判定
+	/// </summary>
+	/// <returns>true: 生きてる / false:死んでる</returns>
+	bool IsExsit() const { return m_isExsit; }
 
 	/// <summary>
 	/// HPを1減らす
 	/// </summary>
-	virtual void OnHp();
+	virtual void OnAttack(const Collision& rect);
+
+protected:
+	/// <summary>
+	/// 壁に当たったら反射させる
+	/// </summary>
+	virtual bool Reflection();
+	/// <summary>
+	/// 反射させる計算
+	/// </summary>
+	void ReflectionCal(const Vec2& norVec);
+	void ShiftReflection(const Vec2& shift);
+
+	/// <summary>
+	/// normal関数に変更する
+	/// </summary>
+	void ChangeNormalFunc();
 
 protected:
 	// メンバ関数ポインタ
@@ -42,13 +74,18 @@ protected:
 	void DrawHpBar();
 
 protected:
+	// 実体化するまでの時間
+	static const int kApeearFrame = 30;
+
 	// スクリーンサイズ
-	const Size& m_windoSize;
+	const Size& m_windowSize;
 	// フィールドサイズ
 	const float m_fieldSize;
 
 	// 敵の名前
 	std::string m_name;
+	// 色
+	unsigned int m_color;
 	// 最大体力
 	const int m_maxHp;
 	// 体力
@@ -59,9 +96,12 @@ protected:
 	// 移動ベクトル
 	Vec2 m_vec;
 	// 当たり判定
-	Rect m_rect;
+	Collision m_col;
 	// 半径
 	float m_radius;
+
+	// 生存判定
+	bool m_isExsit;
 
 	// フレーム
 	int m_frame;

@@ -8,6 +8,7 @@
 
 #include "Player/Player.h"
 #include "Enemy/EnemyDivision.h"
+#include "Boss/BossArmored.h"
 
 namespace
 {
@@ -51,8 +52,10 @@ void Stage1_5::Init()
 	float centerX = m_windowSize.w * 0.5f;
 	float centerY = m_windowSize.h * 0.5f;
 	vec = { centerX, centerY };
-	m_enemy.push_back(std::make_shared<EnemyDivision>(m_windowSize, m_fieldSize, this));
-	m_enemy.back()->Init(vec);
+	//m_enemy.push_back(std::make_shared<EnemyDivision>(m_windowSize, m_fieldSize, this));
+	//m_enemy.back()->Init(vec);
+	m_boss = std::make_shared<BossArmored>(m_windowSize, m_fieldSize, 10);
+	m_boss->Init(vec);
 }
 
 void Stage1_5::ChangeStage(Input& input)

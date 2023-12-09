@@ -4,11 +4,11 @@
 /// <summary>
 /// 円を管理するためのクラス
 /// </summary>
-class Rect
+class Collision
 {
 public:
-	Rect();
-	virtual ~Rect();
+	Collision();
+	virtual ~Collision();
 
 	/// <summary>
 	/// 当たり判定の描画
@@ -35,7 +35,7 @@ public:
 	/// </summary>
 	/// <param name="target">判定側</param>
 	/// <returns>true : 当たった, false : 当たってない</returns>
-	bool IsCollsion(const Rect& target) const;
+	bool IsCollsion(const Collision& target) const;
 
 private:
 	// 中心座標

@@ -36,7 +36,7 @@ void EnemySplit::Init(Vec2& pos, Vec2& vec)
 	m_frame = 0;
 
 	// ‰‚ß‚©‚ç”»’è‚ğ‚Â
-	m_rect.SetCenter(m_pos, m_radius);
+	m_col.SetCenter(m_pos, m_radius);
 
 	ChangeNormalFunc();
 }
@@ -50,5 +50,5 @@ void EnemySplit::NormalUpdate()
 	m_pos += m_vec;
 	Reflection();
 
-	m_rect.SetCenter(m_pos, m_radius);
+	m_col.SetCenter(m_pos, m_radius);
 }

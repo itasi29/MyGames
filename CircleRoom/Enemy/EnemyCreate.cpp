@@ -71,7 +71,7 @@ void EnemyCreate::Init(Vec2& pos)
 	}
 
 	// スピードを調整
-	m_vec *= kSpeed;
+	m_conversionVec = m_vec * kSpeed;
 }
 
 void EnemyCreate::StartUpdate()
@@ -81,7 +81,7 @@ void EnemyCreate::StartUpdate()
 	if (m_frame > kApeearFrame)
 	{
 		// 変わるときに当たり判定も入れる
-		m_rect.SetCenter(m_pos, m_radius);
+		m_col.SetCenter(m_pos, m_radius);
 
 		m_frame = 0;
 		EnemyBase::ChangeNormalFunc();
@@ -96,16 +96,14 @@ void EnemyCreate::NormalUpdate()
 		m_radian = 0.0f;
 	}
 
-	// 変換後用のベクトル
-	Vec2 vec;
 	// 現在のベクトルを垂直方向にコサインカーブの値分ずらす
-	vec = m_vec + m_vec.GetNormalized().Right() * cosf(m_radian) * kSwingHeight;
+	m_conversionVec = m_vec * kSpeed + m_vec.Right() * cosf(m_radian) * kSwingHeight;
 
 	// 出したベクトルを入れる
-	m_pos += vec;
+	m_pos += m_conversionVec;
 	Reflection();
 
-	m_rect.SetCenter(m_pos, m_radius);
+	m_col.SetCenter(m_pos, m_radius);
 
 	m_frame++;
 	if (m_frame > kCreateFrame)

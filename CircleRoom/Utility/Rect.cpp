@@ -2,22 +2,22 @@
 #include <DxLib.h>
 #include <cassert>
 
-Rect::Rect() :
+Collision::Collision() :
 	m_radius(0)
 {
 }
 
-Rect::~Rect()
+Collision::~Collision()
 {
 }
 
-void Rect::Draw(unsigned int color, bool isFill) const
+void Collision::Draw(unsigned int color, bool isFill) const
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(m_radius),
 		color, isFill);
 }
 
-void Rect::SetCenter(Vec2 pos, float radius, float shiftX, float shiftY)
+void Collision::SetCenter(Vec2 pos, float radius, float shiftX, float shiftY)
 {
 	m_pos = pos;
 	m_pos.x += shiftX;
@@ -25,7 +25,7 @@ void Rect::SetCenter(Vec2 pos, float radius, float shiftX, float shiftY)
 	m_radius = radius;
 }
 
-bool Rect::IsCollsion(const Rect& target) const
+bool Collision::IsCollsion(const Collision& target) const
 {
 	// ‚»‚ê‚¼‚ê‚Ì”¼Œa‚Ì2æ‚Ì‘«‚µZ‚ª
 	// ’†S’n“¯m‚Ì’·‚³‚Ì2æ‚æ‚è’Z‚¯‚ê‚Î

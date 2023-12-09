@@ -114,13 +114,13 @@ bool EnemyBase::Reflection(bool isShift)
 	return false;
 }
 
-void EnemyBase::ReflectionCal(Vec2 norVec)
+void EnemyBase::ReflectionCal(const Vec2& norVec)
 {
 	// 法線ベクトルの2倍から現在のベクトルを引く
 	m_vec = m_vec + norVec * norVec.Dot(-m_vec) * 2.0f;
 }
 
-void EnemyBase::ShiftReflection(Vec2 shift)
+void EnemyBase::ShiftReflection(const Vec2& shift)
 {
 	// FIXME:現状はこれでいいけど、できたら参考元にできるように
 
@@ -171,6 +171,6 @@ void EnemyBase::NormalDraw()
 
 #ifdef _DEBUG
 	// 当たり判定の描画
-	m_rect.Draw(0xff0000, false);
+	m_col.Draw(0xff0000, false);
 #endif
 }

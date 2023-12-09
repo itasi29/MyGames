@@ -29,7 +29,7 @@ public:
 	/// 当たり判定の中心座標を取得
 	/// </summary>
 	/// <returns>当たり判定の中心座標</returns>
-	Rect GetRect() const { return m_rect; }
+	Collision GetRect() const { return m_col; }
 	bool IsDash() const { return m_isDash; }
 	/// <summary>
 	/// 生存しているか
@@ -62,7 +62,7 @@ private:
 	Vec2 m_vec;
 
 	// 当たり判定
-	Rect m_rect;
+	Collision m_col;
 
 	// ダッシュするフレーム
 	int m_dashFrame;

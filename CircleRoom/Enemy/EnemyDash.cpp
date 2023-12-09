@@ -77,7 +77,7 @@ void EnemyDash::StartUpdate()
 	if (m_frame > kApeearFrame)
 	{
 		// •Ï‚í‚é‚Æ‚«‚É“–‚½‚è”»’è‚à“ü‚ê‚é
-		m_rect.SetCenter(m_pos, m_radius);
+		m_col.SetCenter(m_pos, m_radius);
 
 		EnemyBase::ChangeNormalFunc();
 	}
@@ -103,7 +103,7 @@ void EnemyDash::NormalUpdate()
 		m_startWaitDashFrame = kStartWaitDashFrame;
 	}
 
-	m_rect.SetCenter(m_pos, m_radius);
+	m_col.SetCenter(m_pos, m_radius);
 }
 
 void EnemyDash::DashStartProcess()

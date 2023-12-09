@@ -33,7 +33,7 @@ void EnemyChild::Init(Vec2& pos)
 	m_frame = 0;
 
 	// ‰‚ß‚©‚ç”»’è‚ğ‚Â
-	m_rect.SetCenter(m_pos, m_radius);
+	m_col.SetCenter(m_pos, m_radius);
 
 	// XVêŠ“™‚à•ÏX‚³‚¹‚é
 	EnemyBase::ChangeNormalFunc();
