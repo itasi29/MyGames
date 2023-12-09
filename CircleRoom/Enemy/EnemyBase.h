@@ -2,7 +2,7 @@
 
 #include <string>
 #include "Vec2.h"
-#include "Rect.h"
+#include "Utility/Collision.h"
 
 struct Size;
 

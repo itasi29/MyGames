@@ -1,10 +1,13 @@
 #pragma once
 #include <string>
 #include "Vec2.h"
-#include "Rect.h"
+#include "Utility/Collision.h"
 
 struct Size;
 
+/// <summary>
+/// ボスの基底クラス
+/// </summary>
 class BossBase
 {
 public:
@@ -13,7 +16,7 @@ public:
 
 	virtual void Init(Vec2& pos) = 0;
 	void Update();
-	void Draw();
+	void Draw() const;
 
 	/// <summary>
 	/// 当たり判定の中心座標を取得
@@ -36,7 +39,7 @@ public:
 	/// <summary>
 	/// HPを1減らす
 	/// </summary>
-	virtual void OnAttack(const Collision& rect);
+	virtual void OnAttack(bool isDash, const Collision& rect);
 
 protected:
 	/// <summary>
@@ -57,7 +60,7 @@ protected:
 protected:
 	// メンバ関数ポインタ
 	using updateFunc_t = void(BossBase::*)();
-	using drawFunc_t = void(BossBase::*)();
+	using drawFunc_t = void(BossBase::*)() const;
 
 	updateFunc_t m_updateFunc;
 	drawFunc_t m_drawFunc;
@@ -65,13 +68,13 @@ protected:
 	virtual void StartUpdate() = 0;
 	virtual void NormalUpdate() = 0;
 
-	virtual void StartDraw();
-	virtual void NormalDraw();
+	virtual void StartDraw() const;
+	virtual void NormalDraw() const;
 
 	/// <summary>
 	/// HPバーの描画
 	/// </summary>
-	void DrawHpBar();
+	void DrawHpBar() const;
 
 protected:
 	// 実体化するまでの時間

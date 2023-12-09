@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Boss\BossArmored.cpp" />
+    <ClCompile Include="Boss\BossDamageObject.cpp" />
     <ClCompile Include="Common\Input.cpp" />
     <ClCompile Include="Boss\BossBase.cpp" />
     <ClCompile Include="Enemy\EnemySplit.cpp" />
@@ -32,6 +33,7 @@
     <ClCompile Include="Enemy\EnemyLarge.cpp" />
     <ClCompile Include="Enemy\EnemyMoveWall.cpp" />
     <ClCompile Include="Enemy\EnemyNormal.cpp" />
+    <ClCompile Include="Enemy\EnemySplitTwoBound.cpp" />
     <ClCompile Include="FileSystem\File.cpp" />
     <ClCompile Include="FileSystem\FileManager.cpp" />
     <ClCompile Include="FileSystem\ImageFile.cpp" />
@@ -53,12 +55,13 @@
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage\StageManager.cpp" />
     <ClCompile Include="StringUtility.cpp" />
-    <ClCompile Include="Utility\Rect.cpp" />
+    <ClCompile Include="Utility\Collision.cpp" />
     <ClCompile Include="Utility\Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Boss\BossArmored.h" />
+    <ClInclude Include="Boss\BossDamageObject.h" />
     <ClInclude Include="Common\Input.h" />
     <ClInclude Include="Boss\BossBase.h" />
     <ClInclude Include="Enemy\EnemySplit.h" />
@@ -70,6 +73,7 @@
     <ClInclude Include="Enemy\EnemyLarge.h" />
     <ClInclude Include="Enemy\EnemyMoveWall.h" />
     <ClInclude Include="Enemy\EnemyNormal.h" />
+    <ClInclude Include="Enemy\EnemySplitTwoBound.h" />
     <ClInclude Include="FileSystem\File.h" />
     <ClInclude Include="FileSystem\FileManager.h" />
     <ClInclude Include="FileSystem\ImageFile.h" />
@@ -90,7 +94,7 @@
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage\StageManager.h" />
     <ClInclude Include="StringUtility.h" />
-    <ClInclude Include="Utility\Rect.h" />
+    <ClInclude Include="Utility\Collision.h" />
     <ClInclude Include="Utility\Vec2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

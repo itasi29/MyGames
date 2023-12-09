@@ -20,6 +20,6 @@ public:
 private:
 	// XVŠÖ”
 	void StartUpdate() override;
-	void NormalUpdate() override;
+	virtual void NormalUpdate() override;
 };
 

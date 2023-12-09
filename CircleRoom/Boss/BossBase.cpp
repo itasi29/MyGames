@@ -14,6 +14,16 @@ namespace
 	// Ç∏ÇÁÇ∑ï˚å¸
 	const Vec2 kShiftSide = Vec2{ 0.0f, 0.2f };
 	const Vec2 kShiftVert = Vec2{ 0.2f, 0.0f };
+
+	// HPÉoÅ[ÇÃïù
+	constexpr int kHpBarWidth = 180;
+	// HPÉoÅ[ÇÃçÇÇ≥
+	constexpr int kHpBarHeight = 50;
+
+	// îwåiHPÉoÅ[ÇÃëOå„ïù
+	constexpr int kBackHpBarWidth = 10;
+	// îwåiHPÉoÅ[ÇÃëOå„çÇÇ≥
+	constexpr int kBackHpBarHeight = 10;
 }
 
 BossBase::BossBase(const Size& windowSize, float fieldSize, int maxHp) :
@@ -36,13 +46,15 @@ void BossBase::Update()
 	(this->*m_updateFunc)();
 }
 
-void BossBase::Draw()
+void BossBase::Draw() const
 {
 	(this->*m_drawFunc)();
 }
 
-void BossBase::OnAttack(const Collision& rect)
+void BossBase::OnAttack(bool isDash, const Collision& rect)
 {
+	if (isDash) return;
+
 	m_hp--;
 
 	// HPÇ™É[ÉçÇ…Ç»Ç¡ÇΩÇÁéÄñSÇ∆Ç∑ÇÈ
@@ -139,7 +151,7 @@ void BossBase::ChangeNormalFunc()
 	m_drawFunc = &BossBase::NormalDraw;
 }
 
-void BossBase::StartDraw()
+void BossBase::StartDraw() const
 {
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
 	int alpha = static_cast<int>(255 * rate);
@@ -149,7 +161,7 @@ void BossBase::StartDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void BossBase::NormalDraw()
+void BossBase::NormalDraw() const
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), m_color, true);
@@ -160,6 +172,17 @@ void BossBase::NormalDraw()
 #endif
 }
 
-void BossBase::DrawHpBar()
+void BossBase::DrawHpBar() const
 {
+	Vec2 base = {m_windowSize.w - kHpBarWidth * 1.5f, 64.0f};
+
+	// îwåi
+	DrawBox(static_cast<int>(base.x - kBackHpBarWidth), static_cast<int>(base.y - kBackHpBarHeight),
+		static_cast<int>(base.x + kHpBarWidth + kBackHpBarWidth), static_cast<int>(base.y + kHpBarHeight + kBackHpBarHeight),
+		0xf0f0f0, true);
+
+	// í èÌÇÃHPÉoÅ[
+	DrawBox(static_cast<int>(base.x), static_cast<int>(base.y),
+		static_cast<int>(base.x + kHpBarWidth * (m_hp / static_cast<float>(m_maxHp))), static_cast<int>(base.y + kHpBarHeight),
+		0x08ff08, true);
 }

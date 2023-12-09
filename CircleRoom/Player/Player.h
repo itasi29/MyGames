@@ -1,6 +1,6 @@
 #pragma once
 #include "Vec2.h"
-#include "Rect.h"
+#include "Utility/Collision.h"
 
 class Input;
 class Application;

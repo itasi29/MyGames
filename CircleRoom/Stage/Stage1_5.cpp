@@ -54,7 +54,7 @@ void Stage1_5::Init()
 	vec = { centerX, centerY };
 	//m_enemy.push_back(std::make_shared<EnemyDivision>(m_windowSize, m_fieldSize, this));
 	//m_enemy.back()->Init(vec);
-	m_boss = std::make_shared<BossArmored>(m_windowSize, m_fieldSize, 10);
+	m_boss = std::make_shared<BossArmored>(m_windowSize, m_fieldSize, 10, this);
 	m_boss->Init(vec);
 }
 

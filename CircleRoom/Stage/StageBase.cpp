@@ -49,7 +49,7 @@ void StageBase::UpdateSelect(Input& input)
 	}
 
 	m_enemy.remove_if(
-		[](const std::shared_ptr<EnemyBase>& enemy)
+		[](const auto& enemy)
 		{
 			return !enemy->IsExsit();
 		});
@@ -79,7 +79,7 @@ void StageBase::UpdatePlaying(Input& input)
 	// プレイヤーの情報を抜き取る
 	bool playerIsDash = m_player->IsDash();
 	bool playerIsExsit = m_player->IsExsit();
-	const Collision playerRect = m_player->GetRect();
+	const Collision& playerCol = m_player->GetRect();
 
 	CreateEnemy();
 	for (const auto& enemy : m_enemy)
@@ -88,7 +88,7 @@ void StageBase::UpdatePlaying(Input& input)
 
 		// プレイヤーとの当たり判定処理
 		// ダッシュしていたら処理はしない
-		if (!playerIsDash && playerRect.IsCollsion(enemy->GetRect()))
+		if (!playerIsDash && playerCol.IsCollsion(enemy->GetRect()))
 		{
 			// プレイヤーの死亡処理
 			m_player->Death();
@@ -114,7 +114,7 @@ void StageBase::UpdatePlaying(Input& input)
 
 	// 死亡した敵は消す
 	m_enemy.remove_if(
-		[](const std::shared_ptr<EnemyBase>& enemy)
+		[](const auto& enemy)
 		{
 			return !enemy->IsExsit();
 		});
@@ -122,10 +122,34 @@ void StageBase::UpdatePlaying(Input& input)
 	if (m_boss)
 	{
 		m_boss->Update();
+		m_boss->OnAttack(playerIsDash, playerCol);
 
-		if (!playerIsDash && playerRect.IsCollsion(m_boss->GetRect()))
+		// ボスの死亡処理
+		if (!m_boss->IsExsit())
 		{
-			// プレイヤーの死亡処理
+			m_boss.reset();
+			// FIXME : 現状プレイヤーの死亡処理と同じにしているけれど後で処理の仕方変わると思う
+			m_player->Death();
+
+			// メンバ関数ポインタを選択の方に戻す
+			m_updateFunc = &StageBase::UpdateSelect;
+			m_drawFunc = &StageBase::DrawSelect;
+
+			// フレームの初期化
+			m_waitFrame = 0;
+
+			// ベストタイムの更新
+			m_mgr.UpdateBestTime(m_stageName, m_frame);
+
+			// クリアしているかの確認
+			CheckStageConditions();
+
+			return;
+		}
+
+		// プレイヤーの死亡処理
+		if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
+		{
 			m_player->Death();
 
 			// メンバ関数ポインタを選択の方に戻す
