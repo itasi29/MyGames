@@ -22,7 +22,7 @@ EnemySplit::~EnemySplit()
 {
 }
 
-void EnemySplit::Init(Vec2& pos, Vec2& vec)
+void EnemySplit::Init(const Vec2& pos, Vec2& vec)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;

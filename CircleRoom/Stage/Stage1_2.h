@@ -15,8 +15,14 @@ public:
 	void CreateEnemy() override;
 
 private:
-	// 敵生成時間
-	int m_createFrame;
+	void CreateNormal();
+	void CreateLage();
+
+private:
+	// 敵(Lage)生成フレーム
+	int m_createLageFrame;
+	// 敵(Normal)生成フレーム
+	int m_createNormalFrame;
 
 	// ステージに入った時点でのクリア情報を保持
 	bool m_isRightClear;

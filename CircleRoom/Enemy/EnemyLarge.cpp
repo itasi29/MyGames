@@ -24,7 +24,7 @@ EnemyLarge::~EnemyLarge()
 {
 }
 
-void EnemyLarge::Init(Vec2& pos)
+void EnemyLarge::Init(const Vec2& pos)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;
@@ -69,7 +69,7 @@ void EnemyLarge::StartUpdate()
 void EnemyLarge::NormalUpdate()
 {
 	m_pos += m_vec;
-	Reflection();
+	Reflection(0.8f);
 
 	m_col.SetCenter(m_pos, m_radius);
 }

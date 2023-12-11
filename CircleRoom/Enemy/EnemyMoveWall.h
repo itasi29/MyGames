@@ -14,7 +14,7 @@ public:
 	/// ‰Šú‰»ˆ—
 	/// </summary>
 	/// <param name="vec">Œ‚‚Â•ûŒü (ãor‰º)</param>
-	void Init(Vec2& vec) override;
+	void Init(const Vec2& vec) override;
 
 private:
 	// XVŠÖ”

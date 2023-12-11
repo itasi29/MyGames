@@ -8,18 +8,23 @@
 
 #include "Player/Player.h"
 #include "Enemy/EnemyMoveWall.h"
+#include "Enemy/EnemyNormal.h"
 #include "Enemy/EnemyLarge.h"
-
-#include "Enemy/EnemyDash.h"
 
 namespace
 {
+	// 右側生存時間
 	constexpr int kRightExsitTime = 10;
+
+	// 大きい敵生成間隔フレーム
+	constexpr int kCreateLageFrame = 60 * 10;
+	// 通常的生成間隔フレーム
+	constexpr int kCreateNormalFrame = 60 * 5 + 10;
 }
 
 Stage1_2::Stage1_2(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	StageBase(mgr, windowSize, fieldSize),
-	m_createFrame(0)
+	m_createLageFrame(0)
 {
 	m_stageName = "Stage1-2";
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
@@ -40,22 +45,32 @@ void Stage1_2::Init()
 	m_frame = 0;
 
 	// 生成フレームの初期化
-	m_createFrame = 0;
+	m_createLageFrame = 0;
+	m_createNormalFrame = 0;
 
 	// プレイヤーの初期化
 	m_player->Init();
 
 	// 敵の配列を初期化
 	m_enemy.clear();
-	// 敵を一体追加
-	m_enemy.push_back(std::make_shared<EnemyDash>(m_windowSize, m_fieldSize, m_player));
 
-	// スタート位置の設定
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
-	Vec2 center{ centerX, centerY };
+	// 壁動く敵の作成
+	Vec2 vec;
+	// 上側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.x = 0;
+	vec.y = -1;
+	m_enemy.back()->Init(vec);
+	// 下側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.y = 1;
+	m_enemy.back()->Init(vec);
 
-	m_enemy.back()->Init(center);
+	// 大きい敵生成
+	CreateLage();
+	// 通常敵生成
+	CreateNormal();
+	CreateNormal();
 }
 
 void Stage1_2::ChangeStage(Input& input)
@@ -107,8 +122,32 @@ void Stage1_2::DrawArrow() const
 
 void Stage1_2::CreateEnemy()
 {
+	m_createNormalFrame++;
+	m_createLageFrame++;
+
+	if (m_createNormalFrame > kCreateNormalFrame)
+	{
+		CreateNormal();
+	}
+
+	if (m_createLageFrame > kCreateLageFrame)
+	{
+		CreateLage();
+	}
 }
 
+void Stage1_2::CreateNormal()
+{
+	// 生成時間の初期化
+	m_createNormalFrame = 0;
+	// 配列の最後に敵を追加
+	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.back()->Init(m_centerPos);
+}
 
-
-
+void Stage1_2::CreateLage()
+{
+	m_createLageFrame = 0;
+	m_enemy.push_back(std::make_shared<EnemyLarge>(m_windowSize, m_fieldSize));
+	m_enemy.back()->Init(m_centerPos);
+}

@@ -7,7 +7,7 @@
 #include "Stage1_4.h"
 
 #include "Player/Player.h"
-#include "Enemy/EnemyDivision.h"
+#include "Enemy/EnemyMoveWall.h"
 #include "Boss/BossArmored.h"
 
 namespace
@@ -46,16 +46,21 @@ void Stage1_5::Init()
 	// 敵の配列を初期化
 	m_enemy.clear();
 
+	// 壁動く敵の作成
 	Vec2 vec;
+	// 上側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.x = 0;
+	vec.y = -1;
+	m_enemy.back()->Init(vec);
+	// 下側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.y = 1;
+	m_enemy.back()->Init(vec);
 
 	// スタート位置の設定
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
-	vec = { centerX, centerY };
-	//m_enemy.push_back(std::make_shared<EnemyDivision>(m_windowSize, m_fieldSize, this));
-	//m_enemy.back()->Init(vec);
 	m_boss = std::make_shared<BossArmored>(m_windowSize, m_fieldSize, 10, this);
-	m_boss->Init(vec);
+	m_boss->Init(m_centerPos);
 }
 
 void Stage1_5::ChangeStage(Input& input)

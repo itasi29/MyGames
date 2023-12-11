@@ -11,6 +11,7 @@
 #include "Boss/BossBase.h"
 
 StageBase::StageBase(StageManager& mgr, const Size& windowSize, float fieldSize) :
+	m_centerPos( { windowSize.w * 0.5f, windowSize.h * 0.5f }),
 	m_mgr(mgr),
 	m_windowSize(windowSize),
 	m_fieldSize(fieldSize),

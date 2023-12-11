@@ -41,15 +41,15 @@ void EnemyBase::Draw()
 	(this->*m_drawFunc)();
 }
 
-bool EnemyBase::Reflection(bool isShift)
+bool EnemyBase::Reflection(float scale, bool isShift)
 {
 	float centerX = m_windowSize.w * 0.5f;
 	float centerY = m_windowSize.h * 0.5f;
 
 	// ç∂
-	if (m_pos.x < centerX - m_fieldSize)
+	if (m_pos.x - m_radius * scale < centerX - m_fieldSize)
 	{
-		m_pos.x = centerX - m_fieldSize;
+		m_pos.x = centerX - m_fieldSize + m_radius * scale;
 		if (isShift)
 		{
 			ReflectionCal(kNorVecLeft);
@@ -63,9 +63,9 @@ bool EnemyBase::Reflection(bool isShift)
 		return true;
 	}
 	// âE
-	if (m_pos.x > centerX + m_fieldSize)
+	if (m_pos.x + m_radius * scale > centerX + m_fieldSize)
 	{
-		m_pos.x = centerX + m_fieldSize;
+		m_pos.x = centerX + m_fieldSize - m_radius * scale;
 		if (isShift)
 		{
 			ReflectionCal(kNorVecRight);
@@ -79,9 +79,9 @@ bool EnemyBase::Reflection(bool isShift)
 		return true;
 	}
 	// è„
-	if (m_pos.y < centerY - m_fieldSize)
+	if (m_pos.y - m_radius * scale < centerY - m_fieldSize)
 	{
-		m_pos.y = centerY - m_fieldSize;
+		m_pos.y = centerY - m_fieldSize + m_radius * scale;
 		if (isShift)
 		{
 			ReflectionCal(kNorVecUp);
@@ -95,9 +95,9 @@ bool EnemyBase::Reflection(bool isShift)
 		return true;
 	}
 	// â∫
-	if (m_pos.y > centerY + m_fieldSize)
+	if (m_pos.y + m_radius * scale > centerY + m_fieldSize)
 	{
-		m_pos.y = centerY + m_fieldSize;
+		m_pos.y = centerY + m_fieldSize - m_radius * scale;
 		if (isShift)
 		{
 			ReflectionCal(kNorVecDown);

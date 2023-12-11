@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include "Vec2.h"
 
 class StageManager;
 class Player;
@@ -48,6 +49,7 @@ public:
 protected:
 	// ステージ変更可能までの待機時間
 	const int kWaitChangeFrame = 30;
+	const Vec2 m_centerPos;
 
 	StageManager& m_mgr;
 
@@ -55,6 +57,7 @@ protected:
 	const Size& m_windowSize;
 	// フィールドサイズ
 	float m_fieldSize;
+	// ステージの中心地
 
 	// ステージ名
 	std::string m_stageName;

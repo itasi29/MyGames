@@ -15,7 +15,8 @@ public:
 
 private:
 	// 敵生成時間
-	int m_createFrame;
+	int m_createNormalFrame;
+	int m_createCreateFrame;
 
 	// ステージに入った時点でのクリア情報を保持
 	bool m_isRightClear;

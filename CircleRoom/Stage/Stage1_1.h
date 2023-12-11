@@ -14,8 +14,13 @@ public:
 	void DrawArrow() const override;
 	void CreateEnemy() override;
 
+private:
+	void CreateNormal();
 
 private:
+	// ¶¬”
+	int m_createNum;
+
 	// “G¶¬ŠÔ
 	int m_createFrame;
 

@@ -39,7 +39,7 @@ EnemyDivision::~EnemyDivision()
 {
 }
 
-void EnemyDivision::Init(Vec2& pos)
+void EnemyDivision::Init(const Vec2& pos)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;

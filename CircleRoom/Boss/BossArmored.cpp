@@ -50,7 +50,7 @@ BossArmored::~BossArmored()
 {
 }
 
-void BossArmored::Init(Vec2& pos)
+void BossArmored::Init(const Vec2& pos)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;

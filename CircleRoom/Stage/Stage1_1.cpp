@@ -13,8 +13,13 @@
 
 namespace
 {
+	// 初めに生成する敵の数
+	constexpr int kStartCreatNum = 4;
+	// 初めの生成間隔フレーム
+	constexpr int kStartCreateFrame = 10;
+
 	// 敵生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 5;
+	constexpr int kCreateFrame = 60 * 6;
 
 	// 左クリア条件　生存時間
 	constexpr int kLeftExsitTime = 10;
@@ -47,6 +52,8 @@ void Stage1_1::Init()
 
 	// 生成フレームの初期化
 	m_createFrame = 0;
+	// 生成数の初期化
+	m_createNum = 0;
 
 	// プレイヤーの初期化
 	m_player->Init();
@@ -68,13 +75,7 @@ void Stage1_1::Init()
 
 	// 敵を一体追加
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
-
-	// スタート位置の設定
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
-	vec = { centerX, centerY };
-
-	m_enemy.back()->Init(vec);
+	m_enemy.back()->Init(m_centerPos);
 }
 
 void Stage1_1::ChangeStage(Input& input)
@@ -155,15 +156,29 @@ void Stage1_1::CreateEnemy()
 	// 生成時間の更新
 	m_createFrame++;
 
+	// 初めは生成間隔が早め
+	if (m_createNum < kStartCreatNum && m_createFrame > kStartCreateFrame)
+	{
+		CreateNormal();
+
+		// 生成すう増加
+		m_createNum++;
+
+		return;
+	}
+
 	if (m_createFrame > kCreateFrame)
 	{
-		// 生成時間の初期化
-		m_createFrame = 0;
-		// 配列の最後に敵を追加
-		m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
-		// そいつに初期化処理
-		Vec2 center(m_windowSize.w * 0.5f, m_windowSize.h * 0.5f);
-		m_enemy.back()->Init(center);
+		CreateNormal();
 	}
+}
+
+void Stage1_1::CreateNormal()
+{
+	// 生成時間の初期化
+	m_createFrame = 0;
+	// 配列の最後に敵を追加
+	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.back()->Init(m_centerPos);
 }
 

@@ -15,7 +15,7 @@ public:
 	/// </summary>
 	/// <param name="pos">初期位置</param>
 	/// <param name="vec">移動ベクトル</param>
-	void Init(Vec2& pos, Vec2& vec);
+	virtual void Init(const Vec2& pos, Vec2& vec);
 
 private:
 	// 更新関数

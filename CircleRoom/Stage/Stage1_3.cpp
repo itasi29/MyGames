@@ -9,12 +9,16 @@
 
 #include "Player/Player.h"
 #include "Enemy/EnemyMoveWall.h"
-#include "Enemy/EnemyCreate.h"
+#include "Enemy/EnemyDash.h"
 
 namespace
 {
+	// クリア時間
 	constexpr int kDownExsitTime = 15;
 	constexpr int kLeftKilledNum = 3;
+
+	// 生成間隔フレーム
+	constexpr int kCreateFrame = 60 * 6;
 }
 
 Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
@@ -61,12 +65,10 @@ void Stage1_3::Init()
 	vec.y = 1;
 	m_enemy.back()->Init(vec);
 
-	// スタート位置の設定
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
-	vec = { centerX, centerY };
-	m_enemy.push_back(std::make_shared<EnemyCreate>(m_windowSize, m_fieldSize, this));
-	m_enemy.back()->Init(vec);
+	m_enemy.push_back(std::make_shared<EnemyDash>(m_windowSize, m_fieldSize, m_player));
+	m_enemy.back()->Init(m_centerPos);
+	m_enemy.push_back(std::make_shared<EnemyDash>(m_windowSize, m_fieldSize, m_player));
+	m_enemy.back()->Init(m_centerPos);
 }
 
 void Stage1_3::ChangeStage(Input& input)
@@ -141,5 +143,12 @@ void Stage1_3::DrawArrow() const
 
 void Stage1_3::CreateEnemy()
 {
-	// とりあえずなにも生成しない
+	m_createFrame++;
+
+	if (m_createFrame > kCreateFrame)
+	{
+		m_createFrame = 0;
+		m_enemy.push_back(std::make_shared<EnemyDash>(m_windowSize, m_fieldSize, m_player));
+		m_enemy.back()->Init(m_centerPos);
+	}
 }

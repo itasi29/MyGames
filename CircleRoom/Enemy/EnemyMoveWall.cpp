@@ -24,7 +24,7 @@ EnemyMoveWall::~EnemyMoveWall()
 {
 }
 
-void EnemyMoveWall::Init(Vec2& vec)
+void EnemyMoveWall::Init(const Vec2& vec)
 {
 	// ƒtƒŒ[ƒ€‚Ì‰Šú‰»
 	m_frame = 0;
@@ -44,7 +44,7 @@ void EnemyMoveWall::StartUpdate()
 {
 	m_frame++;
 	m_pos += m_vec;
-	Reflection(false);
+	Reflection(0.0f, false);
 
 	if (m_frame > kApeearFrame)
 	{
@@ -58,7 +58,7 @@ void EnemyMoveWall::StartUpdate()
 void EnemyMoveWall::NormalUpdate()
 {
 	m_pos += m_vec;
-	Reflection(false);
+	Reflection(0.0f, false);
 
 	m_col.SetCenter(m_pos, m_radius);
 }

@@ -24,7 +24,7 @@ EnemyNormal::~EnemyNormal()
 {
 }
 
-void EnemyNormal::Init(Vec2& pos)
+void EnemyNormal::Init(const Vec2& pos)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;

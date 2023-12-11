@@ -8,17 +8,24 @@
 #include "Stage1_5.h"
 
 #include "Player/Player.h"
-#include "Enemy/EnemyDivision.h"
+
+#include "Enemy/EnemyNormal.h"
+#include "Enemy/EnemyCreate.h"
 
 namespace
 {
+	// クリア時間
 	constexpr int kRightKilledNum = 3;
 	constexpr int kUpKilledNum = 5;
+
+	// 生成間隔
+	constexpr int kCreateNormalFrame = 60 * 4;
+	constexpr int kCreateCreateFrame = 60 * 7;
 }
 
 Stage1_4::Stage1_4(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	StageBase(mgr, windowSize, fieldSize),
-	m_createFrame(0)
+	m_createNormalFrame(0)
 {
 	m_stageName = "Stage1-4";
 	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
@@ -40,7 +47,8 @@ void Stage1_4::Init()
 	m_frame = 0;
 
 	// 生成フレームの初期化
-	m_createFrame = 0;
+	m_createNormalFrame = 0;
+	m_createCreateFrame = 0;
 
 	// プレイヤーの初期化
 	m_player->Init();
@@ -48,14 +56,11 @@ void Stage1_4::Init()
 	// 敵の配列を初期化
 	m_enemy.clear();
 
-	Vec2 vec;
+	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.back()->Init(m_centerPos);
 
-	// スタート位置の設定
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
-	vec = { centerX, centerY };
-	m_enemy.push_back(std::make_shared<EnemyDivision>(m_windowSize, m_fieldSize, this));
-	m_enemy.back()->Init(vec);
+	m_enemy.push_back(std::make_shared<EnemyCreate>(m_windowSize, m_fieldSize, this));
+	m_enemy.back()->Init(m_centerPos);
 }
 
 void Stage1_4::ChangeStage(Input& input)
@@ -129,4 +134,20 @@ void Stage1_4::DrawArrow() const
 
 void Stage1_4::CreateEnemy()
 {
+	m_createNormalFrame++;
+	m_createCreateFrame++;
+
+	if (m_createNormalFrame > kCreateNormalFrame)
+	{
+		m_createNormalFrame = 0;
+		m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+		m_enemy.back()->Init(m_centerPos);
+	}
+
+	if (m_createCreateFrame > kCreateCreateFrame)
+	{
+		m_createCreateFrame = 0;
+		m_enemy.push_back(std::make_shared<EnemyCreate>(m_windowSize, m_fieldSize, this));
+		m_enemy.back()->Init(m_centerPos);
+	}
 }

@@ -15,7 +15,7 @@ public:
 	/// ‰Šú‰»ˆ—
 	/// </summary>
 	/// <param name="pos">‰ŠúˆÊ’u</param>
-	void Init(Vec2& pos) override;
+	void Init(const Vec2& pos) override;
 
 private:
 	// XVŠÖ”

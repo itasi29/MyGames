@@ -42,7 +42,7 @@ EnemyCreate::~EnemyCreate()
 {
 }
 
-void EnemyCreate::Init(Vec2& pos)
+void EnemyCreate::Init(const Vec2& pos)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;

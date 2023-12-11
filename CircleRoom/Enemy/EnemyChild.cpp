@@ -23,7 +23,7 @@ EnemyChild::~EnemyChild()
 {
 }
 
-void EnemyChild::Init(Vec2& pos)
+void EnemyChild::Init(const Vec2& pos)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;

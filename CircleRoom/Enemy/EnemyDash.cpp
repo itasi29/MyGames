@@ -41,7 +41,7 @@ EnemyDash::~EnemyDash()
 {
 }
 
-void EnemyDash::Init(Vec2& pos)
+void EnemyDash::Init(const Vec2& pos)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;
