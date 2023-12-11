@@ -25,7 +25,7 @@ Stage1_5::Stage1_5(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	// ÉfÅ[É^ÇÃê∂ê¨
 	m_mgr.CreateData(m_stageName);
 
-	m_isDownClear = m_mgr.IsClear(m_stageName, StageManager::kStageRight);
+	m_isDownClear = m_mgr.IsClear(m_stageName, StageManager::kStageDown);
 }
 
 Stage1_5::~Stage1_5()
