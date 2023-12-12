@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "Vec2.h"
 #include "Utility/Collision.h"
 
@@ -64,6 +65,10 @@ private:
 	// 当たり判定
 	Collision m_col;
 
+	// ダッシュログ
+	std::vector<Vec2> m_posLog;
+	// ログフレーム
+	int m_logFrame;
 	// ダッシュするフレーム
 	int m_dashFrame;
 	// ダッシュ再利用可能までのフレーム

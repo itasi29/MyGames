@@ -420,12 +420,12 @@ void StageManager::UpdateBestTime(const std::string& stgName, int bestTime)
 	time = bestTime;
 }
 
-int StageManager::GetKilledEnemyCount() const
+int StageManager::GetEnemyTypeCount() const
 {
 	return m_killedEnemyCount;
 }
 
-void StageManager::UpdateKilledEnemy(std::string name)
+void StageManager::UpdateEnemyType(std::string name)
 {
 	// ”z—ñ‘S•”ŒJ‚è•Ô‚·
 	for (auto& tableName : m_killedEnemyNameTable)
@@ -443,4 +443,9 @@ void StageManager::UpdateKilledEnemy(std::string name)
 	m_killedEnemyCount++;
 	// ƒe[ƒuƒ‹‚É“o˜^
 	m_killedEnemyNameTable.push_back(name);
+}
+
+bool StageManager::IsClearBoss(std::string name)
+{
+	return false;
 }

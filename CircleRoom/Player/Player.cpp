@@ -15,6 +15,8 @@ namespace
 	// プレイヤーの中心から判定をどのくらい動かすか
 	constexpr float kColShift = kSize * 0.32f;
 
+	// ダッシュログ数
+	constexpr int kDashLogNum = 8;
 	// ダッシュ時のスピード
 	constexpr float kDashSpeed = 12.0f;
 	// ダッシュ可能時間
@@ -29,6 +31,7 @@ namespace
 Player::Player(const Size& windowSize, float fieldSize) :
 	m_windowSize(windowSize),
 	m_fieldSize(fieldSize),
+	m_logFrame(kDashLogNum),
 	m_dashFrame(0),
 	m_dashWaitFrame(0),
 	m_isDash(false),
@@ -36,6 +39,7 @@ Player::Player(const Size& windowSize, float fieldSize) :
 {
 	Init();
 	m_isExsit = false;
+	m_posLog.resize(kDashLogNum);
 }
 
 Player::~Player()
@@ -84,6 +88,20 @@ void Player::Draw()
 			static_cast<int>(m_leftVec.x + m_pos.x), static_cast<int>(m_leftVec.y + m_pos.y),
 			static_cast<int>(m_rightVec.x + m_pos.x), static_cast<int>(m_rightVec.y + m_pos.y),
 			0xffffff, true);
+
+		// ダッシュした時のログを描画
+		if (m_logFrame < kDashLogNum)
+		{
+			for (int i = 0; i < kDashLogNum; i++)
+			{
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 - (m_logFrame + i) * (255 / kDashLogNum)));
+				DrawTriangle(static_cast<int>(m_frontVec.x + m_posLog[i].x), static_cast<int>(m_frontVec.y + m_posLog[i].y),
+					static_cast<int>(m_leftVec.x + m_posLog[i].x), static_cast<int>(m_leftVec.y + m_posLog[i].y),
+					static_cast<int>(m_rightVec.x + m_posLog[i].x), static_cast<int>(m_rightVec.y + m_posLog[i].y),
+					0xffffff, true);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			}
+		}
 	}
 	// 死んでいたら赤
 	else
@@ -151,6 +169,8 @@ void Player::Move(Input& input)
 
 void Player::Dash(Input& input)
 {
+	m_logFrame++;
+
 	// ダッシュ待機時間中なら待機時間を減らして処理終了
 	if (m_dashWaitFrame > 0)
 	{
@@ -165,6 +185,12 @@ void Player::Dash(Input& input)
 		m_isDash = true;
 		// 使用時間の初期化
 		m_dashFrame = kDashFrame;
+
+		// ログを現在の位置にする
+		for (auto& log : m_posLog)
+		{
+			log = m_pos;
+		}
 	}
 
 	// 現在ダッシュ中でないなら処理終了
@@ -174,6 +200,15 @@ void Player::Dash(Input& input)
 	m_pos -= m_vec;
 	// 移動ベクトルに現在向いている方向の単位ベクトル*スピードしたものを足す
 	m_pos += m_nowFront * kDashSpeed;
+
+	// ログの更新
+	for (int i = kDashLogNum - 1; i > 0; i--)
+	{
+		m_posLog[i] = m_posLog[i - 1];
+	}
+	m_posLog[0] = m_pos;
+	// ログフレームの更新
+	m_logFrame = 0;
 
 	// 使用時間を減らす
 	m_dashFrame--;

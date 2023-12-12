@@ -17,7 +17,7 @@ namespace
 	constexpr float kSwing = 1.5f;
 
 	// 半径
-	constexpr float kRadius = 24.0f;
+	constexpr float kRadius = 48.0f;
 
 	// カラー
 	constexpr int kColor = 0x08ff08;
@@ -31,7 +31,7 @@ namespace
 	// 敵生成数
 	constexpr int kCreateNum = 4;
 	// 生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 5;
+	constexpr int kCreateFrame = 60 * 3.5;
 	// 生成前待機フレーム
 	constexpr int kWaitCreateFrame = 30;
 	// 生成するときの角度
@@ -198,7 +198,7 @@ void BossArmored::CreateEnemy()
 			m_createFrame = kCreateFrame;
 
 			// ベクトルの生成
-			Vec2 vec = m_vec;
+			Vec2 vec = m_conversionVec.GetNormalized();
 
 			// 体力が半分未満なら量倍
 			if (m_hp < m_maxHp * 0.5f)

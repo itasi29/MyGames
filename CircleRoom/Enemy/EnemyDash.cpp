@@ -8,13 +8,15 @@
 namespace
 {
 	// 動くスピード
-	constexpr float kSpeed = 5.0f;
+	constexpr float kSpeed = 4.0f;
 	// 半径
 	constexpr float kRadius = 24.0f;
 
 	// カラー
 	constexpr int kColor = 0x0808ff;
 
+	// ログ数
+	constexpr int kDashLogNum = 8;
 	// ダッシュ時のスピード
 	constexpr float kDashSpeed = 15.0f;
 	// ダッシュ開始までのスピード
@@ -29,12 +31,14 @@ namespace
 EnemyDash::EnemyDash(const Size& windowSize, float fieldSize, std::shared_ptr<Player>& player) :
 	EnemyBase(windowSize, fieldSize),
 	m_player(player),
+	m_logFrame(kDashLogNum),
 	m_isDash(false),
 	m_waitDashFrame(kWaitDashFrame),
 	m_startWaitDashFrame(kStartWaitDashFrame)
 {
 	m_name = "Dash";
 	m_color = kColor;
+	m_posLog.resize(kDashLogNum);
 }
 
 EnemyDash::~EnemyDash()
@@ -85,7 +89,7 @@ void EnemyDash::StartUpdate()
 
 void EnemyDash::NormalUpdate()
 {
-	DashStartProcess();
+	Dash();
 	m_pos += m_vec;
 
 	// 反射したかつ、ダッシュ状態なら通常状態に戻す
@@ -106,11 +110,41 @@ void EnemyDash::NormalUpdate()
 	m_col.SetCenter(m_pos, m_radius);
 }
 
-void EnemyDash::DashStartProcess()
+void EnemyDash::NormalDraw()
 {
-	// ダッシュ中なら処理しない
+	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
+		static_cast<int>(m_radius), m_color, true);
+
+	if (m_logFrame < kDashLogNum)
+	{
+		for (int i = 0; i < kDashLogNum; i++)
+		{
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 - (m_logFrame + i) * (255 / kDashLogNum)));
+			DrawCircle(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y),
+				static_cast<int>(m_radius), m_color, true);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+	}
+
+#ifdef _DEBUG
+	// 当たり判定の描画
+	m_col.Draw(0xff0000, false);
+#endif
+}
+
+void EnemyDash::Dash()
+{
+	m_logFrame++;
+	// ダッシュ中ならログのみ更新
 	if (m_isDash)
 	{
+		for (int i = kDashLogNum - 1; i > 0; i--)
+		{
+			m_posLog[i] = m_posLog[i - 1];
+		}
+		m_posLog[0] = m_pos;
+		m_logFrame = 0;
+
 		return;
 	}
 
@@ -144,5 +178,12 @@ void EnemyDash::DashStartProcess()
 		m_vec.Normalize();
 		// スピードに変換
 		m_vec *= kDashSpeed;
+
+		// ログの更新
+		for (auto& log : m_posLog)
+		{
+			log = m_pos;
+		}
+		m_logFrame = 0;
 	}
 }

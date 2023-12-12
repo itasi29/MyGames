@@ -174,7 +174,7 @@ void BossBase::NormalDraw() const
 
 void BossBase::DrawHpBar() const
 {
-	Vec2 base = {m_windowSize.w - kHpBarWidth * 1.5f, 64.0f};
+	Vec2 base = {m_windowSize.w - kHpBarWidth * 1.5f, 160.0f};
 
 	// îwåi
 	DrawBox(static_cast<int>(base.x - kBackHpBarWidth), static_cast<int>(base.y - kBackHpBarHeight),
@@ -185,4 +185,7 @@ void BossBase::DrawHpBar() const
 	DrawBox(static_cast<int>(base.x), static_cast<int>(base.y),
 		static_cast<int>(base.x + kHpBarWidth * (m_hp / static_cast<float>(m_maxHp))), static_cast<int>(base.y + kHpBarHeight),
 		0x08ff08, true);
+
+	DrawFormatString(static_cast<int>(base.x), static_cast<int>(base.y - 32),
+		0xffffff, L"%02d / %02d", m_hp, m_maxHp);
 }

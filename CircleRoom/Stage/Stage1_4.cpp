@@ -9,6 +9,7 @@
 
 #include "Player/Player.h"
 
+#include "Enemy/EnemyMoveWall.h"
 #include "Enemy/EnemyNormal.h"
 #include "Enemy/EnemyCreate.h"
 
@@ -56,6 +57,18 @@ void Stage1_4::Init()
 	// 敵の配列を初期化
 	m_enemy.clear();
 
+	// 壁動く敵の作成
+	Vec2 vec;
+	// 上側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.x = 0;
+	vec.y = -1;
+	m_enemy.back()->Init(vec);
+	// 下側
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	vec.y = 1;
+	m_enemy.back()->Init(vec);
+
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
 	m_enemy.back()->Init(m_centerPos);
 
@@ -96,14 +109,14 @@ void Stage1_4::CheckStageConditions()
 	// 右をまだクリアしていない場合
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageRight))
 	{
-		if (m_mgr.GetKilledEnemyCount() >= kRightKilledNum)
+		if (m_mgr.GetEnemyTypeCount() >= kRightKilledNum)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageRight);
 		}
 	}
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageUp))
 	{
-		if (m_mgr.GetKilledEnemyCount() >= kUpKilledNum)
+		if (m_mgr.GetEnemyTypeCount() >= kUpKilledNum)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageUp);
 		}
@@ -115,14 +128,14 @@ void Stage1_4::DrawStageConditions(int drawY)
 	if (!m_isRightClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"右　%dの種類で死ぬ\n(%d / %d)",
-			kRightKilledNum, m_mgr.GetKilledEnemyCount(), kRightKilledNum);
+			kRightKilledNum, m_mgr.GetEnemyTypeCount(), kRightKilledNum);
 
 		drawY += 32;
 	}
 	if (!m_isUpClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"上　%dの種類で死ぬ\n(%d / %d)",
-			kUpKilledNum, m_mgr.GetKilledEnemyCount(), kUpKilledNum);
+			kUpKilledNum, m_mgr.GetEnemyTypeCount(), kUpKilledNum);
 	}
 }
 

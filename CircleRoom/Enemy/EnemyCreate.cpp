@@ -13,15 +13,15 @@ namespace
 	constexpr float kPai = 3.1415926535f;
 
 	// 動くスピード
-	constexpr float kSpeed = 5.0f;
+	constexpr float kSpeed = 3.0f;
 	// 半径
 	constexpr float kRadius = 24.0f;
 
 	// カラー
-	constexpr int kColor = 0xffffff;
+	constexpr int kColor = 0xffff08;
 
 	// 1フレームごとの角度
-	constexpr float kRadian = 5.0f * (kPai / 180.0f);
+	constexpr float kRadian = 2.0f * (kPai / 180.0f);
 	// 縦の揺れ幅
 	constexpr float kSwingHeight = 2.0f;
 

@@ -104,7 +104,7 @@ void Stage1_3::CheckStageConditions()
 	// ¶‚ğ‚Ü‚¾ƒNƒŠƒA‚µ‚Ä‚¢‚È‚¢ê‡
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
 	{
-		if (m_mgr.GetKilledEnemyCount() >= kLeftKilledNum)
+		if (m_mgr.GetEnemyTypeCount() >= kLeftKilledNum)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageLeft);
 		}
@@ -124,7 +124,7 @@ void Stage1_3::DrawStageConditions(int drawY)
 	if (!m_isLeftClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"¶@%d‚Ìí—Ş‚Å€‚Ê\n(%d / %d)",
-			kLeftKilledNum, m_mgr.GetKilledEnemyCount(), kLeftKilledNum);
+			kLeftKilledNum, m_mgr.GetEnemyTypeCount(), kLeftKilledNum);
 
 		drawY += 32;
 	}

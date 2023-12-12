@@ -3,9 +3,9 @@
 namespace
 {
 	// 動くスピード
-	constexpr float kSpeed = 1.5f;
+	constexpr float kSpeed = 2.5f;
 	// 半径
-	constexpr float kRadius = 12.0f;
+	constexpr float kRadius = 16.0f;
 
 	// カラー
 	constexpr int kColor = 0xffffff;

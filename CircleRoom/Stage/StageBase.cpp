@@ -104,7 +104,7 @@ void StageBase::UpdatePlaying(Input& input)
 			// ベストタイムの更新
 			m_mgr.UpdateBestTime(m_stageName, m_frame);
 			// 殺したことがある敵情報の更新
-			m_mgr.UpdateKilledEnemy(enemy->GetName());
+			m_mgr.UpdateEnemyType(enemy->GetName());
 
 			// クリアしているかの確認
 			CheckStageConditions();
@@ -128,7 +128,11 @@ void StageBase::UpdatePlaying(Input& input)
 		// ボスの死亡処理
 		if (!m_boss->IsExsit())
 		{
+			// ボスを消す
 			m_boss.reset();
+			// 敵全て消す
+			m_enemy.clear();
+
 			// FIXME : 現状プレイヤーの死亡処理と同じにしているけれど後で処理の仕方変わると思う
 			m_player->Death();
 
@@ -148,9 +152,10 @@ void StageBase::UpdatePlaying(Input& input)
 			return;
 		}
 
-		// プレイヤーの死亡処理
+		// プレイヤーとの判定処理
 		if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
 		{
+			// プレイヤーの死亡処理
 			m_player->Death();
 
 			// メンバ関数ポインタを選択の方に戻す
@@ -163,7 +168,7 @@ void StageBase::UpdatePlaying(Input& input)
 			// ベストタイムの更新
 			m_mgr.UpdateBestTime(m_stageName, m_frame);
 			// 殺したことがある敵情報の更新
-			m_mgr.UpdateKilledEnemy(m_boss->GetName());
+			m_mgr.UpdateEnemyType(m_boss->GetName());
 
 			// クリアしているかの確認
 			CheckStageConditions();
@@ -445,19 +450,19 @@ void StageBase::DrawWall()
 	// 左
 	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
 		static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0x00ff00);
+		0xffffff);
 	// 右
 	DrawLine(static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
 		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0x00ff00);
+		0xffffff);
 	// 上
 	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
 		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		0x00ff00);
+		0xffffff);
 	// 下
 	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0x00ff00);
+		0xffffff);
 }
 
 void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage)

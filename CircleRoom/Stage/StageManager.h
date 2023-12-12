@@ -111,16 +111,32 @@ public:
 	/// プレイヤーを殺した敵の種類数を返す
 	/// </summary>
 	/// <returns>種類数</returns>
-	int GetKilledEnemyCount() const;
+	int GetEnemyTypeCount() const;
 
 	/// <summary>
 	/// プレイヤーを殺した敵がすでに殺したことがあるかの確認
 	/// もし、殺したことがなければ名前を保存し、種類数カウントを増やす
 	/// </summary>
 	/// <param name="name">敵の名前</param>
-	void UpdateKilledEnemy(std::string name);
+	void UpdateEnemyType(std::string name);
+
+	/// <summary>
+	/// すでにクリアしたことがあるボスか
+	/// </summary>
+	/// <param name="name">ボスの名前</param>
+	/// <returns>true: クリアしている / false:クリアしていない</returns>
+	bool IsClearBoss(std::string name);
 
 private:
+	void UpdateMove();
+	void DrawMove();
+
+	void ResetVecX();
+	void ResetVecY();
+
+private:
+	const Size& m_size;
+
 	// ステージのクリア情報群
 	std::unordered_map<std::string, StageData> m_stageSaveData;
 	// 殺された敵の情報群
@@ -142,13 +158,5 @@ private:
 	// 画面の画像ハンドル
 	int m_stageHandle;
 
-	void UpdateMove();
-	void DrawMove();
-
-	void ResetVecX();
-	void ResetVecY();
-
-private:
-	const Size& m_size;
 };
 

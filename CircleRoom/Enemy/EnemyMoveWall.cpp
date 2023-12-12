@@ -5,7 +5,7 @@
 namespace
 {
 	// 動くスピード
-	constexpr float kSpeed = 12.0f;
+	constexpr float kSpeed = 9.0f;
 	// 半径
 	constexpr float kRadius = 24.0f;
 

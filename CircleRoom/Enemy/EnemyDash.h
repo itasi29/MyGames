@@ -1,5 +1,6 @@
 #pragma once
 #include "EnemyBase.h"
+#include <vector>
 #include <memory>
 
 class Player;
@@ -24,12 +25,18 @@ private:
 	void StartUpdate() override;
 	void NormalUpdate() override;
 
+	void NormalDraw() override;
+
 	// ダッシュに関する処理
-	void DashStartProcess();
+	void Dash();
 
 private:
 	std::shared_ptr<Player>& m_player;
 
+	// 位置ログ
+	std::vector<Vec2> m_posLog;
+	// ログフレーム
+	int m_logFrame;
 	// 現状ダッシュしているか
 	bool m_isDash;
 	// ダッシュするまでの待機フレーム

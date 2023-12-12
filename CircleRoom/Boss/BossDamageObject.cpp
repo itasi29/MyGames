@@ -15,8 +15,8 @@ BossDamageObject::BossDamageObject(const Size& windowSize, float fieldSize) :
 	m_isUsed(false)
 {
 	// 中心地からフィールド範囲内に出現するようにランダムに設置
-	m_pos.x = windowSize.w * 0.5f + GetRand(static_cast<int>(fieldSize * 2 - kRadius * 2)) - fieldSize - kRadius;
-	m_pos.y = windowSize.h * 0.5f + GetRand(static_cast<int>(fieldSize * 2 - kRadius * 2)) - fieldSize - kRadius;
+	m_pos.x = windowSize.w * 0.5f + GetRand(static_cast<int>(fieldSize * 2 - kRadius * 2)) - fieldSize + kRadius;
+	m_pos.y = windowSize.h * 0.5f + GetRand(static_cast<int>(fieldSize * 2 - kRadius * 2)) - fieldSize + kRadius;
 
 	m_col.SetCenter(m_pos, kRadius);
 }

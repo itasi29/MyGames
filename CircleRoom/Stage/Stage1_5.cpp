@@ -87,7 +87,7 @@ void Stage1_5::CheckStageConditions()
 	// 下をまだクリアしていない場合
 	if (!m_mgr.IsClear(m_stageName, StageManager::kStageDown))
 	{
-		if (m_mgr.GetKilledEnemyCount() >= kDownKilledNum)
+		if (m_mgr.GetEnemyTypeCount() >= kDownKilledNum)
 		{
 			m_mgr.SaveClear(m_stageName, StageManager::kStageRight);
 		}
@@ -99,8 +99,12 @@ void Stage1_5::DrawStageConditions(int drawY)
 	if (!m_isDownClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"下　%dの種類で死ぬ\n(%d / %d)",
-			kDownKilledNum, m_mgr.GetKilledEnemyCount(), kDownKilledNum);
+			kDownKilledNum, m_mgr.GetEnemyTypeCount(), kDownKilledNum);
+
+		drawY += 32;
 	}
+
+	// FIXME: ここにボスを倒してる場合のクリアを出すが、後で処理は別のとこに書くようにする
 }
 
 void Stage1_5::DrawArrow() const

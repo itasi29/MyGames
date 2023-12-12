@@ -76,6 +76,7 @@ void Stage1_1::Init()
 	// “G‚ðˆê‘Ì’Ç‰Á
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
 	m_enemy.back()->Init(m_centerPos);
+	m_createNum++;
 }
 
 void Stage1_1::ChangeStage(Input& input)
