@@ -34,6 +34,11 @@ public:
 	StageManager();
 	~StageManager();
 
+	// 後で変更or消す
+	void DeleteData();
+
+
+
 	void Update(Input& input);
 	void Draw();
 
@@ -49,7 +54,7 @@ public:
 	/// </summary>
 	/// <param name="pos">動かすベクトル</param>
 	/// <param name="handle">画像ハンドル</param>
-	void StartMove(StageDir dir, int handle);
+	void StartMove(StageManager::StageDir dir, int handle);
 
 	int GetSlideVolumeX(StageDir dir) const;
 	int GetSlideVolumeY(StageDir dir) const;

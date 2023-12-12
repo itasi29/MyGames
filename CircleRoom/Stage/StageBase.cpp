@@ -200,6 +200,15 @@ void StageBase::DrawSelect()
 	DrawFormatString(128, 32, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
 	// ステージ条件の描画
 	DrawStageConditions();
+
+	// ベストタイムの描画
+	int bestTime = m_mgr.GetBestTime(m_stageName);
+	minSec = (bestTime * 1000 / 60) % 1000;
+	sec = (bestTime / 60) % 60;
+	min = bestTime / 3600;
+	DrawExtendString(m_windowSize.w - 256, 32, 1.5, 1.5, L"ベストタイム", 0xffffff);
+	DrawExtendFormatString(m_windowSize.w - 256, 32 + 48, 2, 2, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
+
 	// 矢印の描画
 	DrawArrow();
 }

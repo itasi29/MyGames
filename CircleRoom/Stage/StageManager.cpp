@@ -6,17 +6,17 @@
 #include "StageManager.h"
 #include "StageBase.h"
 
+// ファイル用
+struct StageInfHeader
+{
+	char id[4] = "sti"; // 最後に'\0'入ってるので4バイト
+	float version = 1.0f;
+	size_t dataCount = 0;
+	// 空白の4バイト(パディング)
+};
+
 namespace
 {
-	// ファイル用
-	struct StageInfHeader
-	{
-		char id[4] = "sti"; // 最後に'\0'入ってるので4バイト
-		float version = 1.0f;
-		size_t dataCount = 0;
-		// 空白の4バイト(パディング)
-	};
-
 	// ステージ間の移動にかかる時間
 	constexpr int kStageMoveFrame = 30;
 }
@@ -38,6 +38,13 @@ StageManager::StageManager() :
 StageManager::~StageManager()
 {
 	Save("stg.inf");
+}
+
+void StageManager::DeleteData()
+{
+	m_stageSaveData.clear();
+	m_killedEnemyNameTable.clear();
+	m_killedEnemyCount = 0;
 }
 
 void StageManager::Update(Input& input)
@@ -64,7 +71,7 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 	m_stage = nextStage;
 }
 
-void StageManager::StartMove(StageDir dir, int handle)
+void StageManager::StartMove(StageManager::StageDir dir, int handle)
 {
 	m_isStageMove = true;
 	m_frame = 0;
@@ -322,7 +329,6 @@ void StageManager::Load(const std::wstring& path)
 		name.resize(nameSize);
 		// 文字列の読み込み
 		FileRead_read(name.data(), static_cast<int>(name.size() * sizeof(char)), handle);
-		;
 	}
 
 	// ファイルは閉じる
