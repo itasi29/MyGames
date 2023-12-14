@@ -22,6 +22,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Boss\BossArmored.cpp" />
     <ClCompile Include="Boss\BossDamageObject.cpp" />
+    <ClCompile Include="Boss\BossStrongArmored.cpp" />
     <ClCompile Include="Common\Input.cpp" />
     <ClCompile Include="Boss\BossBase.cpp" />
     <ClCompile Include="Enemy\EnemySplit.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Boss\BossArmored.h" />
     <ClInclude Include="Boss\BossDamageObject.h" />
+    <ClInclude Include="Boss\BossStrongArmored.h" />
     <ClInclude Include="Common\Input.h" />
     <ClInclude Include="Boss\BossBase.h" />
     <ClInclude Include="Enemy\EnemySplit.h" />

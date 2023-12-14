@@ -12,7 +12,7 @@ class BossDamageObject;
 class BossArmored : public BossBase
 {
 public:
-	BossArmored(const Size& windowSize, float fieldSize, int maxHp, StageBase* stage);
+	BossArmored(const Size& windowSize, float fieldSize, StageBase* stage);
 	virtual ~BossArmored();
 
 	/// <summary>
@@ -21,7 +21,13 @@ public:
 	/// <param name="pos">初期位置</param>
 	void Init(const Vec2& pos) override;
 
-	void OnAttack(bool isDash, const Collision& col) override;
+	/// <summary>
+	/// ダメージ処理
+	/// </summary>
+	/// <param name="isDash">プレイヤーのダッシュ状態</param>
+	/// <param name="col">プレイヤーの当たり判定</param>
+	/// <returns>true: ダメージを与えた / false:ダメージを与えていない</returns>
+	virtual bool OnAttack(bool isDash, const Collision& col) override;
 
 protected:
 	// 更新関数
@@ -29,11 +35,11 @@ protected:
 	void NormalUpdate() override;
 
 	// 描画関数
-	void NormalDraw() const override;
+	virtual void NormalDraw() const override;
 
-	void CreateEnemy();
+	virtual void CreateEnemy();
 
-private:
+protected:
 	StageBase* m_stage;
 
 	// 実際の移動は別の動きとなるので変数としてもっておく

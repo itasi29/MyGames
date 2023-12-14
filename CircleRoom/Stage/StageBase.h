@@ -47,35 +47,6 @@ public:
 	std::string GetStageName() const { return m_stageName; }
 
 protected:
-	// ステージ変更可能までの待機時間
-	const int kWaitChangeFrame = 30;
-	const Vec2 m_centerPos;
-
-	StageManager& m_mgr;
-
-	// Windowサイズ
-	const Size& m_windowSize;
-	// フィールドサイズ
-	float m_fieldSize;
-	// ステージの中心地
-
-	// ステージ名
-	std::string m_stageName;
-
-	// プレイヤー
-	std::shared_ptr<Player> m_player;
-	// 敵
-	std::list<std::shared_ptr<EnemyBase>> m_enemy;
-	// ボス
-	std::shared_ptr<BossBase> m_boss;
-
-	// 経過時間
-	int m_frame;
-	
-	// 待機時間
-	int m_waitFrame;
-
-protected:
 	using UpdateFunc_t = void (StageBase::*)(Input&);
 	using DrawFunc_t = void (StageBase::*)();
 
@@ -100,6 +71,16 @@ protected:
 	/// 敵の生成
 	/// </summary>
 	virtual void CreateEnemy() = 0;
+
+	/// <summary>
+	/// 強化ボスの生成
+	/// </summary>
+	virtual void CreateStrongBoss() {}
+
+	/// <summary>
+	/// 時間の更新処理
+	/// </summary>
+	virtual void UpdateTime() {}
 
 	/// <summary>
 	/// 選択中の更新処理
@@ -161,6 +142,11 @@ protected:
 
 private:
 	/// <summary>
+	/// ボスの死亡処理
+	/// </summary>
+	void BossDeath();
+
+	/// <summary>
 	/// スライド処理の全体共通処理
 	/// </summary>
 	/// <param name="now">現在の画面を保存するための画面「ハンドル</param>
@@ -179,5 +165,36 @@ private:
 	/// 壁の描画
 	/// </summary>
 	void DrawWall();
+
+protected:
+	// ステージ変更可能までの待機時間
+	const int kWaitChangeFrame = 30;
+	const Vec2 m_centerPos;
+
+	StageManager& m_mgr;
+
+	// Windowサイズ
+	const Size& m_windowSize;
+	// フィールドサイズ
+	float m_fieldSize;
+	// ステージの中心地
+
+	// ステージ名
+	std::string m_stageName;
+
+	// プレイヤー
+	std::shared_ptr<Player> m_player;
+	// 敵
+	std::list<std::shared_ptr<EnemyBase>> m_enemy;
+	// ボス
+	std::shared_ptr<BossBase> m_boss;
+
+	// 経過時間
+	int m_frame;
+	// 時間経過を行うかどうか
+	bool m_isUpdateTime;
+
+	// 待機時間
+	int m_waitFrame;
 };
 

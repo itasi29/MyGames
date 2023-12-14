@@ -51,9 +51,9 @@ void BossBase::Draw() const
 	(this->*m_drawFunc)();
 }
 
-void BossBase::OnAttack(bool isDash, const Collision& rect)
+bool BossBase::OnAttack(bool isDash, const Collision& rect)
 {
-	if (isDash) return;
+	if (isDash) return false;
 
 	m_hp--;
 
@@ -64,6 +64,8 @@ void BossBase::OnAttack(bool isDash, const Collision& rect)
 		m_hp = 0;
 		m_isExsit = false;
 	}
+
+	return true;
 }
 
 bool BossBase::Reflection()

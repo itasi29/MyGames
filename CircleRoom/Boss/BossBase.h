@@ -25,6 +25,12 @@ public:
 	Collision GetRect() const { return m_col; }
 
 	/// <summary>
+	/// 座標を取得
+	/// </summary>
+	/// <returns>座標の中心座標</returns>
+	Vec2 GetPos() const { return m_pos; }
+
+	/// <summary>
 	/// 敵の名前を返す
 	/// </summary>
 	/// <returns>名前</returns>
@@ -39,7 +45,7 @@ public:
 	/// <summary>
 	/// HPを1減らす
 	/// </summary>
-	virtual void OnAttack(bool isDash, const Collision& rect);
+	virtual bool OnAttack(bool isDash, const Collision& rect);
 
 protected:
 	/// <summary>

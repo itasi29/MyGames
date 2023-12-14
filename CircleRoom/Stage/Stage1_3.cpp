@@ -31,8 +31,8 @@ Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	// データの生成
 	m_mgr.CreateData(m_stageName);
 
-	m_isDownClear = m_mgr.IsClear(m_stageName, StageManager::kStageDown);
-	m_isLeftClear = m_mgr.IsClear(m_stageName, StageManager::kStageLeft);
+	m_isDownClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageDown);
+	m_isLeftClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft);
 }
 
 Stage1_3::~Stage1_3()
@@ -43,6 +43,8 @@ void Stage1_3::Init()
 {
 	// 経過時間の初期化
 	m_frame = 0;
+	// 経過を行うかを初期化
+	m_isUpdateTime = true;
 
 	// 生成フレームの初期化
 	m_createFrame = 0;
@@ -79,7 +81,7 @@ void Stage1_3::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageLeft) && input.IsPress("left"))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft) && input.IsPress("left"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
 		nextStage = std::make_shared<Stage1_4>(m_mgr, m_windowSize, m_fieldSize);
@@ -88,7 +90,7 @@ void Stage1_3::ChangeStage(Input& input)
 
 		return;
 	}
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageDown) && input.IsPress("down"))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageDown) && input.IsPress("down"))
 	{
 		std::shared_ptr<Stage1_1> nextStage;
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
@@ -102,7 +104,7 @@ void Stage1_3::ChangeStage(Input& input)
 void Stage1_3::CheckStageConditions()
 {
 	// 左をまだクリアしていない場合
-	if (!m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
+	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft))
 	{
 		if (m_mgr.GetEnemyTypeCount() >= kLeftKilledNum)
 		{
@@ -110,7 +112,7 @@ void Stage1_3::CheckStageConditions()
 		}
 	}
 	// 下をまだクリアしていない場合
-	if (!m_mgr.IsClear(m_stageName, StageManager::kStageDown))
+	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageDown))
 	{
 		if (m_mgr.GetBestTime(m_stageName) > kDownExsitTime * 60)
 		{
@@ -151,4 +153,9 @@ void Stage1_3::CreateEnemy()
 		m_enemy.push_back(std::make_shared<EnemyDash>(m_windowSize, m_fieldSize, m_player));
 		m_enemy.back()->Init(m_centerPos);
 	}
+}
+
+void Stage1_3::UpdateTime()
+{
+	m_frame++;
 }

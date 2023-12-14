@@ -31,6 +31,7 @@ StageManager::StageManager() :
 	m_stageSaveData.clear();
 	m_killedEnemyNameTable.clear();
 	m_killedEnemyCount = 0;
+	m_clearBossTable.clear();
 
 	Load(L"stg.inf");
 }
@@ -144,68 +145,6 @@ int StageManager::GetSlideVolumeY(StageDir dir) const
 	return 0;
 }
 
-void StageManager::UpdateMove()
-{
-	if (!m_isStageMove) return;
-
-	// フレームの更新
-	m_frame++;
-	// 場所の更新
-	m_pos += m_vec;
-
-	// 一定フレームたったら動かし完了とする
-	if (m_frame >= kStageMoveFrame)
-	{
-		m_isStageMove = false;
-
-		// 位置、ベクトルも初期化しておく
-		m_pos = { 0.0f, 0.0f };
-		m_vec = { 0.0f, 0.0f };
-	}
-}
-
-void StageManager::DrawMove()
-{
-	DrawRectGraph(0, 0, static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_size.w, m_size.h,
-		m_stageHandle, true);
-
-#ifdef _DEBUG
-	DrawFormatString(32, 32, 0xff0808, L"ステージ移動中 %d", m_frame);
-	DrawFormatString(32, 48, 0xff0808, L"座標(%.2f, %.2f)", m_pos.x, m_pos.y);
-#endif
-}
-
-void StageManager::ResetVecX()
-{
-	// 左に動いている
-	if (m_vec.x < 0.0f)
-	{
-		m_vec.x = -m_pos.x / kStageMoveFrame;
-		return;
-	}
-	// 右に動いている
-	if (m_vec.x > 0.0f)
-	{
-		m_vec.x = static_cast<float>((m_size.w - static_cast<int>(m_pos.x)) % (m_size.w + 1) / kStageMoveFrame);
-		return;
-	}
-}
-
-void StageManager::ResetVecY()
-{
-	// 上に動いている
-	if (m_vec.y < 0.0f)
-	{
-		m_vec.y = -m_pos.y / kStageMoveFrame;
-		return;
-	}
-	// 下に動いている
-	if (m_vec.y > 0.0f)
-	{
-		m_vec.y = static_cast<float>((m_size.h - static_cast<int>(m_pos.y)) % (m_size.h + 1) / kStageMoveFrame);
-		return;
-	}
-}
 
 void StageManager::Save(const std::string& path)
 {
@@ -258,6 +197,17 @@ void StageManager::Save(const std::string& path)
 		// 文字列数を書き込み
 		fwrite(&nameSize, sizeof(nameSize), 1, fp);
 		// 文字列の書き込み
+		fwrite(name.data(), name.size(), 1, fp);
+	}
+
+	// ボスクリア情報の書き込み
+	uint8_t size = static_cast<uint8_t>(m_clearBossTable.size());
+	fwrite(&size, sizeof(size), 1, fp);
+	// データの書き込み
+	for (const auto& name : m_clearBossTable)
+	{
+		uint8_t nameSize = static_cast<uint8_t>(name.size());
+		fwrite(&nameSize, sizeof(nameSize), 1, fp);
 		fwrite(name.data(), name.size(), 1, fp);
 	}
 
@@ -331,6 +281,19 @@ void StageManager::Load(const std::wstring& path)
 		FileRead_read(name.data(), static_cast<int>(name.size() * sizeof(char)), handle);
 	}
 
+	// ボスクリア情報の取得
+	uint8_t size;
+	FileRead_read(&size, sizeof(size), handle);
+	m_clearBossTable.resize(size);
+	for (int i = 0; i < size; i++)
+	{
+		uint8_t nameSize;
+		FileRead_read(&nameSize, sizeof(nameSize), handle);
+		auto& name = m_clearBossTable[i];
+		name.resize(nameSize);
+		FileRead_read(name.data(), static_cast<int>(name.size() * sizeof(char)), handle);
+	}
+
 	// ファイルは閉じる
 	FileRead_close(handle);
 }
@@ -356,7 +319,7 @@ void StageManager::CreateData(const std::string& stgName)
 	}
 }
 
-bool StageManager::IsClear(const std::string& stgName, StageDir dir) const
+bool StageManager::IsClearStage(const std::string& stgName, StageDir dir) const
 {
 	auto it = m_stageSaveData.find(stgName);
 	// ステージを見つけられなかったら0を返す
@@ -368,6 +331,40 @@ bool StageManager::IsClear(const std::string& stgName, StageDir dir) const
 
 	// 見つかったらクリア情報を返す
 	return m_stageSaveData.at(stgName).isClears[dir];
+}
+
+bool StageManager::IsClearBoss(const std::string& name) const
+{
+	for (const auto& boss : m_clearBossTable)
+	{
+		// 名前が一致したらクリアしたことがある
+		if (boss == name)
+		{
+			return true;
+		}
+	}
+
+	// 一致しなかったらクリアしたことがない
+	return false;
+}
+
+int StageManager::GetBestTime(const std::string& stgName) const
+{
+	auto it = m_stageSaveData.find(stgName);
+	// ステージを見つけられなかったら0を返す
+	if (it == m_stageSaveData.end())
+	{
+		assert(false);
+		return 0;
+	}
+
+	// 見つかったらベストタイムを返す
+	return m_stageSaveData.at(stgName).bestTime;
+}
+
+int StageManager::GetEnemyTypeCount() const
+{
+	return m_killedEnemyCount;
 }
 
 void StageManager::SaveClear(const std::string& stgName, int dir)
@@ -384,18 +381,20 @@ void StageManager::SaveClear(const std::string& stgName, int dir)
 	m_stageSaveData[stgName].isClears[dir] = true;
 }
 
-int StageManager::GetBestTime(const std::string& stgName) const
+void StageManager::UpdateClearBoss(const std::string& name)
 {
-	auto it = m_stageSaveData.find(stgName);
-	// ステージを見つけられなかったら0を返す
-	if (it == m_stageSaveData.end())
+	for (const auto& boss : m_clearBossTable)
 	{
-		assert(false);
-		return 0;
+		// クリアしたことがあれば何もしない
+		if (boss == name)
+		{
+			return;
+		}
 	}
 
-	// 見つかったらベストタイムを返す
-	return m_stageSaveData.at(stgName).bestTime;
+	// 情報が乗っていない場合は追加する
+	m_clearBossTable.push_back(name);
+	return;
 }
 
 void StageManager::UpdateBestTime(const std::string& stgName, int bestTime)
@@ -420,15 +419,10 @@ void StageManager::UpdateBestTime(const std::string& stgName, int bestTime)
 	time = bestTime;
 }
 
-int StageManager::GetEnemyTypeCount() const
-{
-	return m_killedEnemyCount;
-}
-
-void StageManager::UpdateEnemyType(std::string name)
+void StageManager::UpdateEnemyType(const std::string& name)
 {
 	// 配列全部繰り返す
-	for (auto& tableName : m_killedEnemyNameTable)
+	for (const auto& tableName : m_killedEnemyNameTable)
 	{
 		// 現在のテーブルの名前と殺した敵の名前が同じ場合は一度殺したことがあるから
 		// この処理を終了する
@@ -445,7 +439,66 @@ void StageManager::UpdateEnemyType(std::string name)
 	m_killedEnemyNameTable.push_back(name);
 }
 
-bool StageManager::IsClearBoss(std::string name)
+
+void StageManager::UpdateMove()
 {
-	return false;
+	if (!m_isStageMove) return;
+
+	// フレームの更新
+	m_frame++;
+	// 場所の更新
+	m_pos += m_vec;
+
+	// 一定フレームたったら動かし完了とする
+	if (m_frame >= kStageMoveFrame)
+	{
+		m_isStageMove = false;
+
+		// 位置、ベクトルも初期化しておく
+		m_pos = { 0.0f, 0.0f };
+		m_vec = { 0.0f, 0.0f };
+	}
+}
+
+void StageManager::DrawMove()
+{
+	DrawRectGraph(0, 0, static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_size.w, m_size.h,
+		m_stageHandle, true);
+
+#ifdef _DEBUG
+	DrawFormatString(32, 32, 0xff0808, L"ステージ移動中 %d", m_frame);
+	DrawFormatString(32, 48, 0xff0808, L"座標(%.2f, %.2f)", m_pos.x, m_pos.y);
+#endif
+}
+
+void StageManager::ResetVecX()
+{
+	// 左に動いている
+	if (m_vec.x < 0.0f)
+	{
+		m_vec.x = -m_pos.x / kStageMoveFrame;
+		return;
+	}
+	// 右に動いている
+	if (m_vec.x > 0.0f)
+	{
+		m_vec.x = static_cast<float>((m_size.w - static_cast<int>(m_pos.x)) % (m_size.w + 1) / kStageMoveFrame);
+		return;
+	}
+}
+
+void StageManager::ResetVecY()
+{
+	// 上に動いている
+	if (m_vec.y < 0.0f)
+	{
+		m_vec.y = -m_pos.y / kStageMoveFrame;
+		return;
+	}
+	// 下に動いている
+	if (m_vec.y > 0.0f)
+	{
+		m_vec.y = static_cast<float>((m_size.h - static_cast<int>(m_pos.y)) % (m_size.h + 1) / kStageMoveFrame);
+		return;
+	}
 }

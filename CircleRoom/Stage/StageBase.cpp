@@ -123,37 +123,16 @@ void StageBase::UpdatePlaying(Input& input)
 	if (m_boss)
 	{
 		m_boss->Update();
-		m_boss->OnAttack(playerIsDash, playerCol);
+		// ボスにダメージを与えたら時間を増やす
+		m_isUpdateTime = m_boss->OnAttack(playerIsDash, playerCol);
 
 		// ボスの死亡処理
 		if (!m_boss->IsExsit())
 		{
-			// ボスを消す
-			m_boss.reset();
-			// 敵全て消す
-			m_enemy.clear();
-
-			// FIXME : 現状プレイヤーの死亡処理と同じにしているけれど後で処理の仕方変わると思う
-			m_player->Death();
-
-			// メンバ関数ポインタを選択の方に戻す
-			m_updateFunc = &StageBase::UpdateSelect;
-			m_drawFunc = &StageBase::DrawSelect;
-
-			// フレームの初期化
-			m_waitFrame = 0;
-
-			// ベストタイムの更新
-			m_mgr.UpdateBestTime(m_stageName, m_frame);
-
-			// クリアしているかの確認
-			CheckStageConditions();
-
-			return;
+			BossDeath();
 		}
-
 		// プレイヤーとの判定処理
-		if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
+		else if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
 		{
 			// プレイヤーの死亡処理
 			m_player->Death();
@@ -172,13 +151,10 @@ void StageBase::UpdatePlaying(Input& input)
 
 			// クリアしているかの確認
 			CheckStageConditions();
-
-			return;
 		}
 	}
 
-	// 経過時間の更新
-	m_frame++;
+	UpdateTime();
 }
 
 void StageBase::DrawSelect()
@@ -248,7 +224,7 @@ void StageBase::DrawLeftArrow() const
 {
 	unsigned int color = 0;
 	// クリアしている場合は濃いめで
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageLeft))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft))
 	{
 		color = 0xffffff;
 	}
@@ -266,7 +242,7 @@ void StageBase::DrawLeftArrow() const
 void StageBase::DrawRightArrow() const
 {
 	unsigned int color = 0;
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageRight))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageRight))
 	{
 		color = 0xffffff;
 	}
@@ -283,7 +259,7 @@ void StageBase::DrawRightArrow() const
 void StageBase::DrawUpArrow() const
 {
 	unsigned int color = 0;
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageUp))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageUp))
 	{
 		color = 0xffffff;
 	}
@@ -300,7 +276,7 @@ void StageBase::DrawUpArrow() const
 void StageBase::DrawDownArrow() const
 {
 	unsigned int color;
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageDown))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageDown))
 	{
 		color = 0xffffff;
 	}
@@ -439,6 +415,40 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 
 	// 次のステージに変更する
 	m_mgr.ChangeStage(nextStage);
+}
+
+void StageBase::BossDeath()
+{
+	// すでにクリアされていた場合は強化ボスを出す
+	if (m_mgr.IsClearBoss(m_boss->GetName()))
+	{
+		CreateStrongBoss();
+		return;
+	}
+
+	// 初回殺しの時は倒したら終了とする
+	// FIXME : 現状プレイヤーの死亡処理と同じにしているけれど後で処理の仕方変わると思う
+	m_player->Death();
+
+	// メンバ関数ポインタを選択の方に戻す
+	m_updateFunc = &StageBase::UpdateSelect;
+	m_drawFunc = &StageBase::DrawSelect;
+
+	// フレームの初期化
+	m_waitFrame = 0;
+
+	// 倒した情報の追加
+	m_mgr.UpdateClearBoss(m_boss->GetName());
+	// ベストタイムの更新
+	m_mgr.UpdateBestTime(m_stageName, m_frame);
+
+	// クリアしているかの確認
+	CheckStageConditions();
+
+	// ボスを消す
+	m_boss.reset();
+	// 敵全て消す
+	m_enemy.clear();
 }
 
 void StageBase::DrawWall()

@@ -8,6 +8,9 @@
 
 namespace
 {
+	// 最大HP
+	constexpr int kMaxHp = 10;
+
 	// FIXME:確かDxLibでπが定義されてたはずだけど忘れたから自分で定義しておく
 	constexpr float kPai = 3.1415927f;
 
@@ -38,8 +41,8 @@ namespace
 	constexpr float kCreateRadian = 45.0f * (kPai / 180.0f);
 }
 
-BossArmored::BossArmored(const Size& windowSize, float fieldSize, int maxHp, StageBase* stage) :
-	BossBase(windowSize, fieldSize, maxHp),
+BossArmored::BossArmored(const Size& windowSize, float fieldSize, StageBase* stage) :
+	BossBase(windowSize, fieldSize, kMaxHp),
 	m_stage(stage)
 {
 	m_name = "BossArmored";
@@ -55,6 +58,9 @@ void BossArmored::Init(const Vec2& pos)
 	// 引数で渡された位置を初期位置に
 	m_pos = pos;
 	m_radius = kRadius;
+
+	// hpの初期化
+	m_hp = m_maxHp;
 
 	// ラジアンの初期化
 	m_radian = 0;
@@ -85,10 +91,11 @@ void BossArmored::Init(const Vec2& pos)
 	m_objects.push_back(std::make_shared<BossDamageObject>(m_pos));
 }
 
-void BossArmored::OnAttack(bool isDash, const Collision& col)
+bool BossArmored::OnAttack(bool isDash, const Collision& col)
 {
 	// ダッシュ中であればこの処理はしない
-	if (isDash) return;
+	if (isDash) return false;
+	bool isHit = false;
 
 	for (const auto& obj : m_objects)
 	{
@@ -100,6 +107,8 @@ void BossArmored::OnAttack(bool isDash, const Collision& col)
 
 			obj->Used();
 
+			isHit = true;
+
 			// HPがゼロになったら死亡とする
 			if (m_hp <= 0)
 			{
@@ -107,8 +116,9 @@ void BossArmored::OnAttack(bool isDash, const Collision& col)
 				m_hp = 0;
 				m_isExsit = false;
 
-				return;
+				return isHit;
 			}
+			break;
 		}
 	}
 
@@ -122,7 +132,7 @@ void BossArmored::OnAttack(bool isDash, const Collision& col)
 	while (1)
 	{
 		// ダメージオブジェクトの量が規定値以上であれば終了
-		if (m_objects.size() >= kDamageObjectNum) return;
+		if (m_objects.size() >= kDamageObjectNum) return isHit;
 
 		m_objects.push_back(std::make_shared<BossDamageObject>(m_windowSize, m_fieldSize));
 	}

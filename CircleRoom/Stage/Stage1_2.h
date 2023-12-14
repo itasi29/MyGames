@@ -9,14 +9,16 @@ public:
 
 	void Init() override;
 	void ChangeStage(Input& input) override;
+
+private:
 	void CheckStageConditions() override;
 	void DrawStageConditions(int drawY) override;
 	void DrawArrow() const override;
 	void CreateEnemy() override;
 
-private:
 	void CreateNormal();
 	void CreateLage();
+	void UpdateTime() override;
 
 private:
 	// “G(Lage)¶¬ƒtƒŒ[ƒ€

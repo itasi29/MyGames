@@ -83,7 +83,27 @@ public:
 	/// <param name="stgName">ステージ名</param>
 	/// <param name="dir">確認するステージの方向</param>
 	/// <returns>true:クリア済み / false:未クリア</returns>
-	bool IsClear(const std::string& stgName, StageDir dir) const;
+	bool IsClearStage(const std::string& stgName, StageDir dir) const;
+
+	/// <summary>
+	/// すでにクリアしたことがあるボスか
+	/// </summary>
+	/// <param name="name">ボスの名前</param>
+	/// <returns>true: クリアしている / false:クリアしていない</returns>
+	bool IsClearBoss(const std::string& name) const;
+
+	/// <summary>
+	/// ステージ名に対応するベストクリアタイムを持ってくる
+	/// </summary>
+	/// <param name="stgName">ステージ名</param>
+	/// <returns>ベストタイム</returns>
+	int GetBestTime(const std::string& stgName) const;
+
+	/// <summary>
+	/// プレイヤーを殺した敵の種類数を返す
+	/// </summary>
+	/// <returns>種類数</returns>
+	int GetEnemyTypeCount() const;
 
 	/// <summary>
 	/// クリア情報の保存
@@ -94,11 +114,10 @@ public:
 	void SaveClear(const std::string& stgName, int dir);
 
 	/// <summary>
-	/// ステージ名に対応するベストクリアタイムを持ってくる
+	/// ボスをクリアしたことがあるとする
 	/// </summary>
-	/// <param name="stgName">ステージ名</param>
-	/// <returns>ベストタイム</returns>
-	int GetBestTime(const std::string& stgName) const;
+	/// <param name="name">ボスの名前</param>
+	void UpdateClearBoss(const std::string& name);
 
 	/// <summary>
 	/// ステージ名に対応するベストタイムの更新
@@ -108,24 +127,13 @@ public:
 	void UpdateBestTime(const std::string& stgName, int bestTime);
 
 	/// <summary>
-	/// プレイヤーを殺した敵の種類数を返す
-	/// </summary>
-	/// <returns>種類数</returns>
-	int GetEnemyTypeCount() const;
-
-	/// <summary>
 	/// プレイヤーを殺した敵がすでに殺したことがあるかの確認
 	/// もし、殺したことがなければ名前を保存し、種類数カウントを増やす
 	/// </summary>
 	/// <param name="name">敵の名前</param>
-	void UpdateEnemyType(std::string name);
+	void UpdateEnemyType(const std::string& name);
 
-	/// <summary>
-	/// すでにクリアしたことがあるボスか
-	/// </summary>
-	/// <param name="name">ボスの名前</param>
-	/// <returns>true: クリアしている / false:クリアしていない</returns>
-	bool IsClearBoss(std::string name);
+	
 
 private:
 	void UpdateMove();
@@ -143,6 +151,8 @@ private:
 	std::vector<std::string> m_killedEnemyNameTable;
 	// プレイヤー殺した種類の数
 	int m_killedEnemyCount;
+	// クリアしたボス情報群
+	std::vector<std::string> m_clearBossTable;
 
 	// ステージのポインタ
 	std::shared_ptr<StageBase> m_stage;

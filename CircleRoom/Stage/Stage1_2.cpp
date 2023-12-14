@@ -32,7 +32,7 @@ Stage1_2::Stage1_2(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	// データの生成
 	m_mgr.CreateData(m_stageName);
 
-	m_isRightClear = m_mgr.IsClear(m_stageName, StageManager::kStageRight);
+	m_isRightClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageRight);
 }
 
 Stage1_2::~Stage1_2()
@@ -43,6 +43,8 @@ void Stage1_2::Init()
 {
 	// 経過時間の初期化
 	m_frame = 0;
+	// 経過を行うかを初期化
+	m_isUpdateTime = true;
 
 	// 生成フレームの初期化
 	m_createLageFrame = 0;
@@ -81,7 +83,7 @@ void Stage1_2::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClear(m_stageName, StageManager::kStageRight) && input.IsPress("right"))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageRight) && input.IsPress("right"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;
@@ -96,7 +98,7 @@ void Stage1_2::ChangeStage(Input& input)
 void Stage1_2::CheckStageConditions()
 {
 	// 右をまだクリアしていない場合
-	if (!m_mgr.IsClear(m_stageName, StageManager::kStageRight))
+	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageRight))
 	{
 		// 条件確認
 		if (m_mgr.GetBestTime(m_stageName) > kRightExsitTime * 60)
@@ -150,4 +152,9 @@ void Stage1_2::CreateLage()
 	m_createLageFrame = 0;
 	m_enemy.push_back(std::make_shared<EnemyLarge>(m_windowSize, m_fieldSize));
 	m_enemy.back()->Init(m_centerPos);
+}
+
+void Stage1_2::UpdateTime()
+{
+	m_frame++;
 }
