@@ -36,9 +36,9 @@ Stage1_1::Stage1_1(StageManager& mgr, const Size& windowSize, float fieldSize) :
 
 	// ÉfÅ[É^ÇÃê∂ê¨
 	m_mgr.CreateData(m_stageName);
+	CheckStageConditions();
 
-	m_isLeftClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft);
-	m_isUpClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageUp);
+	StartCheck();
 }
 
 Stage1_1::~Stage1_1()
@@ -79,6 +79,12 @@ void Stage1_1::Init()
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
 	m_enemy.back()->Init(m_centerPos);
 	m_createNum++;
+}
+
+void Stage1_1::StartCheck()
+{
+	m_isLeftClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft);
+	m_isUpClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageUp);
 }
 
 void Stage1_1::ChangeStage(Input& input)

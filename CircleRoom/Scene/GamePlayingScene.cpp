@@ -73,6 +73,12 @@ void GamePlayingScene::UpdateFadeOut(Input& input)
 void GamePlayingScene::UpdateNormal(Input& input)
 {
 	m_stgMgr.Update(input);
+
+	// pauseボタンが押されたらポーズ画面を開く
+	if (input.IsPress("pause"))
+	{
+		m_scnMgr.PushScene(std::make_shared<PauseScene>(m_scnMgr, m_stgMgr));
+	}
 }
 
 void GamePlayingScene::DrawFade()

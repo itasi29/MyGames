@@ -131,7 +131,7 @@ void StageBase::UpdatePlaying(Input& input)
 		{
 			BossDeath();
 		}
-		// プレイヤーとの判定処理
+		// 死んでなければプレイヤーとの判定処理
 		else if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
 		{
 			// プレイヤーの死亡処理
@@ -294,7 +294,7 @@ void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageRight, nextStage->GetStageName());
+	ChangeClearData(StageManager::kStageRight, nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -328,7 +328,7 @@ void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXEME: クソコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageLeft, nextStage->GetStageName());
+	ChangeClearData(StageManager::kStageLeft, nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -358,7 +358,7 @@ void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageDown, nextStage->GetStageName());
+	ChangeClearData(StageManager::kStageDown, nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -390,7 +390,7 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageUp, nextStage->GetStageName());
+	ChangeClearData(StageManager::kStageUp, nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -489,7 +489,8 @@ void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>
 	nextStage->Draw();
 }
 
-void StageBase::ChangeClearData(int dir, const std::string& name) const
+void StageBase::ChangeClearData(int dir, const std::shared_ptr<StageBase>& nextStage) const
 {
-	m_mgr.SaveClear(name, dir);
+	m_mgr.SaveClear(nextStage->GetStageName(), dir);
+	nextStage->StartCheck();
 }

@@ -15,8 +15,6 @@ public:
 	void Draw();
 
 private:
-	int m_frame = 0;
-
 	// 更新メンバ関数ポインタ
 	using UpdateFunc_t = void(PauseScene::*)(Input& input);
 	UpdateFunc_t  m_updateFunc;
@@ -32,5 +30,10 @@ private:
 	// 描画関数
 	void ExpandDraw();	// 拡張縮張描画
 	void NormalDraw();	// 非フェード描画
+
+private:
+	int m_frame = 0;
+
+	int m_currentMenuLine;
 };
 

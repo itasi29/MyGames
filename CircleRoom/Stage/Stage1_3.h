@@ -7,6 +7,7 @@ public:
 	~Stage1_3();
 
 	void Init() override;
+	void StartCheck() override;
 	void ChangeStage(Input& input) override;
 
 private:

@@ -9,10 +9,18 @@ namespace
 {
 	constexpr int kAppeaInterval = 60;
 	constexpr int kMenuMargin = 50;
+
+	// 文字間隔
+	constexpr int kMenuStringMargin = 32;
+
+	const std::vector<std::wstring> kMenuString = { L"キー設定",
+		L"音量設定",
+		L"メインメニューに戻る" };
 }
 
 PauseScene::PauseScene(SceneManager& scnMgr, StageManager& stgMgr) :
-	Scene(scnMgr, stgMgr)
+	Scene(scnMgr, stgMgr),
+	m_currentMenuLine(0)
 {
 	m_updateFunc = &PauseScene::AppearUpdate;
 	m_drawFunc = &PauseScene::ExpandDraw;
@@ -44,10 +52,17 @@ void PauseScene::NormalUpdate(Input& input)
 	{
 		m_updateFunc = &PauseScene::DisappearUpdate;
 		m_drawFunc = &PauseScene::ExpandDraw;
+
+		return;
 	}
-	else if (input.IsTriggered("keyconf"))
+
+	if (input.IsTriggered("up"))
 	{
-		m_scnMgr.PushScene(std::make_shared<KeyConfigScene>(m_scnMgr, m_stgMgr, input));
+		m_currentMenuLine = (m_currentMenuLine - 1 + kMenuString.size()) % kMenuString.size();
+	}
+	if (input.IsTriggered("down"))
+	{
+		m_currentMenuLine = (m_currentMenuLine + 1) % kMenuString.size();
 	}
 }
 
@@ -90,8 +105,23 @@ void PauseScene::NormalDraw()
 		0x888888, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawString(100, 100, L"Pause Scene", 0xffffff);
-
 	DrawBox(kMenuMargin, kMenuMargin, size.w - kMenuMargin, size.h - kMenuMargin,
 		0xffffff, false);
+
+	// メニュー後ろの赤線
+	DrawBox(kMenuMargin * 2, kMenuMargin * 2 + kMenuStringMargin * m_currentMenuLine - kMenuStringMargin * 0.25f, 
+		size.w - kMenuMargin * 2, kMenuMargin * 2 + kMenuStringMargin * (m_currentMenuLine + 1) - kMenuStringMargin * 0.25f,
+		0xff0000, true);
+	// メニューの文字列群
+	for (int i = 0; i < kMenuString.size(); i++)
+	{
+		if (m_currentMenuLine == i)
+		{
+			DrawString(kMenuMargin * 2, kMenuMargin * 2 + kMenuStringMargin * i, kMenuString[i].c_str(), 0x000000);
+		}
+		else
+		{
+			DrawString(kMenuMargin * 2, kMenuMargin * 2 + kMenuStringMargin * i, kMenuString[i].c_str(), 0xffffff);
+		}
+	}
 }

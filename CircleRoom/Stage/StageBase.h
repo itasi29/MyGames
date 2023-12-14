@@ -29,6 +29,11 @@ public:
 	virtual void Init() = 0;
 
 	/// <summary>
+	/// 最初にステージのクリア条件を確認する
+	/// </summary>
+	virtual void StartCheck() = 0;
+
+	/// <summary>
 	/// ステージを変更する
 	/// </summary>
 	/// <param name="input">入力情報</param>
@@ -159,7 +164,7 @@ private:
 	/// </summary>
 	/// <param name="dir">進む方向の反対</param>
 	/// /// <param name="nextStage">次のステージのポインタ</param>
-	void ChangeClearData(int dir, const std::string& name) const;
+	void ChangeClearData(int dir, const std::shared_ptr<StageBase>& nextStage) const;
 
 	/// <summary>
 	/// 壁の描画

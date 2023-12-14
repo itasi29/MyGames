@@ -31,8 +31,9 @@ Stage1_2::Stage1_2(StageManager& mgr, const Size& windowSize, float fieldSize) :
 
 	// ÉfÅ[É^ÇÃê∂ê¨
 	m_mgr.CreateData(m_stageName);
+	CheckStageConditions();
 
-	m_isRightClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageRight);
+	StartCheck();
 }
 
 Stage1_2::~Stage1_2()
@@ -73,6 +74,11 @@ void Stage1_2::Init()
 	// í èÌìGê∂ê¨
 	CreateNormal();
 	CreateNormal();
+}
+
+void Stage1_2::StartCheck()
+{
+	m_isRightClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageRight);
 }
 
 void Stage1_2::ChangeStage(Input& input)

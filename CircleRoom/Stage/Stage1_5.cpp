@@ -26,7 +26,7 @@ Stage1_5::Stage1_5(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	// データの生成
 	m_mgr.CreateData(m_stageName);
 
-	m_isDownClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageDown);
+	StartCheck();
 }
 
 Stage1_5::~Stage1_5()
@@ -64,6 +64,11 @@ void Stage1_5::Init()
 	// スタート位置の設定
 	m_boss = std::make_shared<BossArmored>(m_windowSize, m_fieldSize, this);
 	m_boss->Init(m_centerPos);
+}
+
+void Stage1_5::StartCheck()
+{
+	m_isDownClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageDown);
 }
 
 void Stage1_5::ChangeStage(Input& input)

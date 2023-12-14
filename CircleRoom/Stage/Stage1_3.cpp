@@ -30,9 +30,9 @@ Stage1_3::Stage1_3(StageManager& mgr, const Size& windowSize, float fieldSize) :
 
 	// ƒf[ƒ^‚Ì¶¬
 	m_mgr.CreateData(m_stageName);
+	CheckStageConditions();
 
-	m_isDownClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageDown);
-	m_isLeftClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft);
+	StartCheck();
 }
 
 Stage1_3::~Stage1_3()
@@ -71,6 +71,12 @@ void Stage1_3::Init()
 	m_enemy.back()->Init(m_centerPos);
 	m_enemy.push_back(std::make_shared<EnemyDash>(m_windowSize, m_fieldSize, m_player));
 	m_enemy.back()->Init(m_centerPos);
+}
+
+void Stage1_3::StartCheck()
+{
+	m_isDownClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageDown);
+	m_isLeftClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft);
 }
 
 void Stage1_3::ChangeStage(Input& input)
