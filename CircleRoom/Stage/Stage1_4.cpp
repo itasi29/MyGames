@@ -135,22 +135,61 @@ void Stage1_4::DrawStageConditions(int drawY)
 {
 	if (!m_isRightClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"右　%dの種類で死ぬ\n(%d / %d)",
+		DrawFormatString(128, drawY, 0xffffff, L"右　%d種類の敵に殺される\n(%d / %d)",
 			kRightKilledNum, m_mgr.GetEnemyTypeCount(), kRightKilledNum);
 
 		drawY += 32;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"上　%dの種類で死ぬ\n(%d / %d)",
+		DrawFormatString(128, drawY, 0xffffff, L"上　%d種類の敵に殺される\n(%d / %d)",
 			kUpKilledNum, m_mgr.GetEnemyTypeCount(), kUpKilledNum);
 	}
 }
 
 void Stage1_4::DrawArrow() const
 {
-	DrawRightArrow();
-	DrawUpArrow();
+	DrawRightArrow(m_isRightClear);
+	DrawUpArrow(m_isUpClear);
+}
+
+void Stage1_4::DrawKilledEnemyType() const
+{
+	if (m_mgr.IsKilledEnemy("Normal"))
+	{
+		DrawCircle(256, 28, 16, 0xffffff, true);
+	}
+	else
+	{
+		DrawCircle(256, 28, 16, 0xffffff, true);
+	}
+
+	if (m_mgr.IsKilledEnemy("MoveWall"))
+	{
+		DrawCircle(256 + 48, 28, 16, 0x888888, true);
+	}
+	else
+	{
+		DrawCircle(256 + 48, 28, 16, 0x888888, false);
+	}
+
+	if (m_mgr.IsKilledEnemy("Create"))
+	{
+		DrawCircle(256 + 96, 28, 16, 0xffff08, true);
+	}
+	else
+	{
+		DrawCircle(256 + 96, 28, 16, 0xffff08, false);
+	}
+
+	if (m_mgr.IsKilledEnemy("Child"))
+	{
+		DrawCircle(256 + 144, 28, 12, 0xf0f008, true);
+	}
+	else
+	{
+		DrawCircle(256 + 144, 28, 12, 0xf0f008, false);
+	}
 }
 
 void Stage1_4::CreateEnemy()

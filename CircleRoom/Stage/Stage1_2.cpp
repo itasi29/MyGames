@@ -125,7 +125,37 @@ void Stage1_2::DrawStageConditions(int drawY)
 
 void Stage1_2::DrawArrow() const
 {
-	DrawRightArrow();
+	DrawRightArrow(m_isRightClear);
+}
+
+void Stage1_2::DrawKilledEnemyType() const
+{
+	if (m_mgr.IsKilledEnemy("Normal"))
+	{
+		DrawCircle(256, 28, 16, 0xffffff, true);
+	}
+	else
+	{
+		DrawCircle(256, 28, 16, 0xffffff, false);
+	}
+
+	if (m_mgr.IsKilledEnemy("MoveWall"))
+	{
+		DrawCircle(256 + 48, 28, 16, 0x888888, true);
+	}
+	else
+	{
+		DrawCircle(256 + 48, 28, 16, 0x888888, false);
+	}
+
+	if (m_mgr.IsKilledEnemy("Large"))
+	{
+		DrawCircle(256 + 96, 28, 20, 0xffffff, true);
+	}
+	else
+	{
+		DrawCircle(256 + 96, 28, 20, 0xffffff, false);
+	}
 }
 
 void Stage1_2::CreateEnemy()

@@ -71,6 +71,7 @@ protected:
 	/// ステージの矢印描画
 	/// </summary>
 	virtual void DrawArrow() const = 0;
+	virtual void DrawKilledEnemyType() const = 0;
 
 	/// <summary>
 	/// 敵の生成
@@ -110,19 +111,19 @@ protected:
 	/// <summary>
 	/// 左矢印の描画
 	/// </summary>
-	void DrawLeftArrow() const;
+	void DrawLeftArrow(bool isAlreadyClear) const;
 	/// <summary>
 	/// 右矢印の描画
 	/// </summary>
-	void DrawRightArrow() const;
+	void DrawRightArrow(bool isAlreadyClear) const;
 	/// <summary>
 	/// 上矢印の描画
 	/// </summary>
-	void DrawUpArrow() const;
+	void DrawUpArrow(bool isAlreadyClear) const;
 	/// <summary>
 	/// 下矢印の描画
 	/// </summary>
-	void DrawDownArrow() const;
+	void DrawDownArrow(bool isAlreadyClear) const;
 
 	/// <summary>
 	/// 左に画面をスライドする処理

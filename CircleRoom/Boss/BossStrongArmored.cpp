@@ -20,7 +20,7 @@ namespace
 	// 敵生成数
 	constexpr int kCreateNum = 8;
 	// 生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 2.5;
+	constexpr int kCreateFrame = static_cast<int>(60 * 2.5);
 	// 生成前待機フレーム
 	constexpr int kWaitCreateFrame = 15;
 	// 生成するときの角度

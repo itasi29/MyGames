@@ -29,12 +29,12 @@ namespace
 	constexpr float kRadian = 1.0f * (kPai / 180.0f);
 
 	// 生成するダメージオブジェクトの数
-	constexpr int kDamageObjectNum = 2;
+	constexpr int kDamageObjectNum = 1;
 
 	// 敵生成数
 	constexpr int kCreateNum = 4;
 	// 生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 3.5;
+	constexpr int kCreateFrame = static_cast<int>(60 * 4.5);
 	// 生成前待機フレーム
 	constexpr int kWaitCreateFrame = 30;
 	// 生成するときの角度

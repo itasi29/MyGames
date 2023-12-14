@@ -348,6 +348,21 @@ bool StageManager::IsClearBoss(const std::string& name) const
 	return false;
 }
 
+bool StageManager::IsKilledEnemy(const std::string& name) const
+{
+	for (const auto& killedName : m_killedEnemyNameTable)
+	{
+		// ˆê’v‚·‚ê‚ÎŽE‚³‚ê‚½‚±‚Æ‚ª‚ ‚é
+		if (killedName == name)
+		{
+			return true;
+		}
+	}
+
+	// ˆê’v‚µ‚È‚¢‚¯‚ê‚ÎŽE‚³‚ê‚½‚±‚Æ‚ª‚È‚¢
+	return false;
+}
+
 int StageManager::GetBestTime(const std::string& stgName) const
 {
 	auto it = m_stageSaveData.find(stgName);

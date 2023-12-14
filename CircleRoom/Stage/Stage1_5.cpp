@@ -106,7 +106,7 @@ void Stage1_5::DrawStageConditions(int drawY)
 {
 	if (!m_isDownClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"â∫Å@%dÇÃéÌóﬁÇ≈éÄÇ \n(%d / %d)",
+		DrawFormatString(128, drawY, 0xffffff, L"â∫Å@%déÌóﬁÇÃìGÇ…éEÇ≥ÇÍÇÈ\n(%d / %d)",
 			kDownKilledNum, m_mgr.GetEnemyTypeCount(), kDownKilledNum);
 
 		drawY += 32;
@@ -121,7 +121,46 @@ void Stage1_5::DrawStageConditions(int drawY)
 
 void Stage1_5::DrawArrow() const
 {
-	DrawDownArrow();
+	DrawDownArrow(m_isDownClear);
+}
+
+void Stage1_5::DrawKilledEnemyType() const
+{
+	if (m_mgr.IsKilledEnemy("MoveWall"))
+	{
+		DrawCircle(256, 28, 16, 0x888888, true);
+	}
+	else
+	{
+		DrawCircle(256, 28, 16, 0x888888, true);
+	}
+
+	if (m_mgr.IsKilledEnemy("BossArmored"))
+	{
+		DrawCircle(256 + 48, 28, 16, 0x08ff08, true);
+	}
+	else
+	{
+		DrawCircle(256 + 48, 28, 16, 0x08ff08, false);
+	}
+
+	if (m_mgr.IsKilledEnemy("BossStrongArmored"))
+	{
+		DrawCircle(256 + 96, 28, 16, 0xaaffaa, true);
+	}
+	else
+	{
+		DrawCircle(256 + 96, 28, 16, 0xaaffaa, false);
+	}
+
+	if (m_mgr.IsKilledEnemy("SplitTwoBound"))
+	{
+		DrawCircle(256 + 144, 28, 14, 0xffffff, true);
+	}
+	else
+	{
+		DrawCircle(256 + 144, 28, 14, 0xffffff, false);
+	}
 }
 
 void Stage1_5::CreateEnemy()
@@ -133,7 +172,7 @@ void Stage1_5::UpdateTime()
 	if (m_isUpdateTime)
 	{
 		// àÍïbí«â¡
-		m_frame += 60.0f;
+		m_frame += 60;
 		m_isUpdateTime = false;
 	}
 }

@@ -58,7 +58,7 @@ void PauseScene::NormalUpdate(Input& input)
 
 	if (input.IsTriggered("up"))
 	{
-		m_currentMenuLine = (m_currentMenuLine - 1 + kMenuString.size()) % kMenuString.size();
+		m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kMenuString.size())) % static_cast<int>(kMenuString.size());
 	}
 	if (input.IsTriggered("down"))
 	{
@@ -109,8 +109,8 @@ void PauseScene::NormalDraw()
 		0xffffff, false);
 
 	// メニュー後ろの赤線
-	DrawBox(kMenuMargin * 2, kMenuMargin * 2 + kMenuStringMargin * m_currentMenuLine - kMenuStringMargin * 0.25f, 
-		size.w - kMenuMargin * 2, kMenuMargin * 2 + kMenuStringMargin * (m_currentMenuLine + 1) - kMenuStringMargin * 0.25f,
+	DrawBox(kMenuMargin * 2, static_cast<int>(kMenuMargin * 2 + kMenuStringMargin * m_currentMenuLine - kMenuStringMargin * 0.25f),
+		size.w - kMenuMargin * 2, static_cast<int>(kMenuMargin * 2 + kMenuStringMargin * (m_currentMenuLine + 1) - kMenuStringMargin * 0.25f),
 		0xff0000, true);
 	// メニューの文字列群
 	for (int i = 0; i < kMenuString.size(); i++)

@@ -93,6 +93,13 @@ public:
 	bool IsClearBoss(const std::string& name) const;
 
 	/// <summary>
+	/// すでに殺されたことがある敵か
+	/// </summary>
+	/// <param name="name">敵の名前</param>
+	/// <returns>true: 殺されたことがある / false: 殺されたことがない</returns>
+	bool IsKilledEnemy(const std::string& name) const;
+
+	/// <summary>
 	/// ステージ名に対応するベストクリアタイムを持ってくる
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>

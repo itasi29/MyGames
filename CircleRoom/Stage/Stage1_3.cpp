@@ -131,7 +131,7 @@ void Stage1_3::DrawStageConditions(int drawY)
 {
 	if (!m_isLeftClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"ç∂Å@%dÇÃéÌóﬁÇ≈éÄÇ \n(%d / %d)",
+		DrawFormatString(128, drawY, 0xffffff, L"ç∂Å@%déÌóﬁÇÃìGÇ…éEÇ≥ÇÍÇÈ\n(%d / %d)",
 			kLeftKilledNum, m_mgr.GetEnemyTypeCount(), kLeftKilledNum);
 
 		drawY += 32;
@@ -145,8 +145,29 @@ void Stage1_3::DrawStageConditions(int drawY)
 
 void Stage1_3::DrawArrow() const
 {
-	DrawLeftArrow();
-	DrawDownArrow();
+	DrawLeftArrow(m_isLeftClear);
+	DrawDownArrow(m_isDownClear);
+}
+
+void Stage1_3::DrawKilledEnemyType() const
+{
+	if (m_mgr.IsKilledEnemy("Dash"))
+	{
+		DrawCircle(256, 28, 16, 0x0808ff, true);
+	}
+	else
+	{
+		DrawCircle(256, 28, 16, 0x0808ff, false);
+	}
+
+	if (m_mgr.IsKilledEnemy("MoveWall"))
+	{
+		DrawCircle(256 + 48, 28, 16, 0x888888, true);
+	}
+	else
+	{
+		DrawCircle(256 + 48, 28, 16, 0x888888, false);
+	}
 }
 
 void Stage1_3::CreateEnemy()

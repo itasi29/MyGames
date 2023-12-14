@@ -10,6 +10,12 @@
 #include "Enemy/EnemyBase.h"
 #include "Boss/BossBase.h"
 
+namespace
+{
+	// ñÓàÛÇÃì_ñ≈ä‘äu
+	constexpr int kFlashInterval = 20;
+}
+
 StageBase::StageBase(StageManager& mgr, const Size& windowSize, float fieldSize) :
 	m_centerPos( { windowSize.w * 0.5f, windowSize.h * 0.5f }),
 	m_mgr(mgr),
@@ -174,6 +180,8 @@ void StageBase::DrawSelect()
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ÉXÉeÅ[ÉWñºÇÃï`âÊ
 	DrawFormatString(128, 16, 0xffffff, L"%s", name.c_str());
+	// éEÇ≥ÇÍÇΩÇ±Ç∆Ç™Ç†ÇÈìGÇÃï`âÊ
+	DrawKilledEnemyType();
 	// éûä‘ÇÃï`âÊ
 	int minSec = (m_frame * 1000 / 60) % 1000;
 	int sec = (m_frame / 60) % 60;
@@ -220,73 +228,101 @@ void StageBase::DrawPlaying()
 	DrawStageConditions(64);
 }
 
-void StageBase::DrawLeftArrow() const
+void StageBase::DrawLeftArrow(bool isAlreadyClear) const
 {
 	unsigned int color = 0;
 	// ÉNÉäÉAÇµÇƒÇ¢ÇÈèÍçáÇÕîZÇ¢ÇﬂÇ≈
 	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft))
 	{
-		color = 0xffffff;
+		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
+		{
+			color = 0xffffff;
+		}
+		else
+		{
+			color = 0xffff08;
+		}
 	}
 	// ÉNÉäÉAÇµÇƒÇ¢Ç»Ç¢èÍçáÇÕîñÇﬂÇ≈
 	else
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(100, m_windowSize.h / 2,
-		150, m_windowSize.h / 2 + 25,
-		150, m_windowSize.h / 2 - 25,
+	DrawTriangle(m_windowSize.w / 2 - 150, m_windowSize.h / 2,
+		m_windowSize.w / 2 - 100, m_windowSize.h / 2 + 25,
+		m_windowSize.w / 2 - 100, m_windowSize.h / 2 - 25,
 		color, true);
 }
 
-void StageBase::DrawRightArrow() const
+void StageBase::DrawRightArrow(bool isAlreadyClear) const
 {
 	unsigned int color = 0;
 	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageRight))
 	{
-		color = 0xffffff;
+		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
+		{
+			color = 0xffffff;
+		}
+		else
+		{
+			color = 0xffff08;
+		}
 	}
 	else
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(m_windowSize.w - 100, m_windowSize.h / 2,
-		m_windowSize.w - 150, m_windowSize.h / 2 + 25,
-		m_windowSize.w - 150, m_windowSize.h / 2 - 25,
+	DrawTriangle(m_windowSize.w / 2 + 150, m_windowSize.h / 2,
+		m_windowSize.w / 2 + 100, m_windowSize.h / 2 + 25,
+		m_windowSize.w / 2 + 100, m_windowSize.h / 2 - 25,
 		color, true);
 }
 
-void StageBase::DrawUpArrow() const
+void StageBase::DrawUpArrow(bool isAlreadyClear) const
 {
 	unsigned int color = 0;
 	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageUp))
 	{
-		color = 0xffffff;
+		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
+		{
+			color = 0xffffff;
+		}
+		else
+		{
+			color = 0xffff08;
+		}
 	}
 	else
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(m_windowSize.w / 2, 100,
-		m_windowSize.w / 2 + 25, 150,
-		m_windowSize.w / 2 - 25, 150,
+	DrawTriangle(m_windowSize.w / 2, m_windowSize.h / 2 - 150,
+		m_windowSize.w / 2 + 25, m_windowSize.h / 2 - 100,
+		m_windowSize.w / 2 - 25, m_windowSize.h / 2 - 100,
 		color, true);
 }
 
-void StageBase::DrawDownArrow() const
+void StageBase::DrawDownArrow(bool isAlreadyClear) const
 {
 	unsigned int color;
 	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageDown))
 	{
-		color = 0xffffff;
+		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
+		{
+			color = 0xffffff;
+		}
+		else
+		{
+			color = 0xffff08;
+		}
 	}
 	else
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(m_windowSize.w / 2, m_windowSize.h - 100,
-		m_windowSize.w / 2 + 25, m_windowSize.h - 150,
-		m_windowSize.w / 2 - 25, m_windowSize.h - 150,
+	DrawTriangle(m_windowSize.w / 2, m_windowSize.h / 2 + 150,
+		m_windowSize.w / 2 + 25, m_windowSize.h / 2 + 100,
+		m_windowSize.w / 2 - 25, m_windowSize.h / 2 + 100,
 		color, true);
 }
 
