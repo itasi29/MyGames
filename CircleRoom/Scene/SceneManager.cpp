@@ -35,6 +35,14 @@ void SceneManager::ChangeScene(std::shared_ptr<Scene>nextScene)
 	}
 }
 
+void SceneManager::MoveScene(std::shared_ptr<Scene> nextScene)
+{
+	// ˆê“x‚·‚×‚ÄÁ‚·
+	m_scenes.clear();
+	// ƒV[ƒ“‚ğ’Ç‰Á
+	m_scenes.push_back(nextScene);
+}
+
 void SceneManager::PushScene(std::shared_ptr<Scene> scene)
 {
 	m_scenes.push_back(scene);

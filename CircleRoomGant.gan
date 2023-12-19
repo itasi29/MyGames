@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2023-12-12" view-index="0" gantt-divider-location="446" resource-divider-location="300" version="3.2.3247" locale="ja_JP">
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2023-12-05" view-index="0" gantt-divider-location="432" resource-divider-location="300" version="3.2.3247" locale="ja_JP">
     <description/>
     <view zooming-state="default:1" id="gantt-chart">
         <field id="tpd3" name="名前" width="244" order="0"/>
@@ -37,7 +37,7 @@
             <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
             <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
         </taskproperties>
-        <task id="0" name="プロトタイプ" color="#ff9900" meeting="false" start="2023-11-20" duration="23" complete="96" thirdDate="2023-12-04" thirdDate-constraint="0" expand="false">
+        <task id="0" name="プロトタイプ" color="#ff9900" meeting="false" start="2023-11-20" duration="23" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" expand="true">
             <task id="1" name="プレイヤー" color="#8cb6ce" meeting="false" start="2023-11-20" duration="5" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" expand="false">
                 <task id="2" name="移動" color="#8cb6ce" meeting="false" start="2023-11-20" duration="1" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" priority="4" expand="true"/>
                 <task id="4" name="場外処理" color="#8cb6ce" meeting="false" start="2023-11-20" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
@@ -80,7 +80,7 @@
                     </notes>
                 </task>
             </task>
-            <task id="66" name="敵(ボス)" color="#8cb6ce" meeting="false" start="2023-12-14" duration="5" complete="95" thirdDate="2023-11-22" thirdDate-constraint="0" expand="false">
+            <task id="66" name="敵(ボス)" color="#8cb6ce" meeting="false" start="2023-12-14" duration="5" complete="100" thirdDate="2023-11-22" thirdDate-constraint="0" expand="true">
                 <task id="73" name="移動" color="#8cb6ce" meeting="false" start="2023-12-14" duration="1" complete="100" thirdDate="2023-12-14" thirdDate-constraint="0" expand="true"/>
                 <task id="74" name="場外処理" color="#8cb6ce" meeting="false" start="2023-12-14" duration="1" complete="100" thirdDate="2023-12-14" thirdDate-constraint="0" expand="true"/>
                 <task id="75" name="判定場所更新" color="#8cb6ce" meeting="false" start="2023-12-14" duration="1" complete="100" thirdDate="2023-12-14" thirdDate-constraint="0" expand="true"/>
@@ -92,7 +92,7 @@
 現在体力/最大体力　も描画]]>
                     </notes>
                 </task>
-                <task id="77" name="死亡処理" color="#8cb6ce" meeting="false" start="2023-12-19" duration="2" complete="80" thirdDate="2023-12-19" thirdDate-constraint="0" expand="true"/>
+                <task id="77" name="死亡処理" color="#8cb6ce" meeting="false" start="2023-12-19" duration="2" complete="100" thirdDate="2023-12-19" thirdDate-constraint="0" expand="true"/>
             </task>
             <task id="14" name="プレイ中" color="#8cb6ce" meeting="false" start="2023-11-27" duration="10" complete="100" thirdDate="2023-11-15" thirdDate-constraint="0" expand="false">
                 <task id="15" name="壁生成" color="#8cb6ce" meeting="false" start="2023-11-27" duration="1" complete="100" thirdDate="2023-11-15" thirdDate-constraint="0" expand="true"/>
@@ -111,7 +111,7 @@
                 </task>
                 <task id="27" name="クリア条件処理" color="#8cb6ce" meeting="false" start="2023-12-06" duration="3" complete="100" thirdDate="2023-11-23" thirdDate-constraint="0" expand="true"/>
             </task>
-            <task id="19" name="ステージ選択" color="#8cb6ce" meeting="false" start="2023-11-28" duration="9" complete="86" thirdDate="2023-11-17" thirdDate-constraint="0" expand="false">
+            <task id="19" name="ステージ選択" color="#8cb6ce" meeting="false" start="2023-11-28" duration="9" complete="100" thirdDate="2023-11-17" thirdDate-constraint="0" expand="false">
                 <task id="22" name="タイム表記" color="#8cb6ce" meeting="false" start="2023-11-28" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
                 <task id="21" name="コース名表記" color="#8cb6ce" meeting="false" start="2023-11-29" duration="1" complete="100" thirdDate="2023-11-17" thirdDate-constraint="0" expand="true"/>
                 <task id="20" name="画面移動" color="#8cb6ce" meeting="false" start="2023-11-29" duration="7" complete="100" thirdDate="2023-11-17" thirdDate-constraint="0" expand="true">
@@ -123,7 +123,7 @@
                 </task>
                 <task id="23" name="クリア条件描画" color="#8cb6ce" meeting="false" start="2023-12-06" duration="1" complete="100" thirdDate="2023-11-13" thirdDate-constraint="0" expand="true"/>
                 <task id="64" name="クリア条件処理" color="#8cb6ce" meeting="false" start="2023-12-06" duration="3" complete="100" thirdDate="2023-12-01" thirdDate-constraint="0" expand="true"/>
-                <task id="24" name="矢印描画" color="#8cb6ce" meeting="false" start="2023-12-07" duration="2" complete="0" thirdDate="2023-11-22" thirdDate-constraint="0" expand="true">
+                <task id="24" name="矢印描画" color="#8cb6ce" meeting="false" start="2023-12-07" duration="2" complete="100" thirdDate="2023-11-22" thirdDate-constraint="0" expand="true">
                     <notes>
                         <![CDATA[クリアしていないところへは薄色
 しているところへは濃ゆい色]]>

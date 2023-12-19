@@ -1,9 +1,13 @@
-#include "PauseScene.h"
 #include <DxLib.h>
-#include "Common/Input.h"
+#include <cassert>
 #include "Application.h"
+#include "Common/Input.h"
+
+#include "PauseScene.h"
+
 #include "SceneManager.h"
 #include "KeyConfigScene.h"
+#include "TitleScene.h"
 
 namespace
 {
@@ -16,10 +20,18 @@ namespace
 	const std::vector<std::wstring> kMenuString = { L"キー設定",
 		L"音量設定",
 		L"メインメニューに戻る" };
+
+	enum
+	{
+		kKey,
+		kValume,
+		kMainMenu
+	};
 }
 
 PauseScene::PauseScene(SceneManager& scnMgr, StageManager& stgMgr) :
 	Scene(scnMgr, stgMgr),
+	m_title(false),
 	m_currentMenuLine(0)
 {
 	m_updateFunc = &PauseScene::AppearUpdate;
@@ -56,6 +68,31 @@ void PauseScene::NormalUpdate(Input& input)
 		return;
 	}
 
+	if (input.IsTriggered("OK"))
+	{
+		switch (m_currentMenuLine)
+		{
+		case kKey:
+			m_scnMgr.PushScene(std::make_shared<KeyConfigScene>(m_scnMgr, m_stgMgr, input));
+			break;
+
+		case kValume:
+			break;
+
+		case kMainMenu:
+			m_updateFunc = &PauseScene::DisappearUpdate;
+			m_drawFunc = &PauseScene::FadeDraw;
+			m_title = true;
+
+			return;
+			break;
+
+		default:
+			assert(false);
+			break;
+		}
+	}
+
 	if (input.IsTriggered("up"))
 	{
 		m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kMenuString.size())) % static_cast<int>(kMenuString.size());
@@ -69,10 +106,22 @@ void PauseScene::NormalUpdate(Input& input)
 void PauseScene::DisappearUpdate(Input&)
 {
 	m_frame--;
-	if (m_frame == 0)
+	if (m_frame > 0) return;
+
+	// タイトルシーン
+	if (m_title)
+	{
+		m_scnMgr.MoveScene(std::make_shared<TitleScene>(m_scnMgr, m_stgMgr));
+		return;
+	}
+	// プレイシーン
+	else
 	{
 		m_scnMgr.PopScene();
+		return;	
 	}
+
+	
 }
 
 void PauseScene::ExpandDraw()
@@ -93,6 +142,18 @@ void PauseScene::ExpandDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	DrawBox(kMenuMargin, centerY - currentHalfHeight, size.w - kMenuMargin, centerY + currentHalfHeight,
 		0xffffff, false);
+}
+
+void PauseScene::FadeDraw()
+{
+	NormalDraw();
+	Application& app = Application::GetInstance();
+	const auto& size = app.GetWindowSize();
+
+	float rate = 1.0f - static_cast<float>(m_frame) / kAppeaInterval;	// 現在の時間の割合(0.0～1.0)
+	SetDrawBlendMode(DX_BLENDMODE_MULA, static_cast<int>(255 * rate));
+	DrawBox(0, 0, size.w, size.h, 0x000000, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void PauseScene::NormalDraw()

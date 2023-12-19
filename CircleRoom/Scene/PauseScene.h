@@ -29,10 +29,12 @@ private:
 
 	// 描画関数
 	void ExpandDraw();	// 拡張縮張描画
+	void FadeDraw();	// フェード描画
 	void NormalDraw();	// 非フェード描画
 
 private:
 	int m_frame = 0;
+	bool m_title;
 
 	int m_currentMenuLine;
 };
