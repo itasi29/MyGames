@@ -6,6 +6,7 @@
 class Input;
 class Application;
 struct Size;
+enum Ability;
 
 class Player
 {
@@ -17,7 +18,7 @@ public:
 	/// ‰Šú‰»ˆ—
 	/// </summary>
 	void Init();
-	void Update(Input& input);
+	void Update(Input& input, Ability ability);
 	void Draw();
 
 	/// <summary>

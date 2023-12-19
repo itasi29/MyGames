@@ -75,13 +75,15 @@ void StageBase::UpdateSelect(Input& input)
 		Init();
 	}
 
+	m_mgr.ChangeAbility(kDash);
+
 	// フレームの増加
 	m_waitFrame++;
 }
 
 void StageBase::UpdatePlaying(Input& input)
 {
-	m_player->Update(input);
+	m_player->Update(input, m_mgr.GetAbility());
 
 	// プレイヤーの情報を抜き取る
 	bool playerIsDash = m_player->IsDash();

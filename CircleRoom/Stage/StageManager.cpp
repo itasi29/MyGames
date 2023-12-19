@@ -32,6 +32,8 @@ StageManager::StageManager() :
 	m_killedEnemyNameTable.clear();
 	m_killedEnemyCount = 0;
 	m_clearBossTable.clear();
+	m_ability = kNone;
+	m_abilityActive.clear();
 
 	Load(L"stg.inf");
 }
@@ -211,6 +213,20 @@ void StageManager::Save(const std::string& path)
 		fwrite(name.data(), name.size(), 1, fp);
 	}
 
+	// アビリティの書き込み
+	fwrite(&m_ability, sizeof(m_ability), 1, fp);
+
+	// アビリティの有効テーブルの書き込み
+	size = m_abilityActive.size();
+	fwrite(&size, sizeof(size), 1, fp);
+	for (const auto& active : m_abilityActive)
+	{
+		// アビリティタイプ書き込み
+		fwrite(&active.first, sizeof(active.first), 1, fp);
+		// 有効化どうか書き込み
+		fwrite(&active.second, sizeof(active.second), 1, fp);
+	}
+
 	fclose(fp);
 }
 
@@ -292,6 +308,21 @@ void StageManager::Load(const std::wstring& path)
 		auto& name = m_clearBossTable[i];
 		name.resize(nameSize);
 		FileRead_read(name.data(), static_cast<int>(name.size() * sizeof(char)), handle);
+	}
+
+	// アビリティの取得
+	FileRead_read(&m_ability, sizeof(m_ability), handle);
+
+	// アビリティ有効テーブルの取得
+	FileRead_read(&size, sizeof(size), handle);
+	for (int i = 0; i < size; i++)
+	{
+		Ability ability;
+		bool active;
+		FileRead_read(&ability, sizeof(ability), handle);
+		FileRead_read(&active, sizeof(active), handle);
+
+		m_abilityActive[ability] = active;
 	}
 
 	// ファイルは閉じる
@@ -382,6 +413,11 @@ int StageManager::GetEnemyTypeCount() const
 	return m_killedEnemyCount;
 }
 
+Ability StageManager::GetAbility() const
+{
+	return m_ability;
+}
+
 void StageManager::SaveClear(const std::string& stgName, int dir)
 {
 	auto it = m_stageSaveData.find(stgName);
@@ -452,8 +488,23 @@ void StageManager::UpdateEnemyType(const std::string& name)
 	m_killedEnemyCount++;
 	// テーブルに登録
 	m_killedEnemyNameTable.push_back(name);
+
+	// アビリティの有効化
+	if (name == "Dash")
+	{
+		m_abilityActive[kDash] = true;
+	}
 }
 
+
+void StageManager::ChangeAbility(Ability ability)
+{
+	// アビリティが有効になっていたら変更させる
+	if (m_abilityActive[ability])
+	{
+		m_ability = ability;
+	}
+}
 
 void StageManager::UpdateMove()
 {

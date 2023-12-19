@@ -15,6 +15,12 @@ struct StageData
 	std::vector<bool> isClears;
 };
 
+enum Ability
+{
+	kNone,
+	kDash,
+};
+
 /// <summary>
 /// ステージの遷移をコントロール
 /// </summary>
@@ -113,6 +119,12 @@ public:
 	int GetEnemyTypeCount() const;
 
 	/// <summary>
+	/// アビリティを返す
+	/// </summary>
+	/// <returns>アビリティ</returns>
+	Ability GetAbility() const;
+
+	/// <summary>
 	/// クリア情報の保存
 	/// クリア済みとする
 	/// </summary>
@@ -140,7 +152,11 @@ public:
 	/// <param name="name">敵の名前</param>
 	void UpdateEnemyType(const std::string& name);
 
-	
+	/// <summary>
+	/// アビリティの変更
+	/// </summary>
+	/// <param name="ability">アビリティ番号</param>
+	void ChangeAbility(Ability ability);
 
 private:
 	void UpdateMove();
@@ -160,6 +176,10 @@ private:
 	int m_killedEnemyCount;
 	// クリアしたボス情報群
 	std::vector<std::string> m_clearBossTable;
+	// アビリティ
+	Ability m_ability;
+	// アビリティの有効無効
+	std::unordered_map<Ability, bool> m_abilityActive;
 
 	// ステージのポインタ
 	std::shared_ptr<StageBase> m_stage;

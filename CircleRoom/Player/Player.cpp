@@ -1,7 +1,10 @@
 #include <DxLib.h>
 #include "Application.h"
 #include "Common/Input.h"
+#include "Stage/StageManager.h"
+
 #include "Player.h"
+
 
 namespace
 {
@@ -67,10 +70,31 @@ void Player::Init()
 	m_col.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
 }
 
-void Player::Update(Input& input)
+void Player::Update(Input& input, Ability ability)
 {
 	Move(input);
-	Dash(input);
+	// アビリティ処理
+	switch (ability)
+	{
+		// アビリティなし
+	case kNone:
+	default:
+		break;
+
+		// ダッシュ
+	case kDash:
+		Dash(input);
+		break;
+	}
+	// ログの更新
+	for (int i = kDashLogNum - 1; i > 0; i--)
+	{
+		m_posLog[i] = m_posLog[i - 1];
+	}
+	m_posLog[0] = m_pos;
+	// 位置の更新
+	m_pos += m_vec;
+
 	InRange();
 
 	// 当たり判定の更新
@@ -164,7 +188,7 @@ void Player::Move(Input& input)
 	m_vec *= kSpeed;
 
 	// 座標に移動ベクトルを足す
-	m_pos += m_vec;
+//	m_pos += m_vec;
 }
 
 void Player::Dash(Input& input)
@@ -195,18 +219,13 @@ void Player::Dash(Input& input)
 
 	// 現在ダッシュ中でないなら処理終了
 	if (!m_isDash) return;
-	
-	// その前に現在の移動ベクトル分マイナスする(移動中と移動してない時で変わらないように)
-	m_pos -= m_vec;
-	// 移動ベクトルに現在向いている方向の単位ベクトル*スピードしたものを足す
-	m_pos += m_nowFront * kDashSpeed;
+	//
+	//// その前に現在の移動ベクトル分マイナスする(移動中と移動してない時で変わらないように)
+	//m_pos -= m_vec;
+	//// 移動ベクトルに現在向いている方向の単位ベクトル*スピードしたものを足す
+	//m_pos += m_nowFront * kDashSpeed;
+	m_vec = m_nowFront * kDashSpeed;
 
-	// ログの更新
-	for (int i = kDashLogNum - 1; i > 0; i--)
-	{
-		m_posLog[i] = m_posLog[i - 1];
-	}
-	m_posLog[0] = m_pos;
 	// ログフレームの更新
 	m_logFrame = 0;
 
