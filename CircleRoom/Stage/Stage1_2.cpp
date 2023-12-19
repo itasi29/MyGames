@@ -89,7 +89,7 @@ void Stage1_2::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageRight) && input.IsPress("right"))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageRight) && input.IsTriggered("right"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;

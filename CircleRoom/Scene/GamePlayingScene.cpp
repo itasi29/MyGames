@@ -34,6 +34,8 @@ GamePlayingScene::GamePlayingScene(SceneManager& scnMgr, StageManager& stgMgr) :
 
 	// ステージの設定
 	m_stgMgr.ChangeStage(std::make_shared<Stage1_1>(m_stgMgr, m_windowSize, m_fieldSize));
+
+	m_stgMgr.m_clear = false;
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -78,6 +80,14 @@ void GamePlayingScene::UpdateNormal(Input& input)
 	if (input.IsPress("pause"))
 	{
 		m_scnMgr.PushScene(std::make_shared<PauseScene>(m_scnMgr, m_stgMgr));
+	}
+
+	// 簡易実装
+	if (m_stgMgr.m_clear)
+	{
+		m_updateFunc = &GamePlayingScene::UpdateFadeOut;
+		m_drawFunc = &GamePlayingScene::DrawFade;
+		m_frame = 0;
 	}
 }
 

@@ -183,7 +183,6 @@ protected:
 	const Size& m_windowSize;
 	// フィールドサイズ
 	float m_fieldSize;
-	// ステージの中心地
 
 	// ステージ名
 	std::string m_stageName;

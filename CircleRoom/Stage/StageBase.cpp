@@ -102,22 +102,10 @@ void StageBase::UpdatePlaying(Input& input)
 			// プレイヤーの死亡処理
 			m_player->Death();
 
-			// メンバ関数ポインタを選択の方に戻す
-			m_updateFunc = &StageBase::UpdateSelect;
-			m_drawFunc = &StageBase::DrawSelect;
-
-			// フレームの初期化
-			m_waitFrame = 0;
-
-			// ベストタイムの更新
-			m_mgr.UpdateBestTime(m_stageName, m_frame);
 			// 殺したことがある敵情報の更新
 			m_mgr.UpdateEnemyType(enemy->GetName());
 
-			// クリアしているかの確認
-			CheckStageConditions();
-
-			return;
+			break;
 		}
 	}
 
@@ -137,32 +125,38 @@ void StageBase::UpdatePlaying(Input& input)
 		// ボスの死亡処理
 		if (!m_boss->IsExsit())
 		{
+			// 初回のみクリア処理に移動する
 			BossDeath();
 		}
-		// 死んでなければプレイヤーとの判定処理
+		// ボスが生存していれば
+		// プレイヤーとの判定処理
 		else if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
 		{
 			// プレイヤーの死亡処理
 			m_player->Death();
 
-			// メンバ関数ポインタを選択の方に戻す
-			m_updateFunc = &StageBase::UpdateSelect;
-			m_drawFunc = &StageBase::DrawSelect;
-
-			// フレームの初期化
-			m_waitFrame = 0;
-
-			// ベストタイムの更新
-			m_mgr.UpdateBestTime(m_stageName, m_frame);
 			// 殺したことがある敵情報の更新
 			m_mgr.UpdateEnemyType(m_boss->GetName());
-
-			// クリアしているかの確認
-			CheckStageConditions();
 		}
 	}
 
 	UpdateTime();
+
+	if (!m_player->IsExsit())
+	{
+		// メンバ関数ポインタを選択の方に戻す
+		m_updateFunc = &StageBase::UpdateSelect;
+		m_drawFunc = &StageBase::DrawSelect;
+
+		// フレームの初期化
+		m_waitFrame = 0;
+
+		// ベストタイムの更新
+		m_mgr.UpdateBestTime(m_stageName, m_frame);
+
+		// クリアしているかの確認
+		CheckStageConditions();
+	}
 }
 
 void StageBase::DrawSelect()
@@ -464,6 +458,9 @@ void StageBase::BossDeath()
 		return;
 	}
 
+
+	m_mgr.m_clear = true;
+
 	// 初回殺しの時は倒したら終了とする
 	// FIXME : 現状プレイヤーの死亡処理と同じにしているけれど後で処理の仕方変わると思う
 	m_player->Death();
@@ -472,16 +469,8 @@ void StageBase::BossDeath()
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
 
-	// フレームの初期化
-	m_waitFrame = 0;
-
 	// 倒した情報の追加
 	m_mgr.UpdateClearBoss(m_boss->GetName());
-	// ベストタイムの更新
-	m_mgr.UpdateBestTime(m_stageName, m_frame);
-
-	// クリアしているかの確認
-	CheckStageConditions();
 
 	// ボスを消す
 	m_boss.reset();

@@ -57,15 +57,15 @@ void GameOverScene::FadeOutUpdate(Input&)
 
 void GameOverScene::FadeDraw()
 {
-	DrawString(10, 100, L"GameOverScene", 0xffffff);
+	DrawString(600, 320, L"GameClear", 0xffffff);
 
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
-	DrawBox(0, 0, 640, 480, 0x000000, true);
+	DrawBox(0, 0, 1280, 720, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void GameOverScene::NormalDraw()
 {
-	DrawString(10, 100, L"GameOverScene", 0xffffff);
+	DrawString(600, 320, L"GameClear", 0xffffff);
 }

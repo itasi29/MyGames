@@ -26,6 +26,10 @@ enum Ability
 /// </summary>
 class StageManager
 {
+	// ‚±‚ê‚Íƒ_ƒ‚¾‚¯‚Ç‚ß‚ñ‚Ç‚­‚³‚¢‚©‚çŠÈˆÕÀ‘•
+public:
+	bool m_clear = false;
+
 public:
 	// FIXME:–¼‘O‚Í•Ï‚¦‚é
 	enum StageDir

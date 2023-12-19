@@ -87,7 +87,7 @@ void Stage1_3::ChangeStage(Input& input)
 	// Ž€–S’¼Œã‚Í•Ï‚í‚ç‚È‚¢‚æ‚¤‚É‚·‚é
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft) && input.IsPress("left"))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft) && input.IsTriggered("left"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
 		nextStage = std::make_shared<Stage1_4>(m_mgr, m_windowSize, m_fieldSize);
@@ -96,7 +96,7 @@ void Stage1_3::ChangeStage(Input& input)
 
 		return;
 	}
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageDown) && input.IsPress("down"))
+	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageDown) && input.IsTriggered("down"))
 	{
 		std::shared_ptr<Stage1_1> nextStage;
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_windowSize, m_fieldSize);
