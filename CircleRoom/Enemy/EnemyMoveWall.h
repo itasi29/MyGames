@@ -7,7 +7,7 @@
 class EnemyMoveWall : public EnemyBase
 {
 public:
-	EnemyMoveWall(const Size& windowSize, float fieldSize);
+	EnemyMoveWall(const size& windowSize, float fieldSize);
 	virtual ~EnemyMoveWall();
 
 	/// <summary>

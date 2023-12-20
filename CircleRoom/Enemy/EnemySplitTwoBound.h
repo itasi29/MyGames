@@ -3,7 +3,7 @@
 class EnemySplitTwoBound : public EnemySplit
 {
 public:
-	EnemySplitTwoBound(const Size& windowSize, float fieldSize);
+	EnemySplitTwoBound(const size& windowSize, float fieldSize);
 	virtual ~EnemySplitTwoBound();
 
 	void Init(const Vec2& pos, Vec2& vec) override;

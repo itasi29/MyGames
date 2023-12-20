@@ -29,7 +29,7 @@ namespace
 	constexpr int kCreateFrame = 15;
 }
 
-EnemyCreate::EnemyCreate(const Size& windowSize, float fieldSize, StageBase* stage) :
+EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize, StageBase* stage) :
 	EnemyBase(windowSize, fieldSize),
 	m_stage(stage),
 	m_radian(0)
@@ -110,7 +110,7 @@ void EnemyCreate::NormalUpdate()
 	{
 		m_frame = 0;
 		std::shared_ptr<EnemyChild> child;
-		child = std::make_shared<EnemyChild>(m_windowSize, m_fieldSize);
+		child = std::make_shared<EnemyChild>(m_size, m_fieldSize);
 		child->Init(m_pos);
 
 		m_stage->GenericEnemy(child);

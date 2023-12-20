@@ -26,8 +26,8 @@ namespace
 	constexpr int kBackHpBarHeight = 10;
 }
 
-BossBase::BossBase(const Size& windowSize, float fieldSize, int maxHp) :
-	m_windowSize(windowSize),
+BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
+	m_size(windowSize),
 	m_fieldSize(fieldSize),
 	m_maxHp(maxHp),
 	m_isExsit(true),
@@ -70,8 +70,8 @@ bool BossBase::OnAttack(bool isDash, const Collision& rect)
 
 bool BossBase::Reflection()
 {
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
+	float centerX = m_size.w * 0.5f;
+	float centerY = m_size.h * 0.5f;
 
 	// ç∂
 	if (m_pos.x - m_radius < centerX - m_fieldSize)
@@ -176,7 +176,7 @@ void BossBase::NormalDraw() const
 
 void BossBase::DrawHpBar() const
 {
-	Vec2 base = {m_windowSize.w - kHpBarWidth * 1.5f, 160.0f};
+	Vec2 base = {m_size.w - kHpBarWidth * 1.5f, 160.0f};
 
 	// îwåi
 	DrawBox(static_cast<int>(base.x - kBackHpBarWidth), static_cast<int>(base.y - kBackHpBarHeight),

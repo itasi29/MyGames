@@ -41,7 +41,7 @@ namespace
 	constexpr float kCreateRadian = 45.0f * (kPai / 180.0f);
 }
 
-BossArmored::BossArmored(const Size& windowSize, float fieldSize, StageBase* stage) :
+BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* stage) :
 	BossBase(windowSize, fieldSize, kMaxHp),
 	m_stage(stage)
 {
@@ -134,7 +134,7 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 		// ダメージオブジェクトの量が規定値以上であれば終了
 		if (m_objects.size() >= kDamageObjectNum) return isHit;
 
-		m_objects.push_back(std::make_shared<BossDamageObject>(m_windowSize, m_fieldSize));
+		m_objects.push_back(std::make_shared<BossDamageObject>(m_size, m_fieldSize));
 	}
 }
 
@@ -219,7 +219,7 @@ void BossArmored::CreateEnemy()
 				for (int i = 0; i < kCreateNum * 2; i++)
 				{
 					std::shared_ptr<EnemySplitTwoBound> split;
-					split = std::make_shared<EnemySplitTwoBound>(m_windowSize, m_fieldSize);
+					split = std::make_shared<EnemySplitTwoBound>(m_size, m_fieldSize);
 					split->Init(m_pos, vec);
 
 					m_stage->GenericEnemy(split);
@@ -235,7 +235,7 @@ void BossArmored::CreateEnemy()
 				for (int i = 0; i < kCreateNum; i++)
 				{
 					std::shared_ptr<EnemySplitTwoBound> split;
-					split = std::make_shared<EnemySplitTwoBound>(m_windowSize, m_fieldSize);
+					split = std::make_shared<EnemySplitTwoBound>(m_size, m_fieldSize);
 					split->Init(m_pos, vec);
 
 					m_stage->GenericEnemy(split);

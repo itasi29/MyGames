@@ -7,7 +7,7 @@
 class EnemySplit : public EnemyBase
 {
 public:
-	EnemySplit(const Size& windowSize, float fieldSize);
+	EnemySplit(const size& windowSize, float fieldSize);
 	virtual ~EnemySplit();
 
 	/// <summary>

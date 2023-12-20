@@ -1,6 +1,6 @@
 #pragma once
 
-struct Size
+struct size
 {
 	int w;
 	int h;
@@ -13,7 +13,7 @@ struct Size
 class Application
 {
 private:
-	Size m_windowSize;
+	size m_size;
 	// FPSŒÅ’è—p
 	long long m_time;
 
@@ -40,6 +40,6 @@ public:
 	bool Init();
 	void Run();
 
-	const Size& GetWindowSize() const;
+	const size& GetWindowSize() const;
 };
 

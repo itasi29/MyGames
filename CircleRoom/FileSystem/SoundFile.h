@@ -1,10 +1,10 @@
 #pragma once
-#include "File.h"
+#include "FileBase.h"
 /// <summary>
 /// サウンド系のファイルのハンドルを内包し
 /// 削除処理を適切に行う
 /// </summary>
-class SoundFile : public File
+class SoundFile : public FileBase
 {
 public:
 	SoundFile(FileManager& manager);

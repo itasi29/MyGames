@@ -1,7 +1,6 @@
 #pragma once
 class Input;
-class SceneManager;
-class StageManager;
+class GameManager;
 
 /// <summary>
 /// シーン基底クラス
@@ -10,15 +9,13 @@ class StageManager;
 class Scene
 {
 protected:
-	SceneManager& m_scnMgr;
-	StageManager& m_stgMgr;
+	GameManager& m_mgr;
 public:
 	/// <summary>
-	/// 生成時にSceneManager, StageManagerの参照を受け取っておく
+	/// 生成時にGameManagerの参照を受け取っておく
 	/// </summary>
 	/// <param name="manager">SceneManagerの参照</param>
-	/// <param name="manager">StageManagerの参照</param>
-	Scene(SceneManager& scnMgr, StageManager& stgMgr);
+	Scene(GameManager& mgr);
 	virtual ~Scene() {};
 
 	/// <summary>

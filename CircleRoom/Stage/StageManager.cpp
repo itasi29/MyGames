@@ -217,7 +217,7 @@ void StageManager::Save(const std::string& path)
 	fwrite(&m_ability, sizeof(m_ability), 1, fp);
 
 	// アビリティの有効テーブルの書き込み
-	size = m_abilityActive.size();
+	size = static_cast<uint8_t>(m_abilityActive.size());
 	fwrite(&size, sizeof(size), 1, fp);
 	for (const auto& active : m_abilityActive)
 	{

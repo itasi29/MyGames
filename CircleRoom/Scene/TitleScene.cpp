@@ -2,7 +2,7 @@
 #include <cassert>
 #include "Application.h"
 #include "Common/Input.h"
-#include "SceneManager.h"
+#include "GameManager.h"
 #include "TitleScene.h"
 #include "GamePlayingScene.h"
 
@@ -16,8 +16,8 @@ namespace
 	constexpr int kMenuLength = 256;
 }
 
-TitleScene::TitleScene(SceneManager& scnMgr, StageManager& stgMgr) :
-	Scene(scnMgr, stgMgr)
+TitleScene::TitleScene(GameManager& mgr) :
+	Scene(mgr)
 {
 	m_frame = 60;
 	m_updateFunc = &TitleScene::FadeInUpdate;
@@ -90,7 +90,7 @@ void TitleScene::FadeOutUpdate(Input&)
 	m_frame++;
 	if (60 <= m_frame)
 	{
-		m_scnMgr.ChangeScene(std::make_shared<GamePlayingScene>(m_scnMgr, m_stgMgr));
+		m_mgr.GetScene().ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
 	}
 }
 
@@ -99,11 +99,11 @@ void TitleScene::FadeDraw()
 	// 通常の方の描画
 	NormalDraw();
 
-	const auto& size = Application::GetInstance().GetWindowSize();
+	const auto& m_size = Application::GetInstance().GetWindowSize();
 	// その後にフェード暗幕を描画
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
-	DrawBox(0, 0, size.w, size.h, 0x000000, true);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
@@ -112,8 +112,8 @@ void TitleScene::NormalDraw()
 	// FIXME:マジックナンバーは後で直す
 	// FIXME:書く順番考える
 
-	const auto& size = Application::GetInstance().GetWindowSize();
-	int defX = size.w / 2;
+	const auto& m_size = Application::GetInstance().GetWindowSize();
+	int defX = m_size.w / 2;
 		
 	// タイトル名の描画
 	std::wstring title = L"CircleRoom";

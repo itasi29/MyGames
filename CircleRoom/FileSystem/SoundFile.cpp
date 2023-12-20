@@ -1,9 +1,9 @@
 #include "SoundFile.h"
-#include "FileManager.h"
+#include "GameManager.h"
 #include <DxLib.h>
 
 SoundFile::SoundFile(FileManager& manager) :
-	File(manager)
+	FileBase(manager)
 {
 }
 
@@ -11,7 +11,7 @@ SoundFile::~SoundFile()
 {
 	if (m_isEternal) return;
 
-	m_manager.Delete(m_path);
+	m_mgr.Delete(m_path);
 }
 
 void SoundFile::Delete()

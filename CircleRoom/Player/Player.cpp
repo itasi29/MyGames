@@ -31,8 +31,8 @@ namespace
 	constexpr int kInterpolatedFrame = 50;
 }
 
-Player::Player(const Size& windowSize, float fieldSize) :
-	m_windowSize(windowSize),
+Player::Player(const size& windowSize, float fieldSize) :
+	m_size(windowSize),
 	m_fieldSize(fieldSize),
 	m_logFrame(kDashLogNum),
 	m_dashFrame(0),
@@ -58,7 +58,7 @@ void Player::Init()
 	m_isExsit = true;
 
 	// 位置の設定
-	m_pos = Vec2{ m_windowSize.w / 2.0f, m_windowSize.h - m_fieldSize };
+	m_pos = Vec2{ m_size.w / 2.0f, m_size.h - m_fieldSize };
 
 	// 方向の設定
 	m_nowFront = Vec2::Up();
@@ -242,8 +242,8 @@ void Player::Dash(Input& input)
 
 void Player::InRange()
 {
-	float centerX = m_windowSize.w *0.5f;
-	float centerY = m_windowSize.h * 0.5f;
+	float centerX = m_size.w *0.5f;
+	float centerY = m_size.h * 0.5f;
 
 	// 左処理
 	// 現在の位置から正面方向側の向きに中心をずらし(当たり判定の位置に持っていく)

@@ -8,7 +8,7 @@
 class EnemyNormal : public EnemyBase
 {
 public:
-	EnemyNormal(const Size& windowSize, float fieldSize);
+	EnemyNormal(const size& windowSize, float fieldSize);
 	virtual ~EnemyNormal();
 
 	/// <summary>

@@ -7,7 +7,7 @@
 class EnemyLarge : public EnemyBase
 {
 public:
-	EnemyLarge(const Size& windowSize, float fieldSize);
+	EnemyLarge(const size& windowSize, float fieldSize);
 	virtual ~EnemyLarge();
 
 	/// <summary>

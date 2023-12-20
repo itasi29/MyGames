@@ -28,7 +28,7 @@ namespace
 	constexpr int kStartWaitDashFrame = 30;
 }
 
-EnemyDash::EnemyDash(const Size& windowSize, float fieldSize, std::shared_ptr<Player>& player) :
+EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Player>& player) :
 	EnemyBase(windowSize, fieldSize),
 	m_player(player),
 	m_logFrame(kDashLogNum),

@@ -11,7 +11,7 @@ class Player;
 class EnemyDash : public EnemyBase
 {
 public:
-	EnemyDash(const Size& windowSize, float fieldSize, std::shared_ptr<Player>& player);
+	EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Player>& player);
 	virtual ~EnemyDash();
 
 	/// <summary>

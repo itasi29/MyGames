@@ -2,14 +2,14 @@
 #include "Scene.h"
 
 class Input;
-class ScneManager;
+
 /// <summary>
 /// ポーズ時のシーンクラス
 /// </summary>
 class PauseScene : public Scene
 {
 public:
-	PauseScene(SceneManager& scnMgr, StageManager& stgMgr);
+	PauseScene(GameManager& mgr);
 
 	void Update(Input& input);
 	void Draw();

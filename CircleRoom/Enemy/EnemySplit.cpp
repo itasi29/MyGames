@@ -11,7 +11,7 @@ namespace
 	constexpr int kColor = 0xffffff;
 }
 
-EnemySplit::EnemySplit(const Size& windowSize, float fieldSize) :
+EnemySplit::EnemySplit(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Split";

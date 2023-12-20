@@ -7,7 +7,7 @@
 
 class Input;
 class StageBase;
-struct Size;
+struct size;
 
 struct StageData
 {
@@ -170,7 +170,7 @@ private:
 	void ResetVecY();
 
 private:
-	const Size& m_size;
+	const size& m_size;
 
 	// ステージのクリア情報群
 	std::unordered_map<std::string, StageData> m_stageSaveData;

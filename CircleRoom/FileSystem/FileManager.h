@@ -4,7 +4,7 @@
 #include <string>			// ファイルパスを覚えとくよう
 #include <memory>			// Fileのshared_ptrを保持しておくよう
 
-class File;
+class FileBase;
 
 /// <summary>
 /// ファイルのマップを内包し、ファイルを管理する
@@ -14,7 +14,7 @@ class FileManager
 public:
 	// ファイルパス文字列をキー、値をFileオブジェクトとしたテーブル型
 	using FileTable_t = std::unordered_map<std::wstring,
-											std::shared_ptr<File>>;
+											std::shared_ptr<FileBase>>;
 	FileTable_t m_fileTable;
 
 public:
@@ -25,14 +25,14 @@ public:
 	/// <param name="path">ファイルパス</param>
 	/// <param name="isEternal">常駐フラグ</param>
 	/// <returns>ファイルオブジェクト</returns>
-	std::shared_ptr<File> LoadGraphic(const std::wstring& path, bool isEternal = false);
+	std::shared_ptr<FileBase> LoadGraphic(const std::wstring& path, bool isEternal = false);
 	/// <summary>
 	/// 指定のパスのサウンドデータをロードしてそのファイルオブジェクトを返す
 	/// </summary>
 	/// <param name="path">ファイルパス</param>
 	/// <param name="isEternal">常駐フラグ</param>
 	/// <returns>ファイルオブジェクト</returns>
-	std::shared_ptr<File> LoadSound(const std::wstring& path, bool isEternal = false);
+	std::shared_ptr<FileBase> LoadSound(const std::wstring& path, bool isEternal = false);
 
 	/// <summary>
 	/// リソースの削除を行う

@@ -1,6 +1,6 @@
 #pragma once
-#include "File.h"
-class ImageFile : public File
+#include "FileBase.h"
+class ImageFile : public FileBase
 {
 public:
 	ImageFile(FileManager& manager);

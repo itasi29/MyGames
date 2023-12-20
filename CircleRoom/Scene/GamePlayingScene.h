@@ -2,16 +2,15 @@
 #include "Scene.h"
 #include <memory>
 #include <vector>
-#include "Stage/StageManager.h"
 
-struct Size;
+struct m_size;
 class Player;
 class EnemyBase;
 
 class GamePlayingScene : public Scene
 {
 public:
-    GamePlayingScene(SceneManager& scnMgr, StageManager& stgMgr);
+    GamePlayingScene(GameManager& mgr);
     ~GamePlayingScene();
     virtual void Update(Input& input);
     virtual void Draw();
@@ -51,8 +50,6 @@ private:
     void DrawNormal();
 
 private:
-    // Windowサイズ
-    const Size& m_windowSize;
     // フィールドサイズ
     // なおここでは2倍をしたらちょうどのサイズになるようにする
     float m_fieldSize;

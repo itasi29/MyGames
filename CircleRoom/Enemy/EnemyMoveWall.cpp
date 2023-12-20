@@ -13,7 +13,7 @@ namespace
 	constexpr int kColor = 0x888888;
 }
 
-EnemyMoveWall::EnemyMoveWall(const Size& windowSize, float fieldSize) :
+EnemyMoveWall::EnemyMoveWall(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "MoveWall";
@@ -32,8 +32,8 @@ void EnemyMoveWall::Init(const Vec2& vec)
 	// îºåaÇÃê›íË
 	m_radius = kRadius;
 
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
+	float centerX = m_size.w * 0.5f;
+	float centerY = m_size.h * 0.5f;
 
 	m_pos = Vec2{centerX + m_fieldSize * -vec.y, centerY};
 

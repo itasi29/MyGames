@@ -3,7 +3,7 @@
 class GameOverScene : public Scene
 {
 public:
-    GameOverScene(SceneManager& scnMgr, StageManager& stgMgr);
+    GameOverScene(GameManager& mgr);
     ~GameOverScene();
     virtual void Update(Input& input);
     virtual void Draw();

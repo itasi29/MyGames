@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "Input.h"
 
-#include "StageManager.h"
+#include "GameManager.h"
 #include "Stage1_1.h"
 #include "Stage1_2.h"
 #include "Stage1_3.h"
@@ -27,15 +27,15 @@ namespace
 	constexpr int kUpExsitTime = 15;
 }
 
-Stage1_1::Stage1_1(StageManager& mgr, const Size& windowSize, float fieldSize) :
-	StageBase(mgr, windowSize, fieldSize),
+Stage1_1::Stage1_1(GameManager& mgr, float fieldSize) :
+	StageBase(mgr, fieldSize),
 	m_createFrame(0)
 {
 	m_stageName = "Stage1-1";
-	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
+	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成
-	m_mgr.CreateData(m_stageName);
+	m_mgr.GetStage().CreateData(m_stageName);
 	CheckStageConditions();
 
 	StartCheck();
@@ -66,25 +66,25 @@ void Stage1_1::Init()
 	// 壁動く敵の作成
 	Vec2 vec;
 	// 上側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
 	vec.x = 0;
 	vec.y = -1;
 	m_enemy.back()->Init(vec);
 	// 下側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
 	vec.y = 1;
 	m_enemy.back()->Init(vec);
 
 	// 敵を一体追加
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
 	m_enemy.back()->Init(m_centerPos);
 	m_createNum++;
 }
 
 void Stage1_1::StartCheck()
 {
-	m_isLeftClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft);
-	m_isUpClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageUp);
+	m_isLeftClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft);
+	m_isUpClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp);
 }
 
 void Stage1_1::ChangeStage(Input& input)
@@ -95,20 +95,20 @@ void Stage1_1::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft) && input.IsTriggered("left"))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft) && input.IsTriggered("left"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_2> nextStage;
-		nextStage = std::make_shared<Stage1_2>(m_mgr, m_windowSize, m_fieldSize);
+		nextStage = std::make_shared<Stage1_2>(m_mgr, m_fieldSize);
 
 		SlideLeft(nextStage);
 
 		return;
 	}
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageUp) && input.IsTriggered("up"))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
-		nextStage = std::make_shared<Stage1_3>(m_mgr, m_windowSize, m_fieldSize);
+		nextStage = std::make_shared<Stage1_3>(m_mgr, m_fieldSize);
 
 		SlideUp(nextStage);
 
@@ -119,20 +119,20 @@ void Stage1_1::ChangeStage(Input& input)
 void Stage1_1::CheckStageConditions()
 {
 	// 左をまだクリアしていない場合
-	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft))
+	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft))
 	{
 		// 条件確認
-		if (m_mgr.GetBestTime(m_stageName) > kLeftExsitTime * 60)
+		if (m_mgr.GetStage().GetBestTime(m_stageName) > kLeftExsitTime * 60)
 		{
-			m_mgr.SaveClear(m_stageName, StageManager::kStageLeft);
+			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageLeft);
 		}
 	}
 	// 上をまだクリアしていない場合
-	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageUp))
+	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp))
 	{
-		if (m_mgr.GetBestTime(m_stageName) > kUpExsitTime * 60)
+		if (m_mgr.GetStage().GetBestTime(m_stageName) > kUpExsitTime * 60)
 		{
-			m_mgr.SaveClear(m_stageName, StageManager::kStageUp);
+			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageUp);
 		}
 	}
 }
@@ -142,14 +142,14 @@ void Stage1_1::DrawStageConditions(int drawY)
 	if (!m_isLeftClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"左　%d秒間生き残る\n(%d / %d)",
-			kLeftExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kLeftExsitTime);
+			kLeftExsitTime, m_mgr.GetStage().GetBestTime(m_stageName) / 60, kLeftExsitTime);
 
 		drawY += 32;
 	}
 	if (!m_isUpClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"上　%d秒間生き残る\n(%d / %d)",
-			kUpExsitTime, m_mgr.GetBestTime(m_stageName) / 60, kUpExsitTime);
+			kUpExsitTime, m_mgr.GetStage().GetBestTime(m_stageName) / 60, kUpExsitTime);
 	}
 }
 
@@ -161,7 +161,7 @@ void Stage1_1::DrawArrow() const
 
 void Stage1_1::DrawKilledEnemyType() const
 {
-	if (m_mgr.IsKilledEnemy("Normal"))
+	if (m_mgr.GetStage().IsKilledEnemy("Normal"))
 	{
 		DrawCircle(256, 28, 16, 0xffffff, true);
 	}
@@ -170,7 +170,7 @@ void Stage1_1::DrawKilledEnemyType() const
 		DrawCircle(256, 28, 16, 0xffffff, false);
 	}
 
-	if (m_mgr.IsKilledEnemy("MoveWall"))
+	if (m_mgr.GetStage().IsKilledEnemy("MoveWall"))
 	{
 		DrawCircle(256 + 48, 28, 16, 0x888888, true);
 	}
@@ -207,7 +207,7 @@ void Stage1_1::CreateNormal()
 	// 生成時間の初期化
 	m_createFrame = 0;
 	// 配列の最後に敵を追加
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
 	m_enemy.back()->Init(m_centerPos);
 }
 

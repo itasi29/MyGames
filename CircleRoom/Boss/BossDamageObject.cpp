@@ -11,7 +11,7 @@ namespace
 	constexpr int kRand = 10;
 }
 
-BossDamageObject::BossDamageObject(const Size& windowSize, float fieldSize) :
+BossDamageObject::BossDamageObject(const size& windowSize, float fieldSize) :
 	m_isUsed(false)
 {
 	// 中心地からフィールド範囲内に出現するようにランダムに設置

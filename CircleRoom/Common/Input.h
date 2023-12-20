@@ -60,6 +60,9 @@ public:
 	/// <returns>true:離された瞬間 / false:それ以外</returns>
 	bool IsReleased(const char* command) const;
 
+	void Save(const std::string& path);
+	void Load(const std::wstring& path);
+
 	/// <summary>
 	/// スティックの情報を渡す
 	/// </summary>

@@ -2,34 +2,25 @@
 #include "Scene.h"
 #include <unordered_map>
 #include "Common/Input.h"
+
 /// <summary>
 /// キーコンフィグのシーン
 /// </summary>
 class KeyConfigScene : public Scene
 {
 public:
-	KeyConfigScene(SceneManager& scnMgr, StageManager& stgMgr, Input& input);
+	KeyConfigScene(GameManager& mgr, Input& input);
 	~KeyConfigScene();
 
 	void Update(Input& input);
 	void Draw();
 
 private:
-	int m_frame = 0;
-	std::vector<std::string> m_menuItems;	// 特定の純情にコマンドを並び替えるための配列
-
-	int m_currentLineIndex = 0;		// 現在行のインデックス
-	bool m_isEditingNow = false;	// 今編集中なのか(トグル)
-
-	Input& m_input;	// Inputクラスの参照を持っておく
-	InputTable_t m_keyCommandTable;
-
 	// 更新メンバ関数ポインタ
 	using UpdateFunc_t = void(KeyConfigScene::*)(Input& input);
-	UpdateFunc_t  m_updateFunc;
 	// 描画メンバ関数ポインタ
 	using DrawFunc_t = void (KeyConfigScene::*)();
-	DrawFunc_t m_drawFunc;
+	
 
 	// 更新関数
 	void AppearUpdate(Input&);	// 登場状態
@@ -44,5 +35,27 @@ private:
 	void DrawCommandList();	// コマンドリストの描画(テキスト描画)
 
 	void CommitCurrenKeySetting();
+
+	std::wstring GetKeyName(int keycode);
+	std::wstring GetPadName(int padstate);
+
+private:
+	UpdateFunc_t  m_updateFunc;
+	DrawFunc_t m_drawFunc;
+
+	int m_frame = 0;
+	std::vector<std::string> m_menuItems;	// 特定の純情にコマンドを並び替えるための配列
+
+	int m_currentLineIndex = 0;		// 現在行のインデックス
+	bool m_isEditingNow = false;	// 今編集中なのか(トグル)
+
+	Input& m_input;	// Inputクラスの参照を持っておく
+	InputTable_t m_keyCommandTable;
+
+	bool m_isEditRequestButton;
+
+	// MEMO:これは変更させる可能性高い
+	std::unordered_map<int, std::wstring> m_keynameTable;
+	std::unordered_map<int, std::wstring> m_padnameTable;
 };
 

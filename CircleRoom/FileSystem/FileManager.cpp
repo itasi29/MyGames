@@ -12,7 +12,7 @@ FileManager::~FileManager()
     }
 }
 
-std::shared_ptr<File> FileManager::LoadGraphic(const std::wstring& path, bool isEternal)
+std::shared_ptr<FileBase> FileManager::LoadGraphic(const std::wstring& path, bool isEternal)
 {
     // 二重ロード防止
     // もし、ロード済みのファイルがあったらそのファイルを返す
@@ -49,7 +49,7 @@ std::shared_ptr<File> FileManager::LoadGraphic(const std::wstring& path, bool is
     //    (*std::dynamic_pointer_cast<ImageFile>(file));
 }
 
-std::shared_ptr<File> FileManager::LoadSound(const std::wstring& path, bool isEternal)
+std::shared_ptr<FileBase> FileManager::LoadSound(const std::wstring& path, bool isEternal)
 {
     // 二重ロード防止
 // もし、ロード済みのファイルがあったらそのファイルを返す

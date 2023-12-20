@@ -5,19 +5,19 @@
 #include <string>
 #include "Vec2.h"
 
-class StageManager;
+class GameManager;
 class Player;
 class EnemyBase;
 class BossBase;
 class Input;
-struct Size;
+struct size;
 struct StageData;
 enum class StageDir;
 
 class StageBase
 {
 public:
-	StageBase(StageManager& mgr, const Size& windowSize, float fieldSize);
+	StageBase(GameManager& mgr, float fieldSize);
 	virtual ~StageBase();
 
 	void Update(Input& input);
@@ -54,9 +54,6 @@ public:
 protected:
 	using UpdateFunc_t = void (StageBase::*)(Input&);
 	using DrawFunc_t = void (StageBase::*)();
-
-	UpdateFunc_t m_updateFunc;
-	DrawFunc_t m_drawFunc;
 
 	/// <summary>
 	/// ステージのクリア確認
@@ -173,16 +170,19 @@ private:
 	void DrawWall();
 
 protected:
+	UpdateFunc_t m_updateFunc;
+	DrawFunc_t m_drawFunc;
+
+	GameManager& m_mgr;
+
+	// ウィンドウサイズ
+	const size& m_size;
+	// フィールドサイズ
+	float m_fieldSize;
+
 	// ステージ変更可能までの待機時間
 	const int kWaitChangeFrame = 30;
 	const Vec2 m_centerPos;
-
-	StageManager& m_mgr;
-
-	// Windowサイズ
-	const Size& m_windowSize;
-	// フィールドサイズ
-	float m_fieldSize;
 
 	// ステージ名
 	std::string m_stageName;

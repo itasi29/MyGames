@@ -25,7 +25,7 @@ namespace
 	constexpr int kDivisionWaitFrame = 30;
 }
 
-EnemyDivision::EnemyDivision(const Size& windowSize, float fieldSize, StageBase* stage) :
+EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase* stage) :
 	EnemyBase(windowSize, fieldSize),
 	m_stage(stage),
 	m_isDivisionWait(false),
@@ -100,7 +100,7 @@ void EnemyDivision::NormalUpdate()
 			for (int i = 0; i < kDivisionNum; i++)
 			{
 				std::shared_ptr<EnemySplit> split;
-				split = std::make_shared<EnemySplit>(m_windowSize, m_fieldSize);
+				split = std::make_shared<EnemySplit>(m_size, m_fieldSize);
 				split->Init(m_pos, vec);
 
 				m_stage->GenericEnemy(split);

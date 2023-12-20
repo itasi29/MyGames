@@ -5,7 +5,7 @@
 
 #include "PauseScene.h"
 
-#include "SceneManager.h"
+#include "GameManager.h"
 #include "KeyConfigScene.h"
 #include "TitleScene.h"
 
@@ -29,8 +29,8 @@ namespace
 	};
 }
 
-PauseScene::PauseScene(SceneManager& scnMgr, StageManager& stgMgr) :
-	Scene(scnMgr, stgMgr),
+PauseScene::PauseScene(GameManager& mgr) :
+	Scene(mgr),
 	m_title(false),
 	m_currentMenuLine(0)
 {
@@ -72,13 +72,16 @@ void PauseScene::NormalUpdate(Input& input)
 	{
 		switch (m_currentMenuLine)
 		{
+			// キー設定
 		case kKey:
-			m_scnMgr.PushScene(std::make_shared<KeyConfigScene>(m_scnMgr, m_stgMgr, input));
+			m_mgr.GetScene().PushScene(std::make_shared<KeyConfigScene>(m_mgr, input));
 			break;
 
+			// 音量設定
 		case kValume:
 			break;
 
+			// メニューに戻る
 		case kMainMenu:
 			m_updateFunc = &PauseScene::DisappearUpdate;
 			m_drawFunc = &PauseScene::FadeDraw;
@@ -111,13 +114,13 @@ void PauseScene::DisappearUpdate(Input&)
 	// タイトルシーン
 	if (m_title)
 	{
-		m_scnMgr.MoveScene(std::make_shared<TitleScene>(m_scnMgr, m_stgMgr));
+		m_mgr.GetScene().MoveScene(std::make_shared<TitleScene>(m_mgr));
 		return;
 	}
 	// プレイシーン
 	else
 	{
-		m_scnMgr.PopScene();
+		m_mgr.GetScene().PopScene();
 		return;	
 	}
 
@@ -127,20 +130,20 @@ void PauseScene::DisappearUpdate(Input&)
 void PauseScene::ExpandDraw()
 {
 	Application& app = Application::GetInstance();
-	const auto& size = app.GetWindowSize();
+	const auto& m_size = app.GetWindowSize();
 
-	int halfHeight = (size.h - 100) / 2;
-	int centerY = size.h / 2;
+	int halfHeight = (m_size.h - 100) / 2;
+	int centerY = m_size.h / 2;
 
 	float rate = static_cast<float>(m_frame) / kAppeaInterval;	// 現在の時間の割合(0.0～1.0)
 	int currentHalfHeight = static_cast<int>(rate * halfHeight);
 
 	SetDrawBlendMode(DX_BLENDMODE_MUL, 255);
 	// ちょっと暗い矩形を描画
-	DrawBox(kMenuMargin, centerY - currentHalfHeight, size.w - kMenuMargin, centerY + currentHalfHeight,
+	DrawBox(kMenuMargin, centerY - currentHalfHeight, m_size.w - kMenuMargin, centerY + currentHalfHeight,
 		0x888888, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	DrawBox(kMenuMargin, centerY - currentHalfHeight, size.w - kMenuMargin, centerY + currentHalfHeight,
+	DrawBox(kMenuMargin, centerY - currentHalfHeight, m_size.w - kMenuMargin, centerY + currentHalfHeight,
 		0xffffff, false);
 }
 
@@ -148,30 +151,30 @@ void PauseScene::FadeDraw()
 {
 	NormalDraw();
 	Application& app = Application::GetInstance();
-	const auto& size = app.GetWindowSize();
+	const auto& m_size = app.GetWindowSize();
 
 	float rate = 1.0f - static_cast<float>(m_frame) / kAppeaInterval;	// 現在の時間の割合(0.0～1.0)
 	SetDrawBlendMode(DX_BLENDMODE_MULA, static_cast<int>(255 * rate));
-	DrawBox(0, 0, size.w, size.h, 0x000000, true);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void PauseScene::NormalDraw()
 {
 	Application& app = Application::GetInstance();
-	const auto& size = app.GetWindowSize();
+	const auto& m_size = app.GetWindowSize();
 	SetDrawBlendMode(DX_BLENDMODE_MUL, 255);
 	// ちょっと暗い矩形を描画
-	DrawBox(kMenuMargin, kMenuMargin, size.w - kMenuMargin, size.h - kMenuMargin,
+	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
 		0x888888, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawBox(kMenuMargin, kMenuMargin, size.w - kMenuMargin, size.h - kMenuMargin,
+	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
 		0xffffff, false);
 
 	// メニュー後ろの赤線
 	DrawBox(kMenuMargin * 2, static_cast<int>(kMenuMargin * 2 + kMenuStringMargin * m_currentMenuLine - kMenuStringMargin * 0.25f),
-		size.w - kMenuMargin * 2, static_cast<int>(kMenuMargin * 2 + kMenuStringMargin * (m_currentMenuLine + 1) - kMenuStringMargin * 0.25f),
+		m_size.w - kMenuMargin * 2, static_cast<int>(kMenuMargin * 2 + kMenuStringMargin * (m_currentMenuLine + 1) - kMenuStringMargin * 0.25f),
 		0xff0000, true);
 	// メニューの文字列群
 	for (int i = 0; i < kMenuString.size(); i++)

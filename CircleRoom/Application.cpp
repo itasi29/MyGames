@@ -1,10 +1,13 @@
-#include "Application.h"
-#include "Scene/SceneManager.h"
-#include "Stage/StageManager.h"
-#include "Common/Input.h"
-
 #include <DxLib.h>
 #include <cassert>
+
+#include "Application.h"
+#include "Common/Input.h"
+#include "Common/GameManager.h"
+
+#include "Scene/SceneManager.h"
+#include "Scene/TitleScene.h"
+#include "FileSystem/FileManager.h"
 
 #include "Scene/TitleScene.h"
 
@@ -29,7 +32,7 @@ int MyLoadGraph(const wchar_t* path)
 Application::Application() :
     m_time(0)
 {
-    m_windowSize = Size{kScreenWidth, kScreenHeight};
+    m_size = size{kScreenWidth, kScreenHeight};
 }
 
 void Application::Terminate()
@@ -50,7 +53,7 @@ bool Application::Init()
         ChangeFont(L"ＭＳ Ｐゴシック");
     }
 
-    SetGraphMode(m_windowSize.w, m_windowSize.h, 16);
+    SetGraphMode(m_size.w, m_size.h, 16);
     SetWindowText(L"CircleRoom");
     if (DxLib_Init() == -1)
     {
@@ -64,9 +67,8 @@ bool Application::Init()
 void Application::Run()
 {
     {
-        StageManager stageManager;
-        SceneManager sceneManager(this->GetInstance());
-        sceneManager.ChangeScene(std::make_shared<TitleScene>(sceneManager, stageManager));
+        GameManager& manager = GameManager::GetInstance();
+        manager.GetScene().ChangeScene(std::make_shared<TitleScene>(manager));
 
         Input input;
         while (ProcessMessage() != -1)
@@ -76,8 +78,8 @@ void Application::Run()
 
             ClearDrawScreen();
             input.Update(); // 入力を更新
-            sceneManager.Update(input);
-            sceneManager.Draw();
+            manager.GetScene().Update(input);
+            manager.GetScene().Draw();
             ScreenFlip();
 
             // エスケープキーが押されたら終了する
@@ -92,7 +94,7 @@ void Application::Run()
     Terminate();
 }
 
-const Size& Application::GetWindowSize() const
+const size& Application::GetWindowSize() const
 {
-    return m_windowSize;
+    return m_size;
 }

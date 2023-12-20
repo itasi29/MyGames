@@ -15,8 +15,8 @@ namespace
 	const Vec2 kShiftVert = Vec2{ 0.2f, 0.0f };
 }
 
-EnemyBase::EnemyBase(const Size& windowSize, float fieldSize) :
-	m_windowSize(windowSize),
+EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
+	m_size(windowSize),
 	m_fieldSize(fieldSize),
 	m_color(0),
 	m_radius(0),
@@ -43,8 +43,8 @@ void EnemyBase::Draw()
 
 bool EnemyBase::Reflection(float scale, bool isShift)
 {
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
+	float centerX = m_size.w * 0.5f;
+	float centerY = m_size.h * 0.5f;
 
 	// ç∂
 	if (m_pos.x - m_radius * scale < centerX - m_fieldSize)

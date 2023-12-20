@@ -14,7 +14,7 @@ namespace
 	constexpr int kBoundNum = 2;
 }
 
-EnemySplitTwoBound::EnemySplitTwoBound(const Size& windowSize, float fieldSize) :
+EnemySplitTwoBound::EnemySplitTwoBound(const size& windowSize, float fieldSize) :
 	EnemySplit(windowSize, fieldSize),
 	m_boundNo(0)
 {

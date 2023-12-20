@@ -2,7 +2,7 @@
 #include "Vec2.h"
 #include "Collision.h"
 
-struct Size;
+struct size;
 
 /// <summary>
 /// ボスにダメージを与える物体
@@ -10,7 +10,7 @@ struct Size;
 class BossDamageObject
 {
 public:
-	BossDamageObject(const Size& windowSize, float fieldSize);
+	BossDamageObject(const size& windowSize, float fieldSize);
 	BossDamageObject(const Vec2& col);
 	~BossDamageObject();
 

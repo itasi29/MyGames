@@ -23,6 +23,7 @@
     <ClCompile Include="Boss\BossArmored.cpp" />
     <ClCompile Include="Boss\BossDamageObject.cpp" />
     <ClCompile Include="Boss\BossStrongArmored.cpp" />
+    <ClCompile Include="Common\GameManager.cpp" />
     <ClCompile Include="Common\Input.cpp" />
     <ClCompile Include="Boss\BossBase.cpp" />
     <ClCompile Include="Enemy\EnemySplit.cpp" />
@@ -35,7 +36,7 @@
     <ClCompile Include="Enemy\EnemyMoveWall.cpp" />
     <ClCompile Include="Enemy\EnemyNormal.cpp" />
     <ClCompile Include="Enemy\EnemySplitTwoBound.cpp" />
-    <ClCompile Include="FileSystem\File.cpp" />
+    <ClCompile Include="FileSystem\FileBase.cpp" />
     <ClCompile Include="FileSystem\FileManager.cpp" />
     <ClCompile Include="FileSystem\ImageFile.cpp" />
     <ClCompile Include="FileSystem\SoundFile.cpp" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Boss\BossArmored.h" />
     <ClInclude Include="Boss\BossDamageObject.h" />
     <ClInclude Include="Boss\BossStrongArmored.h" />
+    <ClInclude Include="Common\GameManager.h" />
     <ClInclude Include="Common\Input.h" />
     <ClInclude Include="Boss\BossBase.h" />
     <ClInclude Include="Enemy\EnemySplit.h" />
@@ -76,7 +78,7 @@
     <ClInclude Include="Enemy\EnemyMoveWall.h" />
     <ClInclude Include="Enemy\EnemyNormal.h" />
     <ClInclude Include="Enemy\EnemySplitTwoBound.h" />
-    <ClInclude Include="FileSystem\File.h" />
+    <ClInclude Include="FileSystem\FileBase.h" />
     <ClInclude Include="FileSystem\FileManager.h" />
     <ClInclude Include="FileSystem\ImageFile.h" />
     <ClInclude Include="FileSystem\SoundFile.h" />

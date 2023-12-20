@@ -13,7 +13,7 @@ namespace
 	constexpr int kColor = 0xffffff;
 }
 
-EnemyNormal::EnemyNormal(const Size& windowSize, float fieldSize) :
+EnemyNormal::EnemyNormal(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Normal";

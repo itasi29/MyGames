@@ -4,7 +4,7 @@
 #include "Vec2.h"
 #include "Utility/Collision.h"
 
-struct Size;
+struct size;
 
 /// <summary>
 /// Enemyクラスの基底
@@ -12,7 +12,7 @@ struct Size;
 class EnemyBase
 {
 public:
-	EnemyBase(const Size& windowSize, float fieldSize);
+	EnemyBase(const size& windowSize, float fieldSize);
 	virtual ~EnemyBase();
 
 	virtual void Init(const Vec2&) {}
@@ -76,7 +76,7 @@ protected:
 	static const int kApeearFrame = 60;
 
 	// スクリーンサイズ
-	const Size& m_windowSize;
+	const size& m_size;
 	// フィールドのサイズ
 	const float m_fieldSize;
 

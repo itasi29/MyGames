@@ -3,7 +3,7 @@
 class BossStrongArmored : public BossArmored
 {
 public:
-	BossStrongArmored(const Size& windowSize, float fieldSize, StageBase* stage);
+	BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage);
 	~BossStrongArmored();
 
 	bool OnAttack(bool isDash, const Collision& col) override;

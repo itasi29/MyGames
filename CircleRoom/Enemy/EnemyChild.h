@@ -8,7 +8,7 @@
 class EnemyChild : public EnemyBase
 {
 public:
-	EnemyChild(const Size& windowSize, float fieldSize);
+	EnemyChild(const size& windowSize, float fieldSize);
 	virtual ~EnemyChild();
 
 	/// <summary>

@@ -138,7 +138,7 @@
     <ClCompile Include="Stage\Stage1_3.cpp">
       <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="FileSystem\File.cpp">
+    <ClCompile Include="FileSystem\FileBase.cpp">
       <Filter>ソース ファイル\FileSystem</Filter>
     </ClCompile>
     <ClCompile Include="FileSystem\FileManager.cpp">
@@ -172,6 +172,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Boss\BossStrongArmored.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\GameManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -248,7 +251,7 @@
     <ClInclude Include="Enemy\EnemyNormal.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="FileSystem\File.h">
+    <ClInclude Include="FileSystem\FileBase.h">
       <Filter>ヘッダー ファイル\FileSystem</Filter>
     </ClInclude>
     <ClInclude Include="FileSystem\FileManager.h">
@@ -288,6 +291,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Boss\BossStrongArmored.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\GameManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

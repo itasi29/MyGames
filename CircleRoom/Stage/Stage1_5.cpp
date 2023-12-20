@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "Input.h"
 
-#include "StageManager.h"
+#include "GameManager.h"
 #include "Stage1_5.h"
 #include "Stage1_4.h"
 
@@ -16,15 +16,15 @@ namespace
 	constexpr int kDownKilledNum = 5;
 }
 
-Stage1_5::Stage1_5(StageManager& mgr, const Size& windowSize, float fieldSize) :
-	StageBase(mgr, windowSize, fieldSize),
+Stage1_5::Stage1_5(GameManager& mgr, float fieldSize) :
+	StageBase(mgr, fieldSize),
 	m_createFrame(0)
 {
 	m_stageName = "Stage1-5";
-	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
+	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成
-	m_mgr.CreateData(m_stageName);
+	m_mgr.GetStage().CreateData(m_stageName);
 
 	StartCheck();
 }
@@ -52,23 +52,23 @@ void Stage1_5::Init()
 	// 壁動く敵の作成
 	Vec2 vec;
 	// 上側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
 	vec.x = 0;
 	vec.y = -1;
 	m_enemy.back()->Init(vec);
 	// 下側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
 	vec.y = 1;
 	m_enemy.back()->Init(vec);
 
 	// スタート位置の設定
-	m_boss = std::make_shared<BossArmored>(m_windowSize, m_fieldSize, this);
+	m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
 	m_boss->Init(m_centerPos);
 }
 
 void Stage1_5::StartCheck()
 {
-	m_isDownClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageDown);
+	m_isDownClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown);
 }
 
 void Stage1_5::ChangeStage(Input& input)
@@ -79,10 +79,10 @@ void Stage1_5::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageDown) && input.IsTriggered("down"))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown) && input.IsTriggered("down"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
-		nextStage = std::make_shared<Stage1_4>(m_mgr, m_windowSize, m_fieldSize);
+		nextStage = std::make_shared<Stage1_4>(m_mgr, m_fieldSize);
 
 		SlideDown(nextStage);
 
@@ -93,11 +93,11 @@ void Stage1_5::ChangeStage(Input& input)
 void Stage1_5::CheckStageConditions()
 {
 	// 下をまだクリアしていない場合
-	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageDown))
+	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown))
 	{
-		if (m_mgr.GetEnemyTypeCount() >= kDownKilledNum)
+		if (m_mgr.GetStage().GetEnemyTypeCount() >= kDownKilledNum)
 		{
-			m_mgr.SaveClear(m_stageName, StageManager::kStageRight);
+			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageRight);
 		}
 	}
 }
@@ -107,13 +107,13 @@ void Stage1_5::DrawStageConditions(int drawY)
 	if (!m_isDownClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"下　%d種類の敵に殺される\n(%d / %d)",
-			kDownKilledNum, m_mgr.GetEnemyTypeCount(), kDownKilledNum);
+			kDownKilledNum, m_mgr.GetStage().GetEnemyTypeCount(), kDownKilledNum);
 
 		drawY += 32;
 	}
 
 	// FIXME: ここに追加で書いているけれどあとで別のところに処理を変更する
-	if (m_mgr.IsClearBoss("BossArmored"))
+	if (m_mgr.GetStage().IsClearBoss("BossArmored"))
 	{
 		DrawString(128, drawY, L"clear", 0xffffff);
 	}
@@ -126,7 +126,7 @@ void Stage1_5::DrawArrow() const
 
 void Stage1_5::DrawKilledEnemyType() const
 {
-	if (m_mgr.IsKilledEnemy("MoveWall"))
+	if (m_mgr.GetStage().IsKilledEnemy("MoveWall"))
 	{
 		DrawCircle(256, 28, 16, 0x888888, true);
 	}
@@ -135,7 +135,7 @@ void Stage1_5::DrawKilledEnemyType() const
 		DrawCircle(256, 28, 16, 0x888888, true);
 	}
 
-	if (m_mgr.IsKilledEnemy("BossArmored"))
+	if (m_mgr.GetStage().IsKilledEnemy("BossArmored"))
 	{
 		DrawCircle(256 + 48, 28, 16, 0x08ff08, true);
 	}
@@ -144,7 +144,7 @@ void Stage1_5::DrawKilledEnemyType() const
 		DrawCircle(256 + 48, 28, 16, 0x08ff08, false);
 	}
 
-	if (m_mgr.IsKilledEnemy("BossStrongArmored"))
+	if (m_mgr.GetStage().IsKilledEnemy("BossStrongArmored"))
 	{
 		DrawCircle(256 + 96, 28, 16, 0xaaffaa, true);
 	}
@@ -153,7 +153,7 @@ void Stage1_5::DrawKilledEnemyType() const
 		DrawCircle(256 + 96, 28, 16, 0xaaffaa, false);
 	}
 
-	if (m_mgr.IsKilledEnemy("SplitTwoBound"))
+	if (m_mgr.GetStage().IsKilledEnemy("SplitTwoBound"))
 	{
 		DrawCircle(256 + 144, 28, 14, 0xffffff, true);
 	}
@@ -180,7 +180,7 @@ void Stage1_5::UpdateTime()
 void Stage1_5::CreateStrongBoss()
 {
 	std::shared_ptr<BossStrongArmored> strong;
-	strong = std::make_shared<BossStrongArmored>(m_windowSize, m_fieldSize, this);
+	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
 	strong->Init(m_boss->GetPos());
 
 	m_boss = strong;

@@ -5,13 +5,13 @@
 
 class Input;
 class Application;
-struct Size;
+struct size;
 enum Ability;
 
 class Player
 {
 public:
-	Player(const Size& windowSize, float fieldSize);
+	Player(const size& windowSize, float fieldSize);
 	~Player();
 
 	/// <summary>
@@ -46,7 +46,7 @@ public:
 
 private:
 	// スクリーンサイズ
-	const Size& m_windowSize;
+	const size& m_size;
 	// フィールドのサイズ
 	float m_fieldSize;
 

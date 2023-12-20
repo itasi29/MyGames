@@ -3,7 +3,7 @@
 #include "Vec2.h"
 #include "Utility/Collision.h"
 
-struct Size;
+struct size;
 
 /// <summary>
 /// ボスの基底クラス
@@ -11,7 +11,7 @@ struct Size;
 class BossBase
 {
 public:
-	BossBase(const Size& windowSize, float fieldSize, int maxHp);
+	BossBase(const size& windowSize, float fieldSize, int maxHp);
 	virtual ~BossBase();
 
 	virtual void Init(const Vec2& pos) = 0;
@@ -87,7 +87,7 @@ protected:
 	static const int kApeearFrame = 30;
 
 	// スクリーンサイズ
-	const Size& m_windowSize;
+	const size& m_size;
 	// フィールドサイズ
 	const float m_fieldSize;
 

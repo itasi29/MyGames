@@ -12,7 +12,7 @@ namespace
 	constexpr int kDeleteFrame = 60 * 2;
 }
 
-EnemyChild::EnemyChild(const Size& windowSize, float fieldSize) :
+EnemyChild::EnemyChild(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Child";

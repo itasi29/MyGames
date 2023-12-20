@@ -1,9 +1,9 @@
 #include "ImageFile.h"
 #include <DxLib.h>
-#include "FileManager.h"
+#include "GameManager.h"
 
 ImageFile::ImageFile(FileManager& manager) :
-	File(manager)
+	FileBase(manager)
 {
 }
 
@@ -11,7 +11,7 @@ ImageFile::~ImageFile()
 {
 	if (m_isEternal) return;
 
-	m_manager.Delete(m_path);
+	m_mgr.Delete(m_path);
 }
 
 void ImageFile::Delete()

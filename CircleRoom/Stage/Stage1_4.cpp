@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "Input.h"
 
-#include "StageManager.h"
+#include "GameManager.h"
 #include "Stage1_4.h"
 #include "Stage1_3.h"
 #include "Stage1_5.h"
@@ -24,15 +24,15 @@ namespace
 	constexpr int kCreateCreateFrame = 60 * 7;
 }
 
-Stage1_4::Stage1_4(StageManager& mgr, const Size& windowSize, float fieldSize) :
-	StageBase(mgr, windowSize, fieldSize),
+Stage1_4::Stage1_4(GameManager& mgr, float fieldSize) :
+	StageBase(mgr, fieldSize),
 	m_createNormalFrame(0)
 {
 	m_stageName = "Stage1-4";
-	m_player = std::make_shared<Player>(m_windowSize, m_fieldSize);
+	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// ÉfÅ[É^ÇÃê∂ê¨
-	m_mgr.CreateData(m_stageName);
+	m_mgr.GetStage().CreateData(m_stageName);
 	CheckStageConditions();
 
 	StartCheck();
@@ -62,26 +62,26 @@ void Stage1_4::Init()
 	// ï«ìÆÇ≠ìGÇÃçÏê¨
 	Vec2 vec;
 	// è„ë§
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
 	vec.x = 0;
 	vec.y = -1;
 	m_enemy.back()->Init(vec);
 	// â∫ë§
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
 	vec.y = 1;
 	m_enemy.back()->Init(vec);
 
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+	m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
 	m_enemy.back()->Init(m_centerPos);
 
-	m_enemy.push_back(std::make_shared<EnemyCreate>(m_windowSize, m_fieldSize, this));
+	m_enemy.push_back(std::make_shared<EnemyCreate>(m_size, m_fieldSize, this));
 	m_enemy.back()->Init(m_centerPos);
 }
 
 void Stage1_4::StartCheck()
 {
-	m_isRightClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageRight);
-	m_isUpClear = m_mgr.IsClearStage(m_stageName, StageManager::kStageUp);
+	m_isRightClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight);
+	m_isUpClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp);
 }
 
 void Stage1_4::ChangeStage(Input& input)
@@ -92,19 +92,19 @@ void Stage1_4::ChangeStage(Input& input)
 	// éÄñSíºå„ÇÕïœÇÌÇÁÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageRight) && input.IsTriggered("right"))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight) && input.IsTriggered("right"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
-		nextStage = std::make_shared<Stage1_3>(m_mgr, m_windowSize, m_fieldSize);
+		nextStage = std::make_shared<Stage1_3>(m_mgr, m_fieldSize);
 
 		SlideRight(nextStage);
 
 		return;
 	}
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageUp) && input.IsTriggered("up"))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_5> nextStage;
-		nextStage = std::make_shared<Stage1_5>(m_mgr, m_windowSize, m_fieldSize);
+		nextStage = std::make_shared<Stage1_5>(m_mgr, m_fieldSize);
 
 		SlideUp(nextStage);
 
@@ -115,18 +115,18 @@ void Stage1_4::ChangeStage(Input& input)
 void Stage1_4::CheckStageConditions()
 {
 	// âEÇÇ‹ÇæÉNÉäÉAÇµÇƒÇ¢Ç»Ç¢èÍçá
-	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageRight))
+	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight))
 	{
-		if (m_mgr.GetEnemyTypeCount() >= kRightKilledNum)
+		if (m_mgr.GetStage().GetEnemyTypeCount() >= kRightKilledNum)
 		{
-			m_mgr.SaveClear(m_stageName, StageManager::kStageRight);
+			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageRight);
 		}
 	}
-	if (!m_mgr.IsClearStage(m_stageName, StageManager::kStageUp))
+	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp))
 	{
-		if (m_mgr.GetEnemyTypeCount() >= kUpKilledNum)
+		if (m_mgr.GetStage().GetEnemyTypeCount() >= kUpKilledNum)
 		{
-			m_mgr.SaveClear(m_stageName, StageManager::kStageUp);
+			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageUp);
 		}
 	}
 }
@@ -136,14 +136,14 @@ void Stage1_4::DrawStageConditions(int drawY)
 	if (!m_isRightClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"âEÅ@%déÌóﬁÇÃìGÇ…éEÇ≥ÇÍÇÈ\n(%d / %d)",
-			kRightKilledNum, m_mgr.GetEnemyTypeCount(), kRightKilledNum);
+			kRightKilledNum, m_mgr.GetStage().GetEnemyTypeCount(), kRightKilledNum);
 
 		drawY += 32;
 	}
 	if (!m_isUpClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"è„Å@%déÌóﬁÇÃìGÇ…éEÇ≥ÇÍÇÈ\n(%d / %d)",
-			kUpKilledNum, m_mgr.GetEnemyTypeCount(), kUpKilledNum);
+			kUpKilledNum, m_mgr.GetStage().GetEnemyTypeCount(), kUpKilledNum);
 	}
 }
 
@@ -155,7 +155,7 @@ void Stage1_4::DrawArrow() const
 
 void Stage1_4::DrawKilledEnemyType() const
 {
-	if (m_mgr.IsKilledEnemy("Normal"))
+	if (m_mgr.GetStage().IsKilledEnemy("Normal"))
 	{
 		DrawCircle(256, 28, 16, 0xffffff, true);
 	}
@@ -164,7 +164,7 @@ void Stage1_4::DrawKilledEnemyType() const
 		DrawCircle(256, 28, 16, 0xffffff, true);
 	}
 
-	if (m_mgr.IsKilledEnemy("MoveWall"))
+	if (m_mgr.GetStage().IsKilledEnemy("MoveWall"))
 	{
 		DrawCircle(256 + 48, 28, 16, 0x888888, true);
 	}
@@ -173,7 +173,7 @@ void Stage1_4::DrawKilledEnemyType() const
 		DrawCircle(256 + 48, 28, 16, 0x888888, false);
 	}
 
-	if (m_mgr.IsKilledEnemy("Create"))
+	if (m_mgr.GetStage().IsKilledEnemy("Create"))
 	{
 		DrawCircle(256 + 96, 28, 16, 0xffff08, true);
 	}
@@ -182,7 +182,7 @@ void Stage1_4::DrawKilledEnemyType() const
 		DrawCircle(256 + 96, 28, 16, 0xffff08, false);
 	}
 
-	if (m_mgr.IsKilledEnemy("Child"))
+	if (m_mgr.GetStage().IsKilledEnemy("Child"))
 	{
 		DrawCircle(256 + 144, 28, 12, 0xf0f008, true);
 	}
@@ -200,14 +200,14 @@ void Stage1_4::CreateEnemy()
 	if (m_createNormalFrame > kCreateNormalFrame)
 	{
 		m_createNormalFrame = 0;
-		m_enemy.push_back(std::make_shared<EnemyNormal>(m_windowSize, m_fieldSize));
+		m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
 		m_enemy.back()->Init(m_centerPos);
 	}
 
 	if (m_createCreateFrame > kCreateCreateFrame)
 	{
 		m_createCreateFrame = 0;
-		m_enemy.push_back(std::make_shared<EnemyCreate>(m_windowSize, m_fieldSize, this));
+		m_enemy.push_back(std::make_shared<EnemyCreate>(m_size, m_fieldSize, this));
 		m_enemy.back()->Init(m_centerPos);
 	}
 }

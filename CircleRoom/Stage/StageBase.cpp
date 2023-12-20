@@ -4,7 +4,7 @@
 #include "StringUtility.h"
 
 #include "StageBase.h"
-#include "StageManager.h"
+#include "GameManager.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyBase.h"
@@ -16,11 +16,11 @@ namespace
 	constexpr int kFlashInterval = 20;
 }
 
-StageBase::StageBase(StageManager& mgr, const Size& windowSize, float fieldSize) :
-	m_centerPos( { windowSize.w * 0.5f, windowSize.h * 0.5f }),
+StageBase::StageBase(GameManager& mgr, float fieldSize) :
 	m_mgr(mgr),
-	m_windowSize(windowSize),
+	m_size(Application::GetInstance().GetWindowSize()),
 	m_fieldSize(fieldSize),
+	m_centerPos({m_size.w * 0.5f, m_size.h * 0.5f}),
 	m_frame(0),
 	m_waitFrame(kWaitChangeFrame)
 {
@@ -75,7 +75,7 @@ void StageBase::UpdateSelect(Input& input)
 		Init();
 	}
 
-	m_mgr.ChangeAbility(kDash);
+	m_mgr.GetStage().ChangeAbility(kDash);
 
 	// フレームの増加
 	m_waitFrame++;
@@ -83,7 +83,7 @@ void StageBase::UpdateSelect(Input& input)
 
 void StageBase::UpdatePlaying(Input& input)
 {
-	m_player->Update(input, m_mgr.GetAbility());
+	m_player->Update(input, m_mgr.GetStage().GetAbility());
 
 	// プレイヤーの情報を抜き取る
 	bool playerIsDash = m_player->IsDash();
@@ -103,7 +103,7 @@ void StageBase::UpdatePlaying(Input& input)
 			m_player->Death();
 
 			// 殺したことがある敵情報の更新
-			m_mgr.UpdateEnemyType(enemy->GetName());
+			m_mgr.GetStage().UpdateEnemyType(enemy->GetName());
 
 			break;
 		}
@@ -136,7 +136,7 @@ void StageBase::UpdatePlaying(Input& input)
 			m_player->Death();
 
 			// 殺したことがある敵情報の更新
-			m_mgr.UpdateEnemyType(m_boss->GetName());
+			m_mgr.GetStage().UpdateEnemyType(m_boss->GetName());
 		}
 	}
 
@@ -152,7 +152,7 @@ void StageBase::UpdatePlaying(Input& input)
 		m_waitFrame = 0;
 
 		// ベストタイムの更新
-		m_mgr.UpdateBestTime(m_stageName, m_frame);
+		m_mgr.GetStage().UpdateBestTime(m_stageName, m_frame);
 
 		// クリアしているかの確認
 		CheckStageConditions();
@@ -187,12 +187,12 @@ void StageBase::DrawSelect()
 	DrawStageConditions();
 
 	// ベストタイムの描画
-	int bestTime = m_mgr.GetBestTime(m_stageName);
+	int bestTime = m_mgr.GetStage().GetBestTime(m_stageName);
 	minSec = (bestTime * 1000 / 60) % 1000;
 	sec = (bestTime / 60) % 60;
 	min = bestTime / 3600;
-	DrawExtendString(m_windowSize.w - 256, 32, 1.5, 1.5, L"ベストタイム", 0xffffff);
-	DrawExtendFormatString(m_windowSize.w - 256, 32 + 48, 2, 2, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
+	DrawExtendString(m_size.w - 256, 32, 1.5, 1.5, L"ベストタイム", 0xffffff);
+	DrawExtendFormatString(m_size.w - 256, 32 + 48, 2, 2, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
 
 	// 矢印の描画
 	DrawArrow();
@@ -228,7 +228,7 @@ void StageBase::DrawLeftArrow(bool isAlreadyClear) const
 {
 	unsigned int color = 0;
 	// クリアしている場合は濃いめで
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageLeft))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -244,16 +244,16 @@ void StageBase::DrawLeftArrow(bool isAlreadyClear) const
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(m_windowSize.w / 2 - 150, m_windowSize.h / 2,
-		m_windowSize.w / 2 - 100, m_windowSize.h / 2 + 25,
-		m_windowSize.w / 2 - 100, m_windowSize.h / 2 - 25,
+	DrawTriangle(m_size.w / 2 - 150, m_size.h / 2,
+		m_size.w / 2 - 100, m_size.h / 2 + 25,
+		m_size.w / 2 - 100, m_size.h / 2 - 25,
 		color, true);
 }
 
 void StageBase::DrawRightArrow(bool isAlreadyClear) const
 {
 	unsigned int color = 0;
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageRight))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -268,16 +268,16 @@ void StageBase::DrawRightArrow(bool isAlreadyClear) const
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(m_windowSize.w / 2 + 150, m_windowSize.h / 2,
-		m_windowSize.w / 2 + 100, m_windowSize.h / 2 + 25,
-		m_windowSize.w / 2 + 100, m_windowSize.h / 2 - 25,
+	DrawTriangle(m_size.w / 2 + 150, m_size.h / 2,
+		m_size.w / 2 + 100, m_size.h / 2 + 25,
+		m_size.w / 2 + 100, m_size.h / 2 - 25,
 		color, true);
 }
 
 void StageBase::DrawUpArrow(bool isAlreadyClear) const
 {
 	unsigned int color = 0;
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageUp))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -292,16 +292,16 @@ void StageBase::DrawUpArrow(bool isAlreadyClear) const
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(m_windowSize.w / 2, m_windowSize.h / 2 - 150,
-		m_windowSize.w / 2 + 25, m_windowSize.h / 2 - 100,
-		m_windowSize.w / 2 - 25, m_windowSize.h / 2 - 100,
+	DrawTriangle(m_size.w / 2, m_size.h / 2 - 150,
+		m_size.w / 2 + 25, m_size.h / 2 - 100,
+		m_size.w / 2 - 25, m_size.h / 2 - 100,
 		color, true);
 }
 
 void StageBase::DrawDownArrow(bool isAlreadyClear) const
 {
 	unsigned int color;
-	if (m_mgr.IsClearStage(m_stageName, StageManager::kStageDown))
+	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -316,9 +316,9 @@ void StageBase::DrawDownArrow(bool isAlreadyClear) const
 	{
 		color = 0x808080;
 	}
-	DrawTriangle(m_windowSize.w / 2, m_windowSize.h / 2 + 150,
-		m_windowSize.w / 2 + 25, m_windowSize.h / 2 + 100,
-		m_windowSize.w / 2 - 25, m_windowSize.h / 2 + 100,
+	DrawTriangle(m_size.w / 2, m_size.h / 2 + 150,
+		m_size.w / 2 + 25, m_size.h / 2 + 100,
+		m_size.w / 2 - 25, m_size.h / 2 + 100,
 		color, true);
 }
 
@@ -334,12 +334,12 @@ void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
 
 	// 送る用の描画先を作成する
 	int sendScreenHandle;
-	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
+	sendScreenHandle = MakeScreen(m_size.w * 2, m_size.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
 	// 次のステージを下に動いていたらずらす
-	DrawGraph(0, m_mgr.GetSlideVolumeY(StageManager::kStageDown), nextScreenHandle, true);
+	DrawGraph(0, m_mgr.GetStage().GetSlideVolumeY(StageManager::kStageDown), nextScreenHandle, true);
 	// 現在の画像を上に動いていたらずらす
-	DrawGraph(m_windowSize.w, m_mgr.GetSlideVolumeY(StageManager::kStageUp), nowScreenHandle, true);
+	DrawGraph(m_size.w, m_mgr.GetStage().GetSlideVolumeY(StageManager::kStageUp), nowScreenHandle, true);
 
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -350,10 +350,10 @@ void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kStageLeft, sendScreenHandle);
+	m_mgr.GetStage().StartMove(StageManager::kStageLeft, sendScreenHandle);
 
 	// 次のステージに変更する
-	m_mgr.ChangeStage(nextStage);
+	m_mgr.GetStage().ChangeStage(nextStage);
 }
 
 void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
@@ -367,10 +367,10 @@ void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
 	SlideStart(nowScreenHandle, nextScreenHandle, nextStage);
 
 	int sendScreenHandle;
-	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
+	sendScreenHandle = MakeScreen(m_size.w * 2, m_size.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
-	DrawGraph(0, m_mgr.GetSlideVolumeY(StageManager::kStageUp), nowScreenHandle, true);
-	DrawGraph(m_windowSize.w, m_mgr.GetSlideVolumeY(StageManager::kStageDown), nextScreenHandle, true);
+	DrawGraph(0, m_mgr.GetStage().GetSlideVolumeY(StageManager::kStageUp), nowScreenHandle, true);
+	DrawGraph(m_size.w, m_mgr.GetStage().GetSlideVolumeY(StageManager::kStageDown), nextScreenHandle, true);
 
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -380,10 +380,10 @@ void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 	
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kStageRight, sendScreenHandle);
+	m_mgr.GetStage().StartMove(StageManager::kStageRight, sendScreenHandle);
 
 	// 次のステージに変更する
-	m_mgr.ChangeStage(nextStage);
+	m_mgr.GetStage().ChangeStage(nextStage);
 }
 
 void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
@@ -399,10 +399,10 @@ void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
 
 	// 送る用の描画先を作成する
 	int sendScreenHandle;
-	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
+	sendScreenHandle = MakeScreen(m_size.w * 2, m_size.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageRight), 0, nextScreenHandle, true);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageLeft), m_windowSize.h, nowScreenHandle, true);
+	DrawGraph(m_mgr.GetStage().GetSlideVolumeX(StageManager::kStageRight), 0, nextScreenHandle, true);
+	DrawGraph(m_mgr.GetStage().GetSlideVolumeX(StageManager::kStageLeft), m_size.h, nowScreenHandle, true);
 	
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -412,10 +412,10 @@ void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kStageUp, sendScreenHandle);
+	m_mgr.GetStage().StartMove(StageManager::kStageUp, sendScreenHandle);
 
 	// 次のステージに変更する
-	m_mgr.ChangeStage(nextStage);
+	m_mgr.GetStage().ChangeStage(nextStage);
 }
 
 void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
@@ -430,10 +430,10 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 
 	// 送る用の描画先を作成する
 	int sendScreenHandle;
-	sendScreenHandle = MakeScreen(m_windowSize.w * 2, m_windowSize.h * 2, true);
+	sendScreenHandle = MakeScreen(m_size.w * 2, m_size.h * 2, true);
 	SetDrawScreen(sendScreenHandle);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageLeft), 0, nowScreenHandle, true);
-	DrawGraph(m_mgr.GetSlideVolumeX(StageManager::kStageRight), m_windowSize.h, nextScreenHandle, true);
+	DrawGraph(m_mgr.GetStage().GetSlideVolumeX(StageManager::kStageLeft), 0, nowScreenHandle, true);
+	DrawGraph(m_mgr.GetStage().GetSlideVolumeX(StageManager::kStageRight), m_size.h, nextScreenHandle, true);
 
 	// 描画先を元の場所に戻す
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -443,23 +443,23 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 	DeleteGraph(nextScreenHandle);
 
 	// 画面を動かす処理を実行する
-	m_mgr.StartMove(StageManager::kStageDown, sendScreenHandle);
+	m_mgr.GetStage().StartMove(StageManager::kStageDown, sendScreenHandle);
 
 	// 次のステージに変更する
-	m_mgr.ChangeStage(nextStage);
+	m_mgr.GetStage().ChangeStage(nextStage);
 }
 
 void StageBase::BossDeath()
 {
 	// すでにクリアされていた場合は強化ボスを出す
-	if (m_mgr.IsClearBoss(m_boss->GetName()))
+	if (m_mgr.GetStage().IsClearBoss(m_boss->GetName()))
 	{
 		CreateStrongBoss();
 		return;
 	}
 
 
-	m_mgr.m_clear = true;
+	m_mgr.GetStage().m_clear = true;
 
 	// 初回殺しの時は倒したら終了とする
 	// FIXME : 現状プレイヤーの死亡処理と同じにしているけれど後で処理の仕方変わると思う
@@ -470,7 +470,7 @@ void StageBase::BossDeath()
 	m_drawFunc = &StageBase::DrawSelect;
 
 	// 倒した情報の追加
-	m_mgr.UpdateClearBoss(m_boss->GetName());
+	m_mgr.GetStage().UpdateClearBoss(m_boss->GetName());
 
 	// ボスを消す
 	m_boss.reset();
@@ -480,8 +480,8 @@ void StageBase::BossDeath()
 
 void StageBase::DrawWall()
 {
-	float centerX = m_windowSize.w * 0.5f;
-	float centerY = m_windowSize.h * 0.5f;
+	float centerX = m_size.w * 0.5f;
+	float centerY = m_size.h * 0.5f;
 
 	// 色は仮
 	// 左
@@ -505,19 +505,19 @@ void StageBase::DrawWall()
 void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage)
 {
 	// 現在の画面を保存するよう
-	now = MakeScreen(m_windowSize.w, m_windowSize.h, true);
+	now = MakeScreen(m_size.w, m_size.h, true);
 	// 描画先変更
 	SetDrawScreen(now);
 	// 現在の画面を描画
 	Draw();
 	// 次の画面を保持するよう
-	next = MakeScreen(m_windowSize.w, m_windowSize.h, true);
+	next = MakeScreen(m_size.w, m_size.h, true);
 	SetDrawScreen(next);
 	nextStage->Draw();
 }
 
 void StageBase::ChangeClearData(int dir, const std::shared_ptr<StageBase>& nextStage) const
 {
-	m_mgr.SaveClear(nextStage->GetStageName(), dir);
+	m_mgr.GetStage().SaveClear(nextStage->GetStageName(), dir);
 	nextStage->StartCheck();
 }

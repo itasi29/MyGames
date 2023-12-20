@@ -1,12 +1,12 @@
 #include <DxLib.h>
 #include <cassert>
 #include "Common/Input.h"
-#include "SceneManager.h"
+#include "GameManager.h"
 #include "GameOverScene.h"
 #include "TitleScene.h"
 
-GameOverScene::GameOverScene(SceneManager& scnMgr, StageManager& stgMgr) :
-	Scene(scnMgr, stgMgr)
+GameOverScene::GameOverScene(GameManager& mgr) :
+	Scene(mgr)
 {
 	m_frame = 60;
 	m_updateFunc = &GameOverScene::FadeInUpdate;
@@ -51,7 +51,7 @@ void GameOverScene::FadeOutUpdate(Input&)
 	m_frame++;
 	if (60 <= m_frame)
 	{
-		m_scnMgr.ChangeScene(std::make_shared<TitleScene>(m_scnMgr, m_stgMgr));
+		m_mgr.GetScene().ChangeScene(std::make_shared<TitleScene>(m_mgr));
 	}
 }
 

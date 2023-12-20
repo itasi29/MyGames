@@ -12,7 +12,7 @@ class Scene;
 class SceneManager
 {
 public:
-	SceneManager(Application& app);
+	SceneManager();
 	~SceneManager();
 	/// <summary>
 	/// 持っているシーンのUpdate関数を呼び出す
@@ -47,15 +47,7 @@ public:
 	/// </summary>
 	void PopScene();
 
-	/// <summary>
-	/// Applicationクラスを参照
-	/// </summary>
-	/// <returns>Application</returns>
-	Application& GetApp() const { return m_app; }
-
 private:
-	// Application
-	Application& m_app;
 	// シーンを入れる
 	std::list<std::shared_ptr<Scene>> m_scenes;
 };

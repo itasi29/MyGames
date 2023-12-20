@@ -13,7 +13,7 @@ namespace
 	constexpr int kColor = 0xffffff;
 }
 
-EnemyLarge::EnemyLarge(const Size& windowSize, float fieldSize) :
+EnemyLarge::EnemyLarge(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Large";
