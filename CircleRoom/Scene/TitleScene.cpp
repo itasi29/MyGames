@@ -6,6 +6,8 @@
 #include "TitleScene.h"
 #include "GamePlayingScene.h"
 
+#include "FileSystem/BottansFile.h"
+
 namespace
 {
 	// ƒƒjƒ…[ƒ‰ƒCƒ“‚Ì”

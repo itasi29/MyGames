@@ -1,7 +1,10 @@
 #pragma once
 #include "Scene.h"
 #include <unordered_map>
+#include <memory>
 #include "Common/Input.h"
+
+class BottansFile;
 
 /// <summary>
 /// キーコンフィグのシーン
@@ -54,8 +57,10 @@ private:
 
 	bool m_isEditRequestButton;
 
+	std::shared_ptr<BottansFile> m_btImg;
+
 	// MEMO:これは変更させる可能性高い
 	std::unordered_map<int, std::wstring> m_keynameTable;
-	std::unordered_map<int, std::wstring> m_padnameTable;
+	std::unordered_map<int, std::wstring> m_bottans;
 };
 

@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "GameManager.h"
 #include "StringUtility.h"
+#include "FileSystem/BottansFile.h"
 
 namespace
 {
@@ -64,16 +65,18 @@ KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input) :
 	m_keynameTable[KEY_INPUT_ESCAPE] = L"EscƒL[";
 	m_keynameTable[KEY_INPUT_SPACE] = L"ƒXƒy[ƒXƒL[";
 
-	m_padnameTable[PAD_INPUT_A] = L"‚`ƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_B] = L"‚aƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_C] = L"‚bƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_X] = L"‚wƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_Y] = L"‚xƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_Z] = L"‚yƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_L] = L"‚kƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_R] = L"‚qƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_START] = L"‚r‚s‚`‚q‚sƒ{ƒ^ƒ“";
-	m_padnameTable[PAD_INPUT_M] = L"‚lƒ{ƒ^ƒ“";
+	m_bottans[PAD_INPUT_A] = L"‚`Bottan";
+	m_bottans[PAD_INPUT_B] = L"‚aBottan";
+	m_bottans[PAD_INPUT_C] = L"‚bBottan";
+	m_bottans[PAD_INPUT_X] = L"‚wBottan";
+	m_bottans[PAD_INPUT_Y] = L"‚xBottan";
+	m_bottans[PAD_INPUT_Z] = L"‚yBottan";
+	m_bottans[PAD_INPUT_L] = L"‚kBottan";
+	m_bottans[PAD_INPUT_R] = L"‚qBottan";
+	m_bottans[PAD_INPUT_START] = L"‚r‚s‚`‚q‚sBottan";
+	m_bottans[PAD_INPUT_M] = L"‚lBottan";
+
+	m_btImg = std::make_shared<BottansFile>(m_mgr.GetFile());
 }
 
 KeyConfigScene::~KeyConfigScene()
@@ -252,6 +255,8 @@ void KeyConfigScene::DrawCommandList()
 			cmdName.c_str(), // ƒRƒ}ƒ“ƒh–¼
 			keyname.c_str(),	// ƒL[ƒ{[ƒh‚Ì’l
 			padname.c_str());		// ƒpƒbƒh‚Ì’l
+		m_btImg->DrawBottan(padname, x + 376, y);
+
 		y += 20;
 		idx++;
 	}
@@ -291,8 +296,8 @@ std::wstring KeyConfigScene::GetKeyName(int keycode)
 std::wstring KeyConfigScene::GetPadName(int padstate)
 {
 	wchar_t name[16];
-	auto it = m_padnameTable.find(padstate);
-	if (it == m_padnameTable.end())
+	auto it = m_bottans.find(padstate);
+	if (it == m_bottans.end())
 	{
 		wsprintf(name, L"%04x", padstate);
 		return name;
