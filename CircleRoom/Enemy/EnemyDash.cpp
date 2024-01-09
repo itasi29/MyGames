@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "Application.h"
+#include "FileSystem/ImageFile.h"
 
 #include "EnemyDash.h"
 
@@ -124,6 +125,14 @@ void EnemyDash::NormalDraw()
 				static_cast<int>(m_radius), m_color, true);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
+	}
+
+	// 壁に当たったエフェクトの描画
+	if (m_wallHitFrame > 0)
+	{
+		// MEMO:現在は仮
+		// 座標を中心とする
+		DrawGraph(m_drawWallHitX - 16, m_drawWallHitY - 16, m_wallEffect->GetHandle(), true);
 	}
 
 #ifdef _DEBUG

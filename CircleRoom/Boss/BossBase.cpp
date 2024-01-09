@@ -1,5 +1,7 @@
 #include <DxLib.h>
 #include "Application.h"
+#include "GameManager.h"
+#include "FileSystem/ImageFile.h"
 
 #include "BossBase.h"
 
@@ -24,6 +26,12 @@ namespace
 	constexpr int kBackHpBarWidth = 10;
 	// 背景HPバーの前後高さ
 	constexpr int kBackHpBarHeight = 10;
+
+	// 壁に当たったエフェクトをするフレーム
+	constexpr int kWallHitFrame = 10;
+
+	// ずらす量
+	constexpr int kWallEffectSlide = 32;
 }
 
 BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
@@ -35,6 +43,9 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 {
 	m_updateFunc = &BossBase::StartUpdate;
 	m_drawFunc = &BossBase::StartDraw;
+
+	m_wallEffect = GameManager::GetInstance().GetFile().LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
+	m_damageEffect = GameManager::GetInstance().GetFile().LoadGraphic(L"Data/Image/Enemy/damageEffect.png");
 }
 
 BossBase::~BossBase()
@@ -70,6 +81,8 @@ bool BossBase::OnAttack(bool isDash, const Collision& rect)
 
 bool BossBase::Reflection()
 {
+	m_wallHitFrame--;
+
 	float centerX = m_size.w * 0.5f;
 	float centerY = m_size.h * 0.5f;
 
@@ -80,6 +93,11 @@ bool BossBase::Reflection()
 		ReflectionCal(kNorVecLeft);
 		ShiftReflection(kShiftSide);
 
+		m_wallHitFrame = kWallHitFrame;
+
+		m_drawWallHitX = m_pos.x - kWallEffectSlide - m_radius;
+		m_drawWallHitY = m_pos.y;
+
 		return true;
 	}
 	// 右
@@ -88,6 +106,11 @@ bool BossBase::Reflection()
 		m_pos.x = centerX + m_fieldSize - m_radius;
 		ReflectionCal(kNorVecRight);
 		ShiftReflection(kShiftSide);
+
+		m_wallHitFrame = kWallHitFrame;
+
+		m_drawWallHitX = m_pos.x + kWallEffectSlide + m_radius;
+		m_drawWallHitY = m_pos.y;
 
 		return true;
 	}
@@ -98,6 +121,11 @@ bool BossBase::Reflection()
 		ReflectionCal(kNorVecUp);
 		ShiftReflection(kShiftVert);
 
+		m_wallHitFrame = kWallHitFrame;
+
+		m_drawWallHitX = m_pos.x;
+		m_drawWallHitY = m_pos.y - kWallEffectSlide - m_radius;
+
 		return true;
 	}
 	// 下
@@ -106,6 +134,11 @@ bool BossBase::Reflection()
 		m_pos.y = centerY + m_fieldSize - m_radius;
 		ReflectionCal(kNorVecDown);
 		ShiftReflection(kShiftVert);
+
+		m_wallHitFrame = kWallHitFrame;
+
+		m_drawWallHitX = m_pos.x;
+		m_drawWallHitY = m_pos.y + kWallEffectSlide + m_radius;
 
 		return true;
 	}
@@ -167,6 +200,14 @@ void BossBase::NormalDraw() const
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), m_color, true);
+
+	// 壁に当たったエフェクトの描画
+	if (m_wallHitFrame > 0)
+	{
+		// MEMO:現在は仮
+		// 座標を中心とする
+		DrawGraph(m_drawWallHitX - 16, m_drawWallHitY - 16, m_wallEffect->GetHandle(), true);
+	}
 
 #ifdef _DEBUG
 	// 当たり判定の描画

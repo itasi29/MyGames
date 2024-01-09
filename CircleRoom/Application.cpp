@@ -91,6 +91,7 @@ void Application::Run()
             while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
         }
     }
+
     Terminate();
 }
 

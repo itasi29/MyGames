@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2023-12-19" view-index="0" gantt-divider-location="418" resource-divider-location="300" version="3.2.3247" locale="ja_JP">
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2023-12-24" view-index="0" gantt-divider-location="419" resource-divider-location="300" version="3.2.3247" locale="ja_JP">
     <description/>
-    <view zooming-state="default:1" id="gantt-chart">
-        <field id="tpd3" name="名前" width="236" order="0"/>
-        <field id="tpd4" name="開始日" width="90" order="1"/>
-        <field id="tpd5" name="終了日" width="91" order="2"/>
+    <view zooming-state="default:4" id="gantt-chart">
+        <field id="tpd3" name="名前" width="228" order="0"/>
+        <field id="tpd4" name="開始日" width="87" order="1"/>
+        <field id="tpd5" name="終了日" width="88" order="2"/>
         <option id="filter.completedTasks" value="false"/>
         <option id="color.recent">
             <![CDATA[#333333 #ff3333 #ff9900]]>
@@ -37,7 +37,7 @@
             <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
             <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
         </taskproperties>
-        <task id="0" name="プロトタイプ" color="#ff9900" meeting="false" start="2023-11-20" duration="23" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" expand="false">
+        <task id="0" name="プロトタイプ" color="#ff9900" meeting="false" start="2023-11-20" duration="23" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" expand="true">
             <task id="1" name="プレイヤー" color="#8cb6ce" meeting="false" start="2023-11-20" duration="5" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" expand="false">
                 <task id="2" name="移動" color="#8cb6ce" meeting="false" start="2023-11-20" duration="1" complete="100" thirdDate="2023-12-04" thirdDate-constraint="0" priority="4" expand="true"/>
                 <task id="4" name="場外処理" color="#8cb6ce" meeting="false" start="2023-11-20" duration="1" complete="100" thirdDate="2023-11-14" thirdDate-constraint="0" expand="true"/>
@@ -142,7 +142,7 @@
                 </task>
             </task>
         </task>
-        <task id="31" name="アルファ" color="#ff3333" meeting="false" start="2023-12-20" duration="16" complete="66" thirdDate="2023-11-20" thirdDate-constraint="0" expand="true">
+        <task id="31" name="アルファ" color="#ff3333" meeting="false" start="2023-12-20" duration="16" complete="66" thirdDate="2023-11-20" thirdDate-constraint="0" expand="false">
             <task id="42" name="タイトル" color="#8cb6ce" meeting="false" start="2023-12-20" duration="4" complete="37" thirdDate="2023-12-05" thirdDate-constraint="0" expand="true">
                 <task id="43" name="BGM" color="#8cb6ce" meeting="false" start="2023-12-20" duration="3" complete="50" thirdDate="2023-12-05" thirdDate-constraint="0" expand="true">
                     <notes>

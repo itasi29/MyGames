@@ -8,6 +8,10 @@
 #include "GameOverScene.h"
 #include "PauseScene.h"
 
+#include "FileSystem/FileManager.h"
+#include "FileSystem/ImageFile.h"
+#include "FileSystem/SoundFile.h"
+
 #include "Stage/Stage1_1.h"
 
 namespace
@@ -36,6 +40,9 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 	m_mgr.GetStage().ChangeStage(std::make_shared<Stage1_1>(m_mgr, m_fieldSize));
 
 	m_mgr.GetStage().m_clear = false;
+
+	m_bgm = m_mgr.GetFile().LoadSound(L"Data/Sound/provisionalBgm.mp3");
+	m_bg = m_mgr.GetFile().LoadGraphic(L"Data/Image/BG/bg.png");
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -44,11 +51,15 @@ GamePlayingScene::~GamePlayingScene()
 
 void GamePlayingScene::Update(Input& input)
 {
+	PlaySoundMem(m_bgm->GetHandle(), DX_PLAYTYPE_BACK, false);
+
 	(this->*m_updateFunc)(input);
 }
 
 void GamePlayingScene::Draw()
 {
+	DrawGraph(0, 0, m_bg->GetHandle(), true);
+
 	(this->*m_drawFunc)();
 }
 

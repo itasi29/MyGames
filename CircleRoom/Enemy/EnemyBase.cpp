@@ -2,6 +2,10 @@
 #include "Application.h"
 #include "EnemyBase.h"
 
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/ImageFile.h"
+
 namespace
 {
 	// 壁からの法線ベクトル
@@ -13,6 +17,12 @@ namespace
 	// ずらす方向
 	const Vec2 kShiftSide = Vec2{ 0.0f, 0.2f };
 	const Vec2 kShiftVert = Vec2{ 0.2f, 0.0f };
+
+	// 壁に当たったエフェクトをするフレーム
+	constexpr int kWallHitFrame = 10;
+
+	// ずらす量
+	constexpr int kWallEffectSlide = 32;
 }
 
 EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
@@ -25,6 +35,8 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 {
 	m_updateFunc = &EnemyBase::StartUpdate;
 	m_drawFunc = &EnemyBase::StartDraw;
+
+	m_wallEffect = GameManager::GetInstance().GetFile().LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
 }
 
 EnemyBase::~EnemyBase()
@@ -43,15 +55,26 @@ void EnemyBase::Draw()
 
 bool EnemyBase::Reflection(float scale, bool isShift)
 {
+	m_wallHitFrame--;
+
 	float centerX = m_size.w * 0.5f;
 	float centerY = m_size.h * 0.5f;
 
 	// 左
 	if (m_pos.x - m_radius * scale < centerX - m_fieldSize)
 	{
+		// 位置の修正
 		m_pos.x = centerX - m_fieldSize + m_radius * scale;
+
 		if (isShift)
 		{
+			// エフェクトフレーム初期化
+			m_wallHitFrame = kWallHitFrame;
+
+			// エフェクト描画位置
+			m_drawWallHitX = m_pos.x - kWallEffectSlide - m_radius * scale;
+			m_drawWallHitY = m_pos.y;
+
 			ReflectionCal(kNorVecLeft);
 			ShiftReflection(kShiftSide);
 		}
@@ -66,8 +89,14 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 	if (m_pos.x + m_radius * scale > centerX + m_fieldSize)
 	{
 		m_pos.x = centerX + m_fieldSize - m_radius * scale;
+
 		if (isShift)
 		{
+			m_wallHitFrame = kWallHitFrame;
+
+			m_drawWallHitX = m_pos.x + kWallEffectSlide + m_radius * scale;
+			m_drawWallHitY = m_pos.y;
+
 			ReflectionCal(kNorVecRight);
 			ShiftReflection(kShiftSide);
 		}
@@ -82,8 +111,14 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 	if (m_pos.y - m_radius * scale < centerY - m_fieldSize)
 	{
 		m_pos.y = centerY - m_fieldSize + m_radius * scale;
+
 		if (isShift)
 		{
+			m_wallHitFrame = kWallHitFrame;
+
+			m_drawWallHitX = m_pos.x;
+			m_drawWallHitY = m_pos.y - kWallEffectSlide - m_radius * scale;
+
 			ReflectionCal(kNorVecUp);
 			ShiftReflection(kShiftVert);
 		}
@@ -98,8 +133,14 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 	if (m_pos.y + m_radius * scale > centerY + m_fieldSize)
 	{
 		m_pos.y = centerY + m_fieldSize - m_radius * scale;
+
 		if (isShift)
 		{
+			m_wallHitFrame = kWallHitFrame;
+
+			m_drawWallHitX = m_pos.x;
+			m_drawWallHitY = m_pos.y + kWallEffectSlide + m_radius * scale;
+
 			ReflectionCal(kNorVecDown);
 			ShiftReflection(kShiftVert);
 		}
@@ -168,6 +209,14 @@ void EnemyBase::NormalDraw()
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), m_color, true);
+
+	// 壁に当たったエフェクトの描画
+	if (m_wallHitFrame > 0)
+	{
+		// MEMO:現在は仮
+		// 座標を中心とする
+		DrawGraph(m_drawWallHitX - 16, m_drawWallHitY - 16, m_wallEffect->GetHandle(), true);
+	}
 
 #ifdef _DEBUG
 	// 当たり判定の描画

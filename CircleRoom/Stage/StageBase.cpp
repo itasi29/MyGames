@@ -22,7 +22,8 @@ StageBase::StageBase(GameManager& mgr, float fieldSize) :
 	m_fieldSize(fieldSize),
 	m_centerPos({m_size.w * 0.5f, m_size.h * 0.5f}),
 	m_frame(0),
-	m_waitFrame(kWaitChangeFrame)
+	m_waitFrame(kWaitChangeFrame),
+	m_isUpdateTime(false)
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;

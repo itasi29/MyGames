@@ -6,6 +6,7 @@
 struct m_size;
 class Player;
 class EnemyBase;
+class FileBase;
 
 class GamePlayingScene : public Scene
 {
@@ -59,5 +60,10 @@ private:
 
     // Œo‰ßƒtƒŒ[ƒ€
     int m_frame;
+
+    // BGM
+    std::shared_ptr<FileBase> m_bgm;
+    // ”wŒi
+    std::shared_ptr<FileBase> m_bg;
 };
 

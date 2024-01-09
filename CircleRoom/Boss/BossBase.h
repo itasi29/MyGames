@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
+#include <memory>
 #include "Vec2.h"
 #include "Utility/Collision.h"
 
 struct size;
+class FileBase;
 
 /// <summary>
 /// ボスの基底クラス
@@ -91,6 +93,9 @@ protected:
 	// フィールドサイズ
 	const float m_fieldSize;
 
+	std::shared_ptr<FileBase> m_wallEffect;
+	std::shared_ptr<FileBase> m_damageEffect;
+
 	// 敵の名前
 	std::string m_name;
 	// 色
@@ -114,5 +119,19 @@ protected:
 
 	// フレーム
 	int m_frame;
+
+	// 壁に当たったフレーム
+	int m_wallHitFrame;
+
+	// 壁に当たった際の場所
+	int m_drawWallHitX;
+	int m_drawWallHitY;
+
+	// ダメージを受けたフレーム
+	int m_onDamagetFrame;
+
+	// ダメージを受けた際の場所
+	int m_drawOnDamagetX;
+	int m_drawOnDamagetY;
 };
 

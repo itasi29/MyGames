@@ -29,8 +29,8 @@ public:
 	SceneManager& GetScene();
 
 private:
-	StageManager m_stage;
 	FileManager m_file;
+	StageManager m_stage;
 	SceneManager m_scene;
 };
 

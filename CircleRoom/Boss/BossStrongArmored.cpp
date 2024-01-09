@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "Stage/StageBase.h"
+#include "FileSystem/ImageFile.h"
 
 #include "Enemy/EnemySplitTwoBound.h"
 
@@ -25,6 +26,9 @@ namespace
 	constexpr int kWaitCreateFrame = 15;
 	// 生成するときの角度
 	constexpr float kCreateRadian = 45.0f * (kPai / 180.0f);
+
+	// ダメージを受けた際のフレーム
+	constexpr int kOnDamageFrame = 10;
 }
 
 BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -48,6 +52,10 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 	{
 		if (col.IsCollsion(obj->GetRect()))
 		{
+			m_onDamagetFrame = kOnDamageFrame;
+			m_drawOnDamagetX = m_pos.x;
+			m_drawOnDamagetY = m_pos.y;
+
 			m_radian = 0;
 
 			obj->Used();
@@ -78,6 +86,21 @@ void BossStrongArmored::NormalDraw() const
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), m_color, true);
+
+	// 壁に当たったエフェクトの描画
+	if (m_wallHitFrame > 0)
+	{
+		// MEMO:現在は仮
+		// 座標を中心とする
+		DrawGraph(m_drawWallHitX - 16, m_drawWallHitY - 16, m_wallEffect->GetHandle(), true);
+	}
+
+	// ダメージエフェクト
+	if (m_onDamagetFrame > 0)
+	{
+		// 座標を中心とする
+		DrawGraph(m_drawOnDamagetX - 16, m_drawOnDamagetY - 16, m_damageEffect->GetHandle(), true);
+	}
 
 	// ダメージオブジェクトの描画
 	for (const auto& obj : m_objects)
