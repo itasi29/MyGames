@@ -79,6 +79,16 @@ void SoundConfigScene::ExpandDraw()
 
 void SoundConfigScene::NormalDraw()
 {
+	Application& app = Application::GetInstance();
+	const auto& m_size = app.GetWindowSize();
+	// ‚¿‚å‚Á‚ÆˆÃ‚¢‹éŒ`‚ð•`‰æ
+	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
+		0x444444, true);
+
+	DrawString(100, kMenuMargin + 10, L"KeyConfig Scene", 0xffffff);
+
+	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
+		0xffffff, false);
 }
 
 void SoundConfigScene::DrawGauge(int drawX, int drawY, float rate)
