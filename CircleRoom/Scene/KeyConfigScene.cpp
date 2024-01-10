@@ -9,7 +9,7 @@
 namespace
 {
 	constexpr int kAppeaInterval = 60;
-	constexpr int kMenuMargin = 60;
+	constexpr int kMenuMargin = 120;
 }
 
 KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input) :
@@ -18,7 +18,6 @@ KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input) :
 {
 	m_keyCommandTable = input.GetCommandTable();
 	m_updateFunc = &KeyConfigScene::NormalUpdate;
-	m_drawFunc = &KeyConfigScene::ExpandDraw;
 
 	// ƒƒjƒ…[‚É•À‚Ô‡‚ðì‚é
 	m_menuItems = {
@@ -90,7 +89,7 @@ void KeyConfigScene::Update(Input & input)
 
 void KeyConfigScene::Draw()
 {
-	(this->*m_drawFunc)();
+	NormalDraw();
 }
 
 void KeyConfigScene::NormalUpdate(Input & input)
@@ -101,6 +100,10 @@ void KeyConfigScene::NormalUpdate(Input & input)
 		if (m_currentLineIndex < m_keyCommandTable.size())
 		{
 			m_isEditRequestButton = true;
+		}
+		else
+		{
+			CommitCurrenKeySetting();
 		}
 
 		return;
@@ -179,16 +182,7 @@ void KeyConfigScene::ExpandDraw()
 
 void KeyConfigScene::NormalDraw()
 {
-	Application& app = Application::GetInstance();
-	const auto& m_size = app.GetWindowSize();
-	// ‚¿‚å‚Á‚ÆˆÃ‚¢‹éŒ`‚ð•`‰æ
-	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
-		0x444444, true);
-
 	DrawString(100, kMenuMargin + 10, L"KeyConfig Scene", 0xffffff);
-
-	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
-		0xffffff, false);
 
 	DrawCommandList();
 }

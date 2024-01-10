@@ -21,8 +21,6 @@ public:
 private:
 	// 更新メンバ関数ポインタ
 	using UpdateFunc_t = void(KeyConfigScene::*)(Input& input);
-	// 描画メンバ関数ポインタ
-	using DrawFunc_t = void (KeyConfigScene::*)();
 	
 
 	// 更新関数
@@ -42,7 +40,6 @@ private:
 
 private:
 	UpdateFunc_t  m_updateFunc;
-	DrawFunc_t m_drawFunc;
 
 	int m_frame = 0;
 	std::vector<std::string> m_menuItems;	// 特定の純情にコマンドを並び替えるための配列

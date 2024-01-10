@@ -485,22 +485,9 @@ void StageBase::DrawWall()
 	float centerY = m_size.h * 0.5f;
 
 	// êFÇÕâº
-	// ç∂
-	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0xffffff);
-	// âE
-	DrawLine(static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
+	DrawBox(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
 		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0xffffff);
-	// è„
-	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		0xffffff);
-	// â∫
-	DrawLine(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0xffffff);
+		0xffffff, false);
 }
 
 void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage)

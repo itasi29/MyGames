@@ -4,12 +4,12 @@
 /// <summary>
 /// âπó í≤êÆÉVÅ[Éì
 /// </summary>
-class SoundConfigScene :
+class SoundOptionScene :
     public Scene
 {
 public:
-    SoundConfigScene(GameManager& mgr);
-    ~SoundConfigScene();
+    SoundOptionScene(GameManager& mgr);
+    ~SoundOptionScene();
 
     void Update(Input& input);
     void Draw();

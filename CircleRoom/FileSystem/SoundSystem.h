@@ -7,13 +7,14 @@
 class SoundSystem
 {
 public:
+	SoundSystem();
+
 	/// <summary>
 	/// BGMを流す
 	/// </summary>
 	/// <param name="soundHnadle">BGMハンドル</param>
-	/// <param name="playType">再生タイプ</param>
 	/// <param name="isLoop">ループするか(デフォでtrue)</param>
-	void PlayBgm(int soundHnadle, int playType, bool isLoop = true);
+	void PlayBgm(int soundHnadle, bool isLoop = true);
 
 	/// <summary>
 	/// SEを流す

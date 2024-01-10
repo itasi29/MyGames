@@ -1,16 +1,38 @@
 #include <DxLib.h>
+#include <cassert>
 #include "SoundSystem.h"
 
-void SoundSystem::PlayBgm(int soundHnadle, int playType, bool isLoop)
+namespace
 {
+	constexpr int kMaxVolume = 255;
+}
+
+SoundSystem::SoundSystem() :
+	m_bgmVolume(kMaxVolume),
+	m_seVolume(kMaxVolume)
+{
+}
+
+void SoundSystem::PlayBgm(int soundHnadle, bool isLoop)
+{
+#ifdef _DEBUG
+	auto result = CheckSoundMem(soundHnadle);
+
 	// 再生中なら無視
+	if (result == 1) return;
+
+	if (result == -1) assert(false);
+#else
 	if (CheckSoundMem(soundHnadle)) return;
+#endif
 
 	// 音量の変更
 	ChangeNextPlayVolumeSoundMem(m_bgmVolume, soundHnadle);
 
 	// ループがONの場合はBGMが終了次第先頭に戻る
-	PlaySoundMem(soundHnadle, playType, isLoop);
+	PlaySoundMem(soundHnadle, DX_PLAYTYPE_BACK, isLoop);
+
+	m_nowPlayBgm = soundHnadle;
 }
 
 void SoundSystem::PlaySe(int seHandle, int playType)
@@ -29,9 +51,9 @@ void SoundSystem::ChangeBgmVol(int val)
 	{
 		m_bgmVolume = 0;
 	}
-	else if (m_bgmVolume > 255)
+	else if (m_bgmVolume > kMaxVolume)
 	{
-		m_bgmVolume = 255;
+		m_bgmVolume = kMaxVolume;
 	}
 
 	SetBgm();
@@ -46,9 +68,9 @@ void SoundSystem::ChangeSeVol(int val)
 		m_seVolume = 0;
 		return;
 	}
-	if (m_seVolume > 255)
+	if (m_seVolume > kMaxVolume)
 	{
-		m_seVolume = 255;
+		m_seVolume = kMaxVolume;
 		return;
 	}
 }

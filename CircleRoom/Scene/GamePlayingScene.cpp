@@ -51,7 +51,9 @@ GamePlayingScene::~GamePlayingScene()
 
 void GamePlayingScene::Update(Input& input)
 {
-	PlaySoundMem(m_bgm->GetHandle(), DX_PLAYTYPE_BACK, false);
+	// ‚¤‚é‚³‚¢‚©‚çÁ‚·
+//	PlaySoundMem(m_bgm->GetHandle(), DX_PLAYTYPE_BACK, false);
+	m_mgr.GetSound().PlayBgm(m_bgm->GetHandle());
 
 	(this->*m_updateFunc)(input);
 }

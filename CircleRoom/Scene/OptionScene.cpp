@@ -6,8 +6,10 @@
 #include "OptionScene.h"
 
 #include "GameManager.h"
+#include "StageSelectScene.h"
 #include "KeyConfigScene.h"
-#include "SoundConfigScene.h"
+#include "SoundOptionScene.h"
+#include "OtherOptionScene.h"
 #include "TitleScene.h"
 
 namespace
@@ -47,7 +49,7 @@ OptionScene::OptionScene(GameManager& mgr, Input& input) :
 	m_updateFunc = &OptionScene::AppearUpdate;
 
 	m_scnMgr = std::make_shared<SceneManager>();
-	m_scnMgr->PushScene(std::make_shared<KeyConfigScene>(m_mgr, input));
+	m_scnMgr->PushScene(std::make_shared<StageSelectScene>(m_mgr));
 }
 
 void OptionScene::Update(Input& input)
@@ -190,6 +192,7 @@ void OptionScene::ChangeScene(Input& input)
 	{
 		// ステージ選択
 	case kStageSelect:
+		m_scnMgr->ChangeScene(std::make_shared<StageSelectScene>(m_mgr));
 		break;
 
 		// キー設定
@@ -199,11 +202,12 @@ void OptionScene::ChangeScene(Input& input)
 
 		// 音量設定
 	case kValume:
-		m_scnMgr->ChangeScene(std::make_shared<SoundConfigScene>(m_mgr));
+		m_scnMgr->ChangeScene(std::make_shared<SoundOptionScene>(m_mgr));
 		break;
 
 		// メニューに戻る
 	case kOther:
+		m_scnMgr->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr));
 		break;
 
 	default:
