@@ -6,7 +6,7 @@
 
 #include "GamePlayingScene.h"
 #include "GameOverScene.h"
-#include "PauseScene.h"
+#include "OptionScene.h"
 
 #include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
@@ -90,7 +90,7 @@ void GamePlayingScene::UpdateNormal(Input& input)
 	// pauseボタンが押されたらポーズ画面を開く
 	if (input.IsPress("pause"))
 	{
-		m_mgr.GetScene().PushScene(std::make_shared<PauseScene>(m_mgr));
+		m_mgr.GetScene().PushScene(std::make_shared<OptionScene>(m_mgr, input));
 	}
 
 	// 簡易実装

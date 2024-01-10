@@ -1,26 +1,25 @@
 #pragma once
 #include "Scene.h"
+#include <memory>
 
 class Input;
+class SceneManager;
 
 /// <summary>
 /// ポーズ時のシーンクラス
 /// </summary>
-class PauseScene : public Scene
+class OptionScene : public Scene
 {
 public:
-	PauseScene(GameManager& mgr);
+	OptionScene(GameManager& mgr, Input& input);
 
 	void Update(Input& input);
 	void Draw();
 
 private:
 	// 更新メンバ関数ポインタ
-	using UpdateFunc_t = void(PauseScene::*)(Input& input);
+	using UpdateFunc_t = void(OptionScene::*)(Input& input);
 	UpdateFunc_t  m_updateFunc;
-	// 描画メンバ関数ポインタ
-	using DrawFunc_t = void (PauseScene::*)();
-	DrawFunc_t m_drawFunc;
 
 	// 更新関数
 	void AppearUpdate(Input&);	// 登場状態
@@ -28,14 +27,24 @@ private:
 	void DisappearUpdate(Input&);	// 退場状態
 
 	// 描画関数
-	void ExpandDraw();	// 拡張縮張描画
-	void FadeDraw();	// フェード描画
 	void NormalDraw();	// 非フェード描画
 
+	/// <summary>
+	/// メニューを変更したときに何を描画するかを変更する
+	/// </summary>
+	void ChangeScene(Input& input);
+
 private:
+	// シーンの扱い方が特殊なのでSceneManager別枠として持つ
+	// おかしくなる可能性があるため要確認
+	std::shared_ptr<SceneManager> m_scnMgr;
+
+
 	int m_frame = 0;
 	bool m_title;
 
 	int m_currentMenuLine;
+
+	bool m_isFadeOut;
 };
 

@@ -72,7 +72,7 @@
     <ClCompile Include="Scene\KeyConfigScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\PauseScene.cpp">
+    <ClCompile Include="Scene\OptionScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Scene\Scene.cpp">
@@ -197,7 +197,7 @@
     <ClInclude Include="Scene\SceneManager.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\PauseScene.h">
+    <ClInclude Include="Scene\OptionScene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Scene\KeyConfigScene.h">

@@ -26,10 +26,8 @@ private:
 	
 
 	// XVŠÖ”
-	void AppearUpdate(Input&);	// “oêó‘Ô
 	void NormalUpdate(Input&);		// ’Êíó‘Ô
 	void EditUpdate(Input&);		// •ÒWó‘Ô
-	void DisappearUpdate(Input&);	// ‘Şêó‘Ô
 
 	// •`‰æŠÖ”
 	void ExpandDraw();	// Šg’£k’£•`‰æ

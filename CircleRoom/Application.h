@@ -13,10 +13,6 @@ struct size
 class Application
 {
 private:
-	size m_size;
-	// FPS固定用
-	long long m_time;
-
 	Application();	// シングルトンのためにprivateに
 	// コピー＆代入の禁止
 	Application(const Application& app) = delete;		// コピーコンストラクタの廃止
@@ -40,6 +36,19 @@ public:
 	bool Init();
 	void Run();
 
+	/// <summary>
+	/// ゲームの終了
+	/// </summary>
+	void End();
+
 	const size& GetWindowSize() const;
+
+private:
+	size m_size;
+	// FPS固定用
+	long long m_time;
+
+	// ゲーム終了フラグ
+	bool m_isEnd;
 };
 

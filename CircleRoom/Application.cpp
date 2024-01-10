@@ -30,7 +30,8 @@ int MyLoadGraph(const wchar_t* path)
 }
 
 Application::Application() :
-    m_time(0)
+    m_time(0),
+    m_isEnd(false)
 {
     m_size = size{kScreenWidth, kScreenHeight};
 }
@@ -82,8 +83,14 @@ void Application::Run()
             manager.GetScene().Draw();
             ScreenFlip();
 
-            // エスケープキーが押されたら終了する
+            // エスケープキーが押されたら終了フラグをtrueに
             if (CheckHitKey(KEY_INPUT_ESCAPE))
+            {
+                End();
+            }
+
+            // 終了フラグが立っていれば終了する
+            if (m_isEnd)
             {
                 break;
             }
@@ -93,6 +100,11 @@ void Application::Run()
     }
 
     Terminate();
+}
+
+void Application::End()
+{
+    m_isEnd = true;
 }
 
 const size& Application::GetWindowSize() const

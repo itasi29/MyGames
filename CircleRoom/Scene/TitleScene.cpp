@@ -82,7 +82,8 @@ void TitleScene::NormalUpdate(Input& input)
 		// 2”Ô–Ú‚Ì‚Æ‚«‚ÍI—¹ˆ—
 		if (m_currentLinePos == 2)
 		{
-			// TODO:I—¹‚ğ“`‚¦‚éˆ—
+			Application& app = Application::GetInstance();
+			app.End();
 		}
 	}
 }

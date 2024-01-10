@@ -46,7 +46,7 @@
     <ClCompile Include="Scene\GameOverScene.cpp" />
     <ClCompile Include="Scene\GamePlayingScene.cpp" />
     <ClCompile Include="Scene\KeyConfigScene.cpp" />
-    <ClCompile Include="Scene\PauseScene.cpp" />
+    <ClCompile Include="Scene\OptionScene.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\SoundConfigScene.cpp" />
@@ -90,7 +90,7 @@
     <ClInclude Include="Scene\GameOverScene.h" />
     <ClInclude Include="Scene\GamePlayingScene.h" />
     <ClInclude Include="Scene\KeyConfigScene.h" />
-    <ClInclude Include="Scene\PauseScene.h" />
+    <ClInclude Include="Scene\OptionScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\SoundConfigScene.h" />

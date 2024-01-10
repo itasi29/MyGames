@@ -14,7 +14,7 @@ namespace
 
 BottansFile::BottansFile(FileManager& mgr)
 {
-	m_handle = mgr.LoadGraphic(L"Image/UI/xbox_buttons.png", true)->GetHandle();
+	m_handle = mgr.LoadGraphic(L"Data/Image/UI/xbox_buttons.png", true)->GetHandle();
 
 	m_bottans[L"‚`Bottan"] = 0;
 	m_bottans[L"‚aBottan"] = 1;

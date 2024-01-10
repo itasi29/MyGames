@@ -17,7 +17,7 @@ KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input) :
 	m_input(input)
 {
 	m_keyCommandTable = input.GetCommandTable();
-	m_updateFunc = &KeyConfigScene::AppearUpdate;
+	m_updateFunc = &KeyConfigScene::NormalUpdate;
 	m_drawFunc = &KeyConfigScene::ExpandDraw;
 
 	// メニューに並ぶ順を作る
@@ -93,16 +93,6 @@ void KeyConfigScene::Draw()
 	(this->*m_drawFunc)();
 }
 
-void KeyConfigScene::AppearUpdate(Input&)
-{
-	m_frame++;
-	if (kAppeaInterval <= m_frame)
-	{
-		m_updateFunc = &KeyConfigScene::NormalUpdate;
-		m_drawFunc = &KeyConfigScene::NormalDraw;
-	}
-}
-
 void KeyConfigScene::NormalUpdate(Input & input)
 {
 	// トグル処理
@@ -111,14 +101,6 @@ void KeyConfigScene::NormalUpdate(Input & input)
 		if (m_currentLineIndex < m_keyCommandTable.size())
 		{
 			m_isEditRequestButton = true;
-		}
-		else // 確定
-		{
-			CommitCurrenKeySetting();
-
-			m_updateFunc = &KeyConfigScene::DisappearUpdate;
-			m_drawFunc = &KeyConfigScene::ExpandDraw;
-			m_frame = kAppeaInterval;
 		}
 
 		return;
@@ -133,13 +115,6 @@ void KeyConfigScene::NormalUpdate(Input & input)
 			m_isEditRequestButton = false;
 			return;
 		}
-	}
-
-	if (input.IsTriggered("pause"))
-	{
-		m_updateFunc = &KeyConfigScene::DisappearUpdate;
-		m_drawFunc = &KeyConfigScene::ExpandDraw;
-		m_frame = kAppeaInterval;
 	}
 
 	int size = static_cast<int>(m_keyCommandTable.size() + 1);
@@ -181,15 +156,6 @@ void KeyConfigScene::EditUpdate(Input & input)
 	if (padstate)
 	{
 		cmd[InputType::pad] = padstate;
-	}
-}
-
-void KeyConfigScene::DisappearUpdate(Input&)
-{
-	m_frame--;
-	if (m_frame == 0)
-	{
-		m_mgr.GetScene().PopScene();
 	}
 }
 
