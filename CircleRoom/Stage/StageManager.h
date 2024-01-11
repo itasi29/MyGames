@@ -12,7 +12,7 @@ struct size;
 struct StageData
 {
 	int bestTime = 0;
-	std::vector<bool> isClears;
+	bool isClear = false;
 };
 
 enum Ability
@@ -91,9 +91,8 @@ public:
 	/// クリア情報
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>
-	/// <param name="dir">確認するステージの方向</param>
 	/// <returns>true:クリア済み / false:未クリア</returns>
-	bool IsClearStage(const std::string& stgName, StageDir dir) const;
+	bool IsClearStage(const std::string& stgName);
 
 	/// <summary>
 	/// すでにクリアしたことがあるボスか
@@ -133,8 +132,7 @@ public:
 	/// クリア済みとする
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>
-	/// <param name="dir">保存するステージ方向</param>
-	void SaveClear(const std::string& stgName, int dir);
+	void SaveClear(const std::string& stgName);
 
 	/// <summary>
 	/// ボスをクリアしたことがあるとする

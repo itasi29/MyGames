@@ -42,7 +42,7 @@ namespace
 
 OptionScene::OptionScene(GameManager& mgr, Input& input) :
 	Scene(mgr),
-	m_title(false),
+	m_isEdit(false),
 	m_currentMenuLine(0),
 	m_isFadeOut(false)
 {
@@ -55,6 +55,10 @@ OptionScene::OptionScene(GameManager& mgr, Input& input) :
 void OptionScene::Update(Input& input)
 {
 	m_scnMgr->Update(input);
+
+	// 編集中は処理の変更をしない
+	if (m_isEdit) return;
+
 	(this->*m_updateFunc)(input);
 }
 
@@ -88,38 +92,6 @@ void OptionScene::NormalUpdate(Input& input)
 		return;
 	}
 
-	//if (input.IsTriggered("OK"))
-	//{
-	//	switch (m_currentMenuLine)
-	//	{
-	//	case kStageSelect:
-	//		break;
-	//		// キー設定
-	//	case kKey:
-	//		m_scnMgr->PushScene(std::make_shared<KeyConfigScene>(m_mgr, input));
-	//		break;
-	//		// 音量設定
-	//	case kValume:
-	//		m_scnMgr->PushScene(std::make_shared<SoundConfigScene>(m_mgr));
-	//		break;
-	//		// メニューに戻る
-	//	case kOther:
-	//		m_updateFunc = &OptionScene::DisappearUpdate;
-	//		m_title = true;
-	//		return;
-	//		break;
-	//	default:
-	//		assert(false);
-	//		break;
-	//	}
-	//}
-
-	if (input.IsTriggered("OK") && m_currentMenuLine == kOther)
-	{
-			m_updateFunc = &OptionScene::DisappearUpdate;
-			m_title = true;
-	}
-
 	if (input.IsTriggered("left"))
 	{
 		m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kMenuString.size())) % static_cast<int>(kMenuString.size());
@@ -137,20 +109,7 @@ void OptionScene::DisappearUpdate(Input&)
 	m_frame--;
 	if (m_frame > 0) return;
 
-	// タイトルシーン
-	if (m_title)
-	{
-		m_mgr.GetScene().MoveScene(std::make_shared<TitleScene>(m_mgr));
-		return;
-	}
-	// プレイシーン
-	else
-	{
-		m_mgr.GetScene().PopScene();
-		return;	
-	}
-
-	
+	m_mgr.GetScene().PopScene();
 }
 
 void OptionScene::NormalDraw()
@@ -205,13 +164,11 @@ void OptionScene::ChangeScene(Input& input)
 		m_scnMgr->ChangeScene(std::make_shared<SoundOptionScene>(m_mgr));
 		break;
 
-		// メニューに戻る
-	case kOther:
-		m_scnMgr->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr));
-		break;
-
+		// その他設定
 	default:
 		assert(false);
+	case kOther:
+		m_scnMgr->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr));
 		break;
 	}
 }

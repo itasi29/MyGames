@@ -16,6 +16,13 @@ public:
 	void Update(Input& input);
 	void Draw();
 
+	/// <summary>
+	/// m_isEditのフラグを反転させる
+	/// </summary>
+	void InverseIsEdit() { m_isEdit = !m_isEdit; }
+
+	bool IsEdit() const { return m_isEdit; }
+
 private:
 	// 更新メンバ関数ポインタ
 	using UpdateFunc_t = void(OptionScene::*)(Input& input);
@@ -39,9 +46,8 @@ private:
 	// おかしくなる可能性があるため要確認
 	std::shared_ptr<SceneManager> m_scnMgr;
 
-
 	int m_frame = 0;
-	bool m_title;
+	bool m_isEdit;
 
 	int m_currentMenuLine;
 

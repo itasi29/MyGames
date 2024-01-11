@@ -34,7 +34,7 @@ void SceneManager::ChangeScene(std::shared_ptr<Scene>nextScene)
 	}
 }
 
-void SceneManager::MoveScene(std::shared_ptr<Scene> nextScene)
+void SceneManager::ChangeSceneWithClear(std::shared_ptr<Scene> nextScene)
 {
 	// ˆê“x‚·‚×‚ÄÁ‚·
 	m_scenes.clear();
@@ -50,4 +50,9 @@ void SceneManager::PushScene(std::shared_ptr<Scene> scene)
 void SceneManager::PopScene()
 {
 	m_scenes.pop_back();
+}
+
+std::shared_ptr<Scene> SceneManager::GetTopScene()
+{
+	return m_scenes.back();
 }

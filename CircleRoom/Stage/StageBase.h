@@ -108,19 +108,19 @@ protected:
 	/// <summary>
 	/// ¶–îˆó‚Ì•`‰æ
 	/// </summary>
-	void DrawLeftArrow(bool isAlreadyClear) const;
+	void DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const;
 	/// <summary>
 	/// ‰E–îˆó‚Ì•`‰æ
 	/// </summary>
-	void DrawRightArrow(bool isAlreadyClear) const;
+	void DrawRightArrow(bool isAlreadyClear, const std::string& nextStName) const;
 	/// <summary>
 	/// ã–îˆó‚Ì•`‰æ
 	/// </summary>
-	void DrawUpArrow(bool isAlreadyClear) const;
+	void DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) const;
 	/// <summary>
 	/// ‰º–îˆó‚Ì•`‰æ
 	/// </summary>
-	void DrawDownArrow(bool isAlreadyClear) const;
+	void DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const;
 
 	/// <summary>
 	/// ¶‚É‰æ–Ê‚ğƒXƒ‰ƒCƒh‚·‚éˆ—

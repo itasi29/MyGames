@@ -53,8 +53,8 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 		if (col.IsCollsion(obj->GetRect()))
 		{
 			m_onDamagetFrame = kOnDamageFrame;
-			m_drawOnDamagetX = m_pos.x;
-			m_drawOnDamagetY = m_pos.y;
+			m_drawOnDamagetX = static_cast<int>(m_pos.x);
+			m_drawOnDamagetY = static_cast<int>(m_pos.y);
 
 			m_radian = 0;
 

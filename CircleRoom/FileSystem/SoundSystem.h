@@ -35,6 +35,23 @@ public:
 	/// <param name="val">変更させる値 引数の値だけ±する</param>
 	void ChangeSeVol(int val);
 
+	// Get関数
+	int GetBgmVol() const { return m_bgmVolume; }
+	int GetSeVol() const { return m_seVolume; }
+	int GetMaxVol() const;
+	/// <summary>
+	/// BGMのボリュームの割合(0.0f ~ 1.0f)を取得
+	/// </summary>
+	/// <returns>BgmVolume</returns>
+	float GetBgmVolRate() const;
+	/// <summary>
+	/// SEのボリュームの割合(0.0f ~ 1.0f)を取得
+	/// </summary>
+	/// <returns>SeVolum</returns>
+	float GetSeVolRate() const;
+
+private:
+
 	/// <summary>
 	/// 再生中のBGMの音量を変更する
 	/// </summary>

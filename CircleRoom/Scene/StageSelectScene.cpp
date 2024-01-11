@@ -6,6 +6,8 @@ namespace
 {
 	constexpr int kAppeaInterval = 5;
 	constexpr int kMenuMargin = 120;
+
+	constexpr int kStageNum = 5;
 }
 
 StageSelectScene::StageSelectScene(GameManager& mgr) :

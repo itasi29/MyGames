@@ -15,6 +15,7 @@ public:
     void Draw();
 
 private:
+	void DrawName(int drawY, int index, std::wstring str);
 
 	/// <summary>
 	/// ƒQ[ƒW‚Ì•`‰æ
@@ -25,6 +26,9 @@ private:
 	void DrawGauge(int drawX, int drawY, float rate);
 
 private:
-	int m_frame = 0;
+	int m_currentLineIndex;
+	bool m_isEdit;
+
+	int m_frame;
 };
 

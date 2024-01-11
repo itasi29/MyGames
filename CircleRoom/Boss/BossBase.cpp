@@ -95,8 +95,8 @@ bool BossBase::Reflection()
 
 		m_wallHitFrame = kWallHitFrame;
 
-		m_drawWallHitX = m_pos.x - kWallEffectSlide - m_radius;
-		m_drawWallHitY = m_pos.y;
+		m_drawWallHitX = static_cast<int>(m_pos.x - kWallEffectSlide - m_radius);
+		m_drawWallHitY = static_cast<int>(m_pos.y);
 
 		return true;
 	}
@@ -109,8 +109,8 @@ bool BossBase::Reflection()
 
 		m_wallHitFrame = kWallHitFrame;
 
-		m_drawWallHitX = m_pos.x + kWallEffectSlide + m_radius;
-		m_drawWallHitY = m_pos.y;
+		m_drawWallHitX = static_cast<int>(m_pos.x + kWallEffectSlide + m_radius);
+		m_drawWallHitY = static_cast<int>(m_pos.y);
 
 		return true;
 	}
@@ -123,8 +123,8 @@ bool BossBase::Reflection()
 
 		m_wallHitFrame = kWallHitFrame;
 
-		m_drawWallHitX = m_pos.x;
-		m_drawWallHitY = m_pos.y - kWallEffectSlide - m_radius;
+		m_drawWallHitX = static_cast<int>(m_pos.x);
+		m_drawWallHitY = static_cast<int>(m_pos.y - kWallEffectSlide - m_radius);
 
 		return true;
 	}
@@ -137,8 +137,8 @@ bool BossBase::Reflection()
 
 		m_wallHitFrame = kWallHitFrame;
 
-		m_drawWallHitX = m_pos.x;
-		m_drawWallHitY = m_pos.y + kWallEffectSlide + m_radius;
+		m_drawWallHitX = static_cast<int>(m_pos.x);
+		m_drawWallHitY = static_cast<int>(m_pos.y + kWallEffectSlide + m_radius);
 
 		return true;
 	}

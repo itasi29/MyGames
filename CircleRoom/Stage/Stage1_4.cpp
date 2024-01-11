@@ -22,6 +22,9 @@ namespace
 	// ê∂ê¨ä‘äu
 	constexpr int kCreateNormalFrame = 60 * 4;
 	constexpr int kCreateCreateFrame = 60 * 7;
+
+	const std::string kRightStName = "Stage1-3";
+	const std::string kUpStName = "Stage1-5";
 }
 
 Stage1_4::Stage1_4(GameManager& mgr, float fieldSize) :
@@ -80,8 +83,8 @@ void Stage1_4::Init()
 
 void Stage1_4::StartCheck()
 {
-	m_isRightClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight);
-	m_isUpClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp);
+	m_isRightClear = m_mgr.GetStage().IsClearStage(kRightStName);
+	m_isUpClear = m_mgr.GetStage().IsClearStage(kUpStName);
 }
 
 void Stage1_4::ChangeStage(Input& input)
@@ -92,7 +95,7 @@ void Stage1_4::ChangeStage(Input& input)
 	// éÄñSíºå„ÇÕïœÇÌÇÁÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight) && input.IsTriggered("right"))
+	if (m_mgr.GetStage().IsClearStage(kRightStName) && input.IsTriggered("right"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
 		nextStage = std::make_shared<Stage1_3>(m_mgr, m_fieldSize);
@@ -101,7 +104,7 @@ void Stage1_4::ChangeStage(Input& input)
 
 		return;
 	}
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp) && input.IsTriggered("up"))
+	if (m_mgr.GetStage().IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_5> nextStage;
 		nextStage = std::make_shared<Stage1_5>(m_mgr, m_fieldSize);
@@ -115,18 +118,18 @@ void Stage1_4::ChangeStage(Input& input)
 void Stage1_4::CheckStageConditions()
 {
 	// âEÇÇ‹ÇæÉNÉäÉAÇµÇƒÇ¢Ç»Ç¢èÍçá
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight))
+	if (!m_mgr.GetStage().IsClearStage(kRightStName))
 	{
 		if (m_mgr.GetStage().GetEnemyTypeCount() >= kRightKilledNum)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageRight);
+			m_mgr.GetStage().SaveClear(kRightStName);
 		}
 	}
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp))
+	if (!m_mgr.GetStage().IsClearStage(kUpStName))
 	{
 		if (m_mgr.GetStage().GetEnemyTypeCount() >= kUpKilledNum)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageUp);
+			m_mgr.GetStage().SaveClear(kUpStName);
 		}
 	}
 }
@@ -149,8 +152,8 @@ void Stage1_4::DrawStageConditions(int drawY)
 
 void Stage1_4::DrawArrow() const
 {
-	DrawRightArrow(m_isRightClear);
-	DrawUpArrow(m_isUpClear);
+	DrawRightArrow(m_isRightClear, kRightStName);
+	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
 void Stage1_4::DrawKilledEnemyType() const

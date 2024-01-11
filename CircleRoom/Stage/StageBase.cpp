@@ -225,11 +225,11 @@ void StageBase::DrawPlaying()
 	DrawStageConditions(64);
 }
 
-void StageBase::DrawLeftArrow(bool isAlreadyClear) const
+void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
 	unsigned int color = 0;
 	// ÉNÉäÉAÇµÇƒÇ¢ÇÈèÍçáÇÕîZÇ¢ÇﬂÇ≈
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft))
+	if (m_mgr.GetStage().IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -251,10 +251,10 @@ void StageBase::DrawLeftArrow(bool isAlreadyClear) const
 		color, true);
 }
 
-void StageBase::DrawRightArrow(bool isAlreadyClear) const
+void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
 	unsigned int color = 0;
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight))
+	if (m_mgr.GetStage().IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -275,10 +275,10 @@ void StageBase::DrawRightArrow(bool isAlreadyClear) const
 		color, true);
 }
 
-void StageBase::DrawUpArrow(bool isAlreadyClear) const
+void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
 	unsigned int color = 0;
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp))
+	if (m_mgr.GetStage().IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -299,10 +299,10 @@ void StageBase::DrawUpArrow(bool isAlreadyClear) const
 		color, true);
 }
 
-void StageBase::DrawDownArrow(bool isAlreadyClear) const
+void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
 	unsigned int color;
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown))
+	if (m_mgr.GetStage().IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
@@ -506,6 +506,6 @@ void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>
 
 void StageBase::ChangeClearData(int dir, const std::shared_ptr<StageBase>& nextStage) const
 {
-	m_mgr.GetStage().SaveClear(nextStage->GetStageName(), dir);
+	m_mgr.GetStage().SaveClear(nextStage->GetStageName());
 	nextStage->StartCheck();
 }

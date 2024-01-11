@@ -11,6 +11,8 @@
 #include "Enemy/EnemyNormal.h"
 #include "Enemy/EnemyLarge.h"
 
+#include"Enemy/EnemyDivision.h"
+
 namespace
 {
 	// 右側生存時間
@@ -20,6 +22,8 @@ namespace
 	constexpr int kCreateLageFrame = 60 * 10;
 	// 通常的生成間隔フレーム
 	constexpr int kCreateNormalFrame = 60 * 5 + 10;
+
+	const std::string kRightStName = "Stage1-1";
 }
 
 Stage1_2::Stage1_2(GameManager& mgr, float fieldSize) :
@@ -78,7 +82,7 @@ void Stage1_2::Init()
 
 void Stage1_2::StartCheck()
 {
-	m_isRightClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight);
+	m_isRightClear = m_mgr.GetStage().IsClearStage(kRightStName);
 }
 
 void Stage1_2::ChangeStage(Input& input)
@@ -89,7 +93,7 @@ void Stage1_2::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight) && input.IsTriggered("right"))
+	if (m_mgr.GetStage().IsClearStage(kRightStName) && input.IsTriggered("right"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;
@@ -104,12 +108,12 @@ void Stage1_2::ChangeStage(Input& input)
 void Stage1_2::CheckStageConditions()
 {
 	// 右をまだクリアしていない場合
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageRight))
+	if (!m_mgr.GetStage().IsClearStage(kRightStName))
 	{
 		// 条件確認
 		if (m_mgr.GetStage().GetBestTime(m_stageName) > kRightExsitTime * 60)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageRight);
+			m_mgr.GetStage().SaveClear(kRightStName);
 		}
 	}
 }
@@ -125,7 +129,7 @@ void Stage1_2::DrawStageConditions(int drawY)
 
 void Stage1_2::DrawArrow() const
 {
-	DrawRightArrow(m_isRightClear);
+	DrawRightArrow(m_isRightClear, kRightStName);
 }
 
 void Stage1_2::DrawKilledEnemyType() const

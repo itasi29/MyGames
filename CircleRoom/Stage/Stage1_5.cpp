@@ -14,6 +14,8 @@
 namespace
 {
 	constexpr int kDownKilledNum = 5;
+
+	const std::string kDownStName = "Stage1-4";
 }
 
 Stage1_5::Stage1_5(GameManager& mgr, float fieldSize) :
@@ -68,7 +70,7 @@ void Stage1_5::Init()
 
 void Stage1_5::StartCheck()
 {
-	m_isDownClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown);
+	m_isDownClear = m_mgr.GetStage().IsClearStage(kDownStName);
 }
 
 void Stage1_5::ChangeStage(Input& input)
@@ -79,7 +81,7 @@ void Stage1_5::ChangeStage(Input& input)
 	// Ž€–S’¼Œã‚Í•Ï‚í‚ç‚È‚¢‚æ‚¤‚É‚·‚é
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown) && input.IsTriggered("down"))
+	if (m_mgr.GetStage().IsClearStage(kDownStName) && input.IsTriggered("down"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
 		nextStage = std::make_shared<Stage1_4>(m_mgr, m_fieldSize);
@@ -93,11 +95,11 @@ void Stage1_5::ChangeStage(Input& input)
 void Stage1_5::CheckStageConditions()
 {
 	// ‰º‚ð‚Ü‚¾ƒNƒŠƒA‚µ‚Ä‚¢‚È‚¢ê‡
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown))
+	if (!m_mgr.GetStage().IsClearStage(kDownStName))
 	{
 		if (m_mgr.GetStage().GetEnemyTypeCount() >= kDownKilledNum)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageRight);
+			m_mgr.GetStage().SaveClear(kDownStName);
 		}
 	}
 }
@@ -121,7 +123,7 @@ void Stage1_5::DrawStageConditions(int drawY)
 
 void Stage1_5::DrawArrow() const
 {
-	DrawDownArrow(m_isDownClear);
+	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
 void Stage1_5::DrawKilledEnemyType() const

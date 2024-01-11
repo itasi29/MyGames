@@ -174,11 +174,13 @@ void StageManager::Save(const std::string& path)
 		// 文字列の書き込み
 		fwrite(stageStr.data(), stageStr.size(), 1, fp);    
 
+		// データ情報の書き込み
+		fwrite(&stage.second, sizeof(stage.second), 1, fp);
+#if false
 		// データ群の参照
 		auto& data = stage.second;
 		// ベストタイムの書き込み
 		fwrite(&data.bestTime, sizeof(data.bestTime), 1, fp);
-		// 配列数を書き込み
 		uint8_t dataSize = static_cast<uint8_t>(data.isClears.size());
 		fwrite(&dataSize, sizeof(dataSize), 1, fp);
 		for (const auto& isClear : data.isClears)
@@ -186,6 +188,7 @@ void StageManager::Save(const std::string& path)
 			// クリア情報を書き込む
 			fwrite(&isClear, sizeof(isClear), 1, fp);
 		}
+#endif
 	}
 
 	// データ本体を書き込んでいく
@@ -259,6 +262,10 @@ void StageManager::Load(const std::wstring& path)
 		// ステージクリアテーブルから情報群のvector<StageData>の参照を取得
 		auto& data = m_stageSaveData[stgStr];
 
+		// データ情報の読み込み
+		FileRead_read(&data, sizeof(data), handle);
+
+#if false
 		// ベストタイム読み込み
 		FileRead_read(&data.bestTime, sizeof(data.bestTime), handle);
 
@@ -277,6 +284,7 @@ void StageManager::Load(const std::wstring& path)
 
 			data.isClears[j] = isClear;
 		}
+#endif
 	}
 
 	// 殺された敵の種類数の取得
@@ -343,25 +351,21 @@ void StageManager::CreateData(const std::string& stgName)
 
 	// 情報の初期化
 	data.bestTime = 0;
-	data.isClears.resize(kStageMax);
-	for (int i = 0; i < data.isClears.size(); i++)
-	{
-		data.isClears[i] = false;
-	}
+	data.isClear = false;
 }
 
-bool StageManager::IsClearStage(const std::string& stgName, StageDir dir) const
+bool StageManager::IsClearStage(const std::string& stgName)
 {
 	auto it = m_stageSaveData.find(stgName);
 	// ステージを見つけられなかったら0を返す
 	if (it == m_stageSaveData.end())
 	{
-		assert(false);
+		CreateData(stgName);
 		return false;
 	}
 
 	// 見つかったらクリア情報を返す
-	return m_stageSaveData.at(stgName).isClears[dir];
+	return m_stageSaveData.at(stgName).isClear;
 }
 
 bool StageManager::IsClearBoss(const std::string& name) const
@@ -418,7 +422,7 @@ Ability StageManager::GetAbility() const
 	return m_ability;
 }
 
-void StageManager::SaveClear(const std::string& stgName, int dir)
+void StageManager::SaveClear(const std::string& stgName)
 {
 	auto it = m_stageSaveData.find(stgName);
 	// ステージを見つけられなかったら何もしない
@@ -429,7 +433,7 @@ void StageManager::SaveClear(const std::string& stgName, int dir)
 	}
 
 	// 指定のものをクリアとする
-	m_stageSaveData[stgName].isClears[dir] = true;
+	m_stageSaveData[stgName].isClear = true;
 }
 
 void StageManager::UpdateClearBoss(const std::string& name)

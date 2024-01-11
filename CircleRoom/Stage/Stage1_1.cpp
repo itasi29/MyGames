@@ -25,6 +25,11 @@ namespace
 	constexpr int kLeftExsitTime = 10;
 	// 上クリア条件　生存時間
 	constexpr int kUpExsitTime = 15;
+
+	// 左の部屋の名前
+	const std::string kLeftStName = "Stage1-2";
+	// 上の部屋の名前
+	const std::string kUpStName = "Stage1-3";
 }
 
 Stage1_1::Stage1_1(GameManager& mgr, float fieldSize) :
@@ -36,6 +41,8 @@ Stage1_1::Stage1_1(GameManager& mgr, float fieldSize) :
 
 	// データの生成
 	m_mgr.GetStage().CreateData(m_stageName);
+	// 1-1に関しては初めからクリアしていることとする
+	m_mgr.GetStage().SaveClear(m_stageName);
 	CheckStageConditions();
 
 	StartCheck();
@@ -83,8 +90,8 @@ void Stage1_1::Init()
 
 void Stage1_1::StartCheck()
 {
-	m_isLeftClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft);
-	m_isUpClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp);
+	m_isLeftClear = m_mgr.GetStage().IsClearStage(kLeftStName);
+	m_isUpClear = m_mgr.GetStage().IsClearStage(kUpStName);
 }
 
 void Stage1_1::ChangeStage(Input& input)
@@ -95,7 +102,7 @@ void Stage1_1::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft) && input.IsTriggered("left"))
+	if (m_mgr.GetStage().IsClearStage(kLeftStName) && input.IsTriggered("left"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_2> nextStage;
@@ -105,7 +112,7 @@ void Stage1_1::ChangeStage(Input& input)
 
 		return;
 	}
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp) && input.IsTriggered("up"))
+	if (m_mgr.GetStage().IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
 		nextStage = std::make_shared<Stage1_3>(m_mgr, m_fieldSize);
@@ -119,20 +126,20 @@ void Stage1_1::ChangeStage(Input& input)
 void Stage1_1::CheckStageConditions()
 {
 	// 左をまだクリアしていない場合
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft))
+	if (!m_mgr.GetStage().IsClearStage(kLeftStName))
 	{
 		// 条件確認
 		if (m_mgr.GetStage().GetBestTime(m_stageName) > kLeftExsitTime * 60)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageLeft);
+			m_mgr.GetStage().SaveClear(kLeftStName);
 		}
 	}
 	// 上をまだクリアしていない場合
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageUp))
+	if (!m_mgr.GetStage().IsClearStage(kUpStName))
 	{
 		if (m_mgr.GetStage().GetBestTime(m_stageName) > kUpExsitTime * 60)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageUp);
+			m_mgr.GetStage().SaveClear(kUpStName);
 		}
 	}
 }
@@ -155,8 +162,8 @@ void Stage1_1::DrawStageConditions(int drawY)
 
 void Stage1_1::DrawArrow() const
 {
-	DrawLeftArrow(m_isLeftClear);
-	DrawUpArrow(m_isUpClear);
+	DrawLeftArrow(m_isLeftClear, kLeftStName);
+	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
 void Stage1_1::DrawKilledEnemyType() const

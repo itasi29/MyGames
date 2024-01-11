@@ -19,6 +19,9 @@ namespace
 
 	// 生成間隔フレーム
 	constexpr int kCreateFrame = 60 * 6;
+
+	const std::string kDownStName = "Stage1-1";
+	const std::string kLeftStName = "Stage1-4";
 }
 
 Stage1_3::Stage1_3(GameManager& mgr, float fieldSize) :
@@ -75,8 +78,8 @@ void Stage1_3::Init()
 
 void Stage1_3::StartCheck()
 {
-	m_isDownClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown);
-	m_isLeftClear = m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft);
+	m_isDownClear = m_mgr.GetStage().IsClearStage(kDownStName);
+	m_isLeftClear = m_mgr.GetStage().IsClearStage(kLeftStName);
 }
 
 void Stage1_3::ChangeStage(Input& input)
@@ -87,7 +90,7 @@ void Stage1_3::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft) && input.IsTriggered("left"))
+	if (m_mgr.GetStage().IsClearStage(kLeftStName) && input.IsTriggered("left"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
 		nextStage = std::make_shared<Stage1_4>(m_mgr, m_fieldSize);
@@ -96,7 +99,7 @@ void Stage1_3::ChangeStage(Input& input)
 
 		return;
 	}
-	if (m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown) && input.IsTriggered("down"))
+	if (m_mgr.GetStage().IsClearStage(kDownStName) && input.IsTriggered("down"))
 	{
 		std::shared_ptr<Stage1_1> nextStage;
 		nextStage = std::make_shared<Stage1_1>(m_mgr, m_fieldSize);
@@ -110,19 +113,19 @@ void Stage1_3::ChangeStage(Input& input)
 void Stage1_3::CheckStageConditions()
 {
 	// 左をまだクリアしていない場合
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageLeft))
+	if (!m_mgr.GetStage().IsClearStage(kLeftStName))
 	{
 		if (m_mgr.GetStage().GetEnemyTypeCount() >= kLeftKilledNum)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageLeft);
+			m_mgr.GetStage().SaveClear(kLeftStName);
 		}
 	}
 	// 下をまだクリアしていない場合
-	if (!m_mgr.GetStage().IsClearStage(m_stageName, StageManager::kStageDown))
+	if (!m_mgr.GetStage().IsClearStage(kDownStName))
 	{
 		if (m_mgr.GetStage().GetBestTime(m_stageName) > kDownExsitTime * 60)
 		{
-			m_mgr.GetStage().SaveClear(m_stageName, StageManager::kStageDown);
+			m_mgr.GetStage().SaveClear(kDownStName);
 		}
 	}
 }
@@ -145,8 +148,8 @@ void Stage1_3::DrawStageConditions(int drawY)
 
 void Stage1_3::DrawArrow() const
 {
-	DrawLeftArrow(m_isLeftClear);
-	DrawDownArrow(m_isDownClear);
+	DrawLeftArrow(m_isLeftClear, kLeftStName);
+	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
 void Stage1_3::DrawKilledEnemyType() const

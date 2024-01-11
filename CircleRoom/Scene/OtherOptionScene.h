@@ -10,6 +10,6 @@ public:
 	void Draw();
 
 private:
-	int m_frame = 0;
+	int m_currentLineIndex;
 };
 

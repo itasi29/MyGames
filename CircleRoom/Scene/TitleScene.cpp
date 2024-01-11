@@ -3,10 +3,12 @@
 #include "Application.h"
 #include "Common/Input.h"
 #include "GameManager.h"
-#include "TitleScene.h"
-#include "GamePlayingScene.h"
-
 #include "FileSystem/BottansFile.h"
+
+#include "GamePlayingScene.h"
+#include "OptionScene.h"
+
+#include "TitleScene.h"
 
 namespace
 {
@@ -78,6 +80,7 @@ void TitleScene::NormalUpdate(Input& input)
 		if (m_currentLinePos == 1)
 		{
 			// TODO:オプション画面を開く処理
+			m_mgr.GetScene().PushScene(std::make_shared<OptionScene>(m_mgr, input));
 		}
 		// 2番目のときは終了処理
 		if (m_currentLinePos == 2)

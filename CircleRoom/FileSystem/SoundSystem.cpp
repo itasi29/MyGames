@@ -9,7 +9,8 @@ namespace
 
 SoundSystem::SoundSystem() :
 	m_bgmVolume(kMaxVolume),
-	m_seVolume(kMaxVolume)
+	m_seVolume(kMaxVolume),
+	m_nowPlayBgm(-1)
 {
 }
 
@@ -73,6 +74,21 @@ void SoundSystem::ChangeSeVol(int val)
 		m_seVolume = kMaxVolume;
 		return;
 	}
+}
+
+int SoundSystem::GetMaxVol() const
+{
+	return kMaxVolume;
+}
+
+float SoundSystem::GetBgmVolRate() const
+{
+	return static_cast<float>(m_bgmVolume) / static_cast<float>(kMaxVolume);
+}
+
+float SoundSystem::GetSeVolRate() const
+{
+	return static_cast<float>(m_seVolume) / static_cast<float>(kMaxVolume);
 }
 
 void SoundSystem::SetBgm()
