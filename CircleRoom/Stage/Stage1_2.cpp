@@ -3,6 +3,7 @@
 #include "Input.h"
 
 #include "GameManager.h"
+#include "StageManager.h"
 #include "Stage1_1.h"
 #include "Stage1_2.h"
 
@@ -34,7 +35,7 @@ Stage1_2::Stage1_2(GameManager& mgr, float fieldSize) :
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成
-	m_mgr.GetStage().CreateData(m_stageName);
+	m_mgr.GetStage()->CreateData(m_stageName);
 	CheckStageConditions();
 
 	StartCheck();
@@ -82,7 +83,7 @@ void Stage1_2::Init()
 
 void Stage1_2::StartCheck()
 {
-	m_isRightClear = m_mgr.GetStage().IsClearStage(kRightStName);
+	m_isRightClear = m_mgr.GetStage()->IsClearStage(kRightStName);
 }
 
 void Stage1_2::ChangeStage(Input& input)
@@ -93,7 +94,7 @@ void Stage1_2::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage().IsClearStage(kRightStName) && input.IsTriggered("right"))
+	if (m_mgr.GetStage()->IsClearStage(kRightStName) && input.IsTriggered("right"))
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;
@@ -108,12 +109,12 @@ void Stage1_2::ChangeStage(Input& input)
 void Stage1_2::CheckStageConditions()
 {
 	// 右をまだクリアしていない場合
-	if (!m_mgr.GetStage().IsClearStage(kRightStName))
+	if (!m_mgr.GetStage()->IsClearStage(kRightStName))
 	{
 		// 条件確認
-		if (m_mgr.GetStage().GetBestTime(m_stageName) > kRightExsitTime * 60)
+		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kRightExsitTime * 60)
 		{
-			m_mgr.GetStage().SaveClear(kRightStName);
+			m_mgr.GetStage()->SaveClear(kRightStName);
 		}
 	}
 }
@@ -123,7 +124,7 @@ void Stage1_2::DrawStageConditions(int drawY)
 	if (!m_isRightClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)",
-			kRightExsitTime, m_mgr.GetStage().GetBestTime(m_stageName) / 60, kRightExsitTime);
+			kRightExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kRightExsitTime);
 	}
 }
 
@@ -134,7 +135,7 @@ void Stage1_2::DrawArrow() const
 
 void Stage1_2::DrawKilledEnemyType() const
 {
-	if (m_mgr.GetStage().IsKilledEnemy("Normal"))
+	if (m_mgr.GetStage()->IsKilledEnemy("Normal"))
 	{
 		DrawCircle(256, 28, 16, 0xffffff, true);
 	}
@@ -143,7 +144,7 @@ void Stage1_2::DrawKilledEnemyType() const
 		DrawCircle(256, 28, 16, 0xffffff, false);
 	}
 
-	if (m_mgr.GetStage().IsKilledEnemy("MoveWall"))
+	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
 		DrawCircle(256 + 48, 28, 16, 0x888888, true);
 	}
@@ -152,7 +153,7 @@ void Stage1_2::DrawKilledEnemyType() const
 		DrawCircle(256 + 48, 28, 16, 0x888888, false);
 	}
 
-	if (m_mgr.GetStage().IsKilledEnemy("Large"))
+	if (m_mgr.GetStage()->IsKilledEnemy("Large"))
 	{
 		DrawCircle(256 + 96, 28, 20, 0xffffff, true);
 	}

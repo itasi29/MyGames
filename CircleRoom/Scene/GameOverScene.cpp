@@ -2,6 +2,7 @@
 #include <cassert>
 #include "Common/Input.h"
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "GameOverScene.h"
 #include "TitleScene.h"
 
@@ -51,7 +52,7 @@ void GameOverScene::FadeOutUpdate(Input&)
 	m_frame++;
 	if (60 <= m_frame)
 	{
-		m_mgr.GetScene().ChangeScene(std::make_shared<TitleScene>(m_mgr));
+		m_mgr.GetScene()->ChangeScene(std::make_shared<TitleScene>(m_mgr));
 	}
 }
 

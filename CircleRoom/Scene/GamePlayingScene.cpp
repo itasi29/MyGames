@@ -2,7 +2,10 @@
 #include <cassert>
 #include "Input.h"
 #include "Application.h"
-#include "Common/GameManager.h"
+#include "GameManager.h"
+#include "Scene/SceneManager.h"
+#include "Stage/StageManager.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "GamePlayingScene.h"
 #include "GameOverScene.h"
@@ -10,7 +13,6 @@
 
 #include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
-#include "FileSystem/SoundFile.h"
 
 #include "Stage/Stage1_1.h"
 
@@ -37,12 +39,12 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 	m_drawFunc = &GamePlayingScene::DrawFade;
 
 	// ステージの設定
-	m_mgr.GetStage().ChangeStage(std::make_shared<Stage1_1>(m_mgr, m_fieldSize));
+	m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, m_fieldSize));
 
-	m_mgr.GetStage().m_clear = false;
+	m_mgr.GetStage()->m_clear = false;
 
-	m_bgm = m_mgr.GetFile().LoadSound(L"Data/Sound/provisionalBgm.mp3");
-	m_bg = m_mgr.GetFile().LoadGraphic(L"Data/Image/BG/bg.png");
+	m_bgm = m_mgr.GetFile()->LoadSound(L"Data/Sound/provisionalBgm.mp3");
+	m_bg = m_mgr.GetFile()->LoadGraphic(L"Data/Image/BG/bg.png");
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -53,7 +55,7 @@ void GamePlayingScene::Update(Input& input)
 {
 	// うるさいから消す
 //	PlaySoundMem(m_bgm->GetHandle(), DX_PLAYTYPE_BACK, false);
-	m_mgr.GetSound().PlayBgm(m_bgm->GetHandle());
+	m_mgr.GetSound()->PlayBgm(m_bgm->GetHandle());
 
 	(this->*m_updateFunc)(input);
 }
@@ -81,22 +83,22 @@ void GamePlayingScene::UpdateFadeOut(Input& input)
 	m_frame++;
 	if (m_frame >= kFadeFrame)
 	{
-		m_mgr.GetScene().ChangeScene(std::make_shared<GameOverScene>(m_mgr));
+		m_mgr.GetScene()->ChangeScene(std::make_shared<GameOverScene>(m_mgr));
 	}
 }
 
 void GamePlayingScene::UpdateNormal(Input& input)
 {
-	m_mgr.GetStage().Update(input);
+	m_mgr.GetStage()->Update(input);
 
 	// pauseボタンが押されたらポーズ画面を開く
 	if (input.IsPress("pause"))
 	{
-		m_mgr.GetScene().PushScene(std::make_shared<OptionScene>(m_mgr, input));
+		m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input));
 	}
 
 	// 簡易実装
-	if (m_mgr.GetStage().m_clear)
+	if (m_mgr.GetStage()->m_clear)
 	{
 		m_updateFunc = &GamePlayingScene::UpdateFadeOut;
 		m_drawFunc = &GamePlayingScene::DrawFade;
@@ -106,7 +108,7 @@ void GamePlayingScene::UpdateNormal(Input& input)
 
 void GamePlayingScene::DrawFade()
 {
-	m_mgr.GetStage().Draw();
+	m_mgr.GetStage()->Draw();
 
 	const auto& m_size = Application::GetInstance().GetWindowSize();
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
@@ -117,6 +119,6 @@ void GamePlayingScene::DrawFade()
 
 void GamePlayingScene::DrawNormal()
 {
-	m_mgr.GetStage().Draw();
+	m_mgr.GetStage()->Draw();
 }
 

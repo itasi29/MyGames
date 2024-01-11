@@ -2,6 +2,8 @@
 #include <cassert>
 #include "Application.h"
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
+#include "FileSystem/SoundSystem.h"
 #include "Input.h"
 
 #include "OptionScene.h"
@@ -42,7 +44,7 @@ void SoundOptionScene::Update(Input& input)
 	if (input.IsTriggered("OK"))
 	{
 		m_isEdit = !m_isEdit;
-		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene().GetTopScene());
+		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 		optionScene->InverseIsEdit();
 
 		m_frame = 0;
@@ -57,11 +59,11 @@ void SoundOptionScene::Update(Input& input)
 			default:
 				assert(false);
 			case kBgm:
-				m_mgr.GetSound().ChangeBgmVol(10);
+				m_mgr.GetSound()->ChangeBgmVol(10);
 				break;
 
 			case kSe:
-				m_mgr.GetSound().ChangeSeVol(10);
+				m_mgr.GetSound()->ChangeSeVol(10);
 				break;
 			}
 		}
@@ -72,11 +74,11 @@ void SoundOptionScene::Update(Input& input)
 			default:
 				assert(false);
 			case kBgm:
-				m_mgr.GetSound().ChangeBgmVol(-10);
+				m_mgr.GetSound()->ChangeBgmVol(-10);
 				break;
 
 			case kSe:
-				m_mgr.GetSound().ChangeSeVol(-10);
+				m_mgr.GetSound()->ChangeSeVol(-10);
 				break;
 			}
 		}
@@ -123,12 +125,12 @@ void SoundOptionScene::Draw()
 			0xff0000, true);
 	}
 
-	auto rate = m_mgr.GetSound().GetBgmVolRate();
+	auto rate = m_mgr.GetSound()->GetBgmVolRate();
 	DrawName(kMenuMargin + 42, kBgm, L"BGM");
 	DrawFormatString(200, kMenuMargin + 42, 0xffffff, L"%3dÅì", static_cast<int>(rate * 100));
 	DrawGauge(500, kMenuMargin + 42, rate);
 
-	rate = m_mgr.GetSound().GetSeVolRate();
+	rate = m_mgr.GetSound()->GetSeVolRate();
 	DrawName(kMenuMargin + 106, kSe, L"SE");
 	DrawFormatString(200, kMenuMargin + 106, 0xffffff, L"%3dÅì", static_cast<int>(rate * 100));
 	DrawGauge(500, kMenuMargin + 106, rate);
@@ -152,5 +154,5 @@ void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate)
 	DrawBox(drawX, drawY, drawX + kGaugeLength, drawY + 32, 0xffffff, true);
 
 	// ÉQÅ[ÉWäÑçáï`âÊ
-	DrawBox(drawX, drawY, drawX + kGaugeLength * rate, drawY + 32, 0xffff00, true);
+	DrawBox(drawX, drawY, drawX + static_cast<int>(kGaugeLength * rate), drawY + 32, 0xffff00, true);
 }

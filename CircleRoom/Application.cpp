@@ -69,7 +69,7 @@ void Application::Run()
 {
     {
         GameManager& manager = GameManager::GetInstance();
-        manager.GetScene().ChangeScene(std::make_shared<TitleScene>(manager));
+        manager.GetScene()->ChangeScene(std::make_shared<TitleScene>(manager));
 
         Input input;
         while (ProcessMessage() != -1)
@@ -79,8 +79,8 @@ void Application::Run()
 
             ClearDrawScreen();
             input.Update(); // 入力を更新
-            manager.GetScene().Update(input);
-            manager.GetScene().Draw();
+            manager.GetScene()->Update(input);
+            manager.GetScene()->Draw();
             ScreenFlip();
 
             // エスケープキーが押されたら終了フラグをtrueに

@@ -6,6 +6,8 @@
 #include "OptionScene.h"
 
 #include "GameManager.h"
+#include "SceneManager.h"
+
 #include "StageSelectScene.h"
 #include "KeyConfigScene.h"
 #include "SoundOptionScene.h"
@@ -92,12 +94,12 @@ void OptionScene::NormalUpdate(Input& input)
 		return;
 	}
 
-	if (input.IsTriggered("left"))
+	if (input.IsTriggered("optionLeft"))
 	{
 		m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kMenuString.size())) % static_cast<int>(kMenuString.size());
 		ChangeScene(input);
 	}
-	if (input.IsTriggered("right"))
+	if (input.IsTriggered("optionRight"))
 	{
 		m_currentMenuLine = (m_currentMenuLine + 1) % kMenuString.size();
 		ChangeScene(input);
@@ -109,7 +111,7 @@ void OptionScene::DisappearUpdate(Input&)
 	m_frame--;
 	if (m_frame > 0) return;
 
-	m_mgr.GetScene().PopScene();
+	m_mgr.GetScene()->PopScene();
 }
 
 void OptionScene::NormalDraw()

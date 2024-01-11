@@ -12,9 +12,9 @@ namespace
 	constexpr int kGraphSize = 16;
 }
 
-BottansFile::BottansFile(FileManager& mgr)
+BottansFile::BottansFile(std::shared_ptr<FileManager>& mgr)
 {
-	m_handle = mgr.LoadGraphic(L"Data/Image/UI/xbox_buttons.png", true)->GetHandle();
+	m_handle = mgr->LoadGraphic(L"Data/Image/UI/xbox_buttons.png", true)->GetHandle();
 
 	m_bottans[L"‚`Bottan"] = 0;
 	m_bottans[L"‚aBottan"] = 1;

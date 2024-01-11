@@ -31,6 +31,7 @@ const InputTable_t Input::GetCommandTable() const
 Input::Input()
 {
     // メニュー関連
+    // 見せるもの
     m_commandTable["OK"] = { {InputType::keybd, KEY_INPUT_RETURN} ,
                              {InputType::pad,   PAD_INPUT_A} };    
     m_commandTable["cancel"] = { {InputType::keybd, KEY_INPUT_ESCAPE} ,
@@ -39,6 +40,11 @@ Input::Input()
                                 {InputType::pad,    PAD_INPUT_R} }; // スタートボタン
     m_commandTable["keyconf"] = { {InputType::keybd,  KEY_INPUT_K},
                                 {InputType::pad,    PAD_INPUT_L} }; // キーコンフィグ
+    // 見せないもの
+    m_commandTable["optionLeft"] = { {InputType::keybd, KEY_INPUT_Q},
+                                     {InputType::pad,   PAD_INPUT_5} };
+    m_commandTable["optionRight"] = { {InputType::keybd, KEY_INPUT_E},
+                                     {InputType::pad,   PAD_INPUT_6} };
 
     // ゲーム中関連
     // 見せるもの
@@ -55,7 +61,7 @@ Input::Input()
     m_commandTable["right"] = { {InputType::keybd,  KEY_INPUT_RIGHT},
                              {InputType::pad,    PAD_INPUT_RIGHT} };
 
-    m_exclusiveKeyConfigCommands = {"up", "down", "left", "right"};
+    m_exclusiveKeyConfigCommands = {"optionLeft", "optionRight", "up", "down", "left", "right"};
 }
 
 void Input::Update()

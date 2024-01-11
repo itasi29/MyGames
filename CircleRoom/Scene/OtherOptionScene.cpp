@@ -7,6 +7,7 @@
 #include "Application.h"
 #include "Input.h"
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 
 #include "TitleScene.h"
 
@@ -59,7 +60,7 @@ void OtherOptionScene::Update(Input& input)
 		default:
 			assert(false);
 		case kTitle:
-			m_mgr.GetScene().ChangeSceneWithClear(std::make_shared<TitleScene>(m_mgr));
+			m_mgr.GetScene()->ChangeSceneWithClear(std::make_shared<TitleScene>(m_mgr));
 			break;
 
 		case kRightsNotation:

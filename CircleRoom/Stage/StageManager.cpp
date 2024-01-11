@@ -69,6 +69,11 @@ void StageManager::Draw()
 	}
 }
 
+std::string StageManager::GetStageName() const
+{
+	return m_stage->GetStageName();
+}
+
 void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 {
 	m_stage = nextStage;

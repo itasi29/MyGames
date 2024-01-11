@@ -1,5 +1,5 @@
 #include "SoundFile.h"
-#include "GameManager.h"
+#include "FileManager.h"
 #include <DxLib.h>
 
 SoundFile::SoundFile(FileManager& manager) :

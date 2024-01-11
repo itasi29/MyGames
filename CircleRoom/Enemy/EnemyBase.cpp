@@ -36,7 +36,7 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_updateFunc = &EnemyBase::StartUpdate;
 	m_drawFunc = &EnemyBase::StartDraw;
 
-	m_wallEffect = GameManager::GetInstance().GetFile().LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
+	m_wallEffect = GameManager::GetInstance().GetFile()->LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
 }
 
 EnemyBase::~EnemyBase()
@@ -72,8 +72,8 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 			m_wallHitFrame = kWallHitFrame;
 
 			// エフェクト描画位置
-			m_drawWallHitX = m_pos.x - kWallEffectSlide - m_radius * scale;
-			m_drawWallHitY = m_pos.y;
+			m_drawWallHitX = static_cast<int>(m_pos.x - kWallEffectSlide - m_radius * scale);
+			m_drawWallHitY = static_cast<int>(m_pos.y);
 
 			ReflectionCal(kNorVecLeft);
 			ShiftReflection(kShiftSide);
@@ -94,8 +94,8 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 		{
 			m_wallHitFrame = kWallHitFrame;
 
-			m_drawWallHitX = m_pos.x + kWallEffectSlide + m_radius * scale;
-			m_drawWallHitY = m_pos.y;
+			m_drawWallHitX = static_cast<int>(m_pos.x + kWallEffectSlide + m_radius * scale);
+			m_drawWallHitY = static_cast<int>(m_pos.y);
 
 			ReflectionCal(kNorVecRight);
 			ShiftReflection(kShiftSide);
@@ -116,8 +116,8 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 		{
 			m_wallHitFrame = kWallHitFrame;
 
-			m_drawWallHitX = m_pos.x;
-			m_drawWallHitY = m_pos.y - kWallEffectSlide - m_radius * scale;
+			m_drawWallHitX = static_cast<int>(m_pos.x);
+			m_drawWallHitY = static_cast<int>(m_pos.y - kWallEffectSlide - m_radius * scale);
 
 			ReflectionCal(kNorVecUp);
 			ShiftReflection(kShiftVert);
@@ -138,8 +138,8 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 		{
 			m_wallHitFrame = kWallHitFrame;
 
-			m_drawWallHitX = m_pos.x;
-			m_drawWallHitY = m_pos.y + kWallEffectSlide + m_radius * scale;
+			m_drawWallHitX = static_cast<int>(m_pos.x);
+			m_drawWallHitY = static_cast<int>(m_pos.y + kWallEffectSlide + m_radius * scale);
 
 			ReflectionCal(kNorVecDown);
 			ShiftReflection(kShiftVert);

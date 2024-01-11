@@ -1,9 +1,10 @@
 #pragma once
+#include <memory>
 
-#include "Scene/SceneManager.h"
-#include "Stage/StageManager.h"
-#include "FileSystem/FileManager.h"
-#include "FileSystem/SoundSystem.h"
+class FileManager;
+class StageManager;
+class SceneManager;
+class SoundSystem;
 
 /// <summary>
 /// ゲーム全体のマネージャーを一括管理する
@@ -25,15 +26,15 @@ public:
 	/// <returns>ゲームマネージャークラスのインスタンス</returns>
 	static GameManager& GetInstance();
 
-	FileManager& GetFile();
-	StageManager& GetStage();
-	SceneManager& GetScene();
-	SoundSystem& GetSound();
+	std::shared_ptr<FileManager>& GetFile();
+	std::shared_ptr<StageManager>& GetStage();
+	std::shared_ptr<SceneManager>& GetScene();
+	std::shared_ptr<SoundSystem>& GetSound();
 
 private:
-	FileManager m_file;
-	StageManager m_stage;
-	SceneManager m_scene;
-	SoundSystem m_sound;
+	std::shared_ptr<FileManager> m_file;
+	std::shared_ptr<StageManager> m_stage;
+	std::shared_ptr<SceneManager> m_scene;
+	std::shared_ptr<SoundSystem> m_sound;
 };
 

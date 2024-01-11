@@ -47,10 +47,10 @@ public:
 	// 後で変更or消す
 	void DeleteData();
 
-
-
 	void Update(Input& input);
 	void Draw();
+
+	std::string GetStageName() const;
 
 	/// <summary>
 	///  ステージの切り替え

@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "Application.h"
 #include "GameManager.h"
+#include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
 
 #include "BossBase.h"
@@ -44,8 +45,9 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_updateFunc = &BossBase::StartUpdate;
 	m_drawFunc = &BossBase::StartDraw;
 
-	m_wallEffect = GameManager::GetInstance().GetFile().LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
-	m_damageEffect = GameManager::GetInstance().GetFile().LoadGraphic(L"Data/Image/Enemy/damageEffect.png");
+	auto& mgr = GameManager::GetInstance();
+	m_wallEffect = mgr.GetFile()->LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
+	m_damageEffect = mgr.GetFile()->LoadGraphic(L"Data/Image/Enemy/damageEffect.png");
 }
 
 BossBase::~BossBase()

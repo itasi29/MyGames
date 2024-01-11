@@ -3,6 +3,7 @@
 #include "Input.h"
 
 #include "GameManager.h"
+#include "StageManager.h"
 #include "Stage1_5.h"
 #include "Stage1_4.h"
 
@@ -26,7 +27,7 @@ Stage1_5::Stage1_5(GameManager& mgr, float fieldSize) :
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成
-	m_mgr.GetStage().CreateData(m_stageName);
+	m_mgr.GetStage()->CreateData(m_stageName);
 
 	StartCheck();
 }
@@ -70,7 +71,7 @@ void Stage1_5::Init()
 
 void Stage1_5::StartCheck()
 {
-	m_isDownClear = m_mgr.GetStage().IsClearStage(kDownStName);
+	m_isDownClear = m_mgr.GetStage()->IsClearStage(kDownStName);
 }
 
 void Stage1_5::ChangeStage(Input& input)
@@ -81,7 +82,7 @@ void Stage1_5::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage().IsClearStage(kDownStName) && input.IsTriggered("down"))
+	if (m_mgr.GetStage()->IsClearStage(kDownStName) && input.IsTriggered("down"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
 		nextStage = std::make_shared<Stage1_4>(m_mgr, m_fieldSize);
@@ -95,11 +96,11 @@ void Stage1_5::ChangeStage(Input& input)
 void Stage1_5::CheckStageConditions()
 {
 	// 下をまだクリアしていない場合
-	if (!m_mgr.GetStage().IsClearStage(kDownStName))
+	if (!m_mgr.GetStage()->IsClearStage(kDownStName))
 	{
-		if (m_mgr.GetStage().GetEnemyTypeCount() >= kDownKilledNum)
+		if (m_mgr.GetStage()->GetEnemyTypeCount() >= kDownKilledNum)
 		{
-			m_mgr.GetStage().SaveClear(kDownStName);
+			m_mgr.GetStage()->SaveClear(kDownStName);
 		}
 	}
 }
@@ -109,13 +110,13 @@ void Stage1_5::DrawStageConditions(int drawY)
 	if (!m_isDownClear)
 	{
 		DrawFormatString(128, drawY, 0xffffff, L"下　%d種類の敵に殺される\n(%d / %d)",
-			kDownKilledNum, m_mgr.GetStage().GetEnemyTypeCount(), kDownKilledNum);
+			kDownKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kDownKilledNum);
 
 		drawY += 32;
 	}
 
 	// FIXME: ここに追加で書いているけれどあとで別のところに処理を変更する
-	if (m_mgr.GetStage().IsClearBoss("BossArmored"))
+	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
 	{
 		DrawString(128, drawY, L"clear", 0xffffff);
 	}
@@ -128,7 +129,7 @@ void Stage1_5::DrawArrow() const
 
 void Stage1_5::DrawKilledEnemyType() const
 {
-	if (m_mgr.GetStage().IsKilledEnemy("MoveWall"))
+	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
 		DrawCircle(256, 28, 16, 0x888888, true);
 	}
@@ -137,7 +138,7 @@ void Stage1_5::DrawKilledEnemyType() const
 		DrawCircle(256, 28, 16, 0x888888, true);
 	}
 
-	if (m_mgr.GetStage().IsKilledEnemy("BossArmored"))
+	if (m_mgr.GetStage()->IsKilledEnemy("BossArmored"))
 	{
 		DrawCircle(256 + 48, 28, 16, 0x08ff08, true);
 	}
@@ -146,7 +147,7 @@ void Stage1_5::DrawKilledEnemyType() const
 		DrawCircle(256 + 48, 28, 16, 0x08ff08, false);
 	}
 
-	if (m_mgr.GetStage().IsKilledEnemy("BossStrongArmored"))
+	if (m_mgr.GetStage()->IsKilledEnemy("BossStrongArmored"))
 	{
 		DrawCircle(256 + 96, 28, 16, 0xaaffaa, true);
 	}
@@ -155,7 +156,7 @@ void Stage1_5::DrawKilledEnemyType() const
 		DrawCircle(256 + 96, 28, 16, 0xaaffaa, false);
 	}
 
-	if (m_mgr.GetStage().IsKilledEnemy("SplitTwoBound"))
+	if (m_mgr.GetStage()->IsKilledEnemy("SplitTwoBound"))
 	{
 		DrawCircle(256 + 144, 28, 14, 0xffffff, true);
 	}

@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Common/Input.h"
 #include "GameManager.h"
+#include "SceneManager.h"
 #include "FileSystem/BottansFile.h"
 
 #include "GamePlayingScene.h"
@@ -80,7 +81,7 @@ void TitleScene::NormalUpdate(Input& input)
 		if (m_currentLinePos == 1)
 		{
 			// TODO:オプション画面を開く処理
-			m_mgr.GetScene().PushScene(std::make_shared<OptionScene>(m_mgr, input));
+			m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input));
 		}
 		// 2番目のときは終了処理
 		if (m_currentLinePos == 2)
@@ -96,7 +97,7 @@ void TitleScene::FadeOutUpdate(Input&)
 	m_frame++;
 	if (60 <= m_frame)
 	{
-		m_mgr.GetScene().ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
+		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
 	}
 }
 

@@ -97,7 +97,7 @@ void SoundSystem::SetBgm()
 	if (!CheckSoundMem(m_nowPlayBgm)) return;
 
 	// ズレていたらより正確なこっちで GetSoundCurrentTime 
-	int soundPosition = GetSoundCurrentPosition(m_nowPlayBgm);
+	LONGLONG soundPosition = GetSoundCurrentPosition(m_nowPlayBgm);
 
 	// 一度サウンドを止める
 	StopSoundMem(m_nowPlayBgm);

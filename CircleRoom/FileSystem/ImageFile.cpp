@@ -1,6 +1,6 @@
 #include "ImageFile.h"
 #include <DxLib.h>
-#include "GameManager.h"
+#include "FileManager.h"
 
 ImageFile::ImageFile(FileManager& manager) :
 	FileBase(manager)

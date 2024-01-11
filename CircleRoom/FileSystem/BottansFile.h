@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 /// <summary>
 /// ”Ä—pBottan
@@ -11,7 +12,7 @@ class FileManager;
 class BottansFile
 {
 public:
-	BottansFile(FileManager& mgr);
+	BottansFile(std::shared_ptr<FileManager>& mgr);
 	~BottansFile();
 
 	/// <summary>

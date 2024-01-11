@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "Scene.h"
 
 /// <summary>
@@ -14,6 +15,9 @@ public:
 	void Draw();
 
 private:
+	int m_indexRow;
+	int m_indexLine;
+
 	int m_frame = 0;
 };
 
