@@ -18,9 +18,6 @@
 
 namespace
 {
-	// フィールドサイズの倍率
-	// フィールドはwindowsizeの縦幅に倍率をかけたものとする
-	constexpr float kSizeScale = 0.4f;
 
 	// フェードのフレーム時間
 	constexpr int kFadeFrame = 60;
@@ -32,14 +29,13 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 	m_frame(kFadeFrame)
 {
 	Application& app = Application::GetInstance();
-	m_fieldSize = app.GetWindowSize().h * kSizeScale;
 
 	// メンバ関数ポインタの設定
 	m_updateFunc = &GamePlayingScene::UpdateFadeIn;
 	m_drawFunc = &GamePlayingScene::DrawFade;
 
 	// ステージの設定
-	m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, m_fieldSize));
+	m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr));
 
 	m_mgr.GetStage()->m_clear = false;
 

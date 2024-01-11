@@ -51,10 +51,6 @@ private:
     void DrawNormal();
 
 private:
-    // フィールドサイズ
-    // なおここでは2倍をしたらちょうどのサイズになるようにする
-    float m_fieldSize;
-
     // ステージを動かすときの画面のハンドル
     int m_screenHandle;
 

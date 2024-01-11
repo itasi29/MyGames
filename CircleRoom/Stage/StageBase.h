@@ -17,7 +17,7 @@ enum class StageDir;
 class StageBase
 {
 public:
-	StageBase(GameManager& mgr, float fieldSize);
+	StageBase(GameManager& mgr);
 	virtual ~StageBase();
 
 	void Update(Input& input);
@@ -160,9 +160,8 @@ private:
 	/// <summary>
 	/// 進む方向先のクリア情報もクリアしているとする
 	/// </summary>
-	/// <param name="dir">進む方向の反対</param>
 	/// /// <param name="nextStage">次のステージのポインタ</param>
-	void ChangeClearData(int dir, const std::shared_ptr<StageBase>& nextStage) const;
+	void ChangeClearData(const std::shared_ptr<StageBase>& nextStage) const;
 
 	/// <summary>
 	/// 壁の描画

@@ -27,8 +27,8 @@ namespace
 	const std::string kRightStName = "Stage1-1";
 }
 
-Stage1_2::Stage1_2(GameManager& mgr, float fieldSize) :
-	StageBase(mgr, fieldSize),
+Stage1_2::Stage1_2(GameManager& mgr) :
+	StageBase(mgr),
 	m_createLageFrame(0)
 {
 	m_stageName = "Stage1-2";
@@ -98,7 +98,7 @@ void Stage1_2::ChangeStage(Input& input)
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;
-		nextStage = std::make_shared<Stage1_1>(m_mgr, m_fieldSize);
+		nextStage = std::make_shared<Stage1_1>(m_mgr);
 
 		SlideRight(nextStage);
 

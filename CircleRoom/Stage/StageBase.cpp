@@ -13,14 +13,18 @@
 
 namespace
 {
+	// フィールドサイズの倍率
+	// フィールドはwindowsizeの縦幅に倍率をかけたものとする
+	constexpr float kSizeScale = 0.4f;
+
 	// 矢印の点滅間隔
 	constexpr int kFlashInterval = 20;
 }
 
-StageBase::StageBase(GameManager& mgr, float fieldSize) :
+StageBase::StageBase(GameManager& mgr) :
 	m_mgr(mgr),
 	m_size(Application::GetInstance().GetWindowSize()),
-	m_fieldSize(fieldSize),
+	m_fieldSize(m_size.h* kSizeScale),
 	m_centerPos({m_size.w * 0.5f, m_size.h * 0.5f}),
 	m_frame(0),
 	m_waitFrame(kWaitChangeFrame),
@@ -328,7 +332,7 @@ void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageRight, nextStage);
+	ChangeClearData(nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -362,7 +366,7 @@ void StageBase::SlideRight(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXEME: クソコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageLeft, nextStage);
+	ChangeClearData(nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -392,7 +396,7 @@ void StageBase::SlideUp(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageDown, nextStage);
+	ChangeClearData(nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -424,7 +428,7 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 {
 	// FIXME:今からくそコード書くから後で直して
 	// クリア情報の更新
-	ChangeClearData(StageManager::kStageUp, nextStage);
+	ChangeClearData(nextStage);
 
 	// 画面を保存するよう
 	int nowScreenHandle, nextScreenHandle;
@@ -505,7 +509,7 @@ void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>
 	nextStage->Draw();
 }
 
-void StageBase::ChangeClearData(int dir, const std::shared_ptr<StageBase>& nextStage) const
+void StageBase::ChangeClearData(const std::shared_ptr<StageBase>& nextStage) const
 {
 	m_mgr.GetStage()->SaveClear(nextStage->GetStageName());
 	nextStage->StartCheck();

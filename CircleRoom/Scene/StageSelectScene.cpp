@@ -87,7 +87,26 @@ void StageSelectScene::Update(Input& input)
 		// そのステージがクリアされていなければ終了
 		if (!m_mgr.GetStage()->IsClearStage(stgName)) return;
 
-
+		if (stgName == "Stage1-1")
+		{
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr));
+		}
+		if (stgName == "Stage1-2")
+		{
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr));
+		}
+		if (stgName == "Stage1-3")
+		{
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_3>(m_mgr));
+		}
+		if (stgName == "Stage1-4")
+		{
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_4>(m_mgr));
+		}
+		if (stgName == "Stage1-5")
+		{
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr));
+		}
 	}
 }
 

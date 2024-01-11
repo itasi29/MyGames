@@ -3,7 +3,7 @@
 class Stage1_4 : public StageBase
 {
 public:
-	Stage1_4(GameManager& mgr, float fieldSize);
+	Stage1_4(GameManager& mgr);
 	~Stage1_4();
 
 	void Init() override;

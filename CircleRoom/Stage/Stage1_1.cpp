@@ -33,8 +33,8 @@ namespace
 	const std::string kUpStName = "Stage1-3";
 }
 
-Stage1_1::Stage1_1(GameManager& mgr, float fieldSize) :
-	StageBase(mgr, fieldSize),
+Stage1_1::Stage1_1(GameManager& mgr) :
+	StageBase(mgr),
 	m_createFrame(0)
 {
 	m_stageName = "Stage1-1";
@@ -107,7 +107,7 @@ void Stage1_1::ChangeStage(Input& input)
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_2> nextStage;
-		nextStage = std::make_shared<Stage1_2>(m_mgr, m_fieldSize);
+		nextStage = std::make_shared<Stage1_2>(m_mgr);
 
 		SlideLeft(nextStage);
 
@@ -116,7 +116,7 @@ void Stage1_1::ChangeStage(Input& input)
 	if (m_mgr.GetStage()->IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
-		nextStage = std::make_shared<Stage1_3>(m_mgr, m_fieldSize);
+		nextStage = std::make_shared<Stage1_3>(m_mgr);
 
 		SlideUp(nextStage);
 

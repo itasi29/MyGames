@@ -4,7 +4,7 @@
 class Stage1_1 : public StageBase
 {
 public:
-	Stage1_1(GameManager& mgr, float fieldSize);
+	Stage1_1(GameManager& mgr);
 	~Stage1_1();
 
 	void Init() override;
