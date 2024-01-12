@@ -43,11 +43,13 @@
     <ClCompile Include="FileSystem\SoundFile.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player\Player.cpp" />
+    <ClCompile Include="Scene\ConfigScene.cpp" />
     <ClCompile Include="Scene\GameOverScene.cpp" />
     <ClCompile Include="Scene\GamePlayingScene.cpp" />
     <ClCompile Include="Scene\KeyConfigScene.cpp" />
     <ClCompile Include="Scene\OptionScene.cpp" />
     <ClCompile Include="Scene\OtherOptionScene.cpp" />
+    <ClCompile Include="Scene\PadConfigScene.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\SoundOptionScene.cpp" />
@@ -89,11 +91,13 @@
     <ClInclude Include="FileSystem\ImageFile.h" />
     <ClInclude Include="FileSystem\SoundFile.h" />
     <ClInclude Include="Player\Player.h" />
+    <ClInclude Include="Scene\ConfigScene.h" />
     <ClInclude Include="Scene\GameOverScene.h" />
     <ClInclude Include="Scene\GamePlayingScene.h" />
     <ClInclude Include="Scene\KeyConfigScene.h" />
     <ClInclude Include="Scene\OptionScene.h" />
     <ClInclude Include="Scene\OtherOptionScene.h" />
+    <ClInclude Include="Scene\PadConfigScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\SoundOptionScene.h" />

@@ -25,7 +25,7 @@ namespace
 		kEnd
 	};
 
-	const std::vector<std::wstring> kMenuString = { L"タイトルへ",
+	const std::vector<std::wstring> kGameMenu = { L"タイトルへ",
 		L"権利表記",
 		L"終了"
 	};
@@ -46,11 +46,11 @@ void OtherOptionScene::Update(Input& input)
 {
 	if (input.IsTriggered("up"))
 	{
-		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(kMenuString.size())) % static_cast<int>(kMenuString.size());
+		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(kGameMenu.size())) % static_cast<int>(kGameMenu.size());
 	}
 	if (input.IsTriggered("down"))
 	{
-		m_currentLineIndex = (m_currentLineIndex + 1) % kMenuString.size();
+		m_currentLineIndex = (m_currentLineIndex + 1) % kGameMenu.size();
 	}
 
 	if (input.IsTriggered("OK"))
@@ -84,15 +84,15 @@ void OtherOptionScene::Draw()
 		0xff0000, true);
 
 	// メニューの文字列群
-	for (int i = 0; i < kMenuString.size(); i++)
+	for (int i = 0; i < kGameMenu.size(); i++)
 	{
 		if (m_currentLineIndex == i)
 		{
-			DrawString(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kMenuString[i].c_str(), 0x000000);
+			DrawString(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kGameMenu[i].c_str(), 0x000000);
 		}
 		else
 		{
-			DrawString(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kMenuString[i].c_str(), 0xffffff);
+			DrawString(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kGameMenu[i].c_str(), 0xffffff);
 		}
 	}
 }

@@ -1,10 +1,14 @@
-#include "KeyConfigScene.h"
 #include <DxLib.h>
-#include "Common/Input.h"
 #include "Application.h"
+#include "Common/Input.h"
 #include "GameManager.h"
-#include "StringUtility.h"
 #include "FileSystem/BottansFile.h"
+#include "StringUtility.h"
+
+#include "SceneManager.h"
+#include "ConfigScene.h"
+
+#include "KeyConfigScene.h"
 
 namespace
 {
@@ -12,8 +16,9 @@ namespace
 	constexpr int kMenuMargin = 120;
 }
 
-KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input) :
+KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scn) :
 	Scene(mgr),
+	m_optionScn(scn),
 	m_input(input)
 {
 	m_keyCommandTable = input.GetCommandTable();
@@ -94,6 +99,12 @@ void KeyConfigScene::Draw()
 
 void KeyConfigScene::NormalUpdate(Input & input)
 {
+	if (input.IsTriggered("cancel"))
+	{
+		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, m_optionScn));
+	}
+
+
 	// ÉgÉOÉãèàóù
 	if (input.IsTriggered("OK"))
 	{

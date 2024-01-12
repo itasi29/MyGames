@@ -15,6 +15,11 @@ public:
     void Draw();
 
 private:
+	using updateFunc_t = void(SoundOptionScene::*)(Input&);
+
+	void NormalUpdate(Input& input);
+	void EditUpdate(Input& input);
+
 	void DrawName(int drawY, int index, std::wstring str);
 
 	/// <summary>
@@ -26,6 +31,8 @@ private:
 	void DrawGauge(int drawX, int drawY, float rate);
 
 private:
+	updateFunc_t m_updateFunc;
+
 	int m_currentLineIndex;
 	bool m_isEdit;
 

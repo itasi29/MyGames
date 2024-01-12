@@ -2,9 +2,10 @@
 #include "Scene.h"
 #include <unordered_map>
 #include <memory>
-#include "Common/Input.h"
+#include "Input.h"
 
 class BottansFile;
+class SceneManager;
 
 /// <summary>
 /// キーコンフィグのシーン
@@ -12,7 +13,7 @@ class BottansFile;
 class KeyConfigScene : public Scene
 {
 public:
-	KeyConfigScene(GameManager& mgr, Input& input);
+	KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scn);
 	~KeyConfigScene();
 
 	void Update(Input& input);
@@ -22,7 +23,6 @@ private:
 	// 更新メンバ関数ポインタ
 	using UpdateFunc_t = void(KeyConfigScene::*)(Input& input);
 	
-
 	// 更新関数
 	void NormalUpdate(Input&);		// 通常状態
 	void EditUpdate(Input&);		// 編集状態
@@ -40,6 +40,8 @@ private:
 
 private:
 	UpdateFunc_t  m_updateFunc;
+
+	std::shared_ptr<SceneManager> m_optionScn;
 
 	int m_frame = 0;
 	std::vector<std::string> m_menuItems;	// 特定の純情にコマンドを並び替えるための配列

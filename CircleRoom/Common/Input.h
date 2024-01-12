@@ -14,10 +14,12 @@ enum class InputType
 using InputTable_t = std::unordered_map<std::string, std::map<InputType, int>>;
 
 class KeyConfigScene;
+class PadConfigScene;
 
 class Input
 {
 	friend KeyConfigScene;
+	friend PadConfigScene;
 private:
 	// コマンド名と入力をペアにしたテーブル
 	// キーボードの時は keybd&KEY_INPUT_○○で、

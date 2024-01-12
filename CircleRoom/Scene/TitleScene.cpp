@@ -81,7 +81,7 @@ void TitleScene::NormalUpdate(Input& input)
 		if (m_currentLinePos == 1)
 		{
 			// TODO:オプション画面を開く処理
-			m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input));
+			m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input, false));
 		}
 		// 2番目のときは終了処理
 		if (m_currentLinePos == 2)

@@ -33,6 +33,7 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr) :
 	m_isEdit(false),
 	m_frame(0)
 {
+	m_updateFunc = &SoundOptionScene::NormalUpdate;
 }
 
 SoundOptionScene::~SoundOptionScene()
@@ -41,61 +42,7 @@ SoundOptionScene::~SoundOptionScene()
 
 void SoundOptionScene::Update(Input& input)
 {
-	if (input.IsTriggered("OK"))
-	{
-		m_isEdit = !m_isEdit;
-		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
-		optionScene->InverseIsEdit();
-
-		m_frame = 0;
-	}
-
-	if (m_isEdit)
-	{
-		if (input.IsTriggered("right"))
-		{
-			switch (m_currentLineIndex)
-			{
-			default:
-				assert(false);
-			case kBgm:
-				m_mgr.GetSound()->ChangeBgmVol(10);
-				break;
-
-			case kSe:
-				m_mgr.GetSound()->ChangeSeVol(10);
-				break;
-			}
-		}
-		if (input.IsTriggered("left"))
-		{
-			switch (m_currentLineIndex)
-			{
-			default:
-				assert(false);
-			case kBgm:
-				m_mgr.GetSound()->ChangeBgmVol(-10);
-				break;
-
-			case kSe:
-				m_mgr.GetSound()->ChangeSeVol(-10);
-				break;
-			}
-		}
-
-		m_frame++;
-	}
-	else
-	{
-		if (input.IsTriggered("up"))
-		{
-			m_currentLineIndex = (m_currentLineIndex - 1 + kMax) % kMax;
-		}
-		if (input.IsTriggered("down"))
-		{
-			m_currentLineIndex = (m_currentLineIndex + 1) % kMax;
-		}
-	}
+	(this->*m_updateFunc)(input);
 }
 
 void SoundOptionScene::Draw()
@@ -103,26 +50,17 @@ void SoundOptionScene::Draw()
 	DrawString(100, kMenuMargin + 10, L"SoundOptionScene", 0xffffff);
 	
 	// ëIëÇµÇƒÇ¢ÇÈèÍèäÇï`âÊ
-	if (m_isEdit)
+	if (!m_isEdit || static_cast<int>(m_frame * 0.05f) % 2)
 	{
-		if (static_cast<int>(m_frame * 0.05f) % 2)
-		{
-			DrawBox(128, static_cast<int>(kMenuMargin + 42 + m_currentLineIndex * 64),
-				kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 64),
-				0xff0000, true);
-		}
-		else
-		{
-			DrawBox(128, static_cast<int>(kMenuMargin + 42 + m_currentLineIndex * 64),
-				kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 64),
-				0xff8800, true);
-		}
+		DrawBox(128, static_cast<int>(kMenuMargin + 42 + m_currentLineIndex * 64),
+			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 64),
+			0xff0000, true);
 	}
 	else
 	{
 		DrawBox(128, static_cast<int>(kMenuMargin + 42 + m_currentLineIndex * 64),
 			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 64),
-			0xff0000, true);
+			0xff8800, true);
 	}
 
 	auto rate = m_mgr.GetSound()->GetBgmVolRate();
@@ -134,6 +72,73 @@ void SoundOptionScene::Draw()
 	DrawName(kMenuMargin + 106, kSe, L"SE");
 	DrawFormatString(200, kMenuMargin + 106, 0xffffff, L"%3dÅì", static_cast<int>(rate * 100));
 	DrawGauge(500, kMenuMargin + 106, rate);
+}
+
+void SoundOptionScene::NormalUpdate(Input& input)
+{
+	if (input.IsTriggered("OK"))
+	{
+		m_isEdit = true;
+		m_frame = 0;
+		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
+		optionScene->InverseIsEdit();
+
+		m_updateFunc = &SoundOptionScene::EditUpdate;
+	}
+
+	if (input.IsTriggered("up"))
+	{
+		m_currentLineIndex = (m_currentLineIndex - 1 + kMax) % kMax;
+	}
+	if (input.IsTriggered("down"))
+	{
+		m_currentLineIndex = (m_currentLineIndex + 1) % kMax;
+	}
+}
+
+void SoundOptionScene::EditUpdate(Input& input)
+{
+	if (input.IsTriggered("OK"))
+	{
+		m_isEdit = false;
+		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
+		optionScene->InverseIsEdit();
+
+		m_updateFunc = &SoundOptionScene::NormalUpdate;
+	}
+
+	if (input.IsTriggered("right"))
+	{
+		switch (m_currentLineIndex)
+		{
+		default:
+			assert(false);
+		case kBgm:
+			m_mgr.GetSound()->ChangeBgmVol(10);
+			break;
+
+		case kSe:
+			m_mgr.GetSound()->ChangeSeVol(10);
+			break;
+		}
+	}
+	if (input.IsTriggered("left"))
+	{
+		switch (m_currentLineIndex)
+		{
+		default:
+			assert(false);
+		case kBgm:
+			m_mgr.GetSound()->ChangeBgmVol(-10);
+			break;
+
+		case kSe:
+			m_mgr.GetSound()->ChangeSeVol(-10);
+			break;
+		}
+	}
+
+	m_frame++;
 }
 
 void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)

@@ -9,54 +9,63 @@
 #include "SceneManager.h"
 
 #include "StageSelectScene.h"
-#include "KeyConfigScene.h"
+#include "ConfigScene.h"
 #include "SoundOptionScene.h"
 #include "OtherOptionScene.h"
 #include "TitleScene.h"
 
 namespace
 {
-	// 
+	// フェード時間
 	constexpr int kAppeaInterval = 5;
+
 	// 余白
 	constexpr int kMenuMargin = 50;
 	// 選択枠の縦幅
 	constexpr int kMenuMarginHeight = 32;
-	// 選択幅
-	constexpr int kMenuMarginWidth = 270;
 
-	// 文字間隔
-	constexpr int kMenuStringMargin = 32;
+	// ゲーム中選択幅
+	constexpr int kGameMargin = 270;
+	// タイトル中選択幅
+	constexpr int kTitleMargin = 360;
 
-	const std::vector<std::wstring> kMenuString = { L"ステージ選択",
-		L"キー設定",
+	// タイトルでの文字列
+	const std::vector<std::wstring> kTitleMenu = { L"操作設定",
+		L"音量設定",
+		L"その他" };
+
+	// ゲーム中の文字列
+	const std::vector<std::wstring> kGameMenu = { L"ステージ選択",
+		L"操作設定",
 		L"音量設定",
 		L"その他" };
 
 	enum
 	{
 		kStageSelect,
-		kKey,
+		kOperat,
 		kValume,
 		kOther
 	};
 }
 
-OptionScene::OptionScene(GameManager& mgr, Input& input) :
+OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	Scene(mgr),
+	m_isGame(isGame),
 	m_isEdit(false),
 	m_currentMenuLine(0),
 	m_isFadeOut(false)
 {
 	m_updateFunc = &OptionScene::AppearUpdate;
 
-	m_scnMgr = std::make_shared<SceneManager>();
-	m_scnMgr->PushScene(std::make_shared<StageSelectScene>(m_mgr));
+	m_optionScn = std::make_shared<SceneManager>();
+
+	ChangeScene(input);
 }
 
 void OptionScene::Update(Input& input)
 {
-	m_scnMgr->Update(input);
+	m_optionScn->Update(input);
 
 	// 編集中は処理の変更をしない
 	if (m_isEdit) return;
@@ -72,7 +81,12 @@ void OptionScene::Draw()
 	// MEMO:現状後で変更させる可能性があるので元のに似た形で書いている
 	// MEMO:変更なければ関数挟むのやめる
 	NormalDraw();
-	m_scnMgr->Draw();
+	m_optionScn->Draw();
+}
+
+void OptionScene::ChangeScene(std::shared_ptr<Scene> scene)
+{
+	m_optionScn->ChangeScene(scene);
 }
 
 void OptionScene::AppearUpdate(Input&)
@@ -96,12 +110,26 @@ void OptionScene::NormalUpdate(Input& input)
 
 	if (input.IsTriggered("optionLeft"))
 	{
-		m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kMenuString.size())) % static_cast<int>(kMenuString.size());
+		if (m_isGame)
+		{
+			m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kGameMenu.size())) % static_cast<int>(kGameMenu.size());
+		}
+		else
+		{
+			m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kTitleMenu.size())) % static_cast<int>(kTitleMenu.size());
+		}
 		ChangeScene(input);
 	}
 	if (input.IsTriggered("optionRight"))
 	{
-		m_currentMenuLine = (m_currentMenuLine + 1) % kMenuString.size();
+		if (m_isGame)
+		{
+			m_currentMenuLine = (m_currentMenuLine + 1) % static_cast<int>(kGameMenu.size());
+		}
+		else
+		{
+			m_currentMenuLine = (m_currentMenuLine + 1) % static_cast<int>(kTitleMenu.size());
+		}
 		ChangeScene(input);
 	}
 }
@@ -118,8 +146,8 @@ void OptionScene::NormalDraw()
 {
 	Application& app = Application::GetInstance();
 	const auto& m_size = app.GetWindowSize();
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 126);
 	// ちょっと暗い矩形を描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 126);
 	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
 		0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -127,50 +155,68 @@ void OptionScene::NormalDraw()
 	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
 		0xffffff, false);
 
-	// 選択している場所を描画
-	DrawBox(kMenuMargin * 2 + kMenuMarginWidth * m_currentMenuLine, static_cast<int>(kMenuMargin),
-		kMenuMargin * 2 + kMenuMarginWidth * (m_currentMenuLine + 1), static_cast<int>(kMenuMargin + kMenuMarginHeight),
-		0xff0000, true);
- 
+	if (m_isGame)
+	{
+		DrawContent(kGameMenu, kGameMargin);
+	}
+	else
+	{
+		DrawContent(kTitleMenu, kTitleMargin);
+	}
+}
 
+void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
+{
+	// 選択している場所を描画
+	DrawBox(kMenuMargin * 2 + width * m_currentMenuLine, static_cast<int>(kMenuMargin),
+		kMenuMargin * 2 + width * (m_currentMenuLine + 1), static_cast<int>(kMenuMargin + kMenuMarginHeight),
+		0xff0000, true);
 	// メニューの文字列群
-	for (int i = 0; i < kMenuString.size(); i++)
+	for (int i = 0; i < strs.size(); i++)
 	{
 		if (m_currentMenuLine == i)
 		{
-			DrawString(kMenuMargin * 2 + kMenuMarginWidth * i, kMenuMargin, kMenuString[i].c_str(), 0x000000);
+			DrawString(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0x000000);
 		}
 		else
 		{
-			DrawString(kMenuMargin * 2 + kMenuMarginWidth * i, kMenuMargin, kMenuString[i].c_str(), 0xffffff);
+			DrawString(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0xffffff);
 		}
 	}
 }
 
 void OptionScene::ChangeScene(Input& input)
 {
-	switch (m_currentMenuLine)
+	int current = m_currentMenuLine;
+
+	if (!m_isGame)
+	{
+		// タイトルだとステージ選択がないためはじめを飛ばす
+		current++;
+	}
+
+	switch (current)
 	{
 		// ステージ選択
 	case kStageSelect:
-		m_scnMgr->ChangeScene(std::make_shared<StageSelectScene>(m_mgr));
+		m_optionScn->ChangeScene(std::make_shared<StageSelectScene>(m_mgr));
 		break;
 
 		// キー設定
-	case kKey:
-		m_scnMgr->ChangeScene(std::make_shared<KeyConfigScene>(m_mgr, input));
+	case kOperat:
+		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, m_optionScn));
 		break;
 
 		// 音量設定
 	case kValume:
-		m_scnMgr->ChangeScene(std::make_shared<SoundOptionScene>(m_mgr));
+		m_optionScn->ChangeScene(std::make_shared<SoundOptionScene>(m_mgr));
 		break;
 
 		// その他設定
 	default:
 		assert(false);
 	case kOther:
-		m_scnMgr->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr));
+		m_optionScn->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr));
 		break;
 	}
 }

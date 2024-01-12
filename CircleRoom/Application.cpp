@@ -83,12 +83,6 @@ void Application::Run()
             manager.GetScene()->Draw();
             ScreenFlip();
 
-            // エスケープキーが押されたら終了フラグをtrueに
-            if (CheckHitKey(KEY_INPUT_ESCAPE))
-            {
-                End();
-            }
-
             // 終了フラグが立っていれば終了する
             if (m_isEnd)
             {
