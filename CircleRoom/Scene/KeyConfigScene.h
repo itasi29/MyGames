@@ -5,6 +5,7 @@
 #include "Input.h"
 
 class BottansFile;
+class KeyFile;
 class SceneManager;
 
 /// <summary>
@@ -26,38 +27,39 @@ private:
 	// 更新関数
 	void NormalUpdate(Input&);		// 通常状態
 	void EditUpdate(Input&);		// 編集状態
-
-	// 描画関数
-	void ExpandDraw();	// 拡張縮張描画
-	void NormalDraw();	// 非フェード描画
+	void EditEndUpdate(Input&);		// 編集終了状態
 
 	void DrawCommandList();	// コマンドリストの描画(テキスト描画)
 
 	void CommitCurrenKeySetting();
 
 	std::wstring GetKeyName(int keycode);
-	std::wstring GetPadName(int padstate);
 
 private:
 	UpdateFunc_t  m_updateFunc;
 
+	// Optionのシーン
 	std::shared_ptr<SceneManager> m_optionScn;
 
-	int m_frame = 0;
-	std::vector<std::string> m_menuItems;	// 特定の純情にコマンドを並び替えるための配列
+	// KEYの画像用
+	std::shared_ptr<KeyFile> m_keyImg;
 
-	int m_currentLineIndex = 0;		// 現在行のインデックス
-	bool m_isEditingNow = false;	// 今編集中なのか(トグル)
+	// 特定の純情にコマンドを並び替えるための配列
+	std::vector<std::string> m_menuTable;
 
-	Input& m_input;	// Inputクラスの参照を持っておく
-	InputTable_t m_keyCommandTable;
+	// Inputクラスの参照を持っておく
+	Input& m_input;
+	// Inputクラスのテーブル
+	InputTable_t m_commandTable;
 
-	bool m_isEditRequestButton;
+	// 現在行のインデックス
+	int m_currentLineIndex;
+	// 編集中
+	bool m_isEdit;
+	int m_frame;
 
-	std::shared_ptr<BottansFile> m_btImg;
 
 	// MEMO:これは変更させる可能性高い
 	std::unordered_map<int, std::wstring> m_keynameTable;
-	std::unordered_map<int, std::wstring> m_bottans;
 };
 

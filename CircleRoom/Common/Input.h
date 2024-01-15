@@ -36,6 +36,7 @@ private:
 	Vec2 m_inputStickDate;
 
 	const InputTable_t GetCommandTable() const;
+	std::vector<std::string> GetExclusiveCommandTable() const { return m_exclusiveKeyConfigCommands; }
 
 public:
 	Input();
@@ -55,6 +56,12 @@ public:
 	/// <param name="command">コマンド文字列</param>
 	/// <returns>true:押されている / false:押されていない</returns>
 	bool IsPress(const char* command) const;
+	/// <summary>
+	/// 指定のコマンドが押されていないか
+	/// </summary>
+	/// <param name="command">コマンド文字列</param>
+	/// <returns>true:押されていない / false:押されている</returns>
+	bool IsNotPress(const char* command) const;
 	/// <summary>
 	/// 指定のコマンドが離された瞬間なのか
 	/// </summary>

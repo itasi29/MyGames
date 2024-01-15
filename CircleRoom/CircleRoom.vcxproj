@@ -40,6 +40,7 @@
     <ClCompile Include="FileSystem\FileBase.cpp" />
     <ClCompile Include="FileSystem\FileManager.cpp" />
     <ClCompile Include="FileSystem\ImageFile.cpp" />
+    <ClCompile Include="FileSystem\KeyFile.cpp" />
     <ClCompile Include="FileSystem\SoundFile.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player\Player.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="FileSystem\FileBase.h" />
     <ClInclude Include="FileSystem\FileManager.h" />
     <ClInclude Include="FileSystem\ImageFile.h" />
+    <ClInclude Include="FileSystem\KeyFile.h" />
     <ClInclude Include="FileSystem\SoundFile.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Scene\ConfigScene.h" />

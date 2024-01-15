@@ -21,7 +21,8 @@ public:
 	/// <param name="name">Bottan名</param>
 	/// <param name="drawX">左端</param>
 	/// <param name="drawY">上端</param>
-	void DrawBottan(std::wstring name, int drawX, int drawY) const;
+	/// <param name="rate">倍率</param>
+	void DrawBottan(std::wstring name, int drawX, int drawY, double rate = 1.0) const;
 	/// <summary>
 	/// ボタンの画像＋文字描画
 	/// </summary>
@@ -30,12 +31,13 @@ public:
 	/// <param name="drawGraphY">画像上端</param>
 	/// <param name="drawStrX">文字左端</param>
 	/// <param name="drawStrY">文字上端</param>
-	void DrawBottanToString(std::wstring name, int drawGraphX, int drawGraphY, int drawStrX, int drawStrY) const;
+	/// <param name="rate">倍率</param>
+	void DrawBottanAndString(std::wstring name, int drawGraphX, int drawGraphY, int drawStrX, int drawStrY, double rate = 1.0) const;
 
 private:
 	int m_handle;
 
 	// ボタン名　切り抜き範囲
-	std::unordered_map<std::wstring, int> m_bottans;
+	std::unordered_map<std::wstring, int> m_bottans;	
 };
 

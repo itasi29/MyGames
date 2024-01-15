@@ -4,6 +4,7 @@
 
 #include "SceneManager.h"
 #include "KeyConfigScene.h"
+#include "PadConfigScene.h"
 
 #include "ConfigScene.h"
 
@@ -43,6 +44,7 @@ void ConfigScene::Update(Input& input)
 			break;
 
 		case kPad:
+			m_optionScn->ChangeScene(std::make_shared<PadConfigScene>(m_mgr, input, m_optionScn));
 			break;
 		}
 	}

@@ -52,7 +52,7 @@ namespace
 OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	Scene(mgr),
 	m_isGame(isGame),
-	m_isEdit(false),
+	m_isEdit{ false },
 	m_currentMenuLine(0),
 	m_isFadeOut(false)
 {
@@ -65,11 +65,19 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 
 void OptionScene::Update(Input& input)
 {
+	m_isEdit[1] = m_isEdit[0];
+	if (input.IsTriggered("pause"))
+	{
+		m_updateFunc = &OptionScene::DisappearUpdate;
+		m_isFadeOut = true;
+
+		return;
+	}
+
 	m_optionScn->Update(input);
 
 	// •ÒW’†‚Íˆ—‚Ì•ÏX‚ð‚µ‚È‚¢
-	if (m_isEdit) return;
-
+	if (m_isEdit[1]) return;
 	(this->*m_updateFunc)(input);
 }
 
@@ -100,7 +108,7 @@ void OptionScene::AppearUpdate(Input&)
 
 void OptionScene::NormalUpdate(Input& input)
 {
-	if (input.IsTriggered("pause"))
+	if (input.IsTriggered("cancel"))
 	{
 		m_updateFunc = &OptionScene::DisappearUpdate;
 		m_isFadeOut = true;

@@ -33,7 +33,7 @@ BottansFile::~BottansFile()
 {
 }
 
-void BottansFile::DrawBottan(std::wstring name, int drawX, int drawY) const
+void BottansFile::DrawBottan(std::wstring name, int drawX, int drawY, double rate) const
 {
 	auto it = m_bottans.find(name);
 	if (it == m_bottans.end())
@@ -42,21 +42,19 @@ void BottansFile::DrawBottan(std::wstring name, int drawX, int drawY) const
 		return;
 	}
 
+	// FIXME:–¼‘O‚Í•ÏX‚·‚é
+	int aaa = (kGraphSize * 0.5 * rate);
+	drawX += aaa;
+	drawY += aaa;
+
 	// ‰æ‘œ‚Ì•`‰æ
-	DrawRectGraph(drawX, drawY, 0, m_bottans.at(name) * kGraphSize, kGraphSize, kGraphSize, m_handle, true);
+	DrawRectRotaGraph(drawX, drawY, 0, m_bottans.at(name) * kGraphSize, 
+		kGraphSize, kGraphSize, rate, 0.0, m_handle, true);
 }
 
-void BottansFile::DrawBottanToString(std::wstring name, int drawGraphX, int drawGraphY, int drawStrX, int drawStrY) const
+void BottansFile::DrawBottanAndString(std::wstring name, int drawGraphX, int drawGraphY, int drawStrX, int drawStrY, double rate) const
 {
-	auto it = m_bottans.find(name);
-	if (it == m_bottans.end())
-	{
-		assert(false);
-		return;
-	}
-
-	// ‰æ‘œ‚Ì•`‰æ
-	DrawRectGraph(drawGraphX, drawGraphY, 0, m_bottans.at(name) * kGraphSize, kGraphSize, kGraphSize, m_handle, true);
+	DrawBottan(name, drawGraphX, drawGraphX, rate);
 
 	// •¶š‚Ì•`‰æ
 	DrawFormatString(drawStrX, drawStrY, 0xffffff, L"%s", name.c_str());

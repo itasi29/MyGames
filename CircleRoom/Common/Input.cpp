@@ -62,6 +62,8 @@ Input::Input()
                              {InputType::pad,    PAD_INPUT_RIGHT} };
 
     m_exclusiveKeyConfigCommands = {"optionLeft", "optionRight", "up", "down", "left", "right"};
+
+    Load(L"key.cnf");
 }
 
 void Input::Update()
@@ -135,6 +137,18 @@ bool Input::IsPress(const char* command) const
     }
 
     return m_inputDate.at(command);
+}
+
+bool Input::IsNotPress(const char* command) const
+{
+    auto it = m_inputDate.find(command);
+    if (it == m_inputDate.end())
+    {
+        assert(false);
+        return false;
+    }
+
+    return !m_inputDate.at(command);
 }
 
 bool Input::IsReleased(const char* command) const

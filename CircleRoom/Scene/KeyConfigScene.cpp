@@ -2,30 +2,36 @@
 #include "Application.h"
 #include "Common/Input.h"
 #include "GameManager.h"
-#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 #include "StringUtility.h"
 
 #include "SceneManager.h"
 #include "ConfigScene.h"
+#include "OptionScene.h"
 
 #include "KeyConfigScene.h"
 
 namespace
 {
-	constexpr int kAppeaInterval = 60;
+	constexpr unsigned int kDefColor = 0xffffff;
 	constexpr int kMenuMargin = 120;
+
+	constexpr double kExtendRate = 1.5;
 }
 
 KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scn) :
 	Scene(mgr),
 	m_optionScn(scn),
-	m_input(input)
+	m_input(input),
+	m_currentLineIndex(0),
+	m_isEdit(false),
+	m_frame(0)
 {
-	m_keyCommandTable = input.GetCommandTable();
-	m_updateFunc = &KeyConfigScene::NormalUpdate;
+	m_commandTable = input.GetCommandTable();
+	m_updateFunc = &KeyConfigScene::EditEndUpdate;
 
 	// メニューに並ぶ順を作る
-	m_menuItems = {
+	m_menuTable = {
 		"dash",		// ダッシュ
 		"OK",		// 選択or確定
 		"cancel",	// キャンセル
@@ -69,22 +75,23 @@ KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	m_keynameTable[KEY_INPUT_ESCAPE] = L"Escキー";
 	m_keynameTable[KEY_INPUT_SPACE] = L"スペースキー";
 
-	m_bottans[PAD_INPUT_A] = L"ＡBottan";
-	m_bottans[PAD_INPUT_B] = L"ＢBottan";
-	m_bottans[PAD_INPUT_C] = L"ＣBottan";
-	m_bottans[PAD_INPUT_X] = L"ＸBottan";
-	m_bottans[PAD_INPUT_Y] = L"ＹBottan";
-	m_bottans[PAD_INPUT_Z] = L"ＺBottan";
-	m_bottans[PAD_INPUT_L] = L"ＬBottan";
-	m_bottans[PAD_INPUT_R] = L"ＲBottan";
-	m_bottans[PAD_INPUT_START] = L"ＳＴＡＲＴBottan";
-	m_bottans[PAD_INPUT_M] = L"ＭBottan";
+	m_keyImg = std::make_shared<KeyFile>(m_mgr.GetFile());
 
-	m_btImg = std::make_shared<BottansFile>(m_mgr.GetFile());
+	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
+	optionScene->InverseIsEdit();
 }
 
 KeyConfigScene::~KeyConfigScene()
 {
+	// 情報の書き換え(漏れがないように)
+	for (const auto& cmd : m_commandTable)
+	{
+		m_input.m_commandTable[cmd.first] = cmd.second;
+	}
+	m_input.Save("key.cnf");
+
+	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
+	optionScene->InverseIsEdit();
 }
 
 void KeyConfigScene::Update(Input & input)
@@ -94,7 +101,9 @@ void KeyConfigScene::Update(Input & input)
 
 void KeyConfigScene::Draw()
 {
-	NormalDraw();
+	DrawString(100, kMenuMargin + 10, L"KeyConfig Scene", 0xffffff);
+
+	DrawCommandList();
 }
 
 void KeyConfigScene::NormalUpdate(Input & input)
@@ -104,148 +113,116 @@ void KeyConfigScene::NormalUpdate(Input & input)
 		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, m_optionScn));
 	}
 
-
-	// トグル処理
-	if (input.IsTriggered("OK"))
+	if (input.IsReleased("OK"))
 	{
-		if (m_currentLineIndex < m_keyCommandTable.size())
-		{
-			m_isEditRequestButton = true;
-		}
-		else
-		{
-			CommitCurrenKeySetting();
-		}
-
-		return;
+		m_isEdit = true;
+		m_updateFunc = &KeyConfigScene::EditUpdate;
+		m_frame = 0;
 	}
 
-	if (m_isEditRequestButton)
-	{
-		if (input.IsReleased("OK"))
-		{
-			m_isEditingNow = !m_isEditingNow;
-			m_updateFunc = &KeyConfigScene::EditUpdate;
-			m_isEditRequestButton = false;
-			return;
-		}
-	}
-
-	int size = static_cast<int>(m_keyCommandTable.size() + 1);
 	if (input.IsTriggered("up"))
 	{
-		m_currentLineIndex = (m_currentLineIndex + size - 1) % size;
+		m_currentLineIndex = (m_currentLineIndex - 1 + m_menuTable.size()) % m_menuTable.size();
 	}
 	if (input.IsTriggered("down"))
 	{
-		m_currentLineIndex = (m_currentLineIndex + 1) % size;
+		m_currentLineIndex = (m_currentLineIndex + 1) % m_menuTable.size();
 	}
 }
 
 void KeyConfigScene::EditUpdate(Input & input)
 {
-	// トグル処理
-	if (input.IsTriggered("OK"))
-	{
-		m_isEditingNow = !m_isEditingNow;
-		m_updateFunc = &KeyConfigScene::NormalUpdate;
+	m_frame++;
 
-		return;
-	}
+	// 現在選択しているコマンドのデータを参照
+	auto strItem = m_menuTable[m_currentLineIndex];
+	auto& cmd = m_commandTable[strItem];
 
+	// KEYが入力されたら変更
 	char keystate[256];
 	GetHitKeyStateAll(keystate);
-	int padstate = GetJoypadInputState(DX_INPUT_PAD1);
-
-	auto strItem = m_menuItems[m_currentLineIndex];
-	auto& cmd = m_keyCommandTable[strItem];
 	for (int i = 0; i < 256; i++)
 	{
 		if (keystate[i])
 		{
+			// MEMO:隠しているコマンドと同じ場合は変更できないようにする
+			for (const auto& str : m_input.GetExclusiveCommandTable())
+			{
+				// コマンドと変更するKeyが同じなら変えずに処理終了
+				auto ret = input.m_commandTable[str][InputType::keybd];
+				if (ret == i)
+				{
+					return;
+				}
+			}
+
 			cmd[InputType::keybd] = i;
+
+			// 本体の方も書き換え
+			m_input.m_commandTable[strItem][InputType::keybd] = i;
+
+			m_updateFunc = &KeyConfigScene::EditEndUpdate;
+			m_isEdit = false;
 			break;
 		}
 	}
-	if (padstate)
+}
+
+void KeyConfigScene::EditEndUpdate(Input& input)
+{
+	// OKボタンが押されていないかつ、リリース状態でもないなら通常状態に戻る
+	if (input.IsNotPress("OK") && !input.IsReleased("OK"))
 	{
-		cmd[InputType::pad] = padstate;
+		m_updateFunc = &KeyConfigScene::NormalUpdate;
 	}
-}
-
-void KeyConfigScene::ExpandDraw()
-{
-	Application& app = Application::GetInstance();
-	const auto& m_size = app.GetWindowSize();
-
-	int halfHeight = (m_size.h - 100) / 2;
-	int centerY = m_size.h / 2;
-
-	float rate = static_cast<float>(m_frame) / kAppeaInterval;	// 現在の時間の割合(0.0～1.0)
-	int currentHalfHeight = static_cast<int>(rate * halfHeight);
-
-	// ちょっと暗い矩形を描画
-	DrawBox(kMenuMargin, centerY - currentHalfHeight, m_size.w - kMenuMargin, centerY + currentHalfHeight,
-		0x444444, true);
-	DrawBox(kMenuMargin, centerY - currentHalfHeight, m_size.w - kMenuMargin, centerY + currentHalfHeight,
-		0xffffff, false);
-}
-
-void KeyConfigScene::NormalDraw()
-{
-	DrawString(100, kMenuMargin + 10, L"KeyConfig Scene", 0xffffff);
-
-	DrawCommandList();
 }
 
 void KeyConfigScene::DrawCommandList()
 {
-	constexpr int kLineHeight = 30;
-	int y = kMenuMargin + 50 + 10;
-	int idx = 0;
-	constexpr unsigned int kDefaultColor = 0xffffff;
-	for (const auto& item : m_menuItems)
+	// 選択している場所を描画
+	if (!m_isEdit || static_cast<int>(m_frame * 0.05f) % 2)
 	{
-		auto& cmd = m_keyCommandTable[item];
-		unsigned int lineColor = kDefaultColor;
-		int x = kMenuMargin + 50;
-		std::wstring cmdName = StringUtility::StringToWString(item);
-		if (idx == m_currentLineIndex)
-		{
-			DrawString(x - 20, y, L"⇒", 0xff0000);
-			x += 10;
-			if (m_isEditingNow)
-			{
-				lineColor = 0xffaa00;
-				x += 5;
-			}
-		}
-		auto keyname = GetKeyName(cmd.at(InputType::keybd));
-		auto padname = GetPadName(cmd.at(InputType::pad));
-		DrawFormatString(x, y, lineColor, L"%s : keybd=%s , pad=%s",
-			cmdName.c_str(), // コマンド名
-			keyname.c_str(),	// キーボードの値
-			padname.c_str());		// パッドの値
-		m_btImg->DrawBottan(padname, x + 376, y);
+		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
+			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
+			0xff0000, true);
+	}
+	else
+	{
+		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
+			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
+			0xff8800, true);
+	}
 
-		y += 20;
-		idx++;
-	}
-	y += kLineHeight;
-	int x = kMenuMargin + 200;
-	unsigned int lineColor = kDefaultColor;
-	if (m_currentLineIndex == m_keyCommandTable.size())
+	int y = kMenuMargin + 64;
+
+	for (int i = 0; i < m_menuTable.size(); i++)
 	{
-		x += 10;
-		DrawString(x - 20, y, L"⇒", 0xff0000);
+		// 表示するコマンドの情報を取得
+		auto& cmd = m_commandTable[m_menuTable[i]];
+
+		unsigned int lineColor = kDefColor;
+		if (i == m_currentLineIndex)
+		{
+			lineColor = 0x000000;
+		}
+
+		std::wstring cmdName = StringUtility::StringToWString(m_menuTable[i]);
+
+		// FIXME:フォントサイズでの方法に変更する可能性大
+		//DrawFormatString(kMenuMargin + 50, y, lineColor, L"%s",	cmdName.c_str());
+		DrawRotaFormatString(kMenuMargin + 50, y, kExtendRate, kExtendRate, 0.0, 0.0,
+			0.0, lineColor, lineColor, 0, L"%s", cmdName.c_str());
+
+		m_keyImg->DrawKey(GetKeyName(cmd.at(InputType::keybd)), kMenuMargin + 50 + 376, y, kExtendRate);
+
+		y += 48;
 	}
-	DrawString(x, y, L"確定", lineColor);
 }
 
 void KeyConfigScene::CommitCurrenKeySetting()
 {
 	// input本体のキー情報を書き換えています。
-	for (const auto& cmd : m_keyCommandTable)
+	for (const auto& cmd : m_commandTable)
 	{
 		m_input.m_commandTable[cmd.first] = cmd.second;
 	}
@@ -259,18 +236,6 @@ std::wstring KeyConfigScene::GetKeyName(int keycode)
 	if (it == m_keynameTable.end())
 	{
 		wsprintf(name, L"%02x", keycode);
-		return name;
-	}
-	return (it->second);
-}
-
-std::wstring KeyConfigScene::GetPadName(int padstate)
-{
-	wchar_t name[16];
-	auto it = m_bottans.find(padstate);
-	if (it == m_bottans.end())
-	{
-		wsprintf(name, L"%04x", padstate);
 		return name;
 	}
 	return (it->second);

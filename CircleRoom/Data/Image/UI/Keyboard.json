@@ -1,0 +1,65 @@
+{
+  "frames": [
+    {
+      "filename": "Keyboard Letters and Symbols.png",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 224
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 224
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 224
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "Keyboard Extras.png",
+      "frame": {
+        "x": 128,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  ],
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "Keyboard.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 256,
+      "h": 224
+    },
+    "scale": 1
+  }
+}
