@@ -48,6 +48,18 @@ public:
 	void PopScene();
 
 	/// <summary>
+	/// 画面全体を揺らす
+	/// </summary>
+	/// <param name="frame">揺らすフレーム</param>
+	void ShakeScreen(int frame);
+	/// <summary>
+	/// 画面全体を揺らす
+	/// </summary>
+	/// <param name="frame">揺らすフレーム</param>
+	/// <param name="size">揺らす際の幅</param>
+	void ShakeScreen(int frame, int size);
+
+	/// <summary>
 	/// 末尾のSceneを取得
 	/// </summary>
 	std::shared_ptr<Scene> GetTopScene();
@@ -55,5 +67,14 @@ public:
 private:
 	// シーンを入れる
 	std::list<std::shared_ptr<Scene>> m_scenes;
+
+	// 画面を揺らすときに使う画面
+	int m_shakeHandle;
+	// 画面を揺らすフレーム
+	int m_shakeFrame;
+	// 画面を揺らす際のサイズ
+	int m_shakeSize;
+	// 画面を揺らすか
+	bool m_isShake;
 };
 

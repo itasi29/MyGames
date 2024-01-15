@@ -5,6 +5,7 @@
 
 #include "StageBase.h"
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "StageManager.h"
 
 #include "Player/Player.h"
@@ -19,6 +20,9 @@ namespace
 
 	// –îˆó‚Ì“_–ÅŠÔŠu
 	constexpr int kFlashInterval = 20;
+
+	// ƒvƒŒƒCƒ„[Ž€–SŽž‚Ì‰æ–Ê‚Ì—h‚êƒtƒŒ[ƒ€
+	constexpr int kShakeFrameDeath = 10;
 }
 
 StageBase::StageBase(GameManager& mgr) :
@@ -107,6 +111,7 @@ void StageBase::UpdatePlaying(Input& input)
 		{
 			// ƒvƒŒƒCƒ„[‚ÌŽ€–Sˆ—
 			m_player->Death();
+			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
 
 			// ŽE‚µ‚½‚±‚Æ‚ª‚ ‚é“Gî•ñ‚ÌXV
 			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
@@ -140,6 +145,7 @@ void StageBase::UpdatePlaying(Input& input)
 		{
 			// ƒvƒŒƒCƒ„[‚ÌŽ€–Sˆ—
 			m_player->Death();
+			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
 
 			// ŽE‚µ‚½‚±‚Æ‚ª‚ ‚é“Gî•ñ‚ÌXV
 			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());

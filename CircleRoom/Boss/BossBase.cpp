@@ -33,6 +33,9 @@ namespace
 
 	// ‚¸‚ç‚·—Ê
 	constexpr int kWallEffectSlide = 32;
+
+	// HitStopƒtƒŒ[ƒ€
+	constexpr int kHitStopFrame = 3;
 }
 
 BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
@@ -40,7 +43,8 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_fieldSize(fieldSize),
 	m_maxHp(maxHp),
 	m_isExsit(true),
-	m_hp(maxHp)
+	m_hp(maxHp),
+	m_hitStopFrame(kHitStopFrame)
 {
 	m_updateFunc = &BossBase::StartUpdate;
 	m_drawFunc = &BossBase::StartDraw;
@@ -186,6 +190,21 @@ void BossBase::ChangeNormalFunc()
 {
 	m_updateFunc = &BossBase::NormalUpdate;
 	m_drawFunc = &BossBase::NormalDraw;
+}
+
+void BossBase::HitStop()
+{
+	m_hitStopFrame = 0;
+	m_updateFunc = &BossBase::HitStopUpdate;
+}
+
+void BossBase::HitStopUpdate()
+{
+	if (m_hitStopFrame > kHitStopFrame)
+	{
+		m_updateFunc = &BossBase::NormalUpdate;
+	}
+	m_hitStopFrame++;
 }
 
 void BossBase::StartDraw() const

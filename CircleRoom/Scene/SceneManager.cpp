@@ -1,26 +1,63 @@
+#include <DxLib.h>
+#include "Application.h"
+
 #include "SceneManager.h"
 #include "Scene.h"
 
-SceneManager::SceneManager()
+namespace
 {
+	constexpr int kShakeSize = 10;
+}
+
+SceneManager::SceneManager() :
+	m_shakeFrame(0),
+	m_shakeSize(kShakeSize)
+{
+	const size size = Application::GetInstance().GetWindowSize();
+	m_shakeHandle = MakeScreen(size.w, size.h);
 }
 
 SceneManager::~SceneManager()
 {
+	DeleteGraph(m_shakeHandle);
 }
 
 void SceneManager::Update(Input& input)
 {
 	// ––”ö‚Ì‚ÝŽÀs
 	m_scenes.back()->Update(input);
+
+	if (m_isShake)
+	{
+		m_shakeFrame--;
+
+		if (m_shakeFrame < 0)
+		{
+			m_isShake = false;
+		}
+	}
 }
 
 void SceneManager::Draw()
 {
+	if (m_isShake)
+	{
+		SetDrawScreen(m_shakeHandle);
+		ClearDrawScreen();
+	}
 	// æ“ª‚©‚ç‡‚É•`‰æ(ÅŒã‚ÉÏ‚ñ‚¾‚à‚Ì‚ªÅŒã‚É•`‰æ‚³‚ê‚é)
 	for (auto& scene : m_scenes)
 	{
 		scene->Draw();
+	}
+
+	if (m_isShake)
+	{
+		SetDrawScreen(DX_SCREEN_BACK);
+
+		int x = GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5f);
+		int y = GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5f);
+		DrawGraph(x, y, m_shakeHandle, true);
 	}
 }
 
@@ -50,6 +87,18 @@ void SceneManager::PushScene(std::shared_ptr<Scene> scene)
 void SceneManager::PopScene()
 {
 	m_scenes.pop_back();
+}
+
+void SceneManager::ShakeScreen(int frame)
+{
+	ShakeScreen(frame, kShakeSize);
+}
+
+void SceneManager::ShakeScreen(int frame, int size = kShakeSize)
+{
+	m_shakeFrame = frame;
+	m_shakeSize = size;
+	m_isShake = true;
 }
 
 std::shared_ptr<Scene> SceneManager::GetTopScene()

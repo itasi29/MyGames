@@ -39,10 +39,12 @@
     <ClCompile Include="Enemy\EnemySplitTwoBound.cpp" />
     <ClCompile Include="FileSystem\FileBase.cpp" />
     <ClCompile Include="FileSystem\FileManager.cpp" />
+    <ClCompile Include="FileSystem\FontSystem.cpp" />
     <ClCompile Include="FileSystem\ImageFile.cpp" />
     <ClCompile Include="FileSystem\KeyFile.cpp" />
     <ClCompile Include="FileSystem\SoundFile.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OneShotGraph.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Scene\ConfigScene.cpp" />
     <ClCompile Include="Scene\GameOverScene.cpp" />
@@ -89,9 +91,11 @@
     <ClInclude Include="Enemy\EnemySplitTwoBound.h" />
     <ClInclude Include="FileSystem\FileBase.h" />
     <ClInclude Include="FileSystem\FileManager.h" />
+    <ClInclude Include="FileSystem\FontSystem.h" />
     <ClInclude Include="FileSystem\ImageFile.h" />
     <ClInclude Include="FileSystem\KeyFile.h" />
     <ClInclude Include="FileSystem\SoundFile.h" />
+    <ClInclude Include="OneShotGraph.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Scene\ConfigScene.h" />
     <ClInclude Include="Scene\GameOverScene.h" />
@@ -113,7 +117,7 @@
     <ClInclude Include="Stage\StageBase.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage\StageManager.h" />
-    <ClInclude Include="StringUtility.h" />
+    <ClInclude Include="Utility\StringUtility.h" />
     <ClInclude Include="Utility\Collision.h" />
     <ClInclude Include="Utility\Vec2.h" />
   </ItemGroup>

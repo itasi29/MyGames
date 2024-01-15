@@ -1,5 +1,7 @@
 #include <DxLib.h>
 
+#include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "FileSystem/ImageFile.h"
 
 #include "BossArmored.h"
@@ -44,6 +46,10 @@ namespace
 
 	// ダメージを受けた際のフレーム
 	constexpr int kOnDamageFrame = 10;
+	// ダメージを受けた際画面を揺らす時間
+	constexpr int kShakeFrame = 5;
+	// 揺らすサイズ
+	constexpr int kShakeSize = 20;
 }
 
 BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -127,6 +133,9 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 
 				return isHit;
 			}
+			GameManager& mgr = GameManager::GetInstance();
+			mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
+			HitStop();
 			break;
 		}
 	}

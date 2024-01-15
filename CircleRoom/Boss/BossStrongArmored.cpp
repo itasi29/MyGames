@@ -1,4 +1,7 @@
 #include <DxLib.h>
+
+#include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "Stage/StageBase.h"
 #include "FileSystem/ImageFile.h"
 
@@ -16,7 +19,7 @@ namespace
 	constexpr int kColor = 0xaaffaa;
 
 	// 生成するダメージオブジェクトの数
-	constexpr int kDamageObjectNum = 2;
+	constexpr int kDamageObjectNum = 1;
 
 	// 敵生成数
 	constexpr int kCreateNum = 8;
@@ -29,6 +32,10 @@ namespace
 
 	// ダメージを受けた際のフレーム
 	constexpr int kOnDamageFrame = 10;
+	// ダメージを受けた際画面を揺らす時間
+	constexpr int kShakeFrame = 5;
+	// 揺らすサイズ
+	constexpr int kShakeSize = 20;
 }
 
 BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -62,6 +69,9 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 
 			isHit = true;
 
+			GameManager& mgr = GameManager::GetInstance();
+			mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
+			HitStop();
 			break;
 		}
 	}

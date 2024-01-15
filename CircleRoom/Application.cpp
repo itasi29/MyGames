@@ -47,13 +47,6 @@ bool Application::Init()
     ChangeWindowMode(true); // ウィンドウモードにします
 #endif
 
-    // スコープ内を使うと一時的に例外が発生しにくくなったため入れておく、どういうことかはわからない
-    {
-        SetUseDirect3DVersion(DX_DIRECT3D_9EX);
-        SetEnableXAudioFlag(TRUE);
-        ChangeFont(L"ＭＳ Ｐゴシック");
-    }
-
     SetGraphMode(m_size.w, m_size.h, 16);
     SetWindowText(L"CircleRoom");
     if (DxLib_Init() == -1)

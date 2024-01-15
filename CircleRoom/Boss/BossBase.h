@@ -65,6 +65,11 @@ protected:
 	/// </summary>
 	void ChangeNormalFunc();
 
+	/// <summary>
+	/// HitStopを開始する
+	/// </summary>
+	void HitStop();
+
 protected:
 	// メンバ関数ポインタ
 	using updateFunc_t = void(BossBase::*)();
@@ -75,6 +80,7 @@ protected:
 
 	virtual void StartUpdate() = 0;
 	virtual void NormalUpdate() = 0;
+	void HitStopUpdate();
 
 	virtual void StartDraw() const;
 	virtual void NormalDraw() const;
@@ -119,6 +125,9 @@ protected:
 
 	// フレーム
 	int m_frame;
+
+	// HitStopフレーム
+	int m_hitStopFrame;
 
 	// 壁に当たったフレーム
 	int m_wallHitFrame;

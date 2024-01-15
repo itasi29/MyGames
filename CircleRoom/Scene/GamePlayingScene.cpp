@@ -28,8 +28,6 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 	m_screenHandle(0),
 	m_frame(kFadeFrame)
 {
-	Application& app = Application::GetInstance();
-
 	// メンバ関数ポインタの設定
 	m_updateFunc = &GamePlayingScene::UpdateFadeIn;
 	m_drawFunc = &GamePlayingScene::DrawFade;
