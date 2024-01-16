@@ -36,7 +36,7 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_updateFunc = &EnemyBase::StartUpdate;
 	m_drawFunc = &EnemyBase::StartDraw;
 
-	m_wallEffect = GameManager::GetInstance().GetFile()->LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
+	m_wallEffect = GameManager::GetInstance().GetFile()->LoadGraphic(L"Enemy/wallEffect.png");
 }
 
 EnemyBase::~EnemyBase()

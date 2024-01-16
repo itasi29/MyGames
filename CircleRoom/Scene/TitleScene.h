@@ -1,6 +1,8 @@
 #pragma once
 #include "Scene.h"
 
+class FileBase;
+
 /// <summary>
 /// タイトルシーンクラス
 /// </summary>
@@ -13,6 +15,16 @@ public:
 	virtual void Draw();
 
 private:
+	// 更新関数
+	void FadeInUpdate(Input&);	// フェードイン状態
+	void NormalUpdate(Input&);	// 通常状態
+	void FadeOutUpdate(Input&);	// フェードアウト状態
+
+	// 描画関数
+	void FadeDraw();	// フェード中描画
+	void NormalDraw();	// 非フェード描画
+
+private:
 	int m_frame = 0;
 	// メニュー選択カーソル位置
 	int m_currentLinePos = 0;
@@ -22,14 +34,5 @@ private:
 	// 描画メンバ関数ポインタ
 	using DrawFunc_t = void (TitleScene::*)();
 	DrawFunc_t m_drawFunc;
-
-	// 更新関数
-	void FadeInUpdate(Input&);	// フェードイン状態
-	void NormalUpdate(Input&);	// 通常状態
-	void FadeOutUpdate(Input&);	// フェードアウト状態
-
-	// 描画関数
-	void FadeDraw();	// フェード中描画
-	void NormalDraw();	// 非フェード描画
 };
 

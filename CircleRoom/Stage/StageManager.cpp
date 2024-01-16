@@ -3,6 +3,12 @@
 #include <cmath>
 #include "Application.h"
 
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+#include "Scene/SceneManager.h"
+#include "Scene/OneShotScene.h"
+
 #include "StageManager.h"
 #include "StageBase.h"
 
@@ -35,12 +41,18 @@ StageManager::StageManager() :
 	m_ability = kNone;
 	m_abilityActive.clear();
 
-	Load(L"stg.inf");
+	Load(L"Data/Bin/stg.inf");
 }
 
 StageManager::~StageManager()
 {
-	Save("stg.inf");
+	Save("Data/Bin/stg.inf");
+}
+
+void StageManager::Init()
+{
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_dashImg = mgr->LoadGraphic(L"UI/operationExplanation.png");
 }
 
 void StageManager::DeleteData()
@@ -502,6 +514,10 @@ void StageManager::UpdateEnemyType(const std::string& name)
 	if (name == "Dash")
 	{
 		m_abilityActive[kDash] = true;
+
+		// ƒ_ƒbƒVƒ…à–¾‰æ‘œ
+		auto& mgr = GameManager::GetInstance();
+		mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(mgr, m_dashImg->GetHandle()));
 	}
 }
 

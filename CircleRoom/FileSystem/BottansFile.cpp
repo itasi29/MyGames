@@ -14,7 +14,7 @@ namespace
 
 BottansFile::BottansFile(std::shared_ptr<FileManager>& mgr)
 {
-	m_handle = mgr->LoadGraphic(L"Data/Image/UI/xbox_buttons.png", true)->GetHandle();
+	m_handle = mgr->LoadGraphic(L"UI/xbox_buttons.png", true)->GetHandle();
 
 	m_bottans[L"Ç`Bottan"] = 0;
 	m_bottans[L"ÇaBottan"] = 1;
@@ -43,7 +43,7 @@ void BottansFile::DrawBottan(std::wstring name, int drawX, int drawY, double rat
 	}
 
 	// FIXME:ñºëOÇÕïœçXÇ∑ÇÈ
-	int aaa = (kGraphSize * 0.5 * rate);
+	int aaa = static_cast<int>(kGraphSize * 0.5 * rate);
 	drawX += aaa;
 	drawY += aaa;
 

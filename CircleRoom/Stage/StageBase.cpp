@@ -461,6 +461,18 @@ void StageBase::SlideDown(std::shared_ptr<StageBase> nextStage)
 	m_mgr.GetStage()->ChangeStage(nextStage);
 }
 
+void StageBase::ChangeSelectFunc()
+{
+	m_updateFunc = &StageBase::UpdateSelect;
+	m_drawFunc = &StageBase::DrawSelect;
+}
+
+void StageBase::ChangePlayingFunc()
+{
+	m_updateFunc = &StageBase::UpdatePlaying;
+	m_drawFunc = &StageBase::DrawPlaying;
+}
+
 void StageBase::BossDeath()
 {
 	// すでにクリアされていた場合は強化ボスを出す

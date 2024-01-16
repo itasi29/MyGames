@@ -88,7 +88,7 @@ KeyConfigScene::~KeyConfigScene()
 	{
 		m_input.m_commandTable[cmd.first] = cmd.second;
 	}
-	m_input.Save("key.cnf");
+	m_input.Save("Data/Bin/key.cnf");
 
 	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 	optionScene->InverseIsEdit();
@@ -122,11 +122,11 @@ void KeyConfigScene::NormalUpdate(Input & input)
 
 	if (input.IsTriggered("up"))
 	{
-		m_currentLineIndex = (m_currentLineIndex - 1 + m_menuTable.size()) % m_menuTable.size();
+		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(m_menuTable.size())) % static_cast<int>(m_menuTable.size());
 	}
 	if (input.IsTriggered("down"))
 	{
-		m_currentLineIndex = (m_currentLineIndex + 1) % m_menuTable.size();
+		m_currentLineIndex = (m_currentLineIndex + 1) % static_cast<int>(m_menuTable.size());
 	}
 }
 
@@ -226,7 +226,7 @@ void KeyConfigScene::CommitCurrenKeySetting()
 	{
 		m_input.m_commandTable[cmd.first] = cmd.second;
 	}
-	m_input.Save("key.conf");
+	m_input.Save("Data/Bin/key.conf");
 }
 
 std::wstring KeyConfigScene::GetKeyName(int keycode)

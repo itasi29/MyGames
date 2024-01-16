@@ -63,7 +63,7 @@ Input::Input()
 
     m_exclusiveKeyConfigCommands = {"optionLeft", "optionRight", "up", "down", "left", "right"};
 
-    Load(L"key.cnf");
+    Load(L"Data/Bin/key.cnf");
 }
 
 void Input::Update()

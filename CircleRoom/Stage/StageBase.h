@@ -89,12 +89,12 @@ protected:
 	/// 選択中の更新処理
 	/// </summary>
 	/// <param name="input">入力情報</param>
-	void UpdateSelect(Input& input);
+	virtual void UpdateSelect(Input& input);
 	/// <summary>
 	/// プレイ中の更新処理
 	/// </summary>
 	/// <param name="input">入力情報</param>
-	void UpdatePlaying(Input& input);
+	virtual void UpdatePlaying(Input& input);
 
 	/// <summary>
 	/// 選択中の描画処理
@@ -142,6 +142,9 @@ protected:
 	/// </summary>
 	/// <param name="nextStage">次のステージのshared_ptr</param>
 	void SlideDown(std::shared_ptr<StageBase> nextStage);
+
+	void ChangeSelectFunc();
+	void ChangePlayingFunc();
 
 private:
 	/// <summary>

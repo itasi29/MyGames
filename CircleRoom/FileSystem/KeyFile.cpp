@@ -14,7 +14,7 @@ namespace
 
 KeyFile::KeyFile(std::shared_ptr<FileManager>& mgr)
 {
-	m_handle = mgr->LoadGraphic(L"Data/Image/UI/Keyboard.png", true)->GetHandle();
+	m_handle = mgr->LoadGraphic(L"UI/Keyboard.png", true)->GetHandle();
 
 	m_key[L"Ａキー"] = { 0, 2 };
 	m_key[L"Ｂキー"] = { 1, 2 };
@@ -67,7 +67,7 @@ void KeyFile::DrawKey(std::wstring name, int drawX, int drawY, double rate) cons
 	}
 
 	// FIXME:名前は変更する
-	int aaa = (kGraphSize * 0.5 * rate);
+	int aaa = static_cast<int>(kGraphSize * 0.5 * rate);
 	drawX += aaa;
 	drawY += aaa;
 

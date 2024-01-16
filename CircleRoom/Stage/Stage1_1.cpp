@@ -43,7 +43,7 @@ Stage1_1::Stage1_1(GameManager& mgr) :
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
 	// 1-1に関しては初めからクリアしていることとする
-	m_mgr.GetStage()->SaveClear(m_stageName);
+	//m_mgr.GetStage()->SaveClear(m_stageName);
 	CheckStageConditions();
 
 	StartCheck();

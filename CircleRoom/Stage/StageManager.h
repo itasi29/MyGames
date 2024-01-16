@@ -7,6 +7,7 @@
 
 class Input;
 class StageBase;
+class FileBase;
 struct size;
 
 struct StageData
@@ -43,6 +44,8 @@ public:
 
 	StageManager();
 	~StageManager();
+
+	void Init();
 
 	// 後で変更or消す
 	void DeleteData();
@@ -197,5 +200,7 @@ private:
 	// 画面の画像ハンドル
 	int m_stageHandle;
 
+	// ダッシュ説明画像クラス
+	std::shared_ptr<FileBase> m_dashImg;
 };
 

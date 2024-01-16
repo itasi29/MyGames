@@ -1,8 +1,9 @@
-#include "FileManager.h"
 #include <DxLib.h>
 #include <cassert>
+
 #include "ImageFile.h"
 #include "SoundFile.h"
+#include "FileManager.h"
 
 FileManager::~FileManager()
 {
@@ -30,9 +31,10 @@ std::shared_ptr<FileBase> FileManager::LoadGraphic(const std::wstring& path, boo
         // コピーコンストラクトを使用
         return std::make_shared<ImageFile>(*imgFile);
     }
+    std::wstring dPath = L"Data/Image/" + path;
     // もし、テーブルにロード済みパスがない場合には
     // こちらを通る
-    int handle = LoadGraph(path.c_str());
+    int handle = LoadGraph(dPath.c_str());
     assert(handle >= 0);
     m_fileTable[path] = std::make_shared<ImageFile>(*this);
     // 内部のファイルテーブルに情報を登録する
@@ -67,9 +69,10 @@ std::shared_ptr<FileBase> FileManager::LoadSound(const std::wstring& path, bool 
         // コピーコンストラクトを使用
         return std::make_shared<SoundFile>(*sndFile);
     }
+    std::wstring dPath = L"Data/Sound/" + path;
     // もし、テーブルにロード済みパスがない場合には
     // こちらを通る
-    int handle = LoadSoundMem(path.c_str());
+    int handle = LoadSoundMem(dPath.c_str());
     assert(handle >= 0);
     m_fileTable[path] = std::make_shared<SoundFile>(*this);
     // 内部のファイルテーブルに情報を登録する

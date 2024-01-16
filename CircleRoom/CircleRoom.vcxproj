@@ -44,12 +44,12 @@
     <ClCompile Include="FileSystem\KeyFile.cpp" />
     <ClCompile Include="FileSystem\SoundFile.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OneShotGraph.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Scene\ConfigScene.cpp" />
     <ClCompile Include="Scene\GameOverScene.cpp" />
     <ClCompile Include="Scene\GamePlayingScene.cpp" />
     <ClCompile Include="Scene\KeyConfigScene.cpp" />
+    <ClCompile Include="Scene\OneShotScene.cpp" />
     <ClCompile Include="Scene\OptionScene.cpp" />
     <ClCompile Include="Scene\OtherOptionScene.cpp" />
     <ClCompile Include="Scene\PadConfigScene.cpp" />
@@ -66,6 +66,7 @@
     <ClCompile Include="Stage\StageBase.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage\StageManager.cpp" />
+    <ClCompile Include="Stage\StageTutorial.cpp" />
     <ClCompile Include="Utility\StringUtility.cpp" />
     <ClCompile Include="Utility\Collision.cpp" />
     <ClCompile Include="Utility\Vec2.cpp" />
@@ -95,12 +96,12 @@
     <ClInclude Include="FileSystem\ImageFile.h" />
     <ClInclude Include="FileSystem\KeyFile.h" />
     <ClInclude Include="FileSystem\SoundFile.h" />
-    <ClInclude Include="OneShotGraph.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Scene\ConfigScene.h" />
     <ClInclude Include="Scene\GameOverScene.h" />
     <ClInclude Include="Scene\GamePlayingScene.h" />
     <ClInclude Include="Scene\KeyConfigScene.h" />
+    <ClInclude Include="Scene\OneShotScene.h" />
     <ClInclude Include="Scene\OptionScene.h" />
     <ClInclude Include="Scene\OtherOptionScene.h" />
     <ClInclude Include="Scene\PadConfigScene.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="Stage\StageBase.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage\StageManager.h" />
+    <ClInclude Include="Stage\StageTutorial.h" />
     <ClInclude Include="Utility\StringUtility.h" />
     <ClInclude Include="Utility\Collision.h" />
     <ClInclude Include="Utility\Vec2.h" />

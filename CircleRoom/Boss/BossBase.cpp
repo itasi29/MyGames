@@ -50,8 +50,8 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_drawFunc = &BossBase::StartDraw;
 
 	auto& mgr = GameManager::GetInstance();
-	m_wallEffect = mgr.GetFile()->LoadGraphic(L"Data/Image/Enemy/wallEffect.png");
-	m_damageEffect = mgr.GetFile()->LoadGraphic(L"Data/Image/Enemy/damageEffect.png");
+	m_wallEffect = mgr.GetFile()->LoadGraphic(L"Enemy/wallEffect.png");
+	m_damageEffect = mgr.GetFile()->LoadGraphic(L"Enemy/damageEffect.png");
 }
 
 BossBase::~BossBase()

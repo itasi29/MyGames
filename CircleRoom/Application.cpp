@@ -5,6 +5,7 @@
 #include "Common/Input.h"
 #include "Common/GameManager.h"
 
+#include "Stage/StageManager.h"
 #include "Scene/SceneManager.h"
 #include "Scene/TitleScene.h"
 #include "FileSystem/FileManager.h"
@@ -62,6 +63,8 @@ void Application::Run()
 {
     {
         GameManager& manager = GameManager::GetInstance();
+        manager.GetStage()->Init();
+
         manager.GetScene()->ChangeScene(std::make_shared<TitleScene>(manager));
 
         Input input;

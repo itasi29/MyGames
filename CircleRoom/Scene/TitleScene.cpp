@@ -11,6 +11,11 @@
 
 #include "TitleScene.h"
 
+// お試し用
+#include "FileSystem/FileManager.h"
+#include "FileSystem/ImageFile.h"
+#include "OneShotScene.h"
+
 namespace
 {
 	// メニューラインの数
