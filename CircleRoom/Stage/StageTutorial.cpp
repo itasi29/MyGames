@@ -30,9 +30,9 @@ StageTutorial::StageTutorial(GameManager& mgr) :
 	StageBase(mgr),
 	m_explanation(kOperation)
 {
-	m_handle[kOperation] = m_mgr.GetFile()->LoadGraphic(L"Data/Image/UI/operationExplanation.png");
-	m_handle[kClear] = m_mgr.GetFile()->LoadGraphic(L"Data/Image/UI/clearExplanation.png");
-	m_handle[kClearAnother] = m_mgr.GetFile()->LoadGraphic(L"Data/Image/UI/clearExplanation.png");
+	m_handle[kOperation] = m_mgr.GetFile()->LoadGraphic(L"UI/operationExplanation.png");
+	m_handle[kClear] = m_mgr.GetFile()->LoadGraphic(L"UI/clearExplanation.png");
+	m_handle[kClearAnother] = m_mgr.GetFile()->LoadGraphic(L"UI/clearExplanation.png");
 
 	m_stageName = "StageTutorial";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);

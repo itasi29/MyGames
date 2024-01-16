@@ -3,6 +3,10 @@
 #include "Common/Input.h"
 #include "Stage/StageManager.h"
 
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+
 #include "Player.h"
 
 
@@ -29,6 +33,17 @@ namespace
 
 	// 線形補間を行うフレーム
 	constexpr int kInterpolatedFrame = 50;
+
+	// 死亡エフェクト1つの出ているフレーム数
+	constexpr int kDeathEffectFrame = 3;
+	// 死亡エフェクトのフレーム
+	constexpr int kDeathFrame = 24 * kDeathEffectFrame;
+	// 画像サイズ
+	constexpr int kDeathGraphSize = 100;
+	// 画像の行数
+	constexpr int kRow = 6;
+	// 画像の列数
+	constexpr int kLine = 6;
 }
 
 Player::Player(const size& windowSize, float fieldSize) :
@@ -38,11 +53,16 @@ Player::Player(const size& windowSize, float fieldSize) :
 	m_dashFrame(0),
 	m_dashWaitFrame(0),
 	m_isDash(false),
-	m_isExsit(false)
+	m_isExsit(false),
+	m_deathFrame(0),
+	m_isDeathEffect(false)
 {
 	Init();
 	m_isExsit = false;
 	m_posLog.resize(kDashLogNum);
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_bloodImg = mgr->LoadGraphic(L"Player/blood.png");
 }
 
 Player::~Player()
@@ -56,6 +76,7 @@ void Player::Init()
 	m_dashWaitFrame = 0;
 	m_isDash = false;
 	m_isExsit = true;
+	m_isDeathEffect = false;
 
 	// 位置の設定
 	m_pos = Vec2{ m_size.w / 2.0f, m_size.h - m_fieldSize };
@@ -72,6 +93,20 @@ void Player::Init()
 
 void Player::Update(Input& input, Ability ability)
 {
+	// 死亡エフェクト
+	if (m_isDeathEffect)
+	{
+		m_deathFrame++;
+
+		if (m_deathFrame > kDeathFrame)
+		{
+			m_isDeathEffect = false;
+		}
+	}
+
+	// 死んでいれば処理をしない
+	if (!m_isExsit) return;
+
 	Move(input);
 	// アビリティ処理
 	switch (ability)
@@ -136,6 +171,18 @@ void Player::Draw()
 			0xff0000, true);
 	}
 
+	// 死亡時のエフェクト
+	if (m_isDeathEffect)
+	{
+		int x = m_pos.x - kDeathGraphSize * 0.5f;
+		int y = m_pos.y - kDeathGraphSize * 0.5f;
+		int index = m_deathFrame / kDeathEffectFrame;
+		int srcX = kDeathGraphSize * (index % kRow);
+		int srcY = kDeathGraphSize * (index / kLine);
+
+		DrawRectGraph(x, y, srcX, srcY, kDeathGraphSize, kDeathGraphSize, m_bloodImg->GetHandle(), true);
+	}
+
 #ifdef _DEBUG
 	// 走っていない場合当たり判定の描画
 	if (!m_isDash)
@@ -148,6 +195,9 @@ void Player::Draw()
 void Player::Death()
 {
 	m_isExsit = false;
+
+	m_deathFrame = 0;
+	m_isDeathEffect = true;
 }
 
 void Player::Move(Input& input)

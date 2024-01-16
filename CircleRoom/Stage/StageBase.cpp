@@ -59,7 +59,8 @@ void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 
 void StageBase::UpdateSelect(Input& input)
 {
-	// “G‘¤‚¾‚¯“®‚­ˆ—ŒJ‚è•Ô‚·
+	m_player->Update(input, kNone);
+
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Update();
@@ -175,7 +176,6 @@ void StageBase::DrawSelect()
 {
 	DrawWall();
 
-	m_player->Draw();
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Draw();
@@ -184,6 +184,7 @@ void StageBase::DrawSelect()
 	{
 		m_boss->Draw();
 	}
+	m_player->Draw();
 
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ƒXƒe[ƒW–¼‚Ì•`‰æ
@@ -214,7 +215,6 @@ void StageBase::DrawPlaying()
 {
 	DrawWall();
 
-	m_player->Draw();
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Draw();
@@ -223,6 +223,7 @@ void StageBase::DrawPlaying()
 	{
 		m_boss->Draw();
 	}
+	m_player->Draw();
 
 	// ŽžŠÔ‚Ì•`‰æ
 	int minSec = (m_frame * 1000 / 60) % 1000;

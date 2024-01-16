@@ -18,8 +18,21 @@ namespace
 	const Vec2 kShiftSide = Vec2{ 0.0f, 0.2f };
 	const Vec2 kShiftVert = Vec2{ 0.2f, 0.0f };
 
+	// 1エフェクト何フレームか
+	constexpr int kWallEffectFrame = 3;
 	// 壁に当たったエフェクトをするフレーム
-	constexpr int kWallHitFrame = 10;
+	constexpr int kWallHitFrame = 8 * kWallEffectFrame;
+	// 画像サイズ
+	constexpr int kWallEffectGraphSize = 64;
+	// 行数
+	constexpr int kRow = 8;
+	// 列数の種類数
+	constexpr int kEffectTypeNum = 4;
+	// 出すエフェクトの列の場所
+	constexpr int kLine[kEffectTypeNum] = {
+		0, 4, 7, 8
+	};
+
 
 	// ずらす量
 	constexpr int kWallEffectSlide = 32;
@@ -31,7 +44,8 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_color(0),
 	m_radius(0),
 	m_isExsit(true),
-	m_frame(0)
+	m_frame(0),
+	m_lineType(0)
 {
 	m_updateFunc = &EnemyBase::StartUpdate;
 	m_drawFunc = &EnemyBase::StartDraw;
@@ -157,6 +171,8 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 
 void EnemyBase::ReflectionCal(const Vec2& norVec)
 {
+	m_lineType = GetRand(kEffectTypeNum);
+
 	// 法線ベクトルの2倍から現在のベクトルを引く
 	m_vec = m_vec + norVec * norVec.Dot(-m_vec) * 2.0f;
 }
@@ -213,9 +229,14 @@ void EnemyBase::NormalDraw()
 	// 壁に当たったエフェクトの描画
 	if (m_wallHitFrame > 0)
 	{
-		// MEMO:現在は仮
-		// 座標を中心とする
-		DrawGraph(m_drawWallHitX - 16, m_drawWallHitY - 16, m_wallEffect->GetHandle(), true);
+		int x = m_drawWallHitX - static_cast<int>(kWallEffectGraphSize * 0.5f);
+		int y = m_drawWallHitY - static_cast<int>(kWallEffectGraphSize * 0.5f);
+
+		int index = (kWallHitFrame - m_wallHitFrame) / kWallEffectFrame;
+		int srcX = kWallEffectGraphSize * (index % kRow);
+		int srcY = kWallEffectGraphSize * kLine[m_lineType];
+
+		DrawRectGraph(x, y, srcX, srcY, kWallEffectGraphSize, kWallEffectGraphSize, m_wallEffect->GetHandle(), true);
 	}
 
 #ifdef _DEBUG

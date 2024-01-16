@@ -104,6 +104,9 @@ protected:
 	// フレーム
 	int m_frame;
 
+	// 壁エフェクトの種類
+	int m_lineType;
+
 	// 壁に当たったフレーム
 	int m_wallHitFrame;
 

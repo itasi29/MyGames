@@ -5,6 +5,7 @@
 
 class Input;
 class Application;
+class FileBase;
 struct size;
 enum Ability;
 
@@ -45,6 +46,24 @@ public:
 	void Death();
 
 private:
+	/// <summary>
+	/// プレイヤーの移動
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	void Move(Input& input);
+	/// <summary>
+	/// ダッシュ処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	void Dash(Input& input);
+	/// <summary>
+	/// 場外判定処理
+	/// </summary>
+	void InRange();
+
+private:
+	std::shared_ptr<FileBase> m_bloodImg;
+
 	// スクリーンサイズ
 	const size& m_size;
 	// フィールドのサイズ
@@ -80,20 +99,9 @@ private:
 	// 生存しているか
 	bool m_isExsit;
 
-private:
-	/// <summary>
-	/// プレイヤーの移動
-	/// </summary>
-	/// <param name="input">入力情報</param>
-	void Move(Input& input);
-	/// <summary>
-	/// ダッシュ処理
-	/// </summary>
-	/// <param name="input">入力情報</param>
-	void Dash(Input& input);
-	/// <summary>
-	/// 場外判定処理
-	/// </summary>
-	void InRange();
+	// 死亡エフェクトのフレーム
+	int m_deathFrame;
+	// 死亡エフェクを行うかどうか
+	bool m_isDeathEffect;
 };
 

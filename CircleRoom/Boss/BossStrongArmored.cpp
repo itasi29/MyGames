@@ -31,11 +31,19 @@ namespace
 	constexpr float kCreateRadian = 45.0f * (kPai / 180.0f);
 
 	// ダメージを受けた際のフレーム
-	constexpr int kOnDamageFrame = 10;
+	constexpr int kOnDamageFrame = 33;
 	// ダメージを受けた際画面を揺らす時間
 	constexpr int kShakeFrame = 5;
 	// 揺らすサイズ
 	constexpr int kShakeSize = 20;
+
+
+	// ダメージエフェクトの画像サイズ
+	constexpr int kDamageGraphSize = 32;
+	// ダメージエフェクトサイズ
+	constexpr double kDamageSize = 2.0;
+	// ダメージエフェクトの画像の縦切り取り位置
+	constexpr int kSrcY = 8 * 64;
 }
 
 BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -109,7 +117,11 @@ void BossStrongArmored::NormalDraw() const
 	if (m_onDamagetFrame > 0)
 	{
 		// 座標を中心とする
-		DrawGraph(m_drawOnDamagetX - 16, m_drawOnDamagetY - 16, m_damageEffect->GetHandle(), true);
+		int x = m_drawOnDamagetX - static_cast<int>(kDamageGraphSize * 0.5f);
+		int y = m_drawOnDamagetY - static_cast<int>(kDamageGraphSize * 0.5f);
+		int srcX = static_cast<int>((kOnDamageFrame - m_onDamagetFrame) / 3) * 64;
+
+		DrawRectRotaGraph(x, y, srcX, kSrcY, kDamageGraphSize * kDamageSize, kDamageGraphSize * kDamageSize, kDamageSize, 0.0, m_damageEffect->GetHandle(), true);
 	}
 
 	// ダメージオブジェクトの描画

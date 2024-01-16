@@ -25,6 +25,14 @@ namespace
 {
 	// ステージ間の移動にかかる時間
 	constexpr int kStageMoveFrame = 30;
+
+	// 事前に読み込んでおくデータのpath
+	const std::vector<std::wstring> kPath =
+	{
+		L"Enemy/wallEffect.png",
+		L"Player/blood.png",
+
+	};
 }
 
 StageManager::StageManager() :
@@ -53,6 +61,14 @@ void StageManager::Init()
 {
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_dashImg = mgr->LoadGraphic(L"UI/operationExplanation.png");
+
+	// 事前にステージ内で多く使うものはここで読み込んでおく
+	int size = kPath.size();
+	m_stgData.resize(size);
+	for (int i = 0; i < size; i++)
+	{
+		m_stgData[i] = mgr->LoadGraphic(kPath[i]);
+	}
 }
 
 void StageManager::DeleteData()
@@ -193,19 +209,6 @@ void StageManager::Save(const std::string& path)
 
 		// データ情報の書き込み
 		fwrite(&stage.second, sizeof(stage.second), 1, fp);
-#if false
-		// データ群の参照
-		auto& data = stage.second;
-		// ベストタイムの書き込み
-		fwrite(&data.bestTime, sizeof(data.bestTime), 1, fp);
-		uint8_t dataSize = static_cast<uint8_t>(data.isClears.size());
-		fwrite(&dataSize, sizeof(dataSize), 1, fp);
-		for (const auto& isClear : data.isClears)
-		{
-			// クリア情報を書き込む
-			fwrite(&isClear, sizeof(isClear), 1, fp);
-		}
-#endif
 	}
 
 	// データ本体を書き込んでいく
@@ -281,27 +284,6 @@ void StageManager::Load(const std::wstring& path)
 
 		// データ情報の読み込み
 		FileRead_read(&data, sizeof(data), handle);
-
-#if false
-		// ベストタイム読み込み
-		FileRead_read(&data.bestTime, sizeof(data.bestTime), handle);
-
-		// 配列数読み込み
-		uint8_t dataSize;
-		FileRead_read(&dataSize, sizeof(dataSize), handle);
-
-		// vectorのリサイズ
-		data.isClears.resize(dataSize);
-		for (int j = 0; j < dataSize; j++)
-		{
-			// クリア情報の取得
-			bool isClear;
-
-			FileRead_read(&isClear, sizeof(isClear), handle);
-
-			data.isClears[j] = isClear;
-		}
-#endif
 	}
 
 	// 殺された敵の種類数の取得
