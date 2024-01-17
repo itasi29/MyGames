@@ -32,6 +32,8 @@ TitleScene::TitleScene(GameManager& mgr) :
 	m_frame = 60;
 	m_updateFunc = &TitleScene::FadeInUpdate;
 	m_drawFunc = &TitleScene::FadeDraw;
+
+	m_logoImg = m_mgr.GetFile()->LoadGraphic(L"logo.png");
 }
 
 TitleScene::~TitleScene()
@@ -125,25 +127,28 @@ void TitleScene::NormalDraw()
 	// FIXME:書く順番考える
 
 	const auto& m_size = Application::GetInstance().GetWindowSize();
-	int defX = m_size.w / 2;
+	int drawX = m_size.w / 2;
+
+	// ロゴの描画
+	DrawGraph(0, 0, m_logoImg->GetHandle(), true);
 		
 	// タイトル名の描画
 	std::wstring title = L"CircleRoom";
 	float strLen = static_cast<float>(title.size());
-	DrawExtendString(static_cast<int>(defX - (strLen / 2)) * 16, 100,
+	DrawExtendString(static_cast<int>(drawX - (strLen / 2)) * 16, 100,
 		2, 2, 
 		title.data(), 0xffffff);
 
 	int y = static_cast<int>(200 + m_currentLinePos * kMenuLineInterval);
 	// メニューラインの描画
-	DrawLine(defX, y,
-		defX + kMenuLength, y, 
+	DrawLine(drawX, y,
+		drawX + kMenuLength, y, 
 		0xff0808);
 
 	// スタート
-	DrawString(defX, 200-16, L"START", 0xffffff);
+	DrawString(drawX, 200-16, L"START", 0xffffff);
 	// オプション
-	DrawString(defX, 264-16, L"OPTION", 0xffffff);
+	DrawString(drawX, 264-16, L"OPTION", 0xffffff);
 	// 終了
-	DrawString(defX, 328-16, L"END", 0xffffff);
+	DrawString(drawX, 328-16, L"END", 0xffffff);
 }

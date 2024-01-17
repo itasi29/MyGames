@@ -34,5 +34,8 @@ private:
 	// 描画メンバ関数ポインタ
 	using DrawFunc_t = void (TitleScene::*)();
 	DrawFunc_t m_drawFunc;
+
+	// タイトルロゴ
+	std::shared_ptr<FileBase> m_logoImg;
 };
 
