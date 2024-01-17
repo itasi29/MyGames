@@ -148,24 +148,25 @@ void Stage1_1::CheckStageConditions()
 
 int Stage1_1::DrawStageConditions(int drawY)
 {
-	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+	int startY = drawY;
+	int fontHandle = m_mgr.GetFont()->GetHandle(24);
 	if (!m_isLeftClear)
 	{
 
 		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"¶@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
 			kLeftExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kLeftExsitTime);
 
-		drawY += 32;
+		drawY += 48;
 	}
 	if (!m_isUpClear)
 	{
 		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"ã@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
 			kUpExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kUpExsitTime);
 
-		drawY += 32;
+		drawY += 48;
 	}
 
-	return drawY;
+	return drawY - startY;
 }
 
 void Stage1_1::DrawArrow() const

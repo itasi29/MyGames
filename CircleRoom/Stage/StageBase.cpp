@@ -209,17 +209,26 @@ void StageBase::DrawSelect()
 	int minSec = (m_frame * 1000 / 60) % 1000;
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
-	DrawFormatStringToHandle(128, 32, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
+	DrawFormatStringToHandle(128, 48, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
 
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
+
+	/***********************************************/
+	// 次はここからやる
+	// TODO:フレームの変更と合わせフォントの合わせ処理
+	// TODO:家でやるなら音入れる用の変数を準備＆ボスとダッシュのDrawRectGraphへの変更
+	/***********************************************/
 
 	// ステージ条件の描画
 	auto y = DrawStageConditions();
 
 	SetDrawScreen(DX_SCREEN_BACK);
 	// MEMO:条件後ろにあるフレーム背景を描画する
-	DrawGraph(0, y, m_bFrameImg->GetHandle(), true);
+	if (y != 0)
+	{
+		DrawGraph(0, y, m_bFrameImg->GetHandle(), true);
+	}
 	DrawGraph(0, 0, m_strHandle, true);
 
 	// ベストタイムの描画
@@ -227,8 +236,8 @@ void StageBase::DrawSelect()
 	minSec = (bestTime * 1000 / 60) % 1000;
 	sec = (bestTime / 60) % 60;
 	min = bestTime / 3600;
-	DrawExtendString(m_size.w - 256, 32, 1.5, 1.5, L"ベストタイム", kStrColor);
-	DrawExtendFormatString(m_size.w - 256, 32 + 48, 2, 2, kStrColor, L"%02d:%02d.%03d", min, sec, minSec);
+	DrawExtendStringToHandle(m_size.w - 256, 32, 1.5, 1.5, L"ベストタイム", kStrColor, fontHandle);
+	DrawExtendFormatStringToHandle(m_size.w - 256, 32 + 48, 2, 2, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
 
 	// 矢印の描画
 	DrawArrow();
@@ -257,7 +266,7 @@ void StageBase::DrawPlaying()
 		kStrColor, // 色
 		L"%02d:%02d.%03d", min, sec, minSec);	// 文字列
 	// 条件の描画
-	DrawStageConditions(64);
+	DrawStageConditions(96+24);
 }
 
 void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const

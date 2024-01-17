@@ -65,7 +65,7 @@ protected:
 	/// </summary>
 	/// <param name="drawY">描画する位置 書かなければ48が初期位置</param>
 	/// <returns>Y軸の描画位置</returns>
-	virtual int DrawStageConditions(int drawY = 48) = 0;
+	virtual int DrawStageConditions(int drawY = 96) = 0;
 	/// <summary>
 	/// ステージの矢印描画
 	/// </summary>
