@@ -4,6 +4,7 @@
 
 #include "GameManager.h"
 #include "StageManager.h"
+#include "FileSystem/FontSystem.h"
 #include "Stage1_1.h"
 #include "Stage1_2.h"
 
@@ -119,13 +120,19 @@ void Stage1_2::CheckStageConditions()
 	}
 }
 
-void Stage1_2::DrawStageConditions(int drawY)
+int Stage1_2::DrawStageConditions(int drawY)
 {
 	if (!m_isRightClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"右　%d秒間生き残る\n(%d / %d)",
+		int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"右　%d秒間生き残る\n(%d / %d)",
 			kRightExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kRightExsitTime);
+
+		drawY += 32;
 	}
+
+	return drawY;
 }
 
 void Stage1_2::DrawArrow() const

@@ -2,6 +2,9 @@
 #include <cassert>
 #include "Input.h"
 
+#include "GameManager.h"
+#include "FileSystem/FontSystem.h"
+
 #include "SceneManager.h"
 #include "KeyConfigScene.h"
 #include "PadConfigScene.h"
@@ -72,12 +75,14 @@ void ConfigScene::Draw()
 
 void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 {
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 	if (m_currentLineIndex == index)
 	{
-		DrawString(132, drawY, str.c_str(), 0x000000);
+		DrawStringToHandle(132, drawY, str.c_str(), 0x000000, fontHandle);
 	}
 	else
 	{
-		DrawString(132, drawY, str.c_str(), 0xffffff);
+		DrawStringToHandle(132, drawY, str.c_str(), 0xffffff, fontHandle);
 	}
 }

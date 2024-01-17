@@ -2,10 +2,15 @@
 #include <cassert>
 #include "FontSystem.h"
 
+namespace
+{
+	const wchar_t* const kFontName = L"廻想体 ネクスト UP B";
+}
+
 FontSystem::FontSystem()
 {
 	// 読み込むフォントファイルのパス
-	m_fontPath = L"azuki.ttf"; 
+	m_fontPath = L"Data/Font/Kaisotai-Next-UP-B.otf"; 
 	if (AddFontResourceEx(m_fontPath, FR_PRIVATE, NULL) > 0) {
 	}
 	else {
@@ -14,9 +19,10 @@ FontSystem::FontSystem()
 	}
 
 	// 使いそうなサイズを作っておく
-	m_handle[16] = CreateFontToHandle(m_fontPath, 16, -1);;
-	m_handle[32] = CreateFontToHandle(m_fontPath, 32, -1);;
-	m_handle[64] = CreateFontToHandle(m_fontPath, 64, -1);;
+	m_handle[24] = CreateFontToHandle(kFontName, 16, -1);;
+	m_handle[32] = CreateFontToHandle(kFontName, 32, -1);;
+	m_handle[64] = CreateFontToHandle(kFontName, 64, -1);;
+	m_handle[72] = CreateFontToHandle(kFontName, 72, -1);;
 }
 
 FontSystem::~FontSystem()
@@ -25,6 +31,12 @@ FontSystem::~FontSystem()
 	for (auto& handle : m_handle)
 	{
 		DeleteFontToHandle(handle.second);
+	}
+
+	if (RemoveFontResourceEx(m_fontPath, FR_PRIVATE, NULL)) {
+	}
+	else {
+		MessageBox(NULL, L"remove failure", L"", MB_OK);
 	}
 }
 

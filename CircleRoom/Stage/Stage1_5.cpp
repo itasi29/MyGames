@@ -4,6 +4,7 @@
 
 #include "GameManager.h"
 #include "StageManager.h"
+#include "FileSystem/FontSystem.h"
 #include "Stage1_5.h"
 #include "Stage1_4.h"
 
@@ -105,11 +106,13 @@ void Stage1_5::CheckStageConditions()
 	}
 }
 
-void Stage1_5::DrawStageConditions(int drawY)
+int Stage1_5::DrawStageConditions(int drawY)
 {
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 	if (!m_isDownClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"‰º@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"‰º@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
 			kDownKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kDownKilledNum);
 
 		drawY += 32;
@@ -118,8 +121,12 @@ void Stage1_5::DrawStageConditions(int drawY)
 	// FIXME: ‚±‚±‚É’Ç‰Á‚Å‘‚¢‚Ä‚¢‚é‚¯‚ê‚Ç‚ ‚Æ‚Å•Ê‚Ì‚Æ‚±‚ë‚Éˆ—‚ð•ÏX‚·‚é
 	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
 	{
-		DrawString(128, drawY, L"clear", 0xffffff);
+		DrawStringToHandle(128, drawY, L"clear", 0xffffff, fontHandle);
+
+		drawY += 32;
 	}
+
+	return drawY;
 }
 
 void Stage1_5::DrawArrow() const

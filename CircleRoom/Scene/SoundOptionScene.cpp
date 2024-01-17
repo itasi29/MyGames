@@ -4,6 +4,7 @@
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
 #include "FileSystem/SoundSystem.h"
+#include "FileSystem/FontSystem.h"
 #include "Input.h"
 
 #include "OptionScene.h"
@@ -47,7 +48,9 @@ void SoundOptionScene::Update(Input& input)
 
 void SoundOptionScene::Draw()
 {
+#ifdef _DEBUG
 	DrawString(100, kMenuMargin + 10, L"SoundOptionScene", 0xffffff);
+#endif
 	
 	// ‘I‘ğ‚µ‚Ä‚¢‚éêŠ‚ğ•`‰æ
 	if (!m_isEdit || static_cast<int>(m_frame * 0.05f) % 2)
@@ -63,14 +66,16 @@ void SoundOptionScene::Draw()
 			0xff8800, true);
 	}
 
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 	auto rate = m_mgr.GetSound()->GetBgmVolRate();
 	DrawName(kMenuMargin + 42, kBgm, L"BGM");
-	DrawFormatString(200, kMenuMargin + 42, 0xffffff, L"%3d“", static_cast<int>(rate * 100));
+	DrawFormatStringToHandle(200, kMenuMargin + 42, 0xffffff, fontHandle, L"%3d“", static_cast<int>(rate * 100));
 	DrawGauge(500, kMenuMargin + 42, rate);
 
 	rate = m_mgr.GetSound()->GetSeVolRate();
 	DrawName(kMenuMargin + 106, kSe, L"SE");
-	DrawFormatString(200, kMenuMargin + 106, 0xffffff, L"%3d“", static_cast<int>(rate * 100));
+	DrawFormatStringToHandle(200, kMenuMargin + 106, 0xffffff, fontHandle, L"%3d“", static_cast<int>(rate * 100));
 	DrawGauge(500, kMenuMargin + 106, rate);
 }
 
@@ -143,13 +148,15 @@ void SoundOptionScene::EditUpdate(Input& input)
 
 void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
 {
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 	if (m_currentLineIndex == index)
 	{
-		DrawString(132, drawY, str.c_str(), 0x000000);
+		DrawStringToHandle(132, drawY, str.c_str(), 0x000000, fontHandle);
 	}
 	else
 	{
-		DrawString(132, drawY, str.c_str(), 0xffffff);
+		DrawStringToHandle(132, drawY, str.c_str(), 0xffffff, fontHandle);
 	}
 }
 

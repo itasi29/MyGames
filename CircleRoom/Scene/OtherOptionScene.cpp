@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
+#include "FileSystem/FontSystem.h"
 
 #include "TitleScene.h"
 
@@ -76,23 +77,27 @@ void OtherOptionScene::Update(Input& input)
 
 void OtherOptionScene::Draw()
 {
+#ifdef _DEBUG
 	DrawString(100, kMenuMargin + 10, L"OtherOptionScene", 0xffffff);
+#endif
 
 	// ‘I‘ğ‚µ‚Ä‚¢‚éêŠ‚ğ•`‰æ
 	DrawBox(kMenuMargin + 200, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 32),
 		kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + (m_currentLineIndex + 1) * 32),
 		0xff0000, true);
 
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 	// ƒƒjƒ…[‚Ì•¶š—ñŒQ
 	for (int i = 0; i < kGameMenu.size(); i++)
 	{
 		if (m_currentLineIndex == i)
 		{
-			DrawString(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kGameMenu[i].c_str(), 0x000000);
+			DrawStringToHandle(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kGameMenu[i].c_str(), 0x000000, fontHandle);
 		}
 		else
 		{
-			DrawString(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kGameMenu[i].c_str(), 0xffffff);
+			DrawStringToHandle(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kGameMenu[i].c_str(), 0xffffff, fontHandle);
 		}
 	}
 }

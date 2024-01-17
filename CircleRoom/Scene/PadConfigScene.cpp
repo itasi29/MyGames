@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "SceneManager.h"
 #include "FileSystem/BottansFile.h"
+#include "FileSystem/FontSystem.h"
 
 #include "ConfigScene.h"
 #include "OptionScene.h"
@@ -75,7 +76,7 @@ void PadConfigScene::Update(Input& input)
 
 void PadConfigScene::Draw()
 {
-	DrawString(100, kMenuMargin + 10, L"PadConfigScene", 0xffffff);
+	DrawStringToHandle(100, kMenuMargin + 10, L"PadConfigScene", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 
 	DrawCommandList();
 }
@@ -179,9 +180,9 @@ void PadConfigScene::DrawCommandList()
 		std::wstring cmdName = StringUtility::StringToWString(m_menuTable[i]);
 
 		// FIXME:フォントサイズでの方法に変更する可能性大
-		//DrawFormatString(kMenuMargin + 50, y, lineColor, L"%s",	cmdName.c_str());
-		DrawRotaFormatString(kMenuMargin + 50, y, kExtendRate, kExtendRate, 0.0, 0.0,
-			0.0, lineColor, lineColor, 0, L"%s", cmdName.c_str());
+		DrawFormatStringToHandle(kMenuMargin + 50, y, lineColor, m_mgr.GetFont()->GetHandle(32), L"%s",	cmdName.c_str());
+		//DrawRotaFormatString(kMenuMargin + 50, y, kExtendRate, kExtendRate, 0.0, 0.0,
+		//	0.0, lineColor, lineColor, 0, L"%s", cmdName.c_str());
 
 		m_btImg->DrawBottan(GetPadName(cmd.at(InputType::pad)), kMenuMargin + 50 + 376, y, kExtendRate);
 

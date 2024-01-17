@@ -2,9 +2,11 @@
 #include <cassert>
 #include "Application.h"
 #include "Common/Input.h"
+
 #include "GameManager.h"
 #include "SceneManager.h"
 #include "FileSystem/BottansFile.h"
+#include "FileSystem/FontSystem.h"
 
 #include "GamePlayingScene.h"
 #include "OptionScene.h"
@@ -133,11 +135,6 @@ void TitleScene::NormalDraw()
 	DrawGraph(0, 0, m_logoImg->GetHandle(), true);
 		
 	// タイトル名の描画
-	std::wstring title = L"CircleRoom";
-	float strLen = static_cast<float>(title.size());
-	DrawExtendString(static_cast<int>(drawX - (strLen / 2)) * 16, 100,
-		2, 2, 
-		title.data(), 0xffffff);
 
 	int y = static_cast<int>(200 + m_currentLinePos * kMenuLineInterval);
 	// メニューラインの描画
@@ -146,9 +143,9 @@ void TitleScene::NormalDraw()
 		0xff0808);
 
 	// スタート
-	DrawString(drawX, 200-16, L"START", 0xffffff);
+	DrawStringToHandle(drawX, 200-16, L"START", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 	// オプション
-	DrawString(drawX, 264-16, L"OPTION", 0xffffff);
+	DrawStringToHandle(drawX, 264-16, L"OPTION", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 	// 終了
-	DrawString(drawX, 328-16, L"END", 0xffffff);
+	DrawStringToHandle(drawX, 328-16, L"END", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 }

@@ -112,7 +112,9 @@ void StageSelectScene::Update(Input& input)
 
 void StageSelectScene::Draw()
 {
+#ifdef _DEBUG
 	DrawString(100, kMenuMargin + 10, L"StagSelectScene", 0xffffff);
+#endif
 
 	for(int x = 0; x < kRowNum; x++)
 	{

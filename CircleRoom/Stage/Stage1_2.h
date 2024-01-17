@@ -13,7 +13,7 @@ public:
 
 private:
 	void CheckStageConditions() override;
-	void DrawStageConditions(int drawY) override;
+	int DrawStageConditions(int drawY) override;
 	void DrawArrow() const override;
 	void DrawKilledEnemyType() const override;
 	void CreateEnemy() override;

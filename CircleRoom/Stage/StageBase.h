@@ -6,6 +6,7 @@
 #include "Vec2.h"
 
 class GameManager;
+class FileBase;
 class Player;
 class EnemyBase;
 class BossBase;
@@ -63,7 +64,8 @@ protected:
 	/// ステージ条件の描画
 	/// </summary>
 	/// <param name="drawY">描画する位置 書かなければ48が初期位置</param>
-	virtual void DrawStageConditions(int drawY = 48) = 0;
+	/// <returns>Y軸の描画位置</returns>
+	virtual int DrawStageConditions(int drawY = 48) = 0;
 	/// <summary>
 	/// ステージの矢印描画
 	/// </summary>
@@ -176,6 +178,12 @@ protected:
 	DrawFunc_t m_drawFunc;
 
 	GameManager& m_mgr;
+
+	// 文字列を描画する用の画面ハンドル
+	int m_strHandle;
+
+	// 後ろのフレームを描画するよう
+	std::shared_ptr<FileBase> m_bFrameImg;
 
 	// ウィンドウサイズ
 	const size& m_size;

@@ -3,6 +3,7 @@
 #include "Common/Input.h"
 #include "GameManager.h"
 #include "FileSystem/KeyFile.h"
+#include "FileSystem/FontSystem.h"
 #include "StringUtility.h"
 
 #include "SceneManager.h"
@@ -101,7 +102,7 @@ void KeyConfigScene::Update(Input & input)
 
 void KeyConfigScene::Draw()
 {
-	DrawString(100, kMenuMargin + 10, L"KeyConfig Scene", 0xffffff);
+	DrawStringToHandle(100, kMenuMargin + 10, L"KeyConfig Scene", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 
 	DrawCommandList();
 }

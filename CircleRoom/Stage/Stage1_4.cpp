@@ -4,6 +4,7 @@
 
 #include "GameManager.h"
 #include "StageManager.h"
+#include "FileSystem/FontSystem.h"
 #include "Stage1_4.h"
 #include "Stage1_3.h"
 #include "Stage1_5.h"
@@ -135,20 +136,26 @@ void Stage1_4::CheckStageConditions()
 	}
 }
 
-void Stage1_4::DrawStageConditions(int drawY)
+int Stage1_4::DrawStageConditions(int drawY)
 {
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 	if (!m_isRightClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"‰E@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"‰E@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
 			kRightKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kRightKilledNum);
 
 		drawY += 32;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"ã@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"ã@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
 			kUpKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kUpKilledNum);
+
+		drawY += 32;
 	}
+
+	return drawY;
 }
 
 void Stage1_4::DrawArrow() const

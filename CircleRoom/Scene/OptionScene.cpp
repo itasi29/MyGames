@@ -7,6 +7,7 @@
 
 #include "GameManager.h"
 #include "SceneManager.h"
+#include "FileSystem/FontSystem.h"
 
 #include "StageSelectScene.h"
 #include "ConfigScene.h"
@@ -179,16 +180,18 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 	DrawBox(kMenuMargin * 2 + width * m_currentMenuLine, static_cast<int>(kMenuMargin),
 		kMenuMargin * 2 + width * (m_currentMenuLine + 1), static_cast<int>(kMenuMargin + kMenuMarginHeight),
 		0xff0000, true);
+
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 	// ƒƒjƒ…[‚Ì•¶š—ñŒQ
 	for (int i = 0; i < strs.size(); i++)
 	{
 		if (m_currentMenuLine == i)
 		{
-			DrawString(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0x000000);
+			DrawStringToHandle(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0x000000, fontHandle);
 		}
 		else
 		{
-			DrawString(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0xffffff);
+			DrawStringToHandle(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0xffffff, fontHandle);
 		}
 	}
 }

@@ -4,12 +4,14 @@
 #include "Stage/StageManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/SoundSystem.h"
+#include "FileSystem/FontSystem.h"
 
 GameManager::GameManager() :
 	m_file(std::make_shared<FileManager>()),
 	m_stage(std::make_shared<StageManager>()),
 	m_scene(std::make_shared<SceneManager>()),
-	m_sound(std::make_shared<SoundSystem>())
+	m_sound(std::make_shared<SoundSystem>()),
+	m_font(std::make_shared<FontSystem>())
 {
 }
 
@@ -41,4 +43,9 @@ std::shared_ptr<SceneManager>& GameManager::GetScene()
 std::shared_ptr<SoundSystem>& GameManager::GetSound()
 {
 	return m_sound;
+}
+
+std::shared_ptr<FontSystem>& GameManager::GetFont()
+{
+	return m_font;
 }

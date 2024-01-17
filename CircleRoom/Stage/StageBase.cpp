@@ -7,6 +7,9 @@
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
 #include "StageManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+#include "FileSystem/FontSystem.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyBase.h"
@@ -17,6 +20,9 @@ namespace
 	// フィールドサイズの倍率
 	// フィールドはwindowsizeの縦幅に倍率をかけたものとする
 	constexpr float kSizeScale = 0.4f;
+
+	// 文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
 
 	// 矢印の点滅間隔
 	constexpr int kFlashInterval = 20;
@@ -36,10 +42,16 @@ StageBase::StageBase(GameManager& mgr) :
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
+
+	// 第三引数をtrueにしておかないと作った画面が透過しない
+	m_strHandle = MakeScreen(m_size.w, m_size.h, true);
+
+	m_bFrameImg = m_mgr.GetFile()->LoadGraphic(L"UI/backFrame.png");
 }
 
 StageBase::~StageBase()
 {
+	DeleteGraph(m_strHandle);
 }
 
 void StageBase::Update(Input& input)
@@ -186,26 +198,37 @@ void StageBase::DrawSelect()
 	}
 	m_player->Draw();
 
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ステージ名の描画
-	DrawFormatString(128, 16, 0xffffff, L"%s", name.c_str());
+	DrawFormatStringToHandle(128, 16, kStrColor, fontHandle, L"%s", name.c_str());
 	// 殺されたことがある敵の描画
 	DrawKilledEnemyType();
 	// 時間の描画
 	int minSec = (m_frame * 1000 / 60) % 1000;
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
-	DrawFormatString(128, 32, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
+	DrawFormatStringToHandle(128, 32, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
+
+	SetDrawScreen(m_strHandle);
+	ClearDrawScreen();
+
 	// ステージ条件の描画
-	DrawStageConditions();
+	auto y = DrawStageConditions();
+
+	SetDrawScreen(DX_SCREEN_BACK);
+	// MEMO:条件後ろにあるフレーム背景を描画する
+	DrawGraph(0, y, m_bFrameImg->GetHandle(), true);
+	DrawGraph(0, 0, m_strHandle, true);
 
 	// ベストタイムの描画
 	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
 	minSec = (bestTime * 1000 / 60) % 1000;
 	sec = (bestTime / 60) % 60;
 	min = bestTime / 3600;
-	DrawExtendString(m_size.w - 256, 32, 1.5, 1.5, L"ベストタイム", 0xffffff);
-	DrawExtendFormatString(m_size.w - 256, 32 + 48, 2, 2, 0xffffff, L"%02d:%02d.%03d", min, sec, minSec);
+	DrawExtendString(m_size.w - 256, 32, 1.5, 1.5, L"ベストタイム", kStrColor);
+	DrawExtendFormatString(m_size.w - 256, 32 + 48, 2, 2, kStrColor, L"%02d:%02d.%03d", min, sec, minSec);
 
 	// 矢印の描画
 	DrawArrow();
@@ -231,7 +254,7 @@ void StageBase::DrawPlaying()
 	int min = m_frame / 3600;
 	DrawExtendFormatString(128, 32,	// 表示位置
 		2, 2,	// 拡大率
-		0xffffff, // 色
+		kStrColor, // 色
 		L"%02d:%02d.%03d", min, sec, minSec);	// 文字列
 	// 条件の描画
 	DrawStageConditions(64);

@@ -6,6 +6,7 @@
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
+#include "FileSystem/FontSystem.h"
 #include "StageManager.h"
 #include "Scene/SceneManager.h"
 #include "Scene/OneShotScene.h"
@@ -171,10 +172,12 @@ void StageTutorial::CheckStageConditions()
 	}
 }
 
-void StageTutorial::DrawStageConditions(int drawY)
+int StageTutorial::DrawStageConditions(int drawY)
 {
-	DrawFormatString(128, drawY, 0xffffff, L"¶@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
+	DrawFormatStringToHandle(128, drawY, 0xffffff, m_mgr.GetFont()->GetHandle(32), L"¶@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
 		kExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kExsitTime);
+
+	return drawY;
 }
 
 void StageTutorial::DrawArrow() const

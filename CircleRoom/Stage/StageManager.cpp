@@ -31,6 +31,7 @@ namespace
 	{
 		L"Enemy/wallEffect.png",
 		L"Player/blood.png",
+		L"UI/backFrame.png"
 
 	};
 }

@@ -4,6 +4,7 @@
 
 #include "GameManager.h"
 #include "StageManager.h"
+#include "FileSystem/FontSystem.h"
 #include "Stage1_1.h"
 #include "Stage1_2.h"
 #include "Stage1_3.h"
@@ -145,20 +146,26 @@ void Stage1_1::CheckStageConditions()
 	}
 }
 
-void Stage1_1::DrawStageConditions(int drawY)
+int Stage1_1::DrawStageConditions(int drawY)
 {
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 	if (!m_isLeftClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"¶@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
+
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"¶@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
 			kLeftExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kLeftExsitTime);
 
 		drawY += 32;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatString(128, drawY, 0xffffff, L"ã@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"ã@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
 			kUpExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kUpExsitTime);
+
+		drawY += 32;
 	}
+
+	return drawY;
 }
 
 void Stage1_1::DrawArrow() const
