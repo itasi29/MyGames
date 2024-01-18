@@ -10,7 +10,8 @@ namespace
 SoundSystem::SoundSystem() :
 	m_bgmVolume(kMaxVolume),
 	m_seVolume(kMaxVolume),
-	m_nowPlayBgm(-1)
+	m_nowPlayBgm(-1),
+	m_soundHandle(-1)
 {
 }
 
@@ -36,12 +37,13 @@ void SoundSystem::PlayBgm(int soundHnadle, bool isLoop)
 	m_nowPlayBgm = soundHnadle;
 }
 
-void SoundSystem::PlaySe(int seHandle, int playType)
+void SoundSystem::PlaySe(int seHandle)
 {
 	// âπó ÇÃïœçX
 	ChangeNextPlayVolumeSoundMem(m_seVolume, seHandle);
 
-	PlaySoundMem(seHandle, playType, true);
+	PlaySoundMem(seHandle, DX_PLAYTYPE_BACK, true);
+	m_soundHandle = seHandle;
 }
 
 void SoundSystem::ChangeBgmVol(int val)
@@ -74,6 +76,8 @@ void SoundSystem::ChangeSeVol(int val)
 		m_seVolume = kMaxVolume;
 		return;
 	}
+
+	PlaySe(m_soundHandle);
 }
 
 int SoundSystem::GetMaxVol() const

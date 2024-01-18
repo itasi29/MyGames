@@ -53,6 +53,8 @@ private:
 	// 編集中
 	bool m_isEdit;
 	int m_frame;
+	// キャンセル確認フレーム
+	int m_cancleFrame;
 
 	// PADの番号と名前の連携
 	std::unordered_map<int, std::wstring> m_bottanTable;

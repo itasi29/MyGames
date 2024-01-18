@@ -70,13 +70,11 @@ protected:
 	/// </summary>
 	void HitStop();
 
+
 protected:
 	// メンバ関数ポインタ
 	using updateFunc_t = void(BossBase::*)();
 	using drawFunc_t = void(BossBase::*)() const;
-
-	updateFunc_t m_updateFunc;
-	drawFunc_t m_drawFunc;
 
 	virtual void StartUpdate() = 0;
 	virtual void NormalUpdate() = 0;
@@ -89,8 +87,12 @@ protected:
 	/// HPバーの描画
 	/// </summary>
 	void DrawHpBar() const;
+	void DrawHitWallEffect() const;
 
 protected:
+	updateFunc_t m_updateFunc;
+	drawFunc_t m_drawFunc;
+
 	// 実体化するまでの時間
 	static const int kApeearFrame = 30;
 
@@ -142,5 +144,8 @@ protected:
 	// ダメージを受けた際の場所
 	int m_drawOnDamagetX;
 	int m_drawOnDamagetY;
+
+	// 壁エフェクト種類
+	int m_lineType;
 };
 

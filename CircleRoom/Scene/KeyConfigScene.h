@@ -57,6 +57,8 @@ private:
 	// 編集中
 	bool m_isEdit;
 	int m_frame;
+	// キャンセル確認フレーム
+	int m_cancleFrame;
 
 
 	// MEMO:これは変更させる可能性高い

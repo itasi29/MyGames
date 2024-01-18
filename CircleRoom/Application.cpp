@@ -12,6 +12,10 @@
 
 #include "Scene/TitleScene.h"
 
+#ifdef _DEBUG
+#include "Scene/DebugScene.h"
+#endif
+
 
 namespace 
 {
@@ -65,7 +69,11 @@ void Application::Run()
         GameManager& manager = GameManager::GetInstance();
         manager.GetStage()->Init();
 
+#ifdef _DEBUG
+        manager.GetScene()->ChangeScene(std::make_shared<DebugScene>(manager));
+#else
         manager.GetScene()->ChangeScene(std::make_shared<TitleScene>(manager));
+#endif
 
         Input input;
         while (ProcessMessage() != -1)

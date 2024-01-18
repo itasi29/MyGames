@@ -28,8 +28,22 @@ namespace
 	// 背景HPバーの前後高さ
 	constexpr int kBackHpBarHeight = 10;
 
+	// 1エフェクト何フレームか
+	constexpr int kWallEffectInterval = 3;
 	// 壁に当たったエフェクトをするフレーム
-	constexpr int kWallHitFrame = 10;
+	constexpr int kWallHitFrame = 8 * kWallEffectInterval;
+	// 画像サイズ
+	constexpr int kWallEffectGraphSize = 64;
+	// 拡大率
+	constexpr double kExtRate = 0.75;
+	// 行数
+	constexpr int kRow = 8;
+	// 列数の種類数
+	constexpr int kEffectTypeNum = 4;
+	// 出すエフェクトの列の場所
+	constexpr int kLine[kEffectTypeNum] = {
+		0, 4, 7, 8
+	};
 
 	// ずらす量
 	constexpr int kWallEffectSlide = 32;
@@ -44,7 +58,8 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_maxHp(maxHp),
 	m_isExsit(true),
 	m_hp(maxHp),
-	m_hitStopFrame(kHitStopFrame)
+	m_hitStopFrame(kHitStopFrame),
+	m_lineType(0)
 {
 	m_updateFunc = &BossBase::StartUpdate;
 	m_drawFunc = &BossBase::StartDraw;
@@ -154,6 +169,8 @@ bool BossBase::Reflection()
 
 void BossBase::ReflectionCal(const Vec2& norVec)
 {
+	m_lineType = GetRand(kEffectTypeNum);
+
 	// 法線ベクトルの2倍から現在のベクトルを引く
 	m_vec = m_vec + norVec * norVec.Dot(-m_vec) * 2.0f;
 }
@@ -222,13 +239,7 @@ void BossBase::NormalDraw() const
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), m_color, true);
 
-	// 壁に当たったエフェクトの描画
-	if (m_wallHitFrame > 0)
-	{
-		// MEMO:現在は仮
-		// 座標を中心とする
-		DrawGraph(m_drawWallHitX - 16, m_drawWallHitY - 16, m_wallEffect->GetHandle(), true);
-	}
+	DrawHitWallEffect();
 
 #ifdef _DEBUG
 	// 当たり判定の描画
@@ -253,3 +264,20 @@ void BossBase::DrawHpBar() const
 	DrawFormatString(static_cast<int>(base.x), static_cast<int>(base.y - 32),
 		0xffffff, L"%02d / %02d", m_hp, m_maxHp);
 }
+
+void BossBase::DrawHitWallEffect() const
+{
+	// 壁に当たったエフェクトの描画
+	if (m_wallHitFrame > 0)
+	{
+		int x = m_drawWallHitX - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
+		int y = m_drawWallHitY - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
+
+		int index = (kWallHitFrame - m_wallHitFrame) / kWallEffectInterval;
+		int srcX = kWallEffectGraphSize * (index % kRow);
+		int srcY = kWallEffectGraphSize * kLine[m_lineType];
+
+		DrawRectRotaGraph(x, y, srcX, srcY, kWallEffectGraphSize * kExtRate, kWallEffectGraphSize * kExtRate, kExtRate, 0.0, m_wallEffect->GetHandle(), true);
+	}
+}
+

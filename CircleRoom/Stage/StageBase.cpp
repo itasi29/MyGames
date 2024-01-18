@@ -203,6 +203,9 @@ void StageBase::DrawSelect()
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ƒXƒe[ƒW–¼‚Ì•`‰æ
 	DrawFormatStringToHandle(128, 16, kStrColor, fontHandle, L"%s", name.c_str());
+
+	SetDrawScreen(m_strHandle);
+	ClearDrawScreen();
 	// ŽE‚³‚ê‚½‚±‚Æ‚ª‚ ‚é“G‚Ì•`‰æ
 	DrawKilledEnemyType();
 	// ŽžŠÔ‚Ì•`‰æ
@@ -210,19 +213,15 @@ void StageBase::DrawSelect()
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
 	DrawFormatStringToHandle(128, 48, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
+	SetDrawScreen(DX_SCREEN_BACK);
+	DrawGraph(0, 48, m_bFrameImg->GetHandle(), true);
+	DrawGraph(0, 0, m_strHandle, true);
 
-	SetDrawScreen(m_strHandle);
-	ClearDrawScreen();
-
-	/***********************************************/
-	// ŽŸ‚Í‚±‚±‚©‚ç‚â‚é
-	// TODO:ƒtƒŒ[ƒ€‚Ì•ÏX‚Æ‡‚í‚¹ƒtƒHƒ“ƒg‚Ì‡‚í‚¹ˆ—
-	// TODO:‰Æ‚Å‚â‚é‚È‚ç‰¹“ü‚ê‚é—p‚Ì•Ï”‚ð€”õ•ƒ{ƒX‚Æƒ_ƒbƒVƒ…‚ÌDrawRectGraph‚Ö‚Ì•ÏX
-	/***********************************************/
 
 	// ƒXƒe[ƒWðŒ‚Ì•`‰æ
+	SetDrawScreen(m_strHandle);
+	ClearDrawScreen();
 	auto y = DrawStageConditions();
-
 	SetDrawScreen(DX_SCREEN_BACK);
 	// MEMO:ðŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ð•`‰æ‚·‚é
 	if (y != 0)
@@ -258,6 +257,8 @@ void StageBase::DrawPlaying()
 	m_player->Draw();
 
 	// ŽžŠÔ‚Ì•`‰æ
+	SetDrawScreen(m_strHandle);
+	ClearDrawScreen();
 	int minSec = (m_frame * 1000 / 60) % 1000;
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
@@ -265,8 +266,22 @@ void StageBase::DrawPlaying()
 		2, 2,	// Šg‘å—¦
 		kStrColor, // F
 		L"%02d:%02d.%03d", min, sec, minSec);	// •¶Žš—ñ
+	SetDrawScreen(DX_SCREEN_BACK);
+	DrawGraph(0, 32, m_bFrameImg->GetHandle(), true);
+	DrawGraph(0, 0, m_strHandle, true);
+
 	// ðŒ‚Ì•`‰æ
-	DrawStageConditions(96+24);
+	SetDrawScreen(m_strHandle);
+	ClearDrawScreen();
+	auto y = DrawStageConditions(96+24);
+	SetDrawScreen(DX_SCREEN_BACK);
+	// MEMO:ðŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ð•`‰æ‚·‚é
+	if (y != 0)
+	{
+		DrawGraph(0, y, m_bFrameImg->GetHandle(), true);
+	}
+	DrawGraph(0, 0, m_strHandle, true);
+
 }
 
 void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const

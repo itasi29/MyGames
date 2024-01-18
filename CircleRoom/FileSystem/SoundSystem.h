@@ -20,8 +20,7 @@ public:
 	/// SEを流す
 	/// </summary>
 	/// <param name="seHandle">SEハンドル</param>
-	/// <param name="playType">再生タイプ</param>
-	void PlaySe(int seHandle, int playType);
+	void PlaySe(int seHandle);
 
 	/// <summary>
 	/// BGMのボリュームを変更する
@@ -64,5 +63,7 @@ private:
 
 	// 現在再生中のBGM
 	int m_nowPlayBgm;
+	// 最後に鳴らしたSE
+	int m_soundHandle;
 };
 

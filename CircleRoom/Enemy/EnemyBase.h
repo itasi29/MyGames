@@ -73,6 +73,8 @@ protected:
 	virtual void StartDraw(); 
 	virtual void NormalDraw();
 
+	void DrawHitWallEffect();
+
 protected:
 	// ŽÀ‘Ì‰»‚·‚é‚Ü‚Å‚ÌŽžŠÔ
 	static const int kApeearFrame = 60;

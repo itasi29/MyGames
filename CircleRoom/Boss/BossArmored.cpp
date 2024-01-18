@@ -211,13 +211,7 @@ void BossArmored::NormalDraw() const
 		obj->Draw();
 	}
 
-	// 壁に当たったエフェクトの描画
-	if (m_wallHitFrame > 0)
-	{
-		// MEMO:現在は仮
-		// 座標を中心とする
-		DrawGraph(m_drawWallHitX - 16, m_drawWallHitY - 16, m_wallEffect->GetHandle(), true);
-	}
+	DrawHitWallEffect();
 
 	// ダメージエフェクト
 	if (m_onDamagetFrame > 0)

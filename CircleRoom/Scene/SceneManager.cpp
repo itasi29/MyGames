@@ -10,6 +10,7 @@ namespace
 }
 
 SceneManager::SceneManager() :
+	m_isShake(false),
 	m_shakeFrame(0),
 	m_shakeSize(kShakeSize)
 {

@@ -19,11 +19,13 @@ namespace
 	const Vec2 kShiftVert = Vec2{ 0.2f, 0.0f };
 
 	// 1エフェクト何フレームか
-	constexpr int kWallEffectFrame = 3;
+	constexpr int kWallEffectInterval = 3;
 	// 壁に当たったエフェクトをするフレーム
-	constexpr int kWallHitFrame = 8 * kWallEffectFrame;
+	constexpr int kWallHitFrame = 8 * kWallEffectInterval;
 	// 画像サイズ
 	constexpr int kWallEffectGraphSize = 64;
+	// 拡大率
+	constexpr double kExtRate = 0.75;
 	// 行数
 	constexpr int kRow = 8;
 	// 列数の種類数
@@ -226,21 +228,26 @@ void EnemyBase::NormalDraw()
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
 		static_cast<int>(m_radius), m_color, true);
 
-	// 壁に当たったエフェクトの描画
-	if (m_wallHitFrame > 0)
-	{
-		int x = m_drawWallHitX - static_cast<int>(kWallEffectGraphSize * 0.5f);
-		int y = m_drawWallHitY - static_cast<int>(kWallEffectGraphSize * 0.5f);
-
-		int index = (kWallHitFrame - m_wallHitFrame) / kWallEffectFrame;
-		int srcX = kWallEffectGraphSize * (index % kRow);
-		int srcY = kWallEffectGraphSize * kLine[m_lineType];
-
-		DrawRectGraph(x, y, srcX, srcY, kWallEffectGraphSize, kWallEffectGraphSize, m_wallEffect->GetHandle(), true);
-	}
+	DrawHitWallEffect();
 
 #ifdef _DEBUG
 	// 当たり判定の描画
 	m_col.Draw(0xff0000, false);
 #endif
+}
+
+void EnemyBase::DrawHitWallEffect()
+{
+	// 壁に当たったエフェクトの描画
+	if (m_wallHitFrame > 0)
+	{
+		int x = m_drawWallHitX - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
+		int y = m_drawWallHitY - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
+
+		int index = (kWallHitFrame - m_wallHitFrame) / kWallEffectInterval;
+		int srcX = kWallEffectGraphSize * (index % kRow);
+		int srcY = kWallEffectGraphSize * kLine[m_lineType];
+
+		DrawRectRotaGraph(x, y, srcX, srcY, kWallEffectGraphSize * kExtRate, kWallEffectGraphSize * kExtRate, kExtRate, 0.0, m_wallEffect->GetHandle(), true);
+	}
 }

@@ -25,7 +25,8 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	m_input(input),
 	m_currentLineIndex(0),
 	m_isEdit(false),
-	m_frame(0)
+	m_frame(0),
+	m_cancleFrame(0)
 {
 	m_updateFunc = &PadConfigScene::EditEndUpdate;
 
@@ -93,21 +94,39 @@ void PadConfigScene::NormalUpdate(Input& input)
 		m_isEdit = true;
 		m_updateFunc = &PadConfigScene::EditUpdate;
 		m_frame = 0;
+		m_cancleFrame = 0;
 	}
+
+	m_frame++;
 
 	if (input.IsTriggered("up"))
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(m_menuTable.size())) % static_cast<int>(m_menuTable.size());
+		m_frame = 0;
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % m_menuTable.size();
+		m_frame = 0;
 	}
 }
 
 void PadConfigScene::EditUpdate(Input& input)
 {
 	m_frame++;
+
+	if (input.IsPress("cancel"))
+	{
+		m_cancleFrame++;
+		if (m_cancleFrame > 10)
+		{
+			m_updateFunc = &PadConfigScene::NormalUpdate;
+			m_isEdit = false;
+			m_frame = 0;
+		}
+		return;
+	}
+	m_cancleFrame = 0;
 
 	// 現在選択しているコマンドのデータを参照
 	auto strItem = m_menuTable[m_currentLineIndex];
@@ -145,6 +164,7 @@ void PadConfigScene::EditEndUpdate(Input& input)
 	if (input.IsNotPress("OK") && !input.IsReleased("OK"))
 	{
 		m_updateFunc = &PadConfigScene::NormalUpdate;
+		m_frame = 0;
 	}
 }
 
@@ -171,18 +191,25 @@ void PadConfigScene::DrawCommandList()
 		// 表示するコマンドの情報を取得
 		auto& cmd = m_commandTable[m_menuTable[i]];
 
-		unsigned int lineColor = kDefColor;
+		std::wstring cmdName = StringUtility::StringToWString(m_menuTable[i]);
+		int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
 		if (i == m_currentLineIndex)
 		{
-			lineColor = 0x000000;
+			if (!m_isEdit)
+			{
+				int frame = (m_frame % 80) - 40;
+				float rate = fabs(frame) / 40.0f;
+				int alpha = 255 * rate;
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			}
+			DrawFormatStringToHandle(kMenuMargin + 50, y, 0x000000, fontHandle, L"%s", cmdName.c_str());
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
-
-		std::wstring cmdName = StringUtility::StringToWString(m_menuTable[i]);
-
-		// FIXME:フォントサイズでの方法に変更する可能性大
-		DrawFormatStringToHandle(kMenuMargin + 50, y, lineColor, m_mgr.GetFont()->GetHandle(32), L"%s",	cmdName.c_str());
-		//DrawRotaFormatString(kMenuMargin + 50, y, kExtendRate, kExtendRate, 0.0, 0.0,
-		//	0.0, lineColor, lineColor, 0, L"%s", cmdName.c_str());
+		else
+		{
+			DrawFormatStringToHandle(kMenuMargin + 50, y, 0xffffff, fontHandle, L"%s", cmdName.c_str());
+		}
 
 		m_btImg->DrawBottan(GetPadName(cmd.at(InputType::pad)), kMenuMargin + 50 + 376, y, kExtendRate);
 

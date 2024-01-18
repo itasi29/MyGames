@@ -4,6 +4,9 @@
 #include "Vec2.h"
 #include "GameManager.h"
 #include "Stage/StageManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/SoundSystem.h"
+#include "FileSystem/FileBase.h"
 #include "Input.h"
 
 #include "Stage/Stage1_1.h"
@@ -50,6 +53,8 @@ StageSelectScene::StageSelectScene(GameManager& mgr) :
 	m_indexRow(0),
 	m_indexLine(0)
 {
+	m_soundSys = mgr.GetSound();
+	m_selectSe = mgr.GetFile()->LoadSound(L"Se/select.mp3");
 }
 
 StageSelectScene::~StageSelectScene()
@@ -58,24 +63,30 @@ StageSelectScene::~StageSelectScene()
 
 void StageSelectScene::Update(Input& input)
 {
+	m_frame++;
+
 	// 上下のインデックスの変更
 	if (input.IsTriggered("up"))
 	{
 		m_indexLine = (m_indexLine - 1 + kLineNum) % kLineNum;
+		m_frame = 0;
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_indexLine = (m_indexLine + 1) % kLineNum;
+		m_frame = 0;
 	}
 
 	// 左右のインデックスの変更
 	if (input.IsTriggered("left"))
 	{
 		m_indexRow = (m_indexRow - 1 + kRowNum) % kRowNum;
+		m_frame = 0;
 	}
 	if (input.IsTriggered("right"))
 	{
 		m_indexRow = (m_indexRow + 1) % kRowNum;
+		m_frame = 0;
 	}
 
 	if (input.IsTriggered("OK"))
@@ -86,6 +97,8 @@ void StageSelectScene::Update(Input& input)
 
 		// そのステージがクリアされていなければ終了
 		if (!m_mgr.GetStage()->IsClearStage(stgName)) return;
+
+		m_soundSys->PlaySe(m_selectSe->GetHandle());
 
 		if (stgName == "Stage1-1")
 		{
@@ -123,12 +136,18 @@ void StageSelectScene::Draw()
 
 		for (int y = 0; y < kLineNum; y++)
 		{
+			// フレームの描画
 			if (isIndexRow && m_indexLine == y)
 			{
+				int frame = (m_frame % 80) - 40;
+				float rate = fabs(frame) / 40.0f;
+				int alpha = 255 * rate;
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 				// FIXE:現状大きめの枠を描画しているがのちは画像に変更
 				DrawBoxAA(static_cast<float>(drawX - kStageFrameSize), kStartPos.y + kStageMargine * y - kStageFrameSize,
 					static_cast<float>(drawX + kStageSize + kStageFrameSize), kStartPos.y + kStageMargine * y + kStageSize + kStageFrameSize,
 					0xffff00, false, kStageFrameThickness);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 
 			// ステージの描画が無しの場合は以下のは描画しない
@@ -144,13 +163,6 @@ void StageSelectScene::Draw()
 			{
 				DrawCircle(static_cast<int>(drawX + kStageSize * 0.5f), static_cast<int>(drawY + kStageSize * 0.5f), 16, 0xff8800, true);
 			}
-
-			//for (int i = 0; i < kStageFrameThickness; i++)
-			//{
-			//	DrawBox(drawX + i, kStartPos.y + kStageMargine * y + i,
-			//		drawX + kStageSize - i, kStartPos.y + kStageMargine * y + kStageSize - i,
-			//		0xffffff, false);
-			//}
 
 			// MEMO:アンチエイリアス付きにすると線の太さを指定可能
 

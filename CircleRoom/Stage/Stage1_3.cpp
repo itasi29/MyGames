@@ -15,6 +15,10 @@
 
 namespace
 {
+	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
+	constexpr int kKillTypePosX = 144;
+	constexpr int kKillTypePosY = 96;
+
 	// ƒNƒŠƒAŽžŠÔ
 	constexpr int kDownExsitTime = 15;
 	constexpr int kLeftKilledNum = 3;
@@ -134,6 +138,7 @@ void Stage1_3::CheckStageConditions()
 
 int Stage1_3::DrawStageConditions(int drawY)
 {
+	int startY = drawY;
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
 	if (!m_isLeftClear)
@@ -151,7 +156,7 @@ int Stage1_3::DrawStageConditions(int drawY)
 		drawY += 32;
 	}
 
-	return drawY;
+	return drawY - startY;
 }
 
 void Stage1_3::DrawArrow() const
@@ -164,20 +169,20 @@ void Stage1_3::DrawKilledEnemyType() const
 {
 	if (m_mgr.GetStage()->IsKilledEnemy("Dash"))
 	{
-		DrawCircle(256, 28, 16, 0x0808ff, true);
+		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0x0808ff, true);
 	}
 	else
 	{
-		DrawCircle(256, 28, 16, 0x0808ff, false);
+		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0x0808ff, false);
 	}
 
 	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
-		DrawCircle(256 + 48, 28, 16, 0x888888, true);
+		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, true);
 	}
 	else
 	{
-		DrawCircle(256 + 48, 28, 16, 0x888888, false);
+		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, false);
 	}
 }
 

@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include <cassert>
+#include <string>
 #include "Application.h"
 #include "Common/Input.h"
 
@@ -7,6 +8,8 @@
 #include "SceneManager.h"
 #include "FileSystem/BottansFile.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/SoundSystem.h"
+#include "FileSystem/FileManager.h"
 
 #include "GamePlayingScene.h"
 #include "OptionScene.h"
@@ -14,7 +17,6 @@
 #include "TitleScene.h"
 
 // お試し用
-#include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
 #include "OneShotScene.h"
 
@@ -26,16 +28,30 @@ namespace
 	constexpr float kMenuLineInterval = 64;
 	// ラインの長さ
 	constexpr int kMenuLength = 256;
+
+	// 点滅間隔
+
+	const std::wstring kMenuStr[kMenuLineNum] = {
+		L"START",
+		L"OPTION",
+		L"END"
+	};
 }
 
 TitleScene::TitleScene(GameManager& mgr) :
-	Scene(mgr)
+	Scene(mgr),
+	m_bgFrame(0)
 {
 	m_frame = 60;
 	m_updateFunc = &TitleScene::FadeInUpdate;
 	m_drawFunc = &TitleScene::FadeDraw;
 
-	m_logoImg = m_mgr.GetFile()->LoadGraphic(L"logo.png");
+	auto& file = mgr.GetFile();
+	m_logoImg = file->LoadGraphic(L"logo.png");
+	m_bgImg = file->LoadGraphic(L"BG/bg.png");
+
+	m_soundSys = mgr.GetSound();
+	m_selectSe = file->LoadSound(L"Se/select.mp3");
 }
 
 TitleScene::~TitleScene()
@@ -45,6 +61,7 @@ TitleScene::~TitleScene()
 
 void TitleScene::Update(Input& input)
 {
+	m_bgFrame++;
 	(this->*m_updateFunc)(input);
 }
 
@@ -61,23 +78,30 @@ void TitleScene::FadeInUpdate(Input&)
 		// 次の遷移先
 		m_updateFunc = &TitleScene::NormalUpdate;
 		m_drawFunc = &TitleScene::NormalDraw;
+
+		m_frame = 0;
 	}
 }
 
 void TitleScene::NormalUpdate(Input& input)
 {
+	m_frame++;
+
 	if (input.IsTriggered("up"))
 	{
 		// 現在のラインの位置をメニューのラインの数で繰り返す
 		m_currentLinePos = (kMenuLineNum + m_currentLinePos - 1) % kMenuLineNum;
+		m_frame = 0;
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLinePos = (m_currentLinePos + 1) % kMenuLineNum;
+		m_frame = 0;
 	}
 
 	if (input.IsTriggered("OK"))
 	{
+		m_soundSys->PlaySe(m_selectSe->GetHandle());
 		// 0番目のときはスタート処理
 		if (m_currentLinePos == 0)
 		{
@@ -131,21 +155,43 @@ void TitleScene::NormalDraw()
 	const auto& m_size = Application::GetInstance().GetWindowSize();
 	int drawX = m_size.w / 2;
 
+	DrawBg(m_size);
+
 	// ロゴの描画
 	DrawGraph(0, 0, m_logoImg->GetHandle(), true);
-		
-	// タイトル名の描画
-
-	int y = static_cast<int>(200 + m_currentLinePos * kMenuLineInterval);
+	
+	int y = static_cast<int>(184 + m_currentLinePos * kMenuLineInterval);
 	// メニューラインの描画
-	DrawLine(drawX, y,
-		drawX + kMenuLength, y, 
-		0xff0808);
+	DrawBox(drawX, y, drawX + kMenuLength, y + 32, 0xff0808, true);
 
-	// スタート
-	DrawStringToHandle(drawX, 200-16, L"START", 0xffffff, m_mgr.GetFont()->GetHandle(32));
-	// オプション
-	DrawStringToHandle(drawX, 264-16, L"OPTION", 0xffffff, m_mgr.GetFont()->GetHandle(32));
-	// 終了
-	DrawStringToHandle(drawX, 328-16, L"END", 0xffffff, m_mgr.GetFont()->GetHandle(32));
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
+	y = 200 - 16;
+
+	for (int i = 0; i < kMenuLineNum; i++)
+	{
+		if (m_currentLinePos == i)
+		{
+			int frame = (m_frame % 80) - 40;
+			float rate = fabs(frame) / 40.0f;
+			int alpha = 255 * rate;
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			DrawStringToHandle(drawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+		else
+		{
+			DrawStringToHandle(drawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+		}
+
+		y += 64;
+	}
+}
+
+void TitleScene::DrawBg(const size& size)
+{
+	int posX = m_bgFrame % size.w;
+	DrawGraph(posX, 0, m_bgImg->GetHandle(), false);
+	posX -= size.w;
+	DrawGraph(posX, 0, m_bgImg->GetHandle(), false);
 }

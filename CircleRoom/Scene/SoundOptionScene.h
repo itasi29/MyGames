@@ -1,6 +1,9 @@
 #pragma once
 #include "Scene.h"
 
+class FileBase;
+class SoundSystem;
+
 /// <summary>
 /// ‰¹—Ê’²®ƒV[ƒ“
 /// </summary>
@@ -37,5 +40,10 @@ private:
 	bool m_isEdit;
 
 	int m_frame;
+
+	// ‰¹ŠÖŒW
+	std::shared_ptr<SoundSystem> m_soundSys;
+	// ‘I‘ğSe
+	std::shared_ptr<FileBase> m_selectSe;
 };
 

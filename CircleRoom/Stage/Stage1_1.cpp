@@ -15,6 +15,10 @@
 
 namespace
 {
+	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
+	constexpr int kKillTypePosX = 144;
+	constexpr int kKillTypePosY = 96;
+
 	// ‰‚ß‚É¶¬‚·‚é“G‚Ì”
 	constexpr int kStartCreatNum = 4;
 	// ‰‚ß‚Ì¶¬ŠÔŠuƒtƒŒ[ƒ€
@@ -179,20 +183,20 @@ void Stage1_1::DrawKilledEnemyType() const
 {
 	if (m_mgr.GetStage()->IsKilledEnemy("Normal"))
 	{
-		DrawCircle(256, 28, 16, 0xffffff, true);
+		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0xffffff, true);
 	}
 	else
 	{
-		DrawCircle(256, 28, 16, 0xffffff, false);
+		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0xffffff, false);
 	}
 
 	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
-		DrawCircle(256 + 48, 28, 16, 0x888888, true);
+		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, true);
 	}
 	else
 	{
-		DrawCircle(256 + 48, 28, 16, 0x888888, false);
+		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, false);
 	}
 }
 

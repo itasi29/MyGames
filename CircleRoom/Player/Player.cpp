@@ -61,8 +61,8 @@ Player::Player(const size& windowSize, float fieldSize) :
 	m_isExsit = false;
 	m_posLog.resize(kDashLogNum);
 
-	auto& mgr = GameManager::GetInstance().GetFile();
-	m_bloodImg = mgr->LoadGraphic(L"Player/blood.png");
+	auto& mgr = GameManager::GetInstance();
+	m_bloodImg = mgr.GetFile()->LoadGraphic(L"Player/blood.png");
 }
 
 Player::~Player()

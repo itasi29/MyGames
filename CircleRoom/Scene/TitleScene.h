@@ -1,7 +1,10 @@
 #pragma once
+#include <memory>
 #include "Scene.h"
 
 class FileBase;
+class SoundSystem;
+struct size;
 
 /// <summary>
 /// タイトルシーンクラス
@@ -25,6 +28,9 @@ private:
 	void NormalDraw();	// 非フェード描画
 
 private:
+	void DrawBg(const size& size);
+
+private:
 	int m_frame = 0;
 	// メニュー選択カーソル位置
 	int m_currentLinePos = 0;
@@ -37,5 +43,15 @@ private:
 
 	// タイトルロゴ
 	std::shared_ptr<FileBase> m_logoImg;
+	// 背景画像
+	std::shared_ptr<FileBase> m_bgImg;
+
+	// 背景フレーム
+	int m_bgFrame;
+
+	// 音関係
+	std::shared_ptr<SoundSystem> m_soundSys;
+	// 選択時Se
+	std::shared_ptr<FileBase> m_selectSe;
 };
 
