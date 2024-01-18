@@ -57,6 +57,8 @@ private:
     // 経過フレーム
     int m_frame;
 
+    // ステージ内で多く使うデータ
+    std::vector<std::shared_ptr<FileBase>> m_stgData;
     // BGM
     std::shared_ptr<FileBase> m_bgm;
     // 背景

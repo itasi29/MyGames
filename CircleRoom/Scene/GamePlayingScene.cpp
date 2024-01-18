@@ -8,7 +8,7 @@
 #include "FileSystem/SoundSystem.h"
 
 #include "GamePlayingScene.h"
-#include "GameOverScene.h"
+#include "GameClearScene.h"
 #include "OptionScene.h"
 
 #include "FileSystem/FileManager.h"
@@ -22,6 +22,15 @@ namespace
 
 	// フェードのフレーム時間
 	constexpr int kFadeFrame = 60;
+
+	// 事前に読み込んでおくデータのpath
+	const std::vector<std::wstring> kPath =
+	{
+		L"Enemy/wallEffect.png",
+		L"Player/blood.png",
+		L"UI/backFrame.png"
+	};
+
 }
 
 GamePlayingScene::GamePlayingScene(GameManager& mgr) :
@@ -49,6 +58,14 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 
 	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_bg = m_mgr.GetFile()->LoadGraphic(L"BG/bg.png");
+
+	// 事前にステージ内で多く使うものはここで読み込んでおく
+	int size = kPath.size();
+	m_stgData.resize(size);
+	for (int i = 0; i < size; i++)
+	{
+		m_stgData[i] = m_mgr.GetFile()->LoadGraphic(kPath[i]);
+	}
 }
 
 GamePlayingScene::~GamePlayingScene()
@@ -57,8 +74,6 @@ GamePlayingScene::~GamePlayingScene()
 
 void GamePlayingScene::Update(Input& input)
 {
-	// うるさいから消す
-//	PlaySoundMem(m_bgm->GetHandle(), DX_PLAYTYPE_BACK, false);
 	m_mgr.GetSound()->PlayBgm(m_bgm->GetHandle());
 
 	(this->*m_updateFunc)(input);
@@ -87,13 +102,15 @@ void GamePlayingScene::UpdateFadeOut(Input& input)
 	m_frame++;
 	if (m_frame >= kFadeFrame)
 	{
-		m_mgr.GetScene()->ChangeScene(std::make_shared<GameOverScene>(m_mgr));
+		m_mgr.GetScene()->ChangeScene(std::make_shared<GameClearScene>(m_mgr));
 	}
 }
 
 void GamePlayingScene::UpdateNormal(Input& input)
 {
 	m_mgr.GetStage()->Update(input);
+	// プレイ時間のアップデート
+	m_mgr.UpdatePlaytime();
 
 	// pauseボタンが押されたらポーズ画面を開く
 	if (input.IsPress("pause"))

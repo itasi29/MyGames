@@ -3,7 +3,7 @@
 #include "Input.h"
 #include "TitleScene.h"
 #include "GamePlayingScene.h"
-#include "GameOverScene.h"
+#include "GameClearScene.h"
 #include  "GameManager.h"
 #include "SceneManager.h"
 
@@ -40,7 +40,7 @@ void DebugScene::Update(Input& input)
 			m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
 			break;
 		case 2:
-			m_mgr.GetScene()->ChangeScene(std::make_shared<GameOverScene>(m_mgr));
+			m_mgr.GetScene()->ChangeScene(std::make_shared<GameClearScene>(m_mgr));
 			break;
 		default:
 			break;

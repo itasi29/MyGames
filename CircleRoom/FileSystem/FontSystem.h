@@ -11,6 +11,8 @@ public:
 	FontSystem();
 	~FontSystem();
 
+	void Init();
+
 	int GetHandle(int size) const;
 
 private:

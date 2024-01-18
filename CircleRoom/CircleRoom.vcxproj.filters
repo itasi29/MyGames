@@ -63,7 +63,7 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\GameOverScene.cpp">
+    <ClCompile Include="Scene\GameClearScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Scene\GamePlayingScene.cpp">
@@ -233,7 +233,7 @@
     <ClInclude Include="Scene\GamePlayingScene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\GameOverScene.h">
+    <ClInclude Include="Scene\GameClearScene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Utility\StringUtility.h">

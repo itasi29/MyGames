@@ -19,6 +19,8 @@ public:
 
 public:
 	~FileManager();
+	void End();
+
 	/// <summary>
 	/// 指定のパスの画像データをロードしてそのファイルオブジェクトを返す
 	/// </summary>

@@ -7,6 +7,26 @@ class SceneManager;
 class SoundSystem;
 class FontSystem;
 
+struct VolumeData
+{
+	// Bgmボリューム
+	int bgmVol;
+	// Seボリューム
+	int seVol;
+};
+
+struct AccountData
+{
+	// プレイ時間
+	int playTime;
+	// 死亡数
+	int deathCount;
+	// ダッシュ使用回数
+	int dashCount;
+
+	VolumeData volume;
+};
+
 /// <summary>
 /// ゲーム全体のマネージャーを一括管理する
 /// </summary>
@@ -21,6 +41,8 @@ private:
 public:
 	~GameManager();
 
+	void Init();
+
 	/// <summary>
 	/// ゲームマネージャークラスのインスタンスを返す
 	/// </summary>
@@ -33,11 +55,25 @@ public:
 	std::shared_ptr<SoundSystem>& GetSound();
 	std::shared_ptr<FontSystem>& GetFont();
 
+	VolumeData GetVolume() const { return m_data.volume; }
+	AccountData GetData() const;
+
+	void UpdateVolume(const VolumeData& data) { m_data.volume = data; }
+	void UpdatePlaytime() { m_data.playTime++; }
+	void UpdateDeathCcount() { m_data.deathCount++; }
+	void UpdateDashCount() { m_data.dashCount++; }
+
+private:
+	void Save();
+	void Load();
+
 private:
 	std::shared_ptr<FileManager> m_file;
 	std::shared_ptr<StageManager> m_stage;
 	std::shared_ptr<SceneManager> m_scene;
 	std::shared_ptr<SoundSystem> m_sound;
 	std::shared_ptr<FontSystem> m_font;
+
+	AccountData m_data;
 };
 

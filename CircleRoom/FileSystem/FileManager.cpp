@@ -7,6 +7,10 @@
 
 FileManager::~FileManager()
 {
+}
+
+void FileManager::End()
+{
     for (auto& file : m_fileTable)
     {
         file.second->Delete();

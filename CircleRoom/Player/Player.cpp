@@ -255,6 +255,8 @@ void Player::Dash(Input& input)
 			m_posLog[i] = m_pos;
 			m_angleLog[i] = m_angle;
 		}
+
+		GameManager::GetInstance().UpdateDashCount();
 	}
 
 	// 現在ダッシュ中でないなら処理終了

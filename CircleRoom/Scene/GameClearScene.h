@@ -1,17 +1,18 @@
 #pragma once
 #include "Scene.h"
-class GameOverScene : public Scene
+
+class GameClearScene : public Scene
 {
 public:
-    GameOverScene(GameManager& mgr);
-    ~GameOverScene();
+    GameClearScene(GameManager& mgr);
+    ~GameClearScene();
     virtual void Update(Input& input);
     virtual void Draw();
 
 private:
     // メンバ関数ポインタの宣言
-    using UpdateFunc_t = void (GameOverScene::*)(Input&);
-    using DrawFunc_t = void (GameOverScene::*)();
+    using UpdateFunc_t = void (GameClearScene::*)(Input&);
+    using DrawFunc_t = void (GameClearScene::*)();
 
     // 更新状態を表す関数
     void FadeInUpdate(Input&);
@@ -21,6 +22,8 @@ private:
     // 描画状態を表す関数
     void FadeDraw();
     void NormalDraw();
+
+    void DrawInf(int index, int drawY, int handle);
 
 private:
     UpdateFunc_t m_updateFunc;

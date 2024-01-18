@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include <cassert>
 #include "SoundSystem.h"
+#include "GameManager.h"
 
 namespace
 {
@@ -13,6 +14,22 @@ SoundSystem::SoundSystem() :
 	m_nowPlayBgm(-1),
 	m_soundHandle(-1)
 {
+}
+
+SoundSystem::~SoundSystem()
+{
+}
+
+void SoundSystem::Init()
+{
+	auto volume = GameManager::GetInstance().GetVolume();
+	m_bgmVolume = volume.bgmVol;
+	m_seVolume = volume.seVol;
+}
+
+void SoundSystem::End()
+{
+	GameManager::GetInstance().UpdateVolume({ m_bgmVolume, m_seVolume });
 }
 
 void SoundSystem::PlayBgm(int soundHnadle, bool isLoop)

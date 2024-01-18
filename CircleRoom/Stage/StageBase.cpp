@@ -125,6 +125,7 @@ void StageBase::UpdatePlaying(Input& input)
 			// プレイヤーの死亡処理
 			m_player->Death();
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+			m_mgr.UpdateDeathCcount();
 
 			// 殺したことがある敵情報の更新
 			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
@@ -159,6 +160,7 @@ void StageBase::UpdatePlaying(Input& input)
 			// プレイヤーの死亡処理
 			m_player->Death();
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+			m_mgr.UpdateDeathCcount();
 
 			// 殺したことがある敵情報の更新
 			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());
@@ -537,10 +539,6 @@ void StageBase::BossDeath()
 
 
 	m_mgr.GetStage()->m_clear = true;
-
-	// 初回殺しの時は倒したら終了とする
-	// FIXME : 現状プレイヤーの死亡処理と同じにしているけれど後で処理の仕方変わると思う
-	m_player->Death();
 
 	// メンバ関数ポインタを選択の方に戻す
 	m_updateFunc = &StageBase::UpdateSelect;

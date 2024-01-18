@@ -5,59 +5,59 @@
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
 #include "FileSystem/FontSystem.h"
-#include "GameOverScene.h"
+#include "GameClearScene.h"
 #include "TitleScene.h"
 
 namespace
-{ 
+{
 	constexpr int kCreditsNum = 3;
 
 	constexpr int kTextInterval = 180;
 
 	const std::wstring kCredits[kCreditsNum] = {
-		L"死亡数",
 		L"クリア時間",
-		L"名前"
+		L"死亡数",
+		L"ダッシュ使用回数"
 	};
 }
 
-GameOverScene::GameOverScene(GameManager& mgr) :
+GameClearScene::GameClearScene(GameManager& mgr) :
 	Scene(mgr),
 	m_frame(60),
 	m_textFrame(0),
 	m_index(0)
 {
-	m_updateFunc = &GameOverScene::FadeInUpdate;
-	m_drawFunc = &GameOverScene::FadeDraw;
+	m_updateFunc = &GameClearScene::FadeInUpdate;
+	m_drawFunc = &GameClearScene::FadeDraw;
 }
 
-GameOverScene::~GameOverScene()
+GameClearScene::~GameClearScene()
 {
 }
 
-void GameOverScene::Update(Input& input)
+void GameClearScene::Update(Input& input)
 {
 	(this->*m_updateFunc)(input);
 }
 
-void GameOverScene::Draw()
+void GameClearScene::Draw()
 {
 	(this->*m_drawFunc)();
 }
 
-void GameOverScene::FadeInUpdate(Input&)
+void GameClearScene::FadeInUpdate(Input&)
 {
 	m_frame--;
 	if (m_frame <= 0)
 	{
-		m_updateFunc = &GameOverScene::NormalUpdate;
-		m_drawFunc = &GameOverScene::NormalDraw;
+		m_updateFunc = &GameClearScene::NormalUpdate;
+		m_drawFunc = &GameClearScene::NormalDraw;
 
 		m_frame = 0;
 	}
 }
 
-void GameOverScene::NormalUpdate(Input& input)
+void GameClearScene::NormalUpdate(Input& input)
 {
 	m_textFrame++;
 
@@ -74,14 +74,14 @@ void GameOverScene::NormalUpdate(Input& input)
 
 	if (input.IsTriggered("OK"))
 	{
-		m_updateFunc = &GameOverScene::FadeOutUpdate;
-		m_drawFunc = &GameOverScene::FadeDraw;
+		m_updateFunc = &GameClearScene::FadeOutUpdate;
+		m_drawFunc = &GameClearScene::FadeDraw;
 
 		m_frame = 0;
 	}
 }
 
-void GameOverScene::FadeOutUpdate(Input&)
+void GameClearScene::FadeOutUpdate(Input&)
 {
 	m_frame++;
 	if (60 <= m_frame)
@@ -90,7 +90,7 @@ void GameOverScene::FadeOutUpdate(Input&)
 	}
 }
 
-void GameOverScene::FadeDraw()
+void GameClearScene::FadeDraw()
 {
 	NormalDraw();
 
@@ -100,7 +100,7 @@ void GameOverScene::FadeDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void GameOverScene::NormalDraw()
+void GameClearScene::NormalDraw()
 {
 	DrawString(100, 100, L"GameClear", 0xffffff);
 
@@ -109,6 +109,8 @@ void GameOverScene::NormalDraw()
 	int drawY = 320;
 	for (int i = 0; i < m_index + 1; i++)
 	{
+		if (!(i < kCreditsNum)) break;
+
 		if (i == m_index)
 		{
 			float rate = (static_cast<float>(m_textFrame) / kTextInterval);
@@ -117,13 +119,36 @@ void GameOverScene::NormalDraw()
 
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawFormatStringToHandle(600, y, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
+			DrawInf(i, drawY, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
 			DrawFormatStringToHandle(600, drawY, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
+			DrawInf(i, drawY, fontHandle);
 		}
 
 		drawY += 100;
+	}
+}
+
+void GameClearScene::DrawInf(int index, int drawY, int handle)
+{
+	const auto& data = m_mgr.GetData();
+
+	if (index == 0)
+	{
+		int sec = (data.playTime / 60) % 60;
+		int min = (data.playTime / 3600) % 60;
+		int hour = (data.playTime / 21600);
+		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%02d:%02d:%02d", hour, min, sec);
+	}
+	else if (index == 1)
+	{
+		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%-3d回", data.deathCount);
+	}
+	else
+	{
+		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%-3d回", data.dashCount);
 	}
 }

@@ -8,6 +8,10 @@ class SoundSystem
 {
 public:
 	SoundSystem();
+	~SoundSystem();
+
+	void Init();
+	void End();
 
 	/// <summary>
 	/// BGM‚ð—¬‚·

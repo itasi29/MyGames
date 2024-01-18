@@ -25,15 +25,6 @@ namespace
 {
 	// ステージ間の移動にかかる時間
 	constexpr int kStageMoveFrame = 30;
-
-	// 事前に読み込んでおくデータのpath
-	const std::vector<std::wstring> kPath =
-	{
-		L"Enemy/wallEffect.png",
-		L"Player/blood.png",
-		L"UI/backFrame.png"
-
-	};
 }
 
 StageManager::StageManager() :
@@ -62,14 +53,6 @@ void StageManager::Init()
 {
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_dashImg = mgr->LoadGraphic(L"UI/operationExplanation.png");
-
-	// 事前にステージ内で多く使うものはここで読み込んでおく
-	int size = kPath.size();
-	m_stgData.resize(size);
-	for (int i = 0; i < size; i++)
-	{
-		m_stgData[i] = mgr->LoadGraphic(kPath[i]);
-	}
 }
 
 void StageManager::DeleteData()
