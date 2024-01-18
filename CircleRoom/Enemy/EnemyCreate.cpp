@@ -3,6 +3,9 @@
 #include <memory>
 
 #include "Stage/StageBase.h"
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
 
 #include "EnemyCreate.h"
 #include "EnemyChild.h"
@@ -36,6 +39,9 @@ EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize, StageBase* sta
 {
 	m_name = "Create";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Create.png");
 }
 
 EnemyCreate::~EnemyCreate()

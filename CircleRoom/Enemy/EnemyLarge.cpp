@@ -1,4 +1,7 @@
 #include <DxLib.h>
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
 
 #include "EnemyLarge.h"
 
@@ -18,6 +21,9 @@ EnemyLarge::EnemyLarge(const size& windowSize, float fieldSize) :
 {
 	m_name = "Large";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Large.png");
 }
 
 EnemyLarge::~EnemyLarge()

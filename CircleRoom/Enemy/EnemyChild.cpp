@@ -1,5 +1,9 @@
 #include "EnemyChild.h"
 
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+
 namespace
 {
 	// ”¼Œa
@@ -17,6 +21,9 @@ EnemyChild::EnemyChild(const size& windowSize, float fieldSize) :
 {
 	m_name = "Child";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Child.png");
 }
 
 EnemyChild::~EnemyChild()

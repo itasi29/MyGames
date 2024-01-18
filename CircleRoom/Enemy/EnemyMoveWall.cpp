@@ -1,6 +1,11 @@
-#include "EnemyMoveWall.h"
 #include <DxLib.h>
 #include "Application.h"
+
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+
+#include "EnemyMoveWall.h"
 
 namespace
 {
@@ -18,6 +23,9 @@ EnemyMoveWall::EnemyMoveWall(const size& windowSize, float fieldSize) :
 {
 	m_name = "MoveWall";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Wall.png");
 }
 
 EnemyMoveWall::~EnemyMoveWall()

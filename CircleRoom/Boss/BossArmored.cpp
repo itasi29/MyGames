@@ -3,6 +3,7 @@
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
 #include "FileSystem/ImageFile.h"
+#include "FileSystem/FileManager.h"
 
 #include "BossArmored.h"
 
@@ -65,6 +66,9 @@ BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* sta
 {
 	m_name = "BossArmored";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/BossArmored.png");
 }
 
 BossArmored::~BossArmored()
@@ -202,8 +206,8 @@ void BossArmored::NormalUpdate()
 
 void BossArmored::NormalDraw() const
 {
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), m_color, true);
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+		m_charImg->GetHandle(), true);
 
 	// ダメージオブジェクトの描画
 	for (const auto& obj : m_objects)

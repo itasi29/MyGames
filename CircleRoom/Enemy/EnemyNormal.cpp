@@ -1,5 +1,10 @@
 #include <DxLib.h>
 #include "Application.h"
+
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+
 #include "EnemyNormal.h"
 
 namespace
@@ -18,6 +23,9 @@ EnemyNormal::EnemyNormal(const size& windowSize, float fieldSize) :
 {
 	m_name = "Normal";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Normal.png");
 }
 
 EnemyNormal::~EnemyNormal()

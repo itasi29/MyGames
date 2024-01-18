@@ -4,6 +4,7 @@
 #include "Scene/SceneManager.h"
 #include "Stage/StageBase.h"
 #include "FileSystem/ImageFile.h"
+#include "FileSystem/FileManager.h"
 
 #include "Enemy/EnemySplitTwoBound.h"
 
@@ -51,6 +52,9 @@ BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, St
 {
 	m_name = "BossStrongArmored";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/BossStrongArmored.png");
 }
 
 BossStrongArmored::~BossStrongArmored()
@@ -102,8 +106,8 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 
 void BossStrongArmored::NormalDraw() const
 {
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), m_color, true);
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+		m_charImg->GetHandle(), true);
 
 	DrawHitWallEffect();
 

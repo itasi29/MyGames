@@ -1,6 +1,9 @@
 #include <DxLib.h>
 #include "Application.h"
-#include "FileSystem/ImageFile.h"
+
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
 
 #include "EnemyDash.h"
 
@@ -40,6 +43,9 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 	m_name = "Dash";
 	m_color = kColor;
 	m_posLog.resize(kDashLogNum);
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Dash.png");
 }
 
 EnemyDash::~EnemyDash()
@@ -113,19 +119,21 @@ void EnemyDash::NormalUpdate()
 
 void EnemyDash::NormalDraw()
 {
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), m_color, true);
-
 	if (m_logFrame < kDashLogNum)
 	{
-		for (int i = 0; i < kDashLogNum; i++)
+		for (int i = kDashLogNum - 1; i > -1; i--)
 		{
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 - (m_logFrame + i) * (255 / kDashLogNum)));
-			DrawCircle(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y),
-				static_cast<int>(m_radius), m_color, true);
+			//auto alpha = (255 - (m_logFrame + i) * (255 / kDashLogNum));
+			auto alpha = 255 / (i + m_logFrame + 1);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, 0.0,
+				m_charImg->GetHandle(), true);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
+
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+		m_charImg->GetHandle(), true);
 
 	DrawHitWallEffect();
 

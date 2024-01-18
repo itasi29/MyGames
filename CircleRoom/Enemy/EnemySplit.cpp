@@ -1,11 +1,15 @@
 #include "EnemySplit.h"
 
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+
 namespace
 {
 	// 動くスピード
 	constexpr float kSpeed = 6.0f;
 	// 半径
-	constexpr float kRadius = 16.0f;
+	constexpr float kRadius = 12.0f;
 
 	// カラー
 	constexpr int kColor = 0xffffff;
@@ -16,6 +20,9 @@ EnemySplit::EnemySplit(const size& windowSize, float fieldSize) :
 {
 	m_name = "Split";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Split.png");
 }
 
 EnemySplit::~EnemySplit()

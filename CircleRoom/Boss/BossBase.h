@@ -101,7 +101,11 @@ protected:
 	// フィールドサイズ
 	const float m_fieldSize;
 
+	// キャラ画像
+	std::shared_ptr<FileBase> m_charImg;
+	// 壁エフェクト
 	std::shared_ptr<FileBase> m_wallEffect;
+	// ダメージエフェクト
 	std::shared_ptr<FileBase> m_damageEffect;
 
 	// 敵の名前

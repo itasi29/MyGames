@@ -20,7 +20,7 @@ namespace
 	// プレイヤーのスピード
 	constexpr float kSpeed = 4.0f;
 	// プレイヤーの中心から判定をどのくらい動かすか
-	constexpr float kColShift = kSize * 0.32f;
+	constexpr float kColShift = -kSize * 0.12f;
 
 	// ダッシュログ数
 	constexpr int kDashLogNum = 8;
@@ -49,6 +49,7 @@ namespace
 Player::Player(const size& windowSize, float fieldSize) :
 	m_size(windowSize),
 	m_fieldSize(fieldSize),
+	m_angle(0),
 	m_logFrame(kDashLogNum),
 	m_dashFrame(0),
 	m_dashWaitFrame(0),
@@ -60,9 +61,12 @@ Player::Player(const size& windowSize, float fieldSize) :
 	Init();
 	m_isExsit = false;
 	m_posLog.resize(kDashLogNum);
+	m_angleLog.resize(kDashLogNum);
 
 	auto& mgr = GameManager::GetInstance();
 	m_bloodImg = mgr.GetFile()->LoadGraphic(L"Player/blood.png");
+	m_charImg = mgr.GetFile()->LoadGraphic(L"Player/Player.png");
+	m_charDeathImg = mgr.GetFile()->LoadGraphic(L"Player/PlayerDeath.png");
 }
 
 Player::~Player()
@@ -72,6 +76,7 @@ Player::~Player()
 void Player::Init()
 {
 	// 初期化処理
+	m_angle = 0;
 	m_dashFrame = 0;
 	m_dashWaitFrame = 0;
 	m_isDash = false;
@@ -82,13 +87,10 @@ void Player::Init()
 	m_pos = Vec2{ m_size.w / 2.0f, m_size.h - m_fieldSize };
 
 	// 方向の設定
-	m_nowFront = Vec2::Up();
-	m_frontVec = m_nowFront * kSize;
-	m_rightVec = m_nowFront.Right() * kSize * 0.5f;
-	m_leftVec = m_nowFront.Left() * kSize * 0.5f;
+	m_front = Vec2::Up();
 
 	// 当たり判定の更新
-	m_col.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
+	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
 }
 
 void Player::Update(Input& input, Ability ability)
@@ -125,50 +127,41 @@ void Player::Update(Input& input, Ability ability)
 	for (int i = kDashLogNum - 1; i > 0; i--)
 	{
 		m_posLog[i] = m_posLog[i - 1];
+		m_angleLog[i] = m_angleLog[i - 1];
 	}
 	m_posLog[0] = m_pos;
+	m_angleLog[0] = m_angle;
 	// 位置の更新
 	m_pos += m_vec;
 
 	InRange();
 
 	// 当たり判定の更新
-	m_col.SetCenter(m_pos, kColRadius, m_nowFront.x * kColShift, m_nowFront.y * kColShift);
+	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
 }
 
 void Player::Draw()
 {
-	// プレイヤーを三角形で描画
-	// 上から順に正面、左、右
-	// 生きていたら白
 	if (m_isExsit)
 	{
-		DrawTriangle(static_cast<int>(m_frontVec.x + m_pos.x), static_cast<int>(m_frontVec.y + m_pos.y),
-			static_cast<int>(m_leftVec.x + m_pos.x), static_cast<int>(m_leftVec.y + m_pos.y),
-			static_cast<int>(m_rightVec.x + m_pos.x), static_cast<int>(m_rightVec.y + m_pos.y),
-			0xffffff, true);
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charImg->GetHandle(), true);
 
 		// ダッシュした時のログを描画
 		if (m_logFrame < kDashLogNum)
 		{
 			for (int i = 0; i < kDashLogNum; i++)
 			{
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA, (255 - (m_logFrame + i) * (255 / kDashLogNum)));
-				DrawTriangle(static_cast<int>(m_frontVec.x + m_posLog[i].x), static_cast<int>(m_frontVec.y + m_posLog[i].y),
-					static_cast<int>(m_leftVec.x + m_posLog[i].x), static_cast<int>(m_leftVec.y + m_posLog[i].y),
-					static_cast<int>(m_rightVec.x + m_posLog[i].x), static_cast<int>(m_rightVec.y + m_posLog[i].y),
-					0xffffff, true);
+//				auto alpha = (255 - (m_logFrame + i) * (255 / kDashLogNum));
+				auto alpha = 255 / (m_logFrame + i + 1);
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+				DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, m_angleLog[i], m_charImg->GetHandle(), true);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 		}
 	}
-	// 死んでいたら赤
 	else
 	{
-		DrawTriangle(static_cast<int>(m_frontVec.x + m_pos.x), static_cast<int>(m_frontVec.y + m_pos.y),
-			static_cast<int>(m_leftVec.x + m_pos.x), static_cast<int>(m_leftVec.y + m_pos.y),
-			static_cast<int>(m_rightVec.x + m_pos.x), static_cast<int>(m_rightVec.y + m_pos.y),
-			0xff0000, true);
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charDeathImg->GetHandle(), true);
 	}
 
 	// 死亡時のエフェクト
@@ -229,16 +222,12 @@ void Player::Move(Input& input)
 
 	if (m_vec.SqLength() > 0)
 	{
-		m_nowFront = m_vec;
-		m_frontVec = m_nowFront * kSize;
-		m_rightVec = m_nowFront.Right() * kSize * 0.5f;
-		m_leftVec = m_nowFront.Left() * kSize * 0.5f;
+		m_front = m_vec;
+
+		m_angle = atan2(m_front.x, -m_front.y);
 	}
 
 	m_vec *= kSpeed;
-
-	// 座標に移動ベクトルを足す
-//	m_pos += m_vec;
 }
 
 void Player::Dash(Input& input)
@@ -261,20 +250,18 @@ void Player::Dash(Input& input)
 		m_dashFrame = kDashFrame;
 
 		// ログを現在の位置にする
-		for (auto& log : m_posLog)
+		for (int i = 0; i < kDashLogNum; i++)
 		{
-			log = m_pos;
+			m_posLog[i] = m_pos;
+			m_angleLog[i] = m_angle;
 		}
 	}
 
 	// 現在ダッシュ中でないなら処理終了
 	if (!m_isDash) return;
-	//
-	//// その前に現在の移動ベクトル分マイナスする(移動中と移動してない時で変わらないように)
-	//m_pos -= m_vec;
-	//// 移動ベクトルに現在向いている方向の単位ベクトル*スピードしたものを足す
-	//m_pos += m_nowFront * kDashSpeed;
-	m_vec = m_nowFront * kDashSpeed;
+
+	// ダッシュさせる
+	m_vec = m_front * kDashSpeed;
 
 	// ログフレームの更新
 	m_logFrame = 0;
@@ -298,25 +285,25 @@ void Player::InRange()
 	// 左処理
 	// 現在の位置から正面方向側の向きに中心をずらし(当たり判定の位置に持っていく)
 	// 当たり判定の半径分ずらした位置が場外で位置をずらす
-	if (m_pos.x + m_nowFront.x * kColShift - kColRadius < centerX - m_fieldSize)
+	if (m_pos.x + m_front.x * kColShift - kColRadius < centerX - m_fieldSize)
 	{
 		// 場外の端から当たり判定の位置分ずらし
 		// 半径分右にずらす
-		m_pos.x = centerX - m_fieldSize - m_nowFront.x * kColShift + kColRadius;
+		m_pos.x = centerX - m_fieldSize - m_front.x * kColShift + kColRadius;
 	}
 	// 右処理
-	if (m_pos.x + m_nowFront.x * kColShift + kColRadius > centerX + m_fieldSize)
+	if (m_pos.x + m_front.x * kColShift + kColRadius > centerX + m_fieldSize)
 	{
-		m_pos.x = centerX + m_fieldSize - m_nowFront.x * kColShift - kColRadius;
+		m_pos.x = centerX + m_fieldSize - m_front.x * kColShift - kColRadius;
 	}
 	// 上処理
-	if (m_pos.y + m_nowFront.y * kColShift - kColRadius < centerY - m_fieldSize)
+	if (m_pos.y + m_front.y * kColShift - kColRadius < centerY - m_fieldSize)
 	{
-		m_pos.y = centerY - m_fieldSize - m_nowFront.y * kColShift + kColRadius;
+		m_pos.y = centerY - m_fieldSize - m_front.y * kColShift + kColRadius;
 	}
 	// 下処理
-	if (m_pos.y + m_nowFront.y * kColShift + kColRadius> centerY + m_fieldSize)
+	if (m_pos.y + m_front.y * kColShift + kColRadius> centerY + m_fieldSize)
 	{
-		m_pos.y = centerY + m_fieldSize - m_nowFront.y * kColShift - kColRadius;
+		m_pos.y = centerY + m_fieldSize - m_front.y * kColShift - kColRadius;
 	}
 }

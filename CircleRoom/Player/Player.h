@@ -69,24 +69,26 @@ private:
 	// フィールドのサイズ
 	float m_fieldSize;
 
+	// キャラクター画像
+	std::shared_ptr<FileBase> m_charImg;
+	std::shared_ptr<FileBase> m_charDeathImg;
+
 	// 中心座標
 	Vec2 m_pos;
-	// 正面ベクトル
-	Vec2 m_frontVec;
-	// 右ベクトル
-	Vec2 m_rightVec;
-	// 左ベクトル
-	Vec2 m_leftVec;
-	// 現在の正面方向
-	Vec2 m_nowFront;
+	// 正面方向
+	Vec2 m_front;
 	// 移動ベクトル
 	Vec2 m_vec;
+
+	// 角度
+	double m_angle;
 
 	// 当たり判定
 	Collision m_col;
 
 	// ダッシュログ
 	std::vector<Vec2> m_posLog;
+	std::vector<double> m_angleLog;
 	// ログフレーム
 	int m_logFrame;
 	// ダッシュするフレーム

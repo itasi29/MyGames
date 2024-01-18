@@ -2,6 +2,9 @@
 #include <memory>
 
 #include "Stage/StageBase.h"
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
 
 #include "EnemyDivision.h"
 #include "EnemySplit.h"
@@ -33,6 +36,9 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase*
 {
 	m_name = "Division";
 	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Division.png");
 }
 
 EnemyDivision::~EnemyDivision()

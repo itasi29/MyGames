@@ -217,16 +217,16 @@ void EnemyBase::StartDraw()
 {
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
 	int alpha = static_cast<int>(255 * rate);
-	SetDrawBlendMode(DX_BLENDMODE_ADD, alpha);
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), m_color, true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+		m_charImg->GetHandle(), true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void EnemyBase::NormalDraw()
 {
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y),
-		static_cast<int>(m_radius), m_color, true);
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+		m_charImg->GetHandle(), true);
 
 	DrawHitWallEffect();
 
