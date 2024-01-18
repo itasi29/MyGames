@@ -47,7 +47,7 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 
 	m_mgr.GetStage()->m_clear = false;
 
-	m_bgm = m_mgr.GetFile()->LoadSound(L"provisionalBgm.mp3");
+	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_bg = m_mgr.GetFile()->LoadGraphic(L"BG/bg.png");
 }
 

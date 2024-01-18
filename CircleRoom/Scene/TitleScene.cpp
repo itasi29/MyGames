@@ -30,6 +30,7 @@ namespace
 	constexpr int kMenuLength = 256;
 
 	// “_–ÅŠÔŠu
+	constexpr int kFlashInterval = 40;
 
 	const std::wstring kMenuStr[kMenuLineNum] = {
 		L"START",
@@ -128,7 +129,7 @@ void TitleScene::NormalUpdate(Input& input)
 void TitleScene::FadeOutUpdate(Input&)
 {
 	m_frame++;
-	if (60 <= m_frame)
+	if (m_frame > 60)
 	{
 		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
 	}
@@ -172,8 +173,8 @@ void TitleScene::NormalDraw()
 	{
 		if (m_currentLinePos == i)
 		{
-			int frame = (m_frame % 80) - 40;
-			float rate = fabs(frame) / 40.0f;
+			int frame = (m_frame % kFlashInterval * 2) - kFlashInterval;
+			float rate = fabs(frame) / static_cast<float>(kFlashInterval);
 			int alpha = 255 * rate;
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawStringToHandle(drawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);

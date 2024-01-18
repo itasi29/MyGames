@@ -17,7 +17,7 @@ namespace
 {
 	// E‚³‚ê‚½í—Ş‚ÌŠî€•`‰æˆÊ’u
 	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 96;
+	constexpr int kKillTypePosY = 152;
 
 	// ‰‚ß‚É¶¬‚·‚é“G‚Ì”
 	constexpr int kStartCreatNum = 4;
@@ -170,7 +170,7 @@ int Stage1_1::DrawStageConditions(int drawY)
 		drawY += 48;
 	}
 
-	return drawY - startY;
+	return drawY - startY - 48;
 }
 
 void Stage1_1::DrawArrow() const

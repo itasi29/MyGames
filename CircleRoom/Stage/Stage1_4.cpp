@@ -19,7 +19,7 @@ namespace
 {
 	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
 	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 96;
+	constexpr int kKillTypePosY = 152;
 
 	// ƒNƒŠƒAŽžŠÔ
 	constexpr int kRightKilledNum = 3;
@@ -143,24 +143,24 @@ void Stage1_4::CheckStageConditions()
 int Stage1_4::DrawStageConditions(int drawY)
 {
 	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+	int fontHandle = m_mgr.GetFont()->GetHandle(24);
 
 	if (!m_isRightClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"‰E@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"‰E@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
 			kRightKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kRightKilledNum);
 
-		drawY += 32;
+		drawY += 72;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"ã@%dŽí—Þ‚Ì“G‚ÉŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"ã@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
 			kUpKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kUpKilledNum);
 
-		drawY += 32;
+		drawY += 72;
 	}
 
-	return drawY - startY;
+	return drawY - startY - 48;
 }
 
 void Stage1_4::DrawArrow() const

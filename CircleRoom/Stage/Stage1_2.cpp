@@ -22,7 +22,7 @@ namespace
 
 	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
 	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 96;
+	constexpr int kKillTypePosY = 152;
 
 	// ‘å‚«‚¢“G¶¬ŠÔŠuƒtƒŒ[ƒ€
 	constexpr int kCreateLageFrame = 60 * 10;
@@ -129,15 +129,15 @@ int Stage1_2::DrawStageConditions(int drawY)
 	int startY = drawY;
 	if (!m_isRightClear)
 	{
-		int fontHandle = m_mgr.GetFont()->GetHandle(32);
+		int fontHandle = m_mgr.GetFont()->GetHandle(24);
 
 		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"‰E@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
 			kRightExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kRightExsitTime);
 
-		drawY += 32;
+		drawY += 48;
 	}
 
-	return drawY - startY;
+	return drawY - startY - 48;
 }
 
 void Stage1_2::DrawArrow() const

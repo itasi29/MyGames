@@ -197,39 +197,43 @@ void StageBase::DrawSelect()
 		m_boss->Draw();
 	}
 	m_player->Draw();
+	auto name = StringUtility::StringToWString(m_stageName);
+	// ƒXƒe[ƒW–¼‚Ì•`‰æ
+	DrawFormatStringToHandle(128, 16, kStrColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
-	auto name = StringUtility::StringToWString(m_stageName);
-	// ƒXƒe[ƒW–¼‚Ì•`‰æ
-	DrawFormatStringToHandle(128, 16, kStrColor, fontHandle, L"%s", name.c_str());
-
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
-	// ŽE‚³‚ê‚½‚±‚Æ‚ª‚ ‚é“G‚Ì•`‰æ
-	DrawKilledEnemyType();
 	// ŽžŠÔ‚Ì•`‰æ
 	int minSec = (m_frame * 1000 / 60) % 1000;
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
-	DrawFormatStringToHandle(128, 48, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
+	DrawFormatStringToHandle(128, 96, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
+	// ŽE‚³‚ê‚½‚±‚Æ‚ª‚ ‚é“G‚Ì•`‰æ
+	DrawKilledEnemyType();
 	SetDrawScreen(DX_SCREEN_BACK);
-	DrawGraph(0, 48, m_bFrameImg->GetHandle(), true);
+	// ã‰º”½“]‚µ‚Ä•`‰æƒtƒŒ[ƒ€
+	DrawRotaGraph(155, 120, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
+	DrawBox(0, 120 + 30, 211 + 100, 120 + 30 + 30, 0xB6BBC4, true);
 	DrawGraph(0, 0, m_strHandle, true);
-
 
 	// ƒXƒe[ƒWðŒ‚Ì•`‰æ
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
-	auto y = DrawStageConditions();
+	auto y = DrawStageConditions(196);
 	SetDrawScreen(DX_SCREEN_BACK);
-	// MEMO:ðŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ð•`‰æ‚·‚é
-	if (y != 0)
+	// ðŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ð•`‰æ‚·‚é
+	if (y >= 0)
 	{
-		DrawGraph(0, y, m_bFrameImg->GetHandle(), true);
+		DrawBox(0, 196, 311, 196 + y, 0xb6bbc4, true);
+		DrawGraph(0, 196 + y, m_bFrameImg->GetHandle(), true);
 	}
 	DrawGraph(0, 0, m_strHandle, true);
 
+	// ƒtƒŒ[ƒ€•`‰æ
+	DrawRotaGraph(m_size.w - 128, 48, 1.0, 0.0, m_bFrameImg->GetHandle(), true, true, true);
+	DrawBox(m_size.w - 128 - 156, 78, m_size.w, 144, 0xb6bbc4, true);
 	// ƒxƒXƒgƒ^ƒCƒ€‚Ì•`‰æ
 	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
 	minSec = (bestTime * 1000 / 60) % 1000;
@@ -267,18 +271,19 @@ void StageBase::DrawPlaying()
 		kStrColor, // F
 		L"%02d:%02d.%03d", min, sec, minSec);	// •¶Žš—ñ
 	SetDrawScreen(DX_SCREEN_BACK);
-	DrawGraph(0, 32, m_bFrameImg->GetHandle(), true);
+	DrawRotaGraph(155, 48, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
 	DrawGraph(0, 0, m_strHandle, true);
 
 	// ðŒ‚Ì•`‰æ
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
-	auto y = DrawStageConditions(96+24);
+	auto y = DrawStageConditions(196+24);
 	SetDrawScreen(DX_SCREEN_BACK);
 	// MEMO:ðŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ð•`‰æ‚·‚é
-	if (y != 0)
+	if (y >= 0)
 	{
-		DrawGraph(0, y, m_bFrameImg->GetHandle(), true);
+		DrawBox(0, 196 + 24, 311, 196 + 24 + y, 0xb6bbc4, true);
+		DrawGraph(0, 196 + 24 + y, m_bFrameImg->GetHandle(), true);
 	}
 	DrawGraph(0, 0, m_strHandle, true);
 
