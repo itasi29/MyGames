@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2023-12-24" view-index="0" gantt-divider-location="404" resource-divider-location="300" version="3.2.3247" locale="ja_JP">
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2024-01-07" view-index="0" gantt-divider-location="404" resource-divider-location="300" version="3.2.3247" locale="ja_JP">
     <description/>
     <view zooming-state="default:4" id="gantt-chart">
         <field id="tpd3" name="名前" width="228" order="0"/>
@@ -142,7 +142,7 @@
                 </task>
             </task>
         </task>
-        <task id="31" name="アルファ" color="#ff3333" meeting="false" start="2023-12-20" duration="16" complete="87" thirdDate="2023-11-20" thirdDate-constraint="0" expand="false">
+        <task id="31" name="アルファ" color="#ff3333" meeting="false" start="2023-12-20" duration="16" complete="100" thirdDate="2023-11-20" thirdDate-constraint="0" expand="false">
             <task id="42" name="タイトル" color="#8cb6ce" meeting="false" start="2023-12-20" duration="4" complete="100" thirdDate="2023-12-05" thirdDate-constraint="0" expand="false">
                 <task id="43" name="BGM" color="#8cb6ce" meeting="false" start="2023-12-20" duration="3" complete="100" thirdDate="2023-12-05" thirdDate-constraint="0" expand="true">
                     <notes>
@@ -160,9 +160,9 @@
                     </notes>
                 </task>
             </task>
-            <task id="46" name="ステージ" color="#8cb6ce" meeting="false" start="2023-12-26" duration="10" complete="70" thirdDate="2023-11-30" thirdDate-constraint="0" expand="false">
+            <task id="46" name="ステージ" color="#8cb6ce" meeting="false" start="2023-12-26" duration="10" complete="100" thirdDate="2023-11-30" thirdDate-constraint="0" expand="false">
                 <task id="47" name="通常ステージ作成" color="#8cb6ce" meeting="false" start="2023-12-26" duration="10" complete="100" thirdDate="2023-11-30" thirdDate-constraint="0" expand="true"/>
-                <task id="49" name="チュートリアル" color="#8cb6ce" meeting="false" start="2024-01-02" duration="5" complete="0" thirdDate="2023-12-11" thirdDate-constraint="0" expand="true"/>
+                <task id="49" name="チュートリアル" color="#8cb6ce" meeting="false" start="2024-01-02" duration="5" complete="100" thirdDate="2023-12-11" thirdDate-constraint="0" expand="true"/>
                 <task id="48" name="ボスステージ作成" color="#8cb6ce" meeting="false" start="2024-01-05" duration="2" complete="100" thirdDate="2023-12-18" thirdDate-constraint="0" expand="true"/>
             </task>
             <task id="50" name="外部&amp;オプション" color="#8cb6ce" meeting="false" start="2023-12-26" duration="12" complete="100" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
@@ -172,9 +172,10 @@
                 <task id="54" name="ロード" color="#8cb6ce" meeting="false" start="2024-01-04" duration="5" complete="100" thirdDate="2023-12-19" thirdDate-constraint="0" expand="true"/>
             </task>
         </task>
-        <task id="55" name="ベータ" color="#8cb6ce" meeting="false" start="2024-01-11" duration="17" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
-            <task id="56" name="エフェクト" color="#8cb6ce" meeting="false" start="2024-01-11" duration="9" complete="0" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
-                <task id="57" name="プレイヤー死亡" color="#8cb6ce" meeting="false" start="2024-01-11" duration="3" complete="0" thirdDate="2023-12-15" thirdDate-constraint="0" expand="true"/>
+        <task id="55" name="ベータ" color="#8cb6ce" meeting="false" start="2024-01-11" duration="17" complete="14" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
+            <task id="56" name="エフェクト" color="#8cb6ce" meeting="false" start="2024-01-11" duration="9" complete="27" thirdDate="2023-12-19" thirdDate-constraint="0" expand="false">
+                <task id="57" name="プレイヤー死亡" color="#8cb6ce" meeting="false" start="2024-01-11" duration="3" complete="100" thirdDate="2023-12-15" thirdDate-constraint="0" expand="true"/>
+                <task id="78" name="プレイヤー移動" color="#8cb6ce" meeting="false" start="2024-01-18" duration="2" complete="0" thirdDate="2024-01-08" thirdDate-constraint="0" expand="true"/>
                 <task id="58" name="壁反射" color="#8cb6ce" meeting="false" start="2024-01-16" duration="3" complete="0" thirdDate="2023-12-15" thirdDate-constraint="0" expand="true">
                     <notes>
                         <![CDATA[敵が壁にぶつかったとき]]>

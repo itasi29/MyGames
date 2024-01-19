@@ -36,6 +36,7 @@ void EnemyMoveWall::Init(const Vec2& vec)
 {
 	// ƒtƒŒ[ƒ€‚Ì‰Šú‰»
 	m_frame = 0;
+	m_wallHitFrame = 0;
 
 	// ”¼Œa‚Ìİ’è
 	m_radius = kRadius;

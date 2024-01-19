@@ -177,6 +177,11 @@ void BossArmored::StartUpdate()
 		m_col.SetCenter(m_pos, m_radius);
 
 		BossBase::ChangeNormalFunc();
+
+#if false
+		m_updateFunc = &BossBase::NormalUpdate;
+		m_drawFunc = &BossBase::NormalDraw;
+#endif
 	}
 }
 

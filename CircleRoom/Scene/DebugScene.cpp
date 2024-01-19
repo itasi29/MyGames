@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include <DxLib.h>
 #include "DebugScene.h"
 #include "Input.h"
@@ -56,3 +57,4 @@ void DebugScene::Draw()
 	DrawString(100, 40, L"Game", 0xffffff);
 	DrawString(100, 70, L"Clear", 0xffffff);
 }
+#endif

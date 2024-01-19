@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <list>
 #include "Vec2.h"
 #include "Utility/Collision.h"
 
@@ -8,6 +9,15 @@ class Application;
 class FileBase;
 struct size;
 enum Ability;
+
+struct EffectData
+{
+	Vec2 vec;
+	Vec2 pos;
+	double angle = 0.0;
+	int frame = 0;
+	bool isEnd = false;
+};
 
 class Player
 {
@@ -72,6 +82,7 @@ private:
 	// キャラクター画像
 	std::shared_ptr<FileBase> m_charImg;
 	std::shared_ptr<FileBase> m_charDeathImg;
+	std::shared_ptr<FileBase> m_charEffImg;
 
 	// 中心座標
 	Vec2 m_pos;
@@ -79,6 +90,9 @@ private:
 	Vec2 m_front;
 	// 移動ベクトル
 	Vec2 m_vec;
+
+	// 移動エフェクト
+	std::list<EffectData> m_effs;
 
 	// 角度
 	double m_angle;

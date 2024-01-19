@@ -22,6 +22,9 @@ namespace
 	// プレイヤーの中心から判定をどのくらい動かすか
 	constexpr float kColShift = -kSize * 0.12f;
 
+	// 移動エフェクトフレーム
+	constexpr int kEffFrame = 10;
+
 	// ダッシュログ数
 	constexpr int kDashLogNum = 8;
 	// ダッシュ時のスピード
@@ -67,6 +70,7 @@ Player::Player(const size& windowSize, float fieldSize) :
 	m_bloodImg = mgr.GetFile()->LoadGraphic(L"Player/blood.png");
 	m_charImg = mgr.GetFile()->LoadGraphic(L"Player/Player.png");
 	m_charDeathImg = mgr.GetFile()->LoadGraphic(L"Player/PlayerDeath.png");
+	m_charEffImg = mgr.GetFile()->LoadGraphic(L"Player/PlayerEff.png");
 }
 
 Player::~Player()
@@ -76,6 +80,7 @@ Player::~Player()
 void Player::Init()
 {
 	// 初期化処理
+	m_effs.clear();
 	m_angle = 0;
 	m_dashFrame = 0;
 	m_dashWaitFrame = 0;
@@ -123,6 +128,25 @@ void Player::Update(Input& input, Ability ability)
 		Dash(input);
 		break;
 	}
+	// 移動エフェクトの更新
+	for (auto& eff : m_effs)
+	{
+		eff.frame++;
+
+		if (eff.frame > kEffFrame)
+		{
+			eff.isEnd = true;
+		}
+
+		eff.pos += eff.vec;
+
+		eff.angle += DX_PI_F / 180.0f;
+	}
+
+	m_effs.remove_if(
+		[](const auto& eff) {
+			return eff.isEnd;
+		});
 	// ログの更新
 	for (int i = kDashLogNum - 1; i > 0; i--)
 	{
@@ -144,20 +168,33 @@ void Player::Draw()
 {
 	if (m_isExsit)
 	{
-		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charImg->GetHandle(), true);
+		float rate;
+		int alpha;
+
+		// 移動時のエフェクトを描画
+		for (const auto& eff : m_effs)
+		{
+			rate = 1.0f - (eff.frame / static_cast<float>(kEffFrame));
+			alpha = 255 * rate;
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), rate, eff.angle, m_charEffImg->GetHandle(), true);
+		}
 
 		// ダッシュした時のログを描画
 		if (m_logFrame < kDashLogNum)
 		{
 			for (int i = 0; i < kDashLogNum; i++)
 			{
-//				auto alpha = (255 - (m_logFrame + i) * (255 / kDashLogNum));
-				auto alpha = 255 / (m_logFrame + i + 1);
+				rate = 1.0f - (m_logFrame + i + 1) / static_cast<float>(m_logFrame + kDashLogNum);
+				alpha = 128 * rate;
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 				DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, m_angleLog[i], m_charImg->GetHandle(), true);
-				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 		}
+
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charImg->GetHandle(), true);
 	}
 	else
 	{
@@ -223,6 +260,10 @@ void Player::Move(Input& input)
 	if (m_vec.SqLength() > 0)
 	{
 		m_front = m_vec;
+
+		float effX = -m_vec.x + (GetRand(10) * 0.1f - 0.5f);
+		float effY = -m_vec.y + (GetRand(10) * 0.1f - 0.5f);
+		m_effs.push_back({ {effX, effY}, m_pos });
 
 		m_angle = atan2(m_front.x, -m_front.y);
 	}
