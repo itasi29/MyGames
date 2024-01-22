@@ -1,6 +1,9 @@
 #pragma once
+#include <memory>
+
 class Input;
 class GameManager;
+class SoundSystem;
 
 /// <summary>
 /// シーン基底クラス
@@ -10,6 +13,7 @@ class Scene
 {
 protected:
 	GameManager& m_mgr;
+	std::shared_ptr<SoundSystem>& m_sound;
 public:
 	/// <summary>
 	/// 生成時にGameManagerの参照を受け取っておく

@@ -59,9 +59,8 @@ private:
 
     // ステージ内で多く使うデータ
     std::vector<std::shared_ptr<FileBase>> m_stgData;
-    // BGM
-    std::shared_ptr<FileBase> m_bgm;
     // 背景
     std::shared_ptr<FileBase> m_bg;
+    std::shared_ptr<FileBase> m_bgm;
 };
 

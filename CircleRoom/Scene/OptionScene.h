@@ -4,6 +4,7 @@
 #include <array>
 
 class Input;
+class FileBase;
 class SceneManager;
 
 /// <summary>
@@ -57,5 +58,9 @@ private:
 	int m_currentMenuLine;
 
 	bool m_isFadeOut;
+
+	// Se
+	std::shared_ptr<FileBase> m_cursorUpSe;
+	std::shared_ptr<FileBase> m_cursorDownSe;
 };
 

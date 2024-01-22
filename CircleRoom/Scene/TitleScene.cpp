@@ -6,6 +6,7 @@
 
 #include "GameManager.h"
 #include "SceneManager.h"
+#include "Stage/StageManager.h"
 #include "FileSystem/BottansFile.h"
 #include "FileSystem/FontSystem.h"
 #include "FileSystem/SoundSystem.h"
@@ -22,20 +23,39 @@
 
 namespace
 {
+	// フェードフレーム
+	constexpr int kFadeFrame = 60;
+
 	// メニューラインの数
 	constexpr int kMenuLineNum = 3;
 	// ライン間隔
-	constexpr float kMenuLineInterval = 64;
+	constexpr float kMenuLineInterval = 128;
 	// ラインの長さ
 	constexpr int kMenuLength = 256;
 
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
 
+	// 文字列のX座標
+	constexpr int kStrDrawX = 640 + 256;
+
+	// ロゴ描画位置
+	constexpr int kLogoDrawX = 374;
+	constexpr int kLogoDrawY = 360;
+
 	const std::wstring kMenuStr[kMenuLineNum] = {
-		L"START",
-		L"OPTION",
-		L"END"
+		L"スタート",
+		L"オプション",
+		L"エンド"
+	};
+
+	// スタートセレクト
+	constexpr int kStartSelectNum = 2;
+
+	const std::wstring kStartSelect[kStartSelectNum] =
+	{
+		L"続きから",
+		L"初めから"
 	};
 }
 
@@ -52,7 +72,10 @@ TitleScene::TitleScene(GameManager& mgr) :
 	m_bgImg = file->LoadGraphic(L"BG/bg.png");
 
 	m_soundSys = mgr.GetSound();
-	m_selectSe = file->LoadSound(L"Se/select.mp3");
+	m_bgm = file->LoadSound(L"Bgm/title.mp3");
+	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
+	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 }
 
 TitleScene::~TitleScene()
@@ -73,6 +96,7 @@ void TitleScene::Draw()
 
 void TitleScene::FadeInUpdate(Input&)
 {
+	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_frame / static_cast<float>(kFadeFrame));
 	m_frame--;
 	if (m_frame <= 0) // 遷移条件
 	{
@@ -86,6 +110,7 @@ void TitleScene::FadeInUpdate(Input&)
 
 void TitleScene::NormalUpdate(Input& input)
 {
+	m_sound->PlayBgm(m_bgm->GetHandle());
 	m_frame++;
 
 	if (input.IsTriggered("up"))
@@ -93,11 +118,13 @@ void TitleScene::NormalUpdate(Input& input)
 		// 現在のラインの位置をメニューのラインの数で繰り返す
 		m_currentLinePos = (kMenuLineNum + m_currentLinePos - 1) % kMenuLineNum;
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLinePos = (m_currentLinePos + 1) % kMenuLineNum;
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 
 	if (input.IsTriggered("OK"))
@@ -106,9 +133,23 @@ void TitleScene::NormalUpdate(Input& input)
 		// 0番目のときはスタート処理
 		if (m_currentLinePos == 0)
 		{
-			m_updateFunc = &TitleScene::FadeOutUpdate;
-			m_drawFunc = &TitleScene::FadeDraw;
-			m_frame = 0;
+			// チュートリアルをクリアしていたら続きからor初めから
+			if (m_mgr.GetStage()->IsClearStage("StageTutorial"))
+			{
+				m_updateFunc = &TitleScene::StartSelectUpdate;
+				m_drawFunc = &TitleScene::StartSelectDraw;
+				m_frame = 0;
+			}
+			// してなければ強制スタート
+			else
+			{
+				m_updateFunc = &TitleScene::FadeOutUpdate;
+				m_drawFunc = &TitleScene::FadeDraw;
+				m_frame = 0;
+
+				// 画面外に飛ばす
+				m_currentLinePos = -10;
+			}
 			return;
 		}
 		// 1番目のときはオプション処理
@@ -116,21 +157,77 @@ void TitleScene::NormalUpdate(Input& input)
 		{
 			// TODO:オプション画面を開く処理
 			m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input, false));
+			return;
 		}
 		// 2番目のときは終了処理
 		if (m_currentLinePos == 2)
 		{
 			Application& app = Application::GetInstance();
 			app.End();
+			return;
 		}
+	}
+}
+
+void TitleScene::StartSelectUpdate(Input& input)
+{
+	m_frame++;
+
+	if (input.IsTriggered("cancel"))
+	{
+		m_updateFunc = &TitleScene::NormalUpdate;
+		m_drawFunc = &TitleScene::NormalDraw;
+
+		m_frame = 0;
+	}
+
+	if (input.IsTriggered("up"))
+	{
+		// 現在のラインの位置をメニューのラインの数で繰り返す
+		m_currentLinePos = (kStartSelectNum + m_currentLinePos - 1) % kStartSelectNum;
+		m_frame = 0;
+		m_sound->PlaySe(m_cursorUpSe->GetHandle());
+	}
+	if (input.IsTriggered("down"))
+	{
+		m_currentLinePos = (m_currentLinePos + 1) % kStartSelectNum;
+		m_frame = 0;
+		m_sound->PlaySe(m_cursorDownSe->GetHandle());
+	}
+
+	if (input.IsTriggered("OK"))
+	{
+		// 続きから
+		if (m_currentLinePos == 0)
+		{
+			// MEMO:特にすることないと思う
+		}
+		// 初めから
+		if (m_currentLinePos == 1)
+		{
+			// データの削除
+			m_mgr.GetStage()->DeleteData();
+			m_mgr.DeleteData();
+		}
+
+		// 画面外に飛ばす
+		m_currentLinePos = -10;
+
+		m_updateFunc = &TitleScene::FadeOutUpdate;
+		m_drawFunc = &TitleScene::FadeDraw;
+		m_frame = 0;
+
+		return;
 	}
 }
 
 void TitleScene::FadeOutUpdate(Input&)
 {
+	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_frame / static_cast<float>(kFadeFrame));
 	m_frame++;
-	if (m_frame > 60)
+	if (m_frame > kFadeFrame)
 	{
+		m_sound->Stop();
 		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
 	}
 }
@@ -154,16 +251,14 @@ void TitleScene::NormalDraw()
 	// FIXME:書く順番考える
 
 	const auto& m_size = Application::GetInstance().GetWindowSize();
-	int drawX = m_size.w / 2;
-
 	DrawBg(m_size);
 
 	// ロゴの描画
-	DrawGraph(0, 0, m_logoImg->GetHandle(), true);
+	DrawRotaGraph(kLogoDrawX, kLogoDrawY, 1.0, 0.0, m_logoImg->GetHandle(), true);
 	
 	int y = static_cast<int>(184 + m_currentLinePos * kMenuLineInterval);
 	// メニューラインの描画
-	DrawBox(drawX, y, drawX + kMenuLength, y + 32, 0xff0808, true);
+	DrawBox(kStrDrawX, y, kStrDrawX + kMenuLength, y + 32, 0xff0808, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
@@ -177,15 +272,61 @@ void TitleScene::NormalDraw()
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(drawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawStringToHandle(drawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
 		}
 
-		y += 64;
+		y += kMenuLineInterval;
+	}
+}
+
+void TitleScene::StartSelectDraw()
+{
+	const auto& m_size = Application::GetInstance().GetWindowSize();
+	DrawBg(m_size);
+
+	// ロゴの描画
+	DrawRotaGraph(kLogoDrawX, kLogoDrawY, 1.0, 0.0, m_logoImg->GetHandle(), true);
+
+	int y = static_cast<int>(212 + m_currentLinePos * 40);
+	// 選択場所の描画
+	DrawBox(kStrDrawX + 64, y, kStrDrawX + 64 + kMenuLength, y + 40, 0xff0808, true);
+
+	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+
+	y = 216;
+	for (int i = 0; i < kStartSelectNum; i++)
+	{
+		if (m_currentLinePos == i)
+		{
+			int frame = (m_frame % kFlashInterval * 2) - kFlashInterval;
+			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
+			int alpha = static_cast <int>(255 * rate);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), 0xffffff, fontHandle);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+		else
+		{
+			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), 0xffffff, fontHandle);
+		}
+
+		y += 40;
+	}
+	//DrawStringToHandle(kStrDrawX + 64, y, L"続きから", 0xffffff, fontHandle);
+	//y += 40;
+	//DrawStringToHandle(kStrDrawX + 64, y, L"初めから", 0xffffff, fontHandle);
+
+	y = 184;
+	for (int i = 0; i < kMenuLineNum; i++)
+	{
+		DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+
+		y += kMenuLineInterval;
 	}
 }
 

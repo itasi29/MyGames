@@ -5,11 +5,16 @@
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+#include "FileSystem/SoundSystem.h"
 #include "GameClearScene.h"
 #include "TitleScene.h"
 
 namespace
 {
+	constexpr int kFadeFrame = 60;
+
 	constexpr int kCreditsNum = 3;
 
 	constexpr int kTextInterval = 180;
@@ -23,12 +28,15 @@ namespace
 
 GameClearScene::GameClearScene(GameManager& mgr) :
 	Scene(mgr),
-	m_frame(60),
+	m_frame(kFadeFrame),
 	m_textFrame(0),
 	m_index(0)
 {
 	m_updateFunc = &GameClearScene::FadeInUpdate;
 	m_drawFunc = &GameClearScene::FadeDraw;
+
+	auto& file = mgr.GetFile();
+	m_bgm = file->LoadSound(L"Bgm/end.mp3");
 }
 
 GameClearScene::~GameClearScene()
@@ -47,6 +55,7 @@ void GameClearScene::Draw()
 
 void GameClearScene::FadeInUpdate(Input&)
 {
+	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - (m_frame / static_cast<float>(kFadeFrame)));
 	m_frame--;
 	if (m_frame <= 0)
 	{
@@ -59,6 +68,7 @@ void GameClearScene::FadeInUpdate(Input&)
 
 void GameClearScene::NormalUpdate(Input& input)
 {
+	m_sound->PlayBgm(m_bgm->GetHandle());
 	m_textFrame++;
 
 	if (m_index < kCreditsNum)
@@ -83,9 +93,11 @@ void GameClearScene::NormalUpdate(Input& input)
 
 void GameClearScene::FadeOutUpdate(Input&)
 {
+	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - (m_frame / static_cast<float>(kFadeFrame)));
 	m_frame++;
-	if (60 <= m_frame)
+	if (kFadeFrame <= m_frame)
 	{
+		m_sound->Stop(m_bgm->GetHandle());
 		m_mgr.GetScene()->ChangeScene(std::make_shared<TitleScene>(m_mgr));
 	}
 }
@@ -150,7 +162,7 @@ void GameClearScene::DrawInf(int index, int drawY, int handle)
 		int sec = (data.playTime / 60) % 60;
 		int min = (data.playTime / 3600) % 60;
 		int hour = (data.playTime / 21600);
-		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%02d:%02d:%02d", hour, min, sec);
+		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%02dŽžŠÔ%02d•ª%02d•b", hour, min, sec);
 	}
 	else if (index == 1)
 	{

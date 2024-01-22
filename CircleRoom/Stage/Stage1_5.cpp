@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "StageManager.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/FileManager.h"
 #include "Stage1_5.h"
 #include "Stage1_4.h"
 
@@ -30,6 +31,9 @@ Stage1_5::Stage1_5(GameManager& mgr) :
 {
 	m_stageName = "Stage1-5";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
+
+	// 1-5はボスのためBGMを変更する
+	m_playBgm = m_mgr.GetFile()->LoadSound(L"Bgm/boss.mp3");
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);

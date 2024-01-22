@@ -64,9 +64,12 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_updateFunc = &BossBase::StartUpdate;
 	m_drawFunc = &BossBase::StartDraw;
 
-	auto& mgr = GameManager::GetInstance();
-	m_wallEffect = mgr.GetFile()->LoadGraphic(L"Enemy/wallEffect.png");
-	m_damageEffect = mgr.GetFile()->LoadGraphic(L"Enemy/damageEffect.png");
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_wallEffect = mgr->LoadGraphic(L"Enemy/wallEffect.png");
+	m_damageEffect = mgr->LoadGraphic(L"Enemy/damageEffect.png");
+
+	m_createSe = mgr->LoadSound(L"Se/create.mp3");
+	m_damageSe = mgr->LoadSound(L"Se/bossDamage.mp3");
 }
 
 BossBase::~BossBase()

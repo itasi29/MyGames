@@ -32,5 +32,7 @@ private:
     int m_frame;
     int m_textFrame;
     int m_index;
+
+    std::shared_ptr<FileBase> m_bgm;
 };
 

@@ -21,10 +21,24 @@ public:
 	void PlayBgm(int soundHnadle, bool isLoop = true);
 
 	/// <summary>
+	/// Fade設定ありBGM
+	/// </summary>
+	/// <param name="soundHandle">BGMハンドル</param>
+	/// <param name="val">音量パーセント</param>
+	/// <param name="isLoop">ループするか</param>
+	void PlayFadeBgm(int soundHandle, float val = 1.0f, bool isLoop = true);
+
+	/// <summary>
 	/// SEを流す
 	/// </summary>
 	/// <param name="seHandle">SEハンドル</param>
 	void PlaySe(int seHandle);
+
+	/// <summary>
+	/// 音声の停止
+	/// </summary>
+	/// /// <param name="soundHandle">ハンドル</param>
+	void Stop(int soundHandle = -1);
 
 	/// <summary>
 	/// BGMのボリュームを変更する
@@ -58,7 +72,7 @@ private:
 	/// <summary>
 	/// 再生中のBGMの音量を変更する
 	/// </summary>
-	void SetBgm();
+	void SetBgm(float rate = 1.0f);
 	
 private:
 	// ボリューム調整

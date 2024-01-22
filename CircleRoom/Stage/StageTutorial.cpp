@@ -174,10 +174,10 @@ void StageTutorial::CheckStageConditions()
 
 int StageTutorial::DrawStageConditions(int drawY)
 {
-	DrawFormatStringToHandle(128, drawY, 0xffffff, m_mgr.GetFont()->GetHandle(32), L"¶@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
+	DrawFormatStringToHandle(128, drawY, 0xffffff, m_mgr.GetFont()->GetHandle(24), L"¶@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)",
 		kExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kExsitTime);
 
-	return drawY;
+	return 0;
 }
 
 void StageTutorial::DrawArrow() const

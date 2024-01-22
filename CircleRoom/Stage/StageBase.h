@@ -7,6 +7,7 @@
 
 class GameManager;
 class FileBase;
+class SoundSystem;
 class Player;
 class EnemyBase;
 class BossBase;
@@ -178,6 +179,13 @@ protected:
 	DrawFunc_t m_drawFunc;
 
 	GameManager& m_mgr;
+
+	// サウンド
+	std::shared_ptr<SoundSystem> m_sound;
+	int m_soundFrame;
+	// BGM
+	std::shared_ptr<FileBase> m_selectBgm;
+	std::shared_ptr<FileBase> m_playBgm;
 
 	// 文字列を描画する用の画面ハンドル
 	int m_strHandle;

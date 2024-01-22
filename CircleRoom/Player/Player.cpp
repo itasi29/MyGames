@@ -6,6 +6,7 @@
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "Player.h"
 
@@ -74,11 +75,15 @@ Player::Player(const size& windowSize, float fieldSize) :
 	m_dirLog.resize(kDashLogNum);
 	m_angleLog.resize(kDashLogNum);
 
-	auto& mgr = GameManager::GetInstance();
-	m_bloodImg = mgr.GetFile()->LoadGraphic(L"Player/blood.png");
-	m_charImg = mgr.GetFile()->LoadGraphic(L"Player/Player.png");
-	m_charDeathImg = mgr.GetFile()->LoadGraphic(L"Player/PlayerDeath.png");
-	m_charEffImg = mgr.GetFile()->LoadGraphic(L"Player/PlayerEff.png");
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_bloodImg = mgr->LoadGraphic(L"Player/blood.png");
+	m_charImg = mgr->LoadGraphic(L"Player/Player.png");
+	m_charDeathImg = mgr->LoadGraphic(L"Player/PlayerDeath.png");
+	m_charEffImg = mgr->LoadGraphic(L"Player/PlayerEff.png");
+
+	m_deathSe = mgr->LoadSound(L"Se/playerDeath.mp3");
+	// MEMO:プレイヤーダッシュの音見つけられなかったから現状敵と混合で
+	m_dashSe = mgr->LoadSound(L"Se/enemyDash.mp3");
 }
 
 Player::~Player()
@@ -226,9 +231,9 @@ void Player::Draw()
 #ifdef _GRAPH
 		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charImg->GetHandle(), true);
 #else
-		DrawTriangleAA(static_cast<int>(m_dir.front.x + m_pos.x), static_cast<int>(m_dir.front.y + m_pos.y),
-			static_cast<int>(m_dir.left.x + m_pos.x), static_cast<int>(m_dir.left.y + m_pos.y),
-			static_cast<int>(m_dir.right.x + m_pos.x), static_cast<int>(m_dir.right.y + m_pos.y),
+		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
+			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
+			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			0xffffff, true);
 #endif	// _GRAPH
 	}
@@ -237,9 +242,9 @@ void Player::Draw()
 #ifdef _GRAPH
 		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charDeathImg->GetHandle(), true);
 #else
-		DrawTriangleAA(static_cast<int>(m_dir.front.x + m_pos.x), static_cast<int>(m_dir.front.y + m_pos.y),
-			static_cast<int>(m_dir.left.x + m_pos.x), static_cast<int>(m_dir.left.y + m_pos.y),
-			static_cast<int>(m_dir.right.x + m_pos.x), static_cast<int>(m_dir.right.y + m_pos.y),
+		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
+			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
+			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			0xff0000, true);
 #endif	// _GRAPH
 	}
@@ -267,6 +272,8 @@ void Player::Draw()
 
 void Player::Death()
 {
+	auto& sound = GameManager::GetInstance().GetSound();
+	sound->PlaySe(m_deathSe->GetHandle());
 	m_isExsit = false;
 
 	m_deathFrame = 0;
@@ -335,6 +342,9 @@ void Player::Dash(Input& input)
 	// ダッシュコマンドが押されたら
 	if (input.IsTriggered("dash"))
 	{
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_dashSe->GetHandle());
+
 		// ダッシュするようにする
 		m_isDash = true;
 		// 使用時間の初期化

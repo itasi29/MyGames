@@ -42,6 +42,7 @@ public:
 	~GameManager();
 
 	void Init();
+	void DeleteData();
 
 	/// <summary>
 	/// ゲームマネージャークラスのインスタンスを返す

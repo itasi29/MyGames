@@ -12,6 +12,9 @@ public:
 
 private:
 	std::shared_ptr<FileBase> m_rightNotationImg;
+	// Se
+	std::shared_ptr<FileBase> m_cursorUpSe;
+	std::shared_ptr<FileBase> m_cursorDownSe;
 
 	int m_currentLineIndex;
 

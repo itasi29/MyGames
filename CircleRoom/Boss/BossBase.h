@@ -108,6 +108,11 @@ protected:
 	// ダメージエフェクト
 	std::shared_ptr<FileBase> m_damageEffect;
 
+	// 生成時のSE
+	std::shared_ptr<FileBase> m_createSe;
+	// ダメージを受けた時のSE
+	std::shared_ptr<FileBase> m_damageSe;
+
 	// 敵の名前
 	std::string m_name;
 	// 色

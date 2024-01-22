@@ -4,6 +4,7 @@
 #include "Scene/SceneManager.h"
 #include "FileSystem/ImageFile.h"
 #include "FileSystem/FileManager.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "BossArmored.h"
 
@@ -123,6 +124,9 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 	{
 		if (col.IsCollsion(obj->GetRect()))
 		{
+			auto& sound = GameManager::GetInstance().GetSound();
+			sound->PlaySe(m_damageSe->GetHandle());
+
 			m_onDamagetFrame = kOnDamageFrame;
 			m_drawOnDamagetX = static_cast<int>(m_pos.x);
 			m_drawOnDamagetY = static_cast<int>(m_pos.y);
@@ -175,6 +179,8 @@ void BossArmored::StartUpdate()
 	{
 		// •Ï‚í‚é‚Æ‚«‚É“–‚½‚è”»’è‚à“ü‚ê‚é
 		m_col.SetCenter(m_pos, m_radius);
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_createSe->GetHandle());
 
 		BossBase::ChangeNormalFunc();
 

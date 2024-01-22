@@ -86,6 +86,15 @@ void Application::Run()
             manager.GetScene()->Draw();
             ScreenFlip();
 
+#if false
+            auto data = manager.GetData(); 
+            int sec = (data.playTime / 60) % 60;
+            int min = (data.playTime / 3600) % 60;
+            int hour = (data.playTime / 21600);
+            clsDx();
+            printfDx(L"%02d時間%02d分%02d秒", hour, min, sec);
+#endif
+
             // 終了フラグが立っていれば終了する
             if (m_isEnd)
             {

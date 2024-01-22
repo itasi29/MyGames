@@ -10,6 +10,7 @@
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyBase.h"
@@ -29,6 +30,9 @@ namespace
 
 	// プレイヤー死亡時の画面の揺れフレーム
 	constexpr int kShakeFrameDeath = 10;
+
+	// サウンドのフェードフレーム
+	constexpr int kSoundFade = 30;
 }
 
 StageBase::StageBase(GameManager& mgr) :
@@ -36,6 +40,7 @@ StageBase::StageBase(GameManager& mgr) :
 	m_size(Application::GetInstance().GetWindowSize()),
 	m_fieldSize(m_size.h* kSizeScale),
 	m_centerPos({m_size.w * 0.5f, m_size.h * 0.5f}),
+	m_soundFrame(kSoundFade),
 	m_frame(0),
 	m_waitFrame(kWaitChangeFrame),
 	m_isUpdateTime(false)
@@ -46,7 +51,12 @@ StageBase::StageBase(GameManager& mgr) :
 	// 第三引数をtrueにしておかないと作った画面が透過しない
 	m_strHandle = MakeScreen(m_size.w, m_size.h, true);
 
-	m_bFrameImg = m_mgr.GetFile()->LoadGraphic(L"UI/backFrame.png");
+	m_sound = m_mgr.GetSound();
+
+	auto& file = m_mgr.GetFile();
+	m_bFrameImg = file->LoadGraphic(L"UI/backFrame.png");
+	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
+	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
 }
 
 StageBase::~StageBase()
@@ -71,6 +81,16 @@ void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 
 void StageBase::UpdateSelect(Input& input)
 {
+	if (m_soundFrame > kSoundFade)
+	{
+		m_sound->PlayBgm(m_selectBgm->GetHandle());
+	}
+	else
+	{
+		m_soundFrame++;
+		m_sound->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+	}
+
 	m_player->Update(input, kNone);
 
 	for (const auto& enemy : m_enemy)
@@ -94,6 +114,9 @@ void StageBase::UpdateSelect(Input& input)
 		m_updateFunc = &StageBase::UpdatePlaying;
 		m_drawFunc = &StageBase::DrawPlaying;
 
+		m_sound->Stop(m_selectBgm->GetHandle());
+		m_soundFrame = 0;
+
 		// 各種初期化処理
 		Init();
 	}
@@ -106,6 +129,16 @@ void StageBase::UpdateSelect(Input& input)
 
 void StageBase::UpdatePlaying(Input& input)
 {
+	if (m_soundFrame > kSoundFade)
+	{
+		m_sound->PlayBgm(m_playBgm->GetHandle());
+	}
+	else
+	{
+		m_soundFrame++;
+		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+	}
+
 	m_player->Update(input, m_mgr.GetStage()->GetAbility());
 
 	// プレイヤーの情報を抜き取る
@@ -174,6 +207,10 @@ void StageBase::UpdatePlaying(Input& input)
 		// メンバ関数ポインタを選択の方に戻す
 		m_updateFunc = &StageBase::UpdateSelect;
 		m_drawFunc = &StageBase::DrawSelect;
+
+		// 音関係の設定
+		m_soundFrame = 0;
+		m_sound->Stop(m_playBgm->GetHandle());
 
 		// フレームの初期化
 		m_waitFrame = 0;

@@ -56,8 +56,8 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 
 	m_mgr.GetStage()->m_clear = false;
 
-	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_bg = m_mgr.GetFile()->LoadGraphic(L"BG/bg.png");
+	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp3");
 
 	// 事前にステージ内で多く使うものはここで読み込んでおく
 	auto size = kPath.size();
@@ -74,8 +74,6 @@ GamePlayingScene::~GamePlayingScene()
 
 void GamePlayingScene::Update(Input& input)
 {
-	m_mgr.GetSound()->PlayBgm(m_bgm->GetHandle());
-
 	(this->*m_updateFunc)(input);
 }
 
@@ -88,6 +86,7 @@ void GamePlayingScene::Draw()
 
 void GamePlayingScene::UpdateFadeIn(Input& input)
 {
+	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_frame / static_cast<float>(kFadeFrame));
 	m_frame--;
 	if (m_frame <= 0)
 	{
@@ -100,8 +99,9 @@ void GamePlayingScene::UpdateFadeIn(Input& input)
 void GamePlayingScene::UpdateFadeOut(Input& input)
 {
 	m_frame++;
-	if (m_frame >= kFadeFrame)
+	if (m_frame > kFadeFrame)
 	{
+		m_sound->Stop();
 		m_mgr.GetScene()->ChangeScene(std::make_shared<GameClearScene>(m_mgr));
 	}
 }
@@ -125,6 +125,14 @@ void GamePlayingScene::UpdateNormal(Input& input)
 		m_drawFunc = &GamePlayingScene::DrawFade;
 		m_frame = 0;
 	}
+#if _DEBUG
+	if (CheckHitKey(KEY_INPUT_RSHIFT))
+	{
+		m_updateFunc = &GamePlayingScene::UpdateFadeOut;
+		m_drawFunc = &GamePlayingScene::DrawFade;
+		m_frame = 0;
+	}
+#endif
 }
 
 void GamePlayingScene::DrawFade()

@@ -91,6 +91,11 @@ private:
 	std::shared_ptr<FileBase> m_charDeathImg;
 	std::shared_ptr<FileBase> m_charEffImg;
 
+	// 死亡時Se
+	std::shared_ptr<FileBase> m_deathSe;
+	// ダッシュ時Se
+	std::shared_ptr<FileBase> m_dashSe;
+
 	// 中心座標
 	Vec2 m_pos;
 	// 正面方向

@@ -4,6 +4,7 @@
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "EnemyDash.h"
 
@@ -46,6 +47,8 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Dash.png");
+
+	m_dashSe = mgr->LoadSound(L"Se/enemyDash.mp3");
 }
 
 EnemyDash::~EnemyDash()
@@ -88,7 +91,9 @@ void EnemyDash::StartUpdate()
 	if (m_frame > kApeearFrame)
 	{
 		// 変わるときに当たり判定も入れる
-		m_col.SetCenter(m_pos, m_radius);
+		m_col.SetCenter(m_pos, m_radius); 
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_createSe->GetHandle());
 
 		EnemyBase::ChangeNormalFunc();
 	}
@@ -181,6 +186,8 @@ void EnemyDash::Dash()
 	// スタート待機が終わったら
 	if (m_startWaitDashFrame <= 0)
 	{
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_dashSe->GetHandle());
 		m_isDash = true;
 
 		// 現在の位置からプレイヤーまでのベクトルの生成

@@ -89,6 +89,9 @@ protected:
 	// 壁エフェクト
 	std::shared_ptr<FileBase> m_wallEffect;
 
+	// 生成時のSE
+	std::shared_ptr<FileBase> m_createSe;
+
 	// 敵の名前
 	std::string m_name;
 	// 敵のカラー(グラフに変えたら消えるやつ)

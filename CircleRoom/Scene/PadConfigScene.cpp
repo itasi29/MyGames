@@ -6,6 +6,9 @@
 #include "SceneManager.h"
 #include "FileSystem/BottansFile.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "ConfigScene.h"
 #include "OptionScene.h"
@@ -55,6 +58,10 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 
 	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 	optionScene->InverseIsEdit();
+
+	auto& file = m_mgr.GetFile();
+	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
+	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 }
 
 PadConfigScene::~PadConfigScene()
@@ -103,11 +110,13 @@ void PadConfigScene::NormalUpdate(Input& input)
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(m_menuTable.size())) % static_cast<int>(m_menuTable.size());
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % m_menuTable.size();
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 }
 

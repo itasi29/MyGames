@@ -18,6 +18,8 @@ namespace
 {
 	constexpr int kMenuMargin = 120;
 
+	constexpr int kMenuLineInterval = 128;
+
 	enum
 	{
 		kKey,
@@ -33,7 +35,11 @@ ConfigScene::ConfigScene(GameManager& mgr, std::shared_ptr<SceneManager> scene) 
 	m_frame(0)
 {
 	m_soundSys = mgr.GetSound();
-	m_selectSe = mgr.GetFile()->LoadSound(L"Se/select.mp3");
+
+	auto& file = m_mgr.GetFile();
+	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
+	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 }
 
 ConfigScene::~ConfigScene()
@@ -65,23 +71,31 @@ void ConfigScene::Update(Input& input)
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + kMax) % kMax;
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % kMax;
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 }
 
 void ConfigScene::Draw()
 {
-	DrawBox(128, static_cast<int>(kMenuMargin + 42 + m_currentLineIndex * 64),
-		kMenuMargin + 800, static_cast<int>(kMenuMargin + 74 + m_currentLineIndex * 64),
+	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
+
+	DrawBox(128, y,
+		kMenuMargin + 800, y + 40,
 		0xff0000, true);
 
-	DrawName(kMenuMargin + 42, kKey, L"キー設定");
+	y = kMenuMargin + 42;
 
-	DrawName(kMenuMargin + 106, kPad, L"PAD設定");
+	DrawName(y, kKey, L"キー設定");
+
+	y += kMenuLineInterval;
+
+	DrawName(y, kPad, L"PAD設定");
 }
 
 void ConfigScene::DrawName(int drawY, int index, std::wstring str)

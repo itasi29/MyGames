@@ -33,6 +33,9 @@ private:
 private:
 	std::shared_ptr<Player>& m_player;
 
+	// ダッシュSe
+	std::shared_ptr<FileBase> m_dashSe;
+
 	// 位置ログ
 	std::vector<Vec2> m_posLog;
 	// ログフレーム

@@ -8,6 +8,9 @@
 #include "GameManager.h"
 #include "SceneManager.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/FileBase.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "StageSelectScene.h"
 #include "ConfigScene.h"
@@ -58,6 +61,10 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_isFadeOut(false)
 {
 	m_updateFunc = &OptionScene::AppearUpdate;
+
+	auto& file = m_mgr.GetFile();
+	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
+	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
 	m_optionScn = std::make_shared<SceneManager>();
 
@@ -127,6 +134,7 @@ void OptionScene::NormalUpdate(Input& input)
 		{
 			m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kTitleMenu.size())) % static_cast<int>(kTitleMenu.size());
 		}
+		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 		ChangeScene(input);
 	}
 	if (input.IsTriggered("optionRight"))
@@ -139,6 +147,7 @@ void OptionScene::NormalUpdate(Input& input)
 		{
 			m_currentMenuLine = (m_currentMenuLine + 1) % static_cast<int>(kTitleMenu.size());
 		}
+		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 		ChangeScene(input);
 	}
 }

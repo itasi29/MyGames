@@ -63,5 +63,9 @@ private:
 
 	// MEMO:‚±‚ê‚Í•ÏX‚³‚¹‚é‰Â”\«‚‚¢
 	std::unordered_map<int, std::wstring> m_keynameTable;
+
+	// Se
+	std::shared_ptr<FileBase> m_cursorUpSe;
+	std::shared_ptr<FileBase> m_cursorDownSe;
 };
 

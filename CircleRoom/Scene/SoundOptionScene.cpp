@@ -19,6 +19,8 @@ namespace
 	constexpr int kAppeaInterval = 5;
 	constexpr int kMenuMargin = 120;
 
+	constexpr int kMenuLineInterval = 128;
+
 	// ƒQ[ƒW‚Ì’·‚³
 	constexpr int kGaugeLength = 100;
 
@@ -39,7 +41,10 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr) :
 	m_updateFunc = &SoundOptionScene::NormalUpdate;
 
 	m_soundSys = mgr.GetSound();
-	m_selectSe = mgr.GetFile()->LoadSound(L"Se/select.mp3");
+	auto& file = m_mgr.GetFile();
+	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
+	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 }
 
 SoundOptionScene::~SoundOptionScene()
@@ -52,36 +57,36 @@ void SoundOptionScene::Update(Input& input)
 }
 
 void SoundOptionScene::Draw()
-{
-#ifdef _DEBUG
-	DrawString(100, kMenuMargin + 10, L"SoundOptionScene", 0xffffff);
-#endif
-	
+{	
+	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
+
 	// ‘I‘ğ‚µ‚Ä‚¢‚éêŠ‚ğ•`‰æ
 	if (!m_isEdit || static_cast<int>(m_frame * 0.05f) % 2)
 	{
-		DrawBox(128, static_cast<int>(kMenuMargin + 42 + m_currentLineIndex * 64),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 74 + m_currentLineIndex * 64),
+		DrawBox(128, y,
+			kMenuMargin + 800, y + 40,
 			0xff0000, true);
 	}
 	else
 	{
-		DrawBox(128, static_cast<int>(kMenuMargin + 42 + m_currentLineIndex * 64),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 74 + m_currentLineIndex * 64),
+		DrawBox(128, y,
+			kMenuMargin + 800, y + 40,
 			0xff8800, true);
 	}
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
+	y = kMenuMargin + 42;
 	auto rate = m_mgr.GetSound()->GetBgmVolRate();
-	DrawName(kMenuMargin + 42, kBgm, L"BGM");
-	DrawFormatStringToHandle(200, kMenuMargin + 42, 0xffffff, fontHandle, L"%3d“", static_cast<int>(rate * 100));
-	DrawGauge(500, kMenuMargin + 42, rate);
+	DrawName(y, kBgm, L"BGM");
+	DrawFormatStringToHandle(200, y, 0xffffff, fontHandle, L"%3d“", static_cast<int>(rate * 100));
+	DrawGauge(500, y, rate);
 
+	y += kMenuLineInterval;
 	rate = m_mgr.GetSound()->GetSeVolRate();
-	DrawName(kMenuMargin + 106, kSe, L"SE");
-	DrawFormatStringToHandle(200, kMenuMargin + 106, 0xffffff, fontHandle, L"%3d“", static_cast<int>(rate * 100));
-	DrawGauge(500, kMenuMargin + 106, rate);
+	DrawName(y, kSe, L"SE");
+	DrawFormatStringToHandle(200, y, 0xffffff, fontHandle, L"%3d“", static_cast<int>(rate * 100));
+	DrawGauge(500, y, rate);
 }
 
 void SoundOptionScene::NormalUpdate(Input& input)
@@ -103,11 +108,13 @@ void SoundOptionScene::NormalUpdate(Input& input)
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + kMax) % kMax;
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % kMax;
 		m_frame = 0;
+		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 }
 

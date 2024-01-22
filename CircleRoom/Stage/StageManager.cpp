@@ -60,6 +60,9 @@ void StageManager::DeleteData()
 	m_stageSaveData.clear();
 	m_killedEnemyNameTable.clear();
 	m_killedEnemyCount = 0;
+	m_clearBossTable.clear();
+	m_ability = kNone;
+	m_abilityActive.clear();
 }
 
 void StageManager::Update(Input& input)

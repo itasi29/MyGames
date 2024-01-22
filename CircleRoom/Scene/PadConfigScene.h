@@ -58,5 +58,9 @@ private:
 
 	// PAD‚Ì”Ô†‚Æ–¼‘O‚Ì˜AŒg
 	std::unordered_map<int, std::wstring> m_bottanTable;
+
+	// Se
+	std::shared_ptr<FileBase> m_cursorUpSe;
+	std::shared_ptr<FileBase> m_cursorDownSe;
 };
 

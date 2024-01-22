@@ -32,26 +32,43 @@ void SoundSystem::End()
 	GameManager::GetInstance().UpdateVolume({ m_bgmVolume, m_seVolume });
 }
 
-void SoundSystem::PlayBgm(int soundHnadle, bool isLoop)
+void SoundSystem::PlayBgm(int soundHandle, bool isLoop)
 {
 #ifdef _DEBUG
-	auto result = CheckSoundMem(soundHnadle);
+	auto result = CheckSoundMem(soundHandle);
 
 	// 再生中なら無視
 	if (result == 1) return;
 
 	if (result == -1) assert(false);
 #else
-	if (CheckSoundMem(soundHnadle)) return;
+	if (CheckSoundMem(soundHandle)) return;
 #endif
 
 	// 音量の変更
-	ChangeNextPlayVolumeSoundMem(m_bgmVolume, soundHnadle);
+	ChangeNextPlayVolumeSoundMem(m_bgmVolume, soundHandle);
 
 	// ループがONの場合はBGMが終了次第先頭に戻る
-	PlaySoundMem(soundHnadle, DX_PLAYTYPE_BACK, isLoop);
+	PlaySoundMem(soundHandle, DX_PLAYTYPE_BACK, isLoop);
 
-	m_nowPlayBgm = soundHnadle;
+	m_nowPlayBgm = soundHandle;
+}
+
+void SoundSystem::PlayFadeBgm(int soundHandle, float rate, bool isLoop)
+{
+	if (CheckSoundMem(soundHandle))
+	{
+		SetBgm(rate);
+		return;
+	}
+
+	// 音量の変更
+	ChangeNextPlayVolumeSoundMem(static_cast<int>(m_bgmVolume * rate), soundHandle);
+
+	// ループがONの場合はBGMが終了次第先頭に戻る
+	PlaySoundMem(soundHandle, DX_PLAYTYPE_BACK, isLoop);
+
+	m_nowPlayBgm = soundHandle;
 }
 
 void SoundSystem::PlaySe(int seHandle)
@@ -61,6 +78,16 @@ void SoundSystem::PlaySe(int seHandle)
 
 	PlaySoundMem(seHandle, DX_PLAYTYPE_BACK, true);
 	m_soundHandle = seHandle;
+}
+
+void SoundSystem::Stop(int soundHandle)
+{
+	if (soundHandle < 0)
+	{
+		soundHandle = m_nowPlayBgm;
+	}
+
+	StopSoundMem(soundHandle);
 }
 
 void SoundSystem::ChangeBgmVol(int val)
@@ -112,7 +139,7 @@ float SoundSystem::GetSeVolRate() const
 	return static_cast<float>(m_seVolume) / static_cast<float>(kMaxVolume);
 }
 
-void SoundSystem::SetBgm()
+void SoundSystem::SetBgm(float rate)
 {
 	// 再生中でなければ終了
 	if (!CheckSoundMem(m_nowPlayBgm)) return;
@@ -127,7 +154,7 @@ void SoundSystem::SetBgm()
 	SetSoundCurrentTime(soundPosition, m_nowPlayBgm);
 
 	// 音量の調整
-	ChangeNextPlayVolumeSoundMem(m_bgmVolume, m_nowPlayBgm);
+	ChangeNextPlayVolumeSoundMem(static_cast<int>(m_bgmVolume * rate), m_nowPlayBgm);
 
 	// 再度再生
 	PlaySoundMem(m_nowPlayBgm, DX_PLAYTYPE_BACK, false);

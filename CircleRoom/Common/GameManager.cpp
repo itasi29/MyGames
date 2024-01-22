@@ -38,6 +38,14 @@ void GameManager::Init()
 	m_font->Init();
 }
 
+void GameManager::DeleteData()
+{
+	// プレイデータの初期化
+	m_data.playTime = 0;
+	m_data.deathCount = 0;
+	m_data.dashCount = 0;	
+}
+
 GameManager& GameManager::GetInstance()
 {
 	static GameManager instance;

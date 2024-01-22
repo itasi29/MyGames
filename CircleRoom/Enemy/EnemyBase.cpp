@@ -52,7 +52,9 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_updateFunc = &EnemyBase::StartUpdate;
 	m_drawFunc = &EnemyBase::StartDraw;
 
-	m_wallEffect = GameManager::GetInstance().GetFile()->LoadGraphic(L"Enemy/wallEffect.png");
+	auto& file = GameManager::GetInstance().GetFile();
+	m_wallEffect = file->LoadGraphic(L"Enemy/wallEffect.png");
+	m_createSe = file->LoadSound(L"Se/create.mp3");
 }
 
 EnemyBase::~EnemyBase()

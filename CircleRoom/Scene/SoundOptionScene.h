@@ -45,5 +45,7 @@ private:
 	std::shared_ptr<SoundSystem> m_soundSys;
 	// ‘I‘ğSe
 	std::shared_ptr<FileBase> m_selectSe;
+	std::shared_ptr<FileBase> m_cursorUpSe;
+	std::shared_ptr<FileBase> m_cursorDownSe;
 };
 

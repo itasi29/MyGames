@@ -21,11 +21,13 @@ private:
 	// 更新関数
 	void FadeInUpdate(Input&);	// フェードイン状態
 	void NormalUpdate(Input&);	// 通常状態
+	void StartSelectUpdate(Input&);	// 続きからor初めから
 	void FadeOutUpdate(Input&);	// フェードアウト状態
 
 	// 描画関数
 	void FadeDraw();	// フェード中描画
 	void NormalDraw();	// 非フェード描画
+	void StartSelectDraw();	// スタート選択状態描画
 
 private:
 	void DrawBg(const size& size);
@@ -51,7 +53,11 @@ private:
 
 	// 音関係
 	std::shared_ptr<SoundSystem> m_soundSys;
+	// Bgm
+	std::shared_ptr<FileBase> m_bgm;
 	// 選択時Se
 	std::shared_ptr<FileBase> m_selectSe;
+	std::shared_ptr<FileBase> m_cursorUpSe;
+	std::shared_ptr<FileBase> m_cursorDownSe;
 };
 

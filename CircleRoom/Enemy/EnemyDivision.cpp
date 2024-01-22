@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "EnemyDivision.h"
 #include "EnemySplit.h"
@@ -82,6 +83,8 @@ void EnemyDivision::StartUpdate()
 	{
 		// •Ï‚í‚é‚Æ‚«‚É“–‚½‚è”»’è‚à“ü‚ê‚é
 		m_col.SetCenter(m_pos, m_radius);
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_createSe->GetHandle());
 
 		EnemyBase::ChangeNormalFunc();
 
