@@ -90,9 +90,9 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 
 	if (m_currentLineIndex == index)
 	{
-		int frame = (m_frame % 80) - 40;
-		float rate = fabs(frame) / 40.0f;
-		int alpha = 255 * rate;
+		float frame = (m_frame % 80) - 40.0f;
+		float rate = fabsf(frame) / 40.0f;
+		int alpha = static_cast <int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		DrawStringToHandle(132, drawY, str.c_str(), 0x000000, fontHandle);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

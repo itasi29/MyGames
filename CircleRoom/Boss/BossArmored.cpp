@@ -220,18 +220,8 @@ void BossArmored::NormalDraw() const
 		obj->Draw();
 	}
 
-	DrawHitWallEffect();
-
 	// ダメージエフェクト
-	if (m_onDamagetFrame > 0)
-	{
-		// 座標を中心とする
-		int x = m_drawOnDamagetX - static_cast<int>(kDamageGraphSize * 0.5f);
-		int y = m_drawOnDamagetY - static_cast<int>(kDamageGraphSize * 0.5f);
-		int srcX = static_cast<int>((kOnDamageFrame - m_onDamagetFrame) / 3) * 64;
-
-		DrawRectRotaGraph(x, y, srcX, kSrcY, kDamageGraphSize * kDamageSize, kDamageGraphSize * kDamageSize, kDamageSize, 0.0, m_damageEffect->GetHandle(), true);
-	}
+	DrawHitWallEffect();
 
 	DrawHpBar();
 

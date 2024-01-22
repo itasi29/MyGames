@@ -174,8 +174,8 @@ void TitleScene::NormalDraw()
 		if (m_currentLinePos == i)
 		{
 			int frame = (m_frame % kFlashInterval * 2) - kFlashInterval;
-			float rate = fabs(frame) / static_cast<float>(kFlashInterval);
-			int alpha = 255 * rate;
+			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
+			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawStringToHandle(drawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

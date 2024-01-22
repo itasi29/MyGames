@@ -277,7 +277,7 @@ void BossBase::DrawHitWallEffect() const
 		int srcX = kWallEffectGraphSize * (index % kRow);
 		int srcY = kWallEffectGraphSize * kLine[m_lineType];
 
-		DrawRectRotaGraph(x, y, srcX, srcY, kWallEffectGraphSize * kExtRate, kWallEffectGraphSize * kExtRate, kExtRate, 0.0, m_wallEffect->GetHandle(), true);
+		DrawRectRotaGraph(x, y, srcX, srcY, static_cast<int>(kWallEffectGraphSize * kExtRate), static_cast<int>(kWallEffectGraphSize * kExtRate), kExtRate, 0.0, m_wallEffect->GetHandle(), true);
 	}
 }
 

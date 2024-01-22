@@ -140,8 +140,8 @@ void StageSelectScene::Draw()
 			if (isIndexRow && m_indexLine == y)
 			{
 				int frame = (m_frame % 80) - 40;
-				float rate = fabs(frame) / 40.0f;
-				int alpha = 255 * rate;
+				float rate = fabsf(static_cast<float>(frame)) / 40.0f;
+				int alpha = static_cast<int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 				// FIXE:Œ»ó‘å‚«‚ß‚Ì˜g‚ğ•`‰æ‚µ‚Ä‚¢‚é‚ª‚Ì‚¿‚Í‰æ‘œ‚É•ÏX
 				DrawBoxAA(static_cast<float>(drawX - kStageFrameSize), kStartPos.y + kStageMargine * y - kStageFrameSize,

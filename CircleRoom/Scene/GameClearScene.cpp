@@ -72,7 +72,7 @@ void GameClearScene::NormalUpdate(Input& input)
 		return;
 	}
 
-	if (input.IsTriggered("OK"))
+	if (input.IsAnyTriggerd())
 	{
 		m_updateFunc = &GameClearScene::FadeOutUpdate;
 		m_drawFunc = &GameClearScene::FadeDraw;
@@ -109,22 +109,31 @@ void GameClearScene::NormalDraw()
 	int drawY = 320;
 	for (int i = 0; i < m_index + 1; i++)
 	{
-		if (!(i < kCreditsNum)) break;
+		if (!(i < kCreditsNum))
+		{
+			int val = (m_textFrame + kTextInterval) % (kTextInterval * 2) - kTextInterval;
+			float rate = (fabs(static_cast<float>(val)) / kTextInterval);
+			int alpha = static_cast <int>(255 * rate);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			DrawStringToHandle(500, drawY, L"Å`Å@AnyBottanPushÅ@Å`", 0xffffff, fontHandle);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			break;
+		}
 
 		if (i == m_index)
 		{
 			float rate = (static_cast<float>(m_textFrame) / kTextInterval);
-			int alpha = 255 * rate;
-			int y = drawY - (100 * (1 - rate));
+			int alpha = static_cast <int>(255 * rate);
+			int y = drawY - static_cast<int>(100 * (1 - rate));
 
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawFormatStringToHandle(600, y, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
-			DrawInf(i, drawY, fontHandle);
+			DrawFormatStringToHandle(500, y, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
+			DrawInf(i, y, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawFormatStringToHandle(600, drawY, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
+			DrawFormatStringToHandle(500, drawY, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
 			DrawInf(i, drawY, fontHandle);
 		}
 

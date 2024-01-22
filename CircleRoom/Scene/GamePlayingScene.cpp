@@ -60,7 +60,7 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 	m_bg = m_mgr.GetFile()->LoadGraphic(L"BG/bg.png");
 
 	// 事前にステージ内で多く使うものはここで読み込んでおく
-	int size = kPath.size();
+	auto size = kPath.size();
 	m_stgData.resize(size);
 	for (int i = 0; i < size; i++)
 	{

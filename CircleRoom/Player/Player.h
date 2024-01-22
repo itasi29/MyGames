@@ -10,6 +10,13 @@ class FileBase;
 struct size;
 enum Ability;
 
+struct DirectionVec
+{
+	Vec2 front;
+	Vec2 right;
+	Vec2 left;
+};
+
 struct EffectData
 {
 	Vec2 vec;
@@ -90,6 +97,8 @@ private:
 	Vec2 m_front;
 	// 移動ベクトル
 	Vec2 m_vec;
+	// 方向ベクトル
+	DirectionVec m_dir;
 
 	// 移動エフェクト
 	std::list<EffectData> m_effs;
@@ -102,6 +111,7 @@ private:
 
 	// ダッシュログ
 	std::vector<Vec2> m_posLog;
+	std::vector<DirectionVec> m_dirLog;
 	std::vector<double> m_angleLog;
 	// ログフレーム
 	int m_logFrame;

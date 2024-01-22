@@ -47,7 +47,7 @@ void Application::Terminate()
 bool Application::Init()
 {
 #ifdef _DEBUG
-    ChangeWindowMode(false); // ウィンドウモードにします
+    ChangeWindowMode(true); // ウィンドウモードにします
 #endif
 
     SetGraphMode(m_size.w, m_size.h, 16);

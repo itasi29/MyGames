@@ -199,8 +199,8 @@ void PadConfigScene::DrawCommandList()
 			if (!m_isEdit)
 			{
 				int frame = (m_frame % 80) - 40;
-				float rate = fabs(frame) / 40.0f;
-				int alpha = 255 * rate;
+				float rate = fabsf(static_cast<float>(frame)) / 40.0f;
+				int alpha = static_cast <int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			}
 			DrawFormatStringToHandle(kMenuMargin + 50, y, 0x000000, fontHandle, L"%s", cmdName.c_str());

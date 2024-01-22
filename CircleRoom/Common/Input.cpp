@@ -28,7 +28,9 @@ const InputTable_t Input::GetCommandTable() const
     return ret;
 }
 
-Input::Input()
+Input::Input() :
+    m_isAnyPush(false),
+    m_isLastAnyPush(false)
 {
     // メニュー関連
     // 見せるもの
@@ -69,6 +71,8 @@ Input::Input()
 void Input::Update()
 {
     m_lastInputDate = m_inputDate;  // 直前入力をコピーしておく
+    m_isLastAnyPush = m_isAnyPush;
+    m_isAnyPush = false;
 
     /* ハードウェア入力チェック */
     // キーボード用
@@ -81,6 +85,11 @@ void Input::Update()
     GetJoypadAnalogInput(&stickX, &stickY, DX_INPUT_PAD1);
     m_inputStickDate.x = static_cast<float>(stickX);
     m_inputStickDate.y = static_cast<float>(stickY);
+
+    if (padstate || CheckHitKeyAll())
+    {
+        m_isAnyPush = true;
+    }
 
     /*情報更新*/
     // 登録された情報とハードの情報を照らし合わせながら、
@@ -125,6 +134,11 @@ bool Input::IsTriggered(const char* command) const
 
     return m_inputDate.at(command) && !m_lastInputDate.at(command);
 
+}
+
+bool Input::IsAnyTriggerd()
+{
+    return m_isAnyPush && !m_isLastAnyPush;
 }
 
 bool Input::IsPress(const char* command) const

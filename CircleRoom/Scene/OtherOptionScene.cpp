@@ -105,8 +105,8 @@ void OtherOptionScene::Draw()
 		if (m_currentLineIndex == i)
 		{
 			int frame = (m_frame % 80) - 40;
-			float rate = fabs(frame) / 40.0f;
-			int alpha = 255 * rate;
+			float rate = fabsf(static_cast<float>(frame)) / 40.0f;
+			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawStringToHandle(kMenuMargin + 200, kMenuMargin + 64 + i * 32, kGameMenu[i].c_str(), 0x000000, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

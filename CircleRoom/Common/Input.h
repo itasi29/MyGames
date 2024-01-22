@@ -34,6 +34,9 @@ private:
 
 	// スティック情報
 	Vec2 m_inputStickDate;
+	// 何かしらのボタン押された情報
+	bool m_isAnyPush;
+	bool m_isLastAnyPush;
 
 	const InputTable_t GetCommandTable() const;
 	std::vector<std::string> GetExclusiveCommandTable() const { return m_exclusiveKeyConfigCommands; }
@@ -50,6 +53,11 @@ public:
 	/// <param name="command">コマンド文字列</param>
 	/// <returns>true:押された瞬間 / false:押されていないか押しっぱ</returns>
 	bool IsTriggered(const char* command) const;
+	/// <summary>
+	/// 何かしらのボタンが押されたか
+	/// </summary>
+	/// <returns>true:押された瞬間 / false:押されていないか押しっぱ</returns>
+	bool IsAnyTriggerd();
 	/// <summary>
 	/// 指定のコマンドが押されているか
 	/// </summary>

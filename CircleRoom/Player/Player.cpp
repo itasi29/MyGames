@@ -9,6 +9,9 @@
 
 #include "Player.h"
 
+// MEMO:グラフだと左右反転させたときに画像ががびがびになったため
+// 今のところDrawTriangleで描画中
+#define NGRAPH
 
 namespace
 {
@@ -20,7 +23,11 @@ namespace
 	// プレイヤーのスピード
 	constexpr float kSpeed = 4.0f;
 	// プレイヤーの中心から判定をどのくらい動かすか
+#ifdef _GRAPH
 	constexpr float kColShift = -kSize * 0.12f;
+#else
+	constexpr float kColShift = kSize * 0.32f;
+#endif
 
 	// 移動エフェクトフレーム
 	constexpr int kEffFrame = 10;
@@ -64,6 +71,7 @@ Player::Player(const size& windowSize, float fieldSize) :
 	Init();
 	m_isExsit = false;
 	m_posLog.resize(kDashLogNum);
+	m_dirLog.resize(kDashLogNum);
 	m_angleLog.resize(kDashLogNum);
 
 	auto& mgr = GameManager::GetInstance();
@@ -93,6 +101,13 @@ void Player::Init()
 
 	// 方向の設定
 	m_front = Vec2::Up();
+#ifdef _GRAPH
+	m_angle = 0.0;
+#else
+	m_dir.front = m_front * kSize;
+	m_dir.right = m_front.Right() * kSize * 0.5f;
+	m_dir.left = m_front.Left() * kSize * 0.5f;
+#endif
 
 	// 当たり判定の更新
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
@@ -151,9 +166,11 @@ void Player::Update(Input& input, Ability ability)
 	for (int i = kDashLogNum - 1; i > 0; i--)
 	{
 		m_posLog[i] = m_posLog[i - 1];
+		m_dirLog[i] = m_dirLog[i - 1];
 		m_angleLog[i] = m_angleLog[i - 1];
 	}
 	m_posLog[0] = m_pos;
+	m_dirLog[0] = m_dir;
 	m_angleLog[0] = m_angle;
 	// 位置の更新
 	m_pos += m_vec;
@@ -161,21 +178,25 @@ void Player::Update(Input& input, Ability ability)
 	InRange();
 
 	// 当たり判定の更新
+#ifdef _GRAPH
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
+#else
+	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
+#endif
 }
 
 void Player::Draw()
 {
 	if (m_isExsit)
 	{
-		float rate;
+		double rate;
 		int alpha;
 
 		// 移動時のエフェクトを描画
 		for (const auto& eff : m_effs)
 		{
 			rate = 1.0f - (eff.frame / static_cast<float>(kEffFrame));
-			alpha = 255 * rate;
+			alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), rate, eff.angle, m_charEffImg->GetHandle(), true);
 		}
@@ -185,27 +206,49 @@ void Player::Draw()
 		{
 			for (int i = 0; i < kDashLogNum; i++)
 			{
-				rate = 1.0f - (m_logFrame + i + 1) / static_cast<float>(m_logFrame + kDashLogNum);
-				alpha = 128 * rate;
+				rate = 1.0f - (m_logFrame + i + 1) / static_cast<double>(m_logFrame + kDashLogNum);
+				alpha = static_cast<int>(128 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+#ifdef _GRAPH
 				DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, m_angleLog[i], m_charImg->GetHandle(), true);
+#else
+				DrawTriangle(static_cast<int>(m_dirLog[i].front.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].front.y + m_posLog[i].y),
+					static_cast<int>(m_dirLog[i].left.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].left.y + m_posLog[i].y),
+					static_cast<int>(m_dirLog[i].right.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].right.y + m_posLog[i].y),
+					0xffffff, true);
+#endif // _GRAPH
 			}
 		}
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+		// 現在のプレイヤーを描画
+#ifdef _GRAPH
 		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charImg->GetHandle(), true);
+#else
+		DrawTriangleAA(static_cast<int>(m_dir.front.x + m_pos.x), static_cast<int>(m_dir.front.y + m_pos.y),
+			static_cast<int>(m_dir.left.x + m_pos.x), static_cast<int>(m_dir.left.y + m_pos.y),
+			static_cast<int>(m_dir.right.x + m_pos.x), static_cast<int>(m_dir.right.y + m_pos.y),
+			0xffffff, true);
+#endif	// _GRAPH
 	}
 	else
 	{
+#ifdef _GRAPH
 		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charDeathImg->GetHandle(), true);
+#else
+		DrawTriangleAA(static_cast<int>(m_dir.front.x + m_pos.x), static_cast<int>(m_dir.front.y + m_pos.y),
+			static_cast<int>(m_dir.left.x + m_pos.x), static_cast<int>(m_dir.left.y + m_pos.y),
+			static_cast<int>(m_dir.right.x + m_pos.x), static_cast<int>(m_dir.right.y + m_pos.y),
+			0xff0000, true);
+#endif	// _GRAPH
 	}
 
 	// 死亡時のエフェクト
 	if (m_isDeathEffect)
 	{
-		int x = m_pos.x - kDeathGraphSize * 0.5f;
-		int y = m_pos.y - kDeathGraphSize * 0.5f;
+		int x = static_cast<int>(m_pos.x - kDeathGraphSize * 0.5f);
+		int y = static_cast<int>(m_pos.y - kDeathGraphSize * 0.5f);
 		int index = m_deathFrame / kDeathEffectFrame;
 		int srcX = kDeathGraphSize * (index % kRow);
 		int srcY = kDeathGraphSize * (index / kLine);
@@ -265,7 +308,14 @@ void Player::Move(Input& input)
 		float effY = -m_vec.y + (GetRand(10) * 0.1f - 0.5f);
 		m_effs.push_back({ {effX, effY}, m_pos });
 
+#ifdef _GRAPH
 		m_angle = atan2(m_front.x, -m_front.y);
+#else
+		m_front = m_vec;
+		m_dir.front = m_front * kSize;
+		m_dir.right = m_front.Right() * kSize * 0.5f;
+		m_dir.left = m_front.Left() * kSize * 0.5f;
+#endif
 	}
 
 	m_vec *= kSpeed;
@@ -294,6 +344,7 @@ void Player::Dash(Input& input)
 		for (int i = 0; i < kDashLogNum; i++)
 		{
 			m_posLog[i] = m_pos;
+			m_dirLog[i] = m_dir;
 			m_angleLog[i] = m_angle;
 		}
 
