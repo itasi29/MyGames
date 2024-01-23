@@ -15,6 +15,9 @@
 
 namespace
 {
+	// ’Êí•¶Žš—ñ‚ÌF
+	constexpr unsigned int kStrColor = 0xf0ece5;
+
 	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
 	constexpr int kKillTypePosX = 144;
 	constexpr int kKillTypePosY = 152;
@@ -30,8 +33,8 @@ namespace
 	const std::string kLeftStName = "Stage1-4";
 }
 
-Stage1_3::Stage1_3(GameManager& mgr) :
-	StageBase(mgr),
+Stage1_3::Stage1_3(GameManager& mgr, Input& input) :
+	StageBase(mgr, input),
 	m_createFrame(0)
 {
 	m_stageName = "Stage1-3";
@@ -99,7 +102,7 @@ void Stage1_3::ChangeStage(Input& input)
 	if (m_mgr.GetStage()->IsClearStage(kLeftStName) && input.IsTriggered("left"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
-		nextStage = std::make_shared<Stage1_4>(m_mgr);
+		nextStage = std::make_shared<Stage1_4>(m_mgr, input);
 
 		SlideLeft(nextStage);
 
@@ -108,7 +111,7 @@ void Stage1_3::ChangeStage(Input& input)
 	if (m_mgr.GetStage()->IsClearStage(kDownStName) && input.IsTriggered("down"))
 	{
 		std::shared_ptr<Stage1_1> nextStage;
-		nextStage = std::make_shared<Stage1_1>(m_mgr);
+		nextStage = std::make_shared<Stage1_1>(m_mgr, input);
 
 		SlideDown(nextStage);
 
@@ -143,14 +146,14 @@ int Stage1_3::DrawStageConditions(int drawY)
 
 	if (!m_isLeftClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"¶@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"¶@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
 			kLeftKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kLeftKilledNum);
 
 		drawY += 72;
 	}
 	if (!m_isDownClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"‰º@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)", 
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"‰º@%d•bŠÔ¶‚«Žc‚é\n(%d / %d)", 
 			kDownExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kDownExsitTime);
 
 		drawY += 48;

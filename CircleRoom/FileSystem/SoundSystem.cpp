@@ -56,6 +56,11 @@ void SoundSystem::PlayBgm(int soundHandle, bool isLoop)
 
 void SoundSystem::PlayFadeBgm(int soundHandle, float rate, bool isLoop)
 {
+	if (soundHandle < 0)
+	{
+		soundHandle = m_nowPlayBgm;
+	}
+
 	if (CheckSoundMem(soundHandle))
 	{
 		SetBgm(rate);

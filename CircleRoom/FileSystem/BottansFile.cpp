@@ -14,19 +14,16 @@ namespace
 
 BottansFile::BottansFile(std::shared_ptr<FileManager>& mgr)
 {
-	m_handle = mgr->LoadGraphic(L"UI/xbox_buttons.png", true)->GetHandle();
+	m_handle = mgr->LoadGraphic(L"UI/buttons.png", true)->GetHandle();
 
-	m_bottans[L"Ç`Bottan"] = 0;
-	m_bottans[L"ÇaBottan"] = 1;
-	m_bottans[L"ÇwBottan"] = 2;
-	m_bottans[L"ÇxBottan"] = 3;
-
-//	m_bottans[L"c"] = mgr.LoadGraphic(L"c", true)->GetHandle();
-	//m_bottans[L"z"] = mgr.LoadGraphic(L"z", true)->GetHandle();
-	//m_bottans[L"l"] = mgr.LoadGraphic(L"l", true)->GetHandle();
-	//m_bottans[L"r"] = mgr.LoadGraphic(L"r", true)->GetHandle();
-	//m_bottans[L"start"] = mgr.LoadGraphic(L"start", true)->GetHandle();
-	//m_bottans[L"m"] = mgr.LoadGraphic(L"m", true)->GetHandle();
+	m_bottans[L"Ç`Bottan"] = { 0, 10 };
+	m_bottans[L"ÇaBottan"] = { 1, 10 };
+	m_bottans[L"ÇwBottan"] = { 2, 10 };
+	m_bottans[L"ÇxBottan"] = { 3, 10 };
+	m_bottans[L"ÇkBottan"] = { 4, 10 };
+	m_bottans[L"ÇqBottan"] = { 5, 10 };
+	m_bottans[L"ÇrÇsÇ`ÇqÇsBottan"] = { 3, 11 };
+	m_bottans[L"ÇlBottan"] = { 2, 11 };
 }
 
 BottansFile::~BottansFile()
@@ -42,13 +39,14 @@ void BottansFile::DrawBottan(std::wstring name, int drawX, int drawY, double rat
 		return;
 	}
 
-	// FIXME:ñºëOÇÕïœçXÇ∑ÇÈ
-	int aaa = static_cast<int>(kGraphSize * 0.5 * rate);
-	drawX += aaa;
-	drawY += aaa;
+	int offset = static_cast<int>(kGraphSize * 0.5 * rate);
+	drawX += offset;
+	drawY += offset;
+
+	auto& src = m_bottans.at(name);
 
 	// âÊëúÇÃï`âÊ
-	DrawRectRotaGraph(drawX, drawY, 0, m_bottans.at(name) * kGraphSize, 
+	DrawRectRotaGraph(drawX, drawY, src.x * kGraphSize, src.y * kGraphSize, 
 		kGraphSize, kGraphSize, rate, 0.0, m_handle, true);
 }
 

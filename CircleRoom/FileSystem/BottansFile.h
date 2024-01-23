@@ -9,6 +9,12 @@
 
 class FileManager;
 
+struct PadSrcData
+{
+	int x;
+	int y;
+};
+
 class BottansFile
 {
 public:
@@ -38,6 +44,6 @@ private:
 	int m_handle;
 
 	// ƒ{ƒ^ƒ“–¼@Ø‚è”²‚«”ÍˆÍ
-	std::unordered_map<std::wstring, int> m_bottans;	
+	std::unordered_map<std::wstring, PadSrcData> m_bottans;	
 };
 

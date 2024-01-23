@@ -3,9 +3,13 @@
 #include <memory>
 #include <array>
 
+struct size;
 class Input;
 class FileBase;
+class BottansFile;
+class KeyFile;
 class SceneManager;
+enum class InputType;
 
 /// <summary>
 /// ポーズ時のシーンクラス
@@ -36,7 +40,18 @@ private:
 
 	// 描画関数
 	void NormalDraw();	// 非フェード描画
-
+	
+	/// <summary>
+	/// 左右移動させる画像の描画
+	/// </summary>
+	void DrawImage(const size& size);
+	/// <summary>
+	/// 枠線の描画
+	/// </summary>
+	void DrawFrame(int divisionNum, int width, const size& size);
+	/// <summary>
+	/// 内容の文字列描画
+	/// </summary>
 	void DrawContent(std::vector<std::wstring> strs, int width);
 
 	/// <summary>
@@ -48,6 +63,10 @@ private:
 	// ゲームシーンとタイトルシーン変更させる
 	bool m_isGame;
 
+	// 
+	std::shared_ptr<BottansFile> m_bt;
+	std::shared_ptr<KeyFile> m_key;
+
 	// シーンの扱い方が特殊なのでSceneManager別枠として持つ
 	// おかしくなる可能性があるため要確認
 	std::shared_ptr<SceneManager> m_optionScn;
@@ -58,6 +77,8 @@ private:
 	int m_currentMenuLine;
 
 	bool m_isFadeOut;
+
+	InputType m_type;
 
 	// Se
 	std::shared_ptr<FileBase> m_cursorUpSe;

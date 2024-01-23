@@ -66,10 +66,9 @@ void KeyFile::DrawKey(std::wstring name, int drawX, int drawY, double rate) cons
 		return;
 	}
 
-	// FIXME:–¼‘O‚Í•ÏX‚·‚é
-	int aaa = static_cast<int>(kGraphSize * 0.5 * rate);
-	drawX += aaa;
-	drawY += aaa;
+	int offset = static_cast<int>(kGraphSize * 0.5 * rate);
+	drawX += offset;
+	drawY += offset;
 
 	// ‰æ‘œ‚Ì•`‰æ
 	int width = kGraphSize;

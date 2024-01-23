@@ -17,23 +17,38 @@
 #include "Stage/Stage1_1.h"
 #include "Stage/StageTutorial.h"
 
+
 namespace
 {
+	enum PathType
+	{
+		kGraph,
+		kSound
+	};
+
+	struct PathData
+	{
+		std::wstring path;
+		PathType type;
+	};
 
 	// フェードのフレーム時間
 	constexpr int kFadeFrame = 60;
 
 	// 事前に読み込んでおくデータのpath
-	const std::vector<std::wstring> kPath =
+	const std::vector<PathData> kPath =
 	{
-		L"Enemy/wallEffect.png",
-		L"Player/blood.png",
-		L"UI/backFrame.png"
+		{L"Enemy/wallEffect.png", kGraph},
+		{L"Player/blood.png", kGraph},
+		{L"UI/backFrame.png", kGraph},
+		{L"Bgm/provisionalBgm.mp3", kSound},
+		{L"Bgm/fieldFight.mp3", kSound},
+		{L"Bgm/boss.mp3", kSound}
 	};
 
 }
 
-GamePlayingScene::GamePlayingScene(GameManager& mgr) :
+GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 	Scene(mgr),
 	m_screenHandle(0),
 	m_frame(kFadeFrame)
@@ -46,17 +61,16 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 	// チュートリアルステージを通常ステージに
 	if (m_mgr.GetStage()->IsClearStage("StageTutorial"))
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr));
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
 	}
 	// していなければチュートリアルステージに
 	else
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<StageTutorial>(m_mgr));
+		m_mgr.GetStage()->ChangeStage(std::make_shared<StageTutorial>(m_mgr, input));
 	}
 
 	m_mgr.GetStage()->m_clear = false;
 
-	m_bg = m_mgr.GetFile()->LoadGraphic(L"BG/bg.png");
 	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp3");
 
 	// 事前にステージ内で多く使うものはここで読み込んでおく
@@ -64,7 +78,18 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr) :
 	m_stgData.resize(size);
 	for (int i = 0; i < size; i++)
 	{
-		m_stgData[i] = m_mgr.GetFile()->LoadGraphic(kPath[i]);
+		switch (kPath[i].type)
+		{
+		default:
+			assert(false);
+		case kGraph:
+			m_stgData[i] = m_mgr.GetFile()->LoadGraphic(kPath[i].path);
+			break;
+		case kSound:
+			m_stgData[i] = m_mgr.GetFile()->LoadSound(kPath[i].path);
+			break;
+			break;
+		}
 	}
 }
 
@@ -79,8 +104,6 @@ void GamePlayingScene::Update(Input& input)
 
 void GamePlayingScene::Draw()
 {
-	DrawGraph(0, 0, m_bg->GetHandle(), true);
-
 	(this->*m_drawFunc)();
 }
 

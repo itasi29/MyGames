@@ -17,6 +17,9 @@
 
 namespace
 {
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+
 	// 右側生存時間
 	constexpr int kRightExsitTime = 10;
 
@@ -32,8 +35,8 @@ namespace
 	const std::string kRightStName = "Stage1-1";
 }
 
-Stage1_2::Stage1_2(GameManager& mgr) :
-	StageBase(mgr),
+Stage1_2::Stage1_2(GameManager& mgr, Input& input) :
+	StageBase(mgr, input),
 	m_createLageFrame(0)
 {
 	m_stageName = "Stage1-2";
@@ -103,7 +106,7 @@ void Stage1_2::ChangeStage(Input& input)
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_1> nextStage;
-		nextStage = std::make_shared<Stage1_1>(m_mgr);
+		nextStage = std::make_shared<Stage1_1>(m_mgr, input);
 
 		SlideRight(nextStage);
 
@@ -131,7 +134,7 @@ int Stage1_2::DrawStageConditions(int drawY)
 	{
 		int fontHandle = m_mgr.GetFont()->GetHandle(24);
 
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"右　%d秒間生き残る\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"右　%d秒間生き残る\n(%d / %d)",
 			kRightExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kRightExsitTime);
 
 		drawY += 48;

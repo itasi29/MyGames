@@ -30,7 +30,8 @@ const InputTable_t Input::GetCommandTable() const
 
 Input::Input() :
     m_isAnyPush(false),
-    m_isLastAnyPush(false)
+    m_isLastAnyPush(false),
+    m_lastType(InputType::pad)
 {
     // メニュー関連
     // 見せるもの
@@ -66,6 +67,53 @@ Input::Input() :
     m_exclusiveKeyConfigCommands = {"optionLeft", "optionRight", "up", "down", "left", "right"};
 
     Load(L"Data/Bin/key.cnf");
+
+    auto& pad = m_corrTable[InputType::pad];
+    pad[PAD_INPUT_A] = L"ＡBottan";
+    pad[PAD_INPUT_B] = L"ＢBottan";
+    pad[PAD_INPUT_C] = L"ＸBottan";
+    pad[PAD_INPUT_X] = L"ＹBottan";
+    pad[PAD_INPUT_5] = L"ＬBottan";
+    pad[PAD_INPUT_6] = L"ＲBottan";
+    pad[PAD_INPUT_R] = L"ＳＴＡＲＴBottan";
+    pad[PAD_INPUT_L] = L"ＭBottan";
+
+    auto& keybd = m_corrTable[InputType::keybd];
+    keybd[KEY_INPUT_A] = L"Ａキー";
+    keybd[KEY_INPUT_B] = L"Ｂキー";
+    keybd[KEY_INPUT_C] = L"Ｃキー";
+    keybd[KEY_INPUT_D] = L"Ｄキー";
+    keybd[KEY_INPUT_E] = L"Ｅキー";
+    keybd[KEY_INPUT_F] = L"Ｆキー";
+    keybd[KEY_INPUT_G] = L"Ｇキー";
+    keybd[KEY_INPUT_H] = L"Ｈキー";
+    keybd[KEY_INPUT_I] = L"Ｉキー";
+    keybd[KEY_INPUT_J] = L"Ｊキー";
+    keybd[KEY_INPUT_K] = L"Ｋキー";
+    keybd[KEY_INPUT_L] = L"Ｌキー";
+    keybd[KEY_INPUT_M] = L"Ｍキー";
+    keybd[KEY_INPUT_N] = L"Ｎキー";
+    keybd[KEY_INPUT_O] = L"Ｏキー";
+    keybd[KEY_INPUT_P] = L"Ｐキー";
+    keybd[KEY_INPUT_Q] = L"Ｑキー";
+    keybd[KEY_INPUT_R] = L"Ｒキー";
+    keybd[KEY_INPUT_S] = L"Ｓキー";
+    keybd[KEY_INPUT_T] = L"Ｔキー";
+    keybd[KEY_INPUT_U] = L"Ｕキー";
+    keybd[KEY_INPUT_V] = L"Ｖキー";
+    keybd[KEY_INPUT_W] = L"Ｗキー";
+    keybd[KEY_INPUT_X] = L"Ｘキー";
+    keybd[KEY_INPUT_Y] = L"Ｙキー";
+    keybd[KEY_INPUT_Z] = L"Ｚキー";
+    keybd[KEY_INPUT_BACK] = L"BSキー";
+    keybd[KEY_INPUT_TAB] = L"Tabキー";
+    keybd[KEY_INPUT_RETURN] = L"Enterキー";
+    keybd[KEY_INPUT_LSHIFT] = L"左Shiftキー";
+    keybd[KEY_INPUT_RSHIFT] = L"右Shiftキー";
+    keybd[KEY_INPUT_LCONTROL] = L"左Ctrlキー";
+    keybd[KEY_INPUT_RCONTROL] = L"右Ctrlキー";
+    keybd[KEY_INPUT_ESCAPE] = L"Escキー";
+    keybd[KEY_INPUT_SPACE] = L"スペースキー";
 }
 
 void Input::Update()
@@ -108,6 +156,7 @@ void Input::Update()
                 if (keystate[hardIO.second])
                 {
                     input = true;
+                    m_lastType = hardIO.first;
                     break;
                 }
             }
@@ -116,6 +165,7 @@ void Input::Update()
                 if (padstate & hardIO.second)
                 {
                     input = true;
+                    m_lastType = hardIO.first;
                     break;
                 }
             }
@@ -175,6 +225,11 @@ bool Input::IsReleased(const char* command) const
     }
 
     return !m_inputDate.at(command) && m_lastInputDate.at(command);
+}
+
+std::wstring Input::GetHardDataName(const std::string cmd, InputType type) const
+{
+    return m_corrTable.at(type).at(m_commandTable.at(cmd).at(type));
 }
 
 void Input::Save(const std::string& path)

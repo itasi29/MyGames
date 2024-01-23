@@ -17,7 +17,7 @@ enum Explanation
 class StageTutorial : public StageBase
 {
 public:
-	StageTutorial(GameManager& mgr);
+	StageTutorial(GameManager& mgr, Input& input);
 	~StageTutorial();
 
 	void Init() override;

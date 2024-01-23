@@ -40,6 +40,7 @@ void FontSystem::Init()
 	m_handle[16] = CreateFontToHandle(kFontName, 16, -1);
 	m_handle[24] = CreateFontToHandle(kFontName, 24, -1);
 	m_handle[32] = CreateFontToHandle(kFontName, 32, -1);
+	m_handle[48] = CreateFontToHandle(kFontName, 48, -1);
 	m_handle[64] = CreateFontToHandle(kFontName, 64, -1);
 	m_handle[72] = CreateFontToHandle(kFontName, 72, -1);
 }

@@ -26,6 +26,7 @@ struct EffectData
 	bool isEnd = false;
 };
 
+
 class Player
 {
 public:

@@ -38,7 +38,7 @@ void DebugScene::Update(Input& input)
 			break;
 
 		case 1:
-			m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
+			m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr, input));
 			break;
 		case 2:
 			m_mgr.GetScene()->ChangeScene(std::make_shared<GameClearScene>(m_mgr));

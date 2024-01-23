@@ -35,9 +35,9 @@ namespace
 		0, 4, 7, 8
 	};
 
-
 	// ‚¸‚ç‚·—Ê
 	constexpr int kWallEffectSlide = 32;
+
 }
 
 EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :

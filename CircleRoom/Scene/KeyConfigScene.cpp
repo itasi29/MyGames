@@ -17,6 +17,20 @@
 
 namespace
 {
+	// フレームの色
+	constexpr unsigned int kFrameColor = 0xd80032;
+	// フレーム点滅時の色の差(RGB別)
+	constexpr unsigned int kFrameColorDeffR = 0x1f;
+	constexpr unsigned int kFrameColorDeffG = 0x8c;
+	constexpr unsigned int kFrameColorDeffB = 0x70;
+
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+	// 選択時文字列の色
+	constexpr unsigned int kSelectStrColor = 0x161a30;
+	// 点滅間隔
+	constexpr int kFlashInterval = 40;
+
 	constexpr unsigned int kDefColor = 0xffffff;
 	constexpr int kMenuMargin = 120;
 
@@ -110,7 +124,30 @@ void KeyConfigScene::Update(Input & input)
 
 void KeyConfigScene::Draw()
 {
-	DrawStringToHandle(100, kMenuMargin + 10, L"KeyConfig Scene", 0xffffff, m_mgr.GetFont()->GetHandle(32));
+	DrawStringToHandle(100, kMenuMargin + 10, L"キー変更", 0xffffff, m_mgr.GetFont()->GetHandle(32));
+
+	// FIXME:なんか色がむっちゃ気持ち悪いからこれは絶対直せ
+	// 
+	// 選択している場所を描画
+	if (!m_isEdit)
+	{
+		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
+			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
+			kFrameColor, true);
+	}
+	else
+	{
+		int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
+		unsigned int addR = static_cast<unsigned int>(kFrameColorDeffR * rate) << (4 * 4);
+		unsigned int addG = static_cast<unsigned int>(kFrameColorDeffG * rate) << (4 * 2);
+		unsigned int addB = static_cast<unsigned int>(kFrameColorDeffB * rate);
+		unsigned int color = kFrameColor + addR + addG + addB;
+
+		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
+			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
+			color, true);
+	}
 
 	DrawCommandList();
 }
@@ -126,7 +163,7 @@ void KeyConfigScene::NormalUpdate(Input & input)
 	{
 		m_isEdit = true;
 		m_updateFunc = &KeyConfigScene::EditUpdate;
-		m_frame = 0;
+		m_frame = kFlashInterval;
 		m_cancleFrame = 0;
 	}
 
@@ -150,6 +187,10 @@ void KeyConfigScene::EditUpdate(Input & input)
 {
 	m_frame++;
 
+	// 現在選択しているコマンドのデータを参照
+	const auto& strItem = m_menuTable[m_currentLineIndex];
+	auto& cmd = m_commandTable[strItem];
+
 	if (input.IsPress("cancel"))
 	{
 		m_cancleFrame++;
@@ -161,11 +202,19 @@ void KeyConfigScene::EditUpdate(Input & input)
 		}
 		return;
 	}
-	m_cancleFrame = 0;
+	if (m_cancleFrame > 0)
+	{
+		auto state = m_commandTable["cancel"][InputType::keybd];
 
-	// 現在選択しているコマンドのデータを参照
-	auto strItem = m_menuTable[m_currentLineIndex];
-	auto& cmd = m_commandTable[strItem];
+		cmd[InputType::keybd] = state;
+
+		// 本体の方も書き換え
+		m_input.m_commandTable["cancel"][InputType::keybd] = state;
+
+		m_isEdit = false;
+		m_updateFunc = &KeyConfigScene::EditEndUpdate;
+		return;
+	}
 
 	// KEYが入力されたら変更
 	char keystate[256];
@@ -209,20 +258,6 @@ void KeyConfigScene::EditEndUpdate(Input& input)
 
 void KeyConfigScene::DrawCommandList()
 {
-	// 選択している場所を描画
-	if (!m_isEdit || static_cast<int>(m_frame * 0.05f) % 2)
-	{
-		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
-			0xff0000, true);
-	}
-	else
-	{
-		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
-			0xff8800, true);
-	}
-
 	int y = kMenuMargin + 64;
 
 	for (int i = 0; i < m_menuTable.size(); i++)
@@ -237,17 +272,17 @@ void KeyConfigScene::DrawCommandList()
 		{
 			if (!m_isEdit)
 			{
-				int frame = (m_frame % 80) - 40;
-				float rate = fabsf(static_cast<float>(frame)) / 40.0f;
+				int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+				float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 				int alpha = static_cast <int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			}
-			DrawFormatStringToHandle(kMenuMargin + 50, y, 0x000000, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kSelectStrColor, fontHandle, L"%s", cmdName.c_str());
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawFormatStringToHandle(kMenuMargin + 50, y, 0xffffff, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kStrColor, fontHandle, L"%s", cmdName.c_str());
 		}
 
 		m_keyImg->DrawKey(GetKeyName(cmd.at(InputType::keybd)), kMenuMargin + 50 + 376, y, kExtendRate);

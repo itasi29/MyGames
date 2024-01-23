@@ -17,6 +17,9 @@
 
 namespace
 {
+	// ’Êí•¶Žš—ñ‚ÌF
+	constexpr unsigned int kStrColor = 0xf0ece5;
+
 	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
 	constexpr int kKillTypePosX = 144;
 	constexpr int kKillTypePosY = 152;
@@ -33,8 +36,8 @@ namespace
 	const std::string kUpStName = "Stage1-5";
 }
 
-Stage1_4::Stage1_4(GameManager& mgr) :
-	StageBase(mgr),
+Stage1_4::Stage1_4(GameManager& mgr, Input& input) :
+	StageBase(mgr, input),
 	m_createNormalFrame(0)
 {
 	m_stageName = "Stage1-4";
@@ -104,7 +107,7 @@ void Stage1_4::ChangeStage(Input& input)
 	if (m_mgr.GetStage()->IsClearStage(kRightStName) && input.IsTriggered("right"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
-		nextStage = std::make_shared<Stage1_3>(m_mgr);
+		nextStage = std::make_shared<Stage1_3>(m_mgr, input);
 
 		SlideRight(nextStage);
 
@@ -113,7 +116,7 @@ void Stage1_4::ChangeStage(Input& input)
 	if (m_mgr.GetStage()->IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_5> nextStage;
-		nextStage = std::make_shared<Stage1_5>(m_mgr);
+		nextStage = std::make_shared<Stage1_5>(m_mgr, input);
 
 		SlideUp(nextStage);
 
@@ -147,14 +150,14 @@ int Stage1_4::DrawStageConditions(int drawY)
 
 	if (!m_isRightClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"‰E@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"‰E@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
 			kRightKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kRightKilledNum);
 
 		drawY += 72;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"ã@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"ã@%dŽí—Þ‚Ì“G‚É\n@@ŽE‚³‚ê‚é\n(%d / %d)",
 			kUpKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kUpKilledNum);
 
 		drawY += 72;

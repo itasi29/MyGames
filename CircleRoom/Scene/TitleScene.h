@@ -30,23 +30,29 @@ private:
 	void StartSelectDraw();	// スタート選択状態描画
 
 private:
-	void DrawBg(const size& size);
+	/// <summary>
+	/// ロゴの描画
+	/// </summary>
+	void DrawLogo();
 
 private:
-	int m_frame = 0;
-	// メニュー選択カーソル位置
-	int m_currentLinePos = 0;
-
 	// 更新メンバ関数ポインタ
 	void(TitleScene::* m_updateFunc)(Input& input);
 	// 描画メンバ関数ポインタ
 	using DrawFunc_t = void (TitleScene::*)();
 	DrawFunc_t m_drawFunc;
 
-	// タイトルロゴ
+	// 画像群
 	std::shared_ptr<FileBase> m_logoImg;
-	// 背景画像
 	std::shared_ptr<FileBase> m_bgImg;
+
+	// 全体フレーム
+	int m_frame;
+	// メニュー選択カーソル位置
+	int m_currentLinePos;
+
+	// ロゴアングル
+	float m_logoAngle;
 
 	// 背景フレーム
 	int m_bgFrame;

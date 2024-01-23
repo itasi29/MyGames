@@ -5,6 +5,7 @@
 class Application;
 class Input;
 class Scene;
+class FileBase;
 
 /// <summary>
 /// 各シーンの遷移をコントロールするクラス
@@ -12,8 +13,11 @@ class Scene;
 class SceneManager
 {
 public:
-	SceneManager();
+	SceneManager(bool isDrawBg = true);
 	~SceneManager();
+
+	void Init();
+
 	/// <summary>
 	/// 持っているシーンのUpdate関数を呼び出す
 	/// </summary>
@@ -28,13 +32,15 @@ public:
 	/// 現在末尾で実行中のシーンを引数で指定されたシーンに切り替える
 	/// </summary>
 	/// <param name="nextScene">次のシーン</param>
-	void ChangeScene(std::shared_ptr<Scene> nextScene);
+	/// <param name="isMoveBg">背景を動かすか</param>
+	void ChangeScene(std::shared_ptr<Scene> nextScene, bool isMoveBg = true);
 
 	/// <summary>
 	/// 現在あるすべてのシーンを削除しシーンを切り替える
 	/// </summary>
 	/// <param name="nextScene">次のシーン</param>
-	void ChangeSceneWithClear(std::shared_ptr<Scene> nextScene);
+	/// <param name="isMoveBg">背景を動かすか</param>
+	void ChangeSceneWithClear(std::shared_ptr<Scene> nextScene, bool isMoveBg = true);
 
 	/// <summary>
 	/// 現在のシーンの上にシーンを乗っけます
@@ -65,6 +71,9 @@ public:
 	std::shared_ptr<Scene> GetTopScene();
 
 private:
+	void DrawBg();
+
+private:
 	// シーンを入れる
 	std::list<std::shared_ptr<Scene>> m_scenes;
 
@@ -76,5 +85,15 @@ private:
 	int m_shakeSize;
 	// 画面を揺らすか
 	bool m_isShake;
+
+	std::shared_ptr<FileBase> m_bg;
+
+	// 背景の動かすフレーム
+	int m_bgFrame;
+	// 背景を動かすか
+	bool m_isMoveBg;
+
+	// 背景の描画をするか
+	bool m_isDrawBg;
 };
 

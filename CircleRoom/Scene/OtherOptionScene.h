@@ -11,6 +11,19 @@ public:
 	void Draw();
 
 private:
+	void FadeUpdate(Input& input);
+	void NormalUpdate(Input& input);
+
+	void FadeDraw();
+	void NormalDraw();
+
+private:
+	using UpdateFunc_t = void(OtherOptionScene::*)(Input&);
+	using DrawFunc_t = void(OtherOptionScene::*)();
+
+	UpdateFunc_t m_updateFunc;
+	DrawFunc_t m_drawFunc;
+
 	std::shared_ptr<FileBase> m_rightNotationImg;
 	// Se
 	std::shared_ptr<FileBase> m_cursorUpSe;

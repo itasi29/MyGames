@@ -16,6 +16,20 @@
 
 namespace
 {
+	// フレームの色
+	constexpr unsigned int kFrameColor = 0xd80032;
+	// フレーム点滅時の色の差(RGB別)
+	constexpr unsigned int kFrameColorDeffR = 0x1f;
+	constexpr unsigned int kFrameColorDeffG = 0x8c;
+	constexpr unsigned int kFrameColorDeffB = 0x70;
+
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+	// 選択時文字列の色
+	constexpr unsigned int kSelectStrColor = 0x161a30;
+	// 点滅間隔
+	constexpr int kFlashInterval = 40;
+
 	constexpr int kAppeaInterval = 5;
 	constexpr int kMenuMargin = 120;
 
@@ -60,18 +74,27 @@ void SoundOptionScene::Draw()
 {	
 	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
 
+	// FIXME:なんか色がむっちゃ気持ち悪いからこれは絶対直せ
+	// 
 	// 選択している場所を描画
-	if (!m_isEdit || static_cast<int>(m_frame * 0.05f) % 2)
+	if (!m_isEdit)
 	{
 		DrawBox(128, y,
 			kMenuMargin + 800, y + 40,
-			0xff0000, true);
+			kFrameColor, true);
 	}
 	else
 	{
+		int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
+		unsigned int addR = static_cast<unsigned int>(kFrameColorDeffR * rate) << (4 * 4);
+		unsigned int addG = static_cast<unsigned int>(kFrameColorDeffG * rate) << (4 * 2);
+		unsigned int addB = static_cast<unsigned int>(kFrameColorDeffB * rate);
+		unsigned int color = kFrameColor + addR + addG + addB;
+
 		DrawBox(128, y,
 			kMenuMargin + 800, y + 40,
-			0xff8800, true);
+			color, true);
 	}
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
@@ -79,13 +102,13 @@ void SoundOptionScene::Draw()
 	y = kMenuMargin + 42;
 	auto rate = m_mgr.GetSound()->GetBgmVolRate();
 	DrawName(y, kBgm, L"BGM");
-	DrawFormatStringToHandle(200, y, 0xffffff, fontHandle, L"%3d％", static_cast<int>(rate * 100));
+	DrawFormatStringToHandle(200, y, kStrColor, fontHandle, L"%3d％", static_cast<int>(rate * 100));
 	DrawGauge(500, y, rate);
 
 	y += kMenuLineInterval;
 	rate = m_mgr.GetSound()->GetSeVolRate();
 	DrawName(y, kSe, L"SE");
-	DrawFormatStringToHandle(200, y, 0xffffff, fontHandle, L"%3d％", static_cast<int>(rate * 100));
+	DrawFormatStringToHandle(200, y, kStrColor, fontHandle, L"%3d％", static_cast<int>(rate * 100));
 	DrawGauge(500, y, rate);
 }
 
@@ -95,7 +118,7 @@ void SoundOptionScene::NormalUpdate(Input& input)
 	{
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 		m_isEdit = true;
-		m_frame = 0;
+		m_frame = kFlashInterval;
 		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 		optionScene->InverseIsEdit();
 
@@ -171,25 +194,25 @@ void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
 	{
 		if (!m_isEdit)
 		{
-			int frame = (m_frame % 80) - 40;
-			float rate = fabsf(static_cast<float>(frame)) / 40.0f;
+			int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+			float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		}
-		DrawStringToHandle(132, drawY, str.c_str(), 0x000000, fontHandle);
+		DrawStringToHandle(132, drawY, str.c_str(), kSelectStrColor, fontHandle);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 	else
 	{
-		DrawStringToHandle(132, drawY, str.c_str(), 0xffffff, fontHandle);
+		DrawStringToHandle(132, drawY, str.c_str(), kStrColor, fontHandle);
 	}
 }
 
 void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate)
 {
 	// 下地描画
-	DrawBox(drawX, drawY, drawX + kGaugeLength, drawY + 32, 0xffffff, true);
-
+	DrawBox(drawX, drawY, drawX + kGaugeLength, drawY + 32, 0xa9a9a9, true);
+	
 	// ゲージ割合描画
-	DrawBox(drawX, drawY, drawX + static_cast<int>(kGaugeLength * rate), drawY + 32, 0xffff00, true);
+	DrawBox(drawX, drawY, drawX + static_cast<int>(kGaugeLength * rate), drawY + 32, 0xff9130, true);
 }

@@ -16,6 +16,20 @@
 
 namespace
 {
+	// ƒtƒŒ[ƒ€‚ÌF
+	constexpr unsigned int kFrameColor = 0xd80032;
+	// ƒtƒŒ[ƒ€“_–Å‚ÌF‚Ì·(RGB•Ê)
+	constexpr unsigned int kFrameColorDeffR = 0x1f;
+	constexpr unsigned int kFrameColorDeffG = 0x8c;
+	constexpr unsigned int kFrameColorDeffB = 0x70;
+
+	// ’Êí•¶š—ñ‚ÌF
+	constexpr unsigned int kStrColor = 0xf0ece5;
+	// ‘I‘ğ•¶š—ñ‚ÌF
+	constexpr unsigned int kSelectStrColor = 0x161a30;
+	// “_–ÅŠÔŠu
+	constexpr int kFlashInterval = 40;
+
 	constexpr unsigned int kDefColor = 0xffffff;
 	constexpr int kMenuMargin = 120;
 
@@ -45,14 +59,12 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 
 	m_bottanTable[PAD_INPUT_A] = L"‚`Bottan";
 	m_bottanTable[PAD_INPUT_B] = L"‚aBottan";
-	m_bottanTable[PAD_INPUT_C] = L"‚bBottan";
-	m_bottanTable[PAD_INPUT_X] = L"‚wBottan";
-	m_bottanTable[PAD_INPUT_Y] = L"‚xBottan";
-	m_bottanTable[PAD_INPUT_Z] = L"‚yBottan";
-	m_bottanTable[PAD_INPUT_L] = L"‚kBottan";
-	m_bottanTable[PAD_INPUT_R] = L"‚qBottan";
-	m_bottanTable[PAD_INPUT_START] = L"‚r‚s‚`‚q‚sBottan";
-	m_bottanTable[PAD_INPUT_M] = L"‚lBottan";
+	m_bottanTable[PAD_INPUT_C] = L"‚wBottan";
+	m_bottanTable[PAD_INPUT_X] = L"‚xBottan";
+	m_bottanTable[PAD_INPUT_5] = L"‚kBottan";
+	m_bottanTable[PAD_INPUT_6] = L"‚qBottan";
+	m_bottanTable[PAD_INPUT_R] = L"‚r‚s‚`‚q‚sBottan";
+	m_bottanTable[PAD_INPUT_L] = L"‚lBottan";
 
 	m_btImg = std::make_shared<BottansFile>(m_mgr.GetFile());
 
@@ -84,7 +96,30 @@ void PadConfigScene::Update(Input& input)
 
 void PadConfigScene::Draw()
 {
-	DrawStringToHandle(100, kMenuMargin + 10, L"PadConfigScene", 0xffffff, m_mgr.GetFont()->GetHandle(32));
+	DrawStringToHandle(100, kMenuMargin + 10, L"ƒpƒbƒh•ÏX", 0xffffff, m_mgr.GetFont()->GetHandle(32));
+
+	// FIXME:‚È‚ñ‚©F‚ª‚Ş‚Á‚¿‚á‹C‚¿ˆ«‚¢‚©‚ç‚±‚ê‚Íâ‘Î’¼‚¹
+	// 
+	// ‘I‘ğ‚µ‚Ä‚¢‚éêŠ‚ğ•`‰æ
+	if (!m_isEdit)
+	{
+		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
+			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
+			kFrameColor, true);
+	}
+	else
+	{
+		int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
+		unsigned int addR = static_cast<unsigned int>(kFrameColorDeffR * rate) << (4 * 4);
+		unsigned int addG = static_cast<unsigned int>(kFrameColorDeffG * rate) << (4 * 2);
+		unsigned int addB = static_cast<unsigned int>(kFrameColorDeffB * rate);
+		unsigned int color = kFrameColor + addR + addG + addB;
+
+		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
+			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
+			color, true);
+	}
 
 	DrawCommandList();
 }
@@ -100,7 +135,7 @@ void PadConfigScene::NormalUpdate(Input& input)
 	{
 		m_isEdit = true;
 		m_updateFunc = &PadConfigScene::EditUpdate;
-		m_frame = 0;
+		m_frame = kFlashInterval;
 		m_cancleFrame = 0;
 	}
 
@@ -124,6 +159,10 @@ void PadConfigScene::EditUpdate(Input& input)
 {
 	m_frame++;
 
+	// Œ»İ‘I‘ğ‚µ‚Ä‚¢‚éƒRƒ}ƒ“ƒh‚Ìƒf[ƒ^‚ğQÆ
+	const auto& strItem = m_menuTable[m_currentLineIndex];
+	auto& cmd = m_commandTable[strItem];
+
 	if (input.IsPress("cancel"))
 	{
 		m_cancleFrame++;
@@ -135,11 +174,20 @@ void PadConfigScene::EditUpdate(Input& input)
 		}
 		return;
 	}
-	m_cancleFrame = 0;
+	// ˆê’èŠÔ“à‚Écancel‚ğ‰Ÿ‚µ‚½‚çcancel‚Ì’l‚ğ“ü‚ê‚é
+	if (m_cancleFrame > 0)
+	{
+		auto state = m_commandTable["cancel"][InputType::pad];
 
-	// Œ»İ‘I‘ğ‚µ‚Ä‚¢‚éƒRƒ}ƒ“ƒh‚Ìƒf[ƒ^‚ğQÆ
-	auto strItem = m_menuTable[m_currentLineIndex];
-	auto& cmd = m_commandTable[strItem];
+		cmd[InputType::pad] = state;
+
+		// –{‘Ì‚Ì•û‚à‘‚«Š·‚¦
+		m_input.m_commandTable[strItem][InputType::pad] = state;
+
+		m_isEdit = false;
+		m_updateFunc = &PadConfigScene::EditEndUpdate;
+		return;
+	}
 
 	// PAD‚ª“ü—Í‚³‚ê‚½‚ç•ÏX
 	int padstate = GetJoypadInputState(DX_INPUT_PAD1);
@@ -179,19 +227,7 @@ void PadConfigScene::EditEndUpdate(Input& input)
 
 void PadConfigScene::DrawCommandList()
 {
-	// ‘I‘ğ‚µ‚Ä‚¢‚éêŠ‚ğ•`‰æ
-	if (!m_isEdit || static_cast<int>(m_frame * 0.05f) % 2)
-	{
-		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
-			0xff0000, true);
-	}
-	else
-	{
-		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
-			0xff8800, true);
-	}
+
 
 	int y = kMenuMargin + 64;
 
@@ -207,17 +243,17 @@ void PadConfigScene::DrawCommandList()
 		{
 			if (!m_isEdit)
 			{
-				int frame = (m_frame % 80) - 40;
-				float rate = fabsf(static_cast<float>(frame)) / 40.0f;
+				int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+				float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 				int alpha = static_cast <int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			}
-			DrawFormatStringToHandle(kMenuMargin + 50, y, 0x000000, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kSelectStrColor, fontHandle, L"%s", cmdName.c_str());
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawFormatStringToHandle(kMenuMargin + 50, y, 0xffffff, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kStrColor, fontHandle, L"%s", cmdName.c_str());
 		}
 
 		m_btImg->DrawBottan(GetPadName(cmd.at(InputType::pad)), kMenuMargin + 50 + 376, y, kExtendRate);

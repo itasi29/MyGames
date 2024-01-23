@@ -24,15 +24,16 @@ private:
     void NormalDraw();
 
     void DrawInf(int index, int drawY, int handle);
-
 private:
     UpdateFunc_t m_updateFunc;
     DrawFunc_t m_drawFunc;
 
+    std::shared_ptr<FileBase> m_bg;
+    std::shared_ptr<FileBase> m_bgm;
+
     int m_frame;
     int m_textFrame;
+    int m_bgFrame;
     int m_index;
-
-    std::shared_ptr<FileBase> m_bgm;
 };
 

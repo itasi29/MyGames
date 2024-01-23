@@ -19,6 +19,9 @@
 
 namespace
 {
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+
 	const std::string kStageName = "Stage1-1";
 	constexpr int kExsitTime = 2;
 
@@ -27,8 +30,8 @@ namespace
 	constexpr int kShakeFrameDeath = 10;
 }
 
-StageTutorial::StageTutorial(GameManager& mgr) :
-	StageBase(mgr),
+StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
+	StageBase(mgr, input),
 	m_explanation(kOperation)
 {
 	m_handle[kOperation] = m_mgr.GetFile()->LoadGraphic(L"UI/operationExplanation.png");
@@ -66,7 +69,7 @@ void StageTutorial::ChangeStage(Input& input)
 
 	if (m_mgr.GetStage()->IsClearStage(kStageName) && input.IsTriggered("up"))
 	{
-		std::shared_ptr<Stage1_1> nextStage = std::make_shared<Stage1_1>(m_mgr);
+		std::shared_ptr<Stage1_1> nextStage = std::make_shared<Stage1_1>(m_mgr, input);
 
 		SlideUp(nextStage);
 
@@ -174,7 +177,7 @@ void StageTutorial::CheckStageConditions()
 
 int StageTutorial::DrawStageConditions(int drawY)
 {
-	DrawFormatStringToHandle(128, drawY, 0xffffff, m_mgr.GetFont()->GetHandle(24), L"左　%d秒間生き残る\n(%d / %d)",
+	DrawFormatStringToHandle(128, drawY, kStrColor, m_mgr.GetFont()->GetHandle(24), L"左　%d秒間生き残る\n(%d / %d)",
 		kExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kExsitTime);
 
 	return 0;

@@ -11,15 +11,30 @@
 #include "GameClearScene.h"
 #include "TitleScene.h"
 
+#ifdef _DEBUG
+#include "Application.h"
+#endif
+
 namespace
 {
+	// 文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+
+	// フェード時間
 	constexpr int kFadeFrame = 60;
 
-	constexpr int kCreditsNum = 3;
+	// リザルト数
+	constexpr int kResultNum = 3;
 
+	// 文字のX座標描画位置
+	constexpr int kDrawResultX = 350;
+	// リザルト結果のX座標描画位置
+	constexpr int kDrawResultDataX = 750;
+
+	// 文字同士の間隔
 	constexpr int kTextInterval = 180;
 
-	const std::wstring kCredits[kCreditsNum] = {
+	const std::wstring kResultStr[kResultNum] = {
 		L"クリア時間",
 		L"死亡数",
 		L"ダッシュ使用回数"
@@ -36,6 +51,7 @@ GameClearScene::GameClearScene(GameManager& mgr) :
 	m_drawFunc = &GameClearScene::FadeDraw;
 
 	auto& file = mgr.GetFile();
+	m_bg = file->LoadGraphic(L"BG/bg.png");
 	m_bgm = file->LoadSound(L"Bgm/end.mp3");
 }
 
@@ -45,6 +61,7 @@ GameClearScene::~GameClearScene()
 
 void GameClearScene::Update(Input& input)
 {
+	m_bgFrame--;
 	(this->*m_updateFunc)(input);
 }
 
@@ -71,7 +88,7 @@ void GameClearScene::NormalUpdate(Input& input)
 	m_sound->PlayBgm(m_bgm->GetHandle());
 	m_textFrame++;
 
-	if (m_index < kCreditsNum)
+	if (m_index < kResultNum)
 	{
 		if (m_textFrame > kTextInterval || input.IsTriggered("OK"))
 		{
@@ -114,20 +131,19 @@ void GameClearScene::FadeDraw()
 
 void GameClearScene::NormalDraw()
 {
-	DrawString(100, 100, L"GameClear", 0xffffff);
-
+	DrawStringToHandle(550, 50, L"リザルト", kStrColor, m_mgr.GetFont()->GetHandle(48));
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
-	int drawY = 320;
+	int drawY = 150;
 	for (int i = 0; i < m_index + 1; i++)
 	{
-		if (!(i < kCreditsNum))
+		if (!(i < kResultNum))
 		{
 			int val = (m_textFrame + kTextInterval) % (kTextInterval * 2) - kTextInterval;
 			float rate = (fabs(static_cast<float>(val)) / kTextInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(500, drawY, L"～　AnyBottanPush　～", 0xffffff, fontHandle);
+			DrawStringToHandle(500, drawY, L"～　PressAnyKey　～", kStrColor, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			break;
 		}
@@ -139,13 +155,13 @@ void GameClearScene::NormalDraw()
 			int y = drawY - static_cast<int>(100 * (1 - rate));
 
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawFormatStringToHandle(500, y, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
+			DrawFormatStringToHandle(kDrawResultX, y, kStrColor, fontHandle, L"%s", kResultStr[i].c_str());
 			DrawInf(i, y, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawFormatStringToHandle(500, drawY, 0xffffff, fontHandle, L"%s", kCredits[i].c_str());
+			DrawFormatStringToHandle(kDrawResultX, drawY, kStrColor, fontHandle, L"%s", kResultStr[i].c_str());
 			DrawInf(i, drawY, fontHandle);
 		}
 
@@ -162,14 +178,14 @@ void GameClearScene::DrawInf(int index, int drawY, int handle)
 		int sec = (data.playTime / 60) % 60;
 		int min = (data.playTime / 3600) % 60;
 		int hour = (data.playTime / 21600);
-		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%02d時間%02d分%02d秒", hour, min, sec);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kStrColor, handle, L"%02d時間%02d分%02d秒", hour, min, sec);
 	}
 	else if (index == 1)
 	{
-		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%-3d回", data.deathCount);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kStrColor, handle, L"%-3d回", data.deathCount);
 	}
 	else
 	{
-		DrawFormatStringToHandle(800, drawY, 0xffffff, handle, L"%-3d回", data.dashCount);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kStrColor, handle, L"%-3d回", data.dashCount);
 	}
 }

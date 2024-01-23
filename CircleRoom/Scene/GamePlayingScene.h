@@ -11,7 +11,7 @@ class FileBase;
 class GamePlayingScene : public Scene
 {
 public:
-    GamePlayingScene(GameManager& mgr);
+    GamePlayingScene(GameManager& mgr, Input& input);
     ~GamePlayingScene();
     virtual void Update(Input& input);
     virtual void Draw();
@@ -59,8 +59,7 @@ private:
 
     // ステージ内で多く使うデータ
     std::vector<std::shared_ptr<FileBase>> m_stgData;
-    // 背景
-    std::shared_ptr<FileBase> m_bg;
+    // BGM
     std::shared_ptr<FileBase> m_bgm;
 };
 

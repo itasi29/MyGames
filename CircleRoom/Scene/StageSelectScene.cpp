@@ -32,10 +32,11 @@ namespace
 	// フレームの太さ
 	constexpr int kStageFrameThickness = 4;
 	// ステージ間の空白
-	constexpr int kStageMargine = 96;
+	constexpr int kStageMargine = 128;
 
 	// スタート位置
-	const Vec2 kStartPos(kMenuMargin + kStageMargine, kMenuMargin + kStageMargine);
+	constexpr int kStartX = 400;
+	constexpr int kStartY = 216;
 
 	// ステージの縦横の数
 	constexpr int kLineNum = 3;
@@ -102,36 +103,32 @@ void StageSelectScene::Update(Input& input)
 
 		if (stgName == "Stage1-1")
 		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr));
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
 		}
 		if (stgName == "Stage1-2")
 		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr));
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr, input));
 		}
 		if (stgName == "Stage1-3")
 		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_3>(m_mgr));
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_3>(m_mgr, input));
 		}
 		if (stgName == "Stage1-4")
 		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_4>(m_mgr));
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_4>(m_mgr, input));
 		}
 		if (stgName == "Stage1-5")
 		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr));
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr, input));
 		}
 	}
 }
 
 void StageSelectScene::Draw()
 {
-#ifdef _DEBUG
-	DrawString(100, kMenuMargin + 10, L"StagSelectScene", 0xffffff);
-#endif
-
 	for(int x = 0; x < kRowNum; x++)
 	{
-		int drawX = static_cast<int>(kStartPos.x + kStageMargine * x);
+		int drawX = static_cast<int>(kStageMargine * x) + kStartX;
 		bool isIndexRow = (m_indexRow == x);
 
 		for (int y = 0; y < kLineNum; y++)
@@ -144,8 +141,8 @@ void StageSelectScene::Draw()
 				int alpha = static_cast<int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 				// FIXE:現状大きめの枠を描画しているがのちは画像に変更
-				DrawBoxAA(static_cast<float>(drawX - kStageFrameSize), kStartPos.y + kStageMargine * y - kStageFrameSize,
-					static_cast<float>(drawX + kStageSize + kStageFrameSize), kStartPos.y + kStageMargine * y + kStageSize + kStageFrameSize,
+				DrawBoxAA(static_cast<float>(drawX - kStageFrameSize), kStartY + kStageMargine * y - kStageFrameSize,
+					static_cast<float>(drawX + kStageFrameSize + kStageSize), kStartY + kStageMargine * y + kStageSize + kStageFrameSize,
 					0xffff00, false, kStageFrameThickness);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
@@ -153,7 +150,7 @@ void StageSelectScene::Draw()
 			// ステージの描画が無しの場合は以下のは描画しない
 			if (kStageStr[y][x] == "None") continue;
 
-			int drawY = static_cast<int>(kStartPos.y + kStageMargine * y);
+			int drawY = static_cast<int>(kStartY + kStageMargine * y);
 
 			// 現在選択しているステージ
 			// FIXME:仮として円を描画しているので、グラフィックが出来次第変更

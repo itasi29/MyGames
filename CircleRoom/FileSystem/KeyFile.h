@@ -5,7 +5,7 @@
 
 class FileManager;
 
-struct SrcData
+struct KeySrcData
 {
 	// カットする左上座標
 	int x;
@@ -30,6 +30,6 @@ private:
 	int m_handle;
 
 	// ボタン名　切り抜き範囲
-	std::unordered_map<std::wstring, SrcData> m_key;
+	std::unordered_map<std::wstring, KeySrcData> m_key;
 };
 

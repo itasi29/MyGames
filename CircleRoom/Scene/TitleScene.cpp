@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include <cassert>
 #include <string>
+#include <cmath>
 #include "Application.h"
 #include "Common/Input.h"
 
@@ -26,10 +27,18 @@ namespace
 	// フェードフレーム
 	constexpr int kFadeFrame = 60;
 
+	// フレームの色
+	constexpr unsigned int kFrameColor = 0xd80032;
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+	// 選択時文字列の色
+	constexpr unsigned int kSelectStrColor = 0x161a30;
+
+
 	// メニューラインの数
 	constexpr int kMenuLineNum = 3;
 	// ライン間隔
-	constexpr float kMenuLineInterval = 128;
+	constexpr int kMenuLineInterval = 128;
 	// ラインの長さ
 	constexpr int kMenuLength = 256;
 
@@ -37,11 +46,15 @@ namespace
 	constexpr int kFlashInterval = 40;
 
 	// 文字列のX座標
-	constexpr int kStrDrawX = 640 + 256;
+	constexpr int kStrDrawX = 640 + 128;
 
 	// ロゴ描画位置
 	constexpr int kLogoDrawX = 374;
-	constexpr int kLogoDrawY = 360;
+	constexpr int kLogoDrawY = 336;
+	// 上下に動かす幅
+	constexpr int kLogoShitY = 50;
+	// 1度ずつのアングル
+	constexpr float kLogoAngle = DX_PI_F / 180.0f;
 
 	const std::wstring kMenuStr[kMenuLineNum] = {
 		L"スタート",
@@ -61,9 +74,11 @@ namespace
 
 TitleScene::TitleScene(GameManager& mgr) :
 	Scene(mgr),
+	m_frame(kFadeFrame),
+	m_currentLinePos(0),
+	m_logoAngle(0),
 	m_bgFrame(0)
 {
-	m_frame = 60;
 	m_updateFunc = &TitleScene::FadeInUpdate;
 	m_drawFunc = &TitleScene::FadeDraw;
 
@@ -85,7 +100,8 @@ TitleScene::~TitleScene()
 
 void TitleScene::Update(Input& input)
 {
-	m_bgFrame++;
+	m_bgFrame--;
+	m_logoAngle += kLogoAngle;
 	(this->*m_updateFunc)(input);
 }
 
@@ -155,7 +171,6 @@ void TitleScene::NormalUpdate(Input& input)
 		// 1番目のときはオプション処理
 		if (m_currentLinePos == 1)
 		{
-			// TODO:オプション画面を開く処理
 			m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input, false));
 			return;
 		}
@@ -221,14 +236,14 @@ void TitleScene::StartSelectUpdate(Input& input)
 	}
 }
 
-void TitleScene::FadeOutUpdate(Input&)
+void TitleScene::FadeOutUpdate(Input& input)
 {
 	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_frame / static_cast<float>(kFadeFrame));
 	m_frame++;
 	if (m_frame > kFadeFrame)
 	{
 		m_sound->Stop();
-		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr));
+		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr, input), false);
 	}
 }
 
@@ -237,28 +252,21 @@ void TitleScene::FadeDraw()
 	// 通常の方の描画
 	NormalDraw();
 
-	const auto& m_size = Application::GetInstance().GetWindowSize();
+	const auto& size = Application::GetInstance().GetWindowSize();
 	// その後にフェード暗幕を描画
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
-	DrawBox(0, 0, m_size.w, m_size.h, 0x000000, true);
+	DrawBox(0, 0, size.w, size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void TitleScene::NormalDraw()
 {
-	// FIXME:マジックナンバーは後で直す
-	// FIXME:書く順番考える
-
-	const auto& m_size = Application::GetInstance().GetWindowSize();
-	DrawBg(m_size);
-
-	// ロゴの描画
-	DrawRotaGraph(kLogoDrawX, kLogoDrawY, 1.0, 0.0, m_logoImg->GetHandle(), true);
+	DrawLogo();
 	
 	int y = static_cast<int>(184 + m_currentLinePos * kMenuLineInterval);
 	// メニューラインの描画
-	DrawBox(kStrDrawX, y, kStrDrawX + kMenuLength, y + 32, 0xff0808, true);
+	DrawBox(kStrDrawX, y, kStrDrawX + kMenuLength, y + 32, kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
@@ -268,16 +276,16 @@ void TitleScene::NormalDraw()
 	{
 		if (m_currentLinePos == i)
 		{
-			int frame = (m_frame % kFlashInterval * 2) - kFlashInterval;
+			int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kSelectStrColor, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kStrColor, fontHandle);
 		}
 
 		y += kMenuLineInterval;
@@ -286,15 +294,11 @@ void TitleScene::NormalDraw()
 
 void TitleScene::StartSelectDraw()
 {
-	const auto& m_size = Application::GetInstance().GetWindowSize();
-	DrawBg(m_size);
-
-	// ロゴの描画
-	DrawRotaGraph(kLogoDrawX, kLogoDrawY, 1.0, 0.0, m_logoImg->GetHandle(), true);
+	DrawLogo();
 
 	int y = static_cast<int>(212 + m_currentLinePos * 40);
 	// 選択場所の描画
-	DrawBox(kStrDrawX + 64, y, kStrDrawX + 64 + kMenuLength, y + 40, 0xff0808, true);
+	DrawBox(kStrDrawX + 64, y, kStrDrawX + 64 + kMenuLength, y + 40, kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
@@ -303,37 +307,32 @@ void TitleScene::StartSelectDraw()
 	{
 		if (m_currentLinePos == i)
 		{
-			int frame = (m_frame % kFlashInterval * 2) - kFlashInterval;
+			int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), 0xffffff, fontHandle);
+			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), kSelectStrColor, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), 0xffffff, fontHandle);
+			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), kStrColor, fontHandle);
 		}
 
 		y += 40;
 	}
-	//DrawStringToHandle(kStrDrawX + 64, y, L"続きから", 0xffffff, fontHandle);
-	//y += 40;
-	//DrawStringToHandle(kStrDrawX + 64, y, L"初めから", 0xffffff, fontHandle);
 
 	y = 184;
 	for (int i = 0; i < kMenuLineNum; i++)
 	{
-		DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), 0xffffff, fontHandle);
+		DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kStrColor, fontHandle);
 
 		y += kMenuLineInterval;
 	}
 }
 
-void TitleScene::DrawBg(const size& size)
+void TitleScene::DrawLogo()
 {
-	int posX = m_bgFrame % size.w;
-	DrawGraph(posX, 0, m_bgImg->GetHandle(), false);
-	posX -= size.w;
-	DrawGraph(posX, 0, m_bgImg->GetHandle(), false);
+	int y = kLogoDrawY + static_cast<int>(kLogoShitY * sinf(m_logoAngle));
+	DrawRotaGraph(kLogoDrawX, y, 1.0, 0.0, m_logoImg->GetHandle(), true);
 }

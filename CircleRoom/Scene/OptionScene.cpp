@@ -11,6 +11,8 @@
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/SoundSystem.h"
+#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 
 #include "StageSelectScene.h"
 #include "ConfigScene.h"
@@ -20,6 +22,13 @@
 
 namespace
 {
+	// フレームの色
+	constexpr unsigned int kFrameColor = 0xd80032;
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+	// 選択時文字列の色
+	constexpr unsigned int kSelectStrColor = 0x161a30;
+
 	// フェード時間
 	constexpr int kAppeaInterval = 5;
 
@@ -58,15 +67,20 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_isGame(isGame),
 	m_isEdit{ false },
 	m_currentMenuLine(0),
-	m_isFadeOut(false)
+	m_isFadeOut(false),
+	m_type(InputType::pad)
 {
 	m_updateFunc = &OptionScene::AppearUpdate;
+
+	m_bt = std::make_shared<BottansFile>(m_mgr.GetFile());
+	m_key = std::make_shared<KeyFile>(m_mgr.GetFile());
 
 	auto& file = m_mgr.GetFile();
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
-	m_optionScn = std::make_shared<SceneManager>();
+	m_optionScn = std::make_shared<SceneManager>(false);
+	m_optionScn->Init();
 
 	ChangeScene(input);
 }
@@ -74,13 +88,6 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 void OptionScene::Update(Input& input)
 {
 	m_isEdit[1] = m_isEdit[0];
-	if (input.IsTriggered("pause"))
-	{
-		m_updateFunc = &OptionScene::DisappearUpdate;
-		m_isFadeOut = true;
-
-		return;
-	}
 
 	m_optionScn->Update(input);
 
@@ -116,6 +123,16 @@ void OptionScene::AppearUpdate(Input&)
 
 void OptionScene::NormalUpdate(Input& input)
 {
+	m_type = input.GetType();
+
+	if (input.IsTriggered("pause"))
+	{
+		m_updateFunc = &OptionScene::DisappearUpdate;
+		m_isFadeOut = true;
+
+		return;
+	}
+
 	if (input.IsTriggered("cancel"))
 	{
 		m_updateFunc = &OptionScene::DisappearUpdate;
@@ -163,45 +180,82 @@ void OptionScene::DisappearUpdate(Input&)
 void OptionScene::NormalDraw()
 {
 	Application& app = Application::GetInstance();
-	const auto& m_size = app.GetWindowSize();
+	const auto& size = app.GetWindowSize();
 	// ちょっと暗い矩形を描画
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 126);
-	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 189);
+	DrawBox(kMenuMargin, kMenuMargin, size.w - kMenuMargin, size.h - kMenuMargin,
 		0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	// 枠線
-	DrawBox(kMenuMargin, kMenuMargin, m_size.w - kMenuMargin, m_size.h - kMenuMargin,
+	DrawBox(kMenuMargin, kMenuMargin, size.w - kMenuMargin, size.h - kMenuMargin,
 		0xffffff, false);
 
+	DrawImage(size);
 	if (m_isGame)
 	{
+		DrawFrame(static_cast<int>(kGameMenu.size()), kGameMargin, size);
 		DrawContent(kGameMenu, kGameMargin);
 	}
 	else
 	{
+		DrawFrame(static_cast<int>(kTitleMenu.size()), kTitleMargin, size);
 		DrawContent(kTitleMenu, kTitleMargin);
+	}
+}
+
+void OptionScene::DrawImage(const size& size)
+{
+	switch (m_type)
+	{
+	case InputType::keybd:
+		m_key->DrawKey(L"Ｑキー", kMenuMargin + 7, kMenuMargin, 2.5);
+		m_key->DrawKey(L"Ｅキー", size.w - kMenuMargin - 43, kMenuMargin, 2.5);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		// L、Rボタンの描画
+		m_bt->DrawBottan(L"ＬBottan", kMenuMargin + 7, kMenuMargin, 2.5);
+		m_bt->DrawBottan(L"ＲBottan", size.w - kMenuMargin - 48, kMenuMargin, 2.5);
+		break;
+	}
+}
+
+void OptionScene::DrawFrame(int divisionNum, int width, const size& size)
+{
+	int y = kMenuMargin + kMenuMarginHeight;
+	// 下の線の描画
+	DrawLine(kMenuMargin, y, size.w - kMenuMargin, y, 0xffffff);
+
+	int x = kMenuMargin * 2;
+
+	for (int i = 0; i < divisionNum + 1; i++)
+	{
+		DrawLine(x, kMenuMargin, x, y, 0xffffff);
+
+		x += width;
 	}
 }
 
 void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 {
 	// 選択している場所を描画
-	DrawBox(kMenuMargin * 2 + width * m_currentMenuLine, static_cast<int>(kMenuMargin),
-		kMenuMargin * 2 + width * (m_currentMenuLine + 1), static_cast<int>(kMenuMargin + kMenuMarginHeight),
-		0xff0000, true);
+	int x = kMenuMargin * 2;
+	DrawBox(x + width * m_currentMenuLine + 1, static_cast<int>(kMenuMargin + 1),
+		x + width * (m_currentMenuLine + 1), static_cast<int>(kMenuMargin + kMenuMarginHeight),
+		kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+	unsigned int color;
 	// メニューの文字列群
 	for (int i = 0; i < strs.size(); i++)
 	{
+		color = kStrColor;
 		if (m_currentMenuLine == i)
 		{
-			DrawStringToHandle(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0x000000, fontHandle);
+			color = kSelectStrColor;
 		}
-		else
-		{
-			DrawStringToHandle(kMenuMargin * 2 + width * i, kMenuMargin, strs[i].c_str(), 0xffffff, fontHandle);
-		}
+		DrawStringToHandle(x + width * i, kMenuMargin, strs[i].c_str(), color, fontHandle);
 	}
 }
 

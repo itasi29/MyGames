@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <list>
 #include "Vec2.h"
 #include "Collision.h"
 
@@ -58,13 +59,6 @@ protected:
 	void ChangeNormalFunc();
 
 protected:
-	// メンバ関数ポインタ
-	using updateFunc_t = void(EnemyBase::*)();
-	using drawFunc_t = void(EnemyBase::*)();
-
-	updateFunc_t m_updateFunc;
-	drawFunc_t m_drawFunc;
-
 	// 更新関数
 	virtual void StartUpdate() = 0;
 	virtual void NormalUpdate() = 0;
@@ -75,9 +69,19 @@ protected:
 
 	void DrawHitWallEffect();
 
+
 protected:
+	// メンバ関数ポインタ
+	using updateFunc_t = void(EnemyBase::*)();
+	using drawFunc_t = void(EnemyBase::*)();
+
+	updateFunc_t m_updateFunc;
+	drawFunc_t m_drawFunc;
+
 	// 実体化するまでの時間
 	static const int kApeearFrame = 60;
+	// 移動エフェクトのフレーム
+	static const int kEffFrame = 10;
 
 	// スクリーンサイズ
 	const size& m_size;

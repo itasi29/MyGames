@@ -23,10 +23,10 @@ public:
 	/// <summary>
 	/// Fade設定ありBGM
 	/// </summary>
-	/// <param name="soundHandle">BGMハンドル</param>
+	/// <param name="soundHandle">BGMハンドル : -値だと現在流しているBGMをそのまま変更する</param>
 	/// <param name="val">音量パーセント</param>
 	/// <param name="isLoop">ループするか</param>
-	void PlayFadeBgm(int soundHandle, float val = 1.0f, bool isLoop = true);
+	void PlayFadeBgm(int soundHandle = -1, float val = 1.0f, bool isLoop = true);
 
 	/// <summary>
 	/// SEを流す

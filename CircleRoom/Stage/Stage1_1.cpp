@@ -15,6 +15,9 @@
 
 namespace
 {
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+
 	// 殺された種類の基準描画位置
 	constexpr int kKillTypePosX = 144;
 	constexpr int kKillTypePosY = 152;
@@ -38,8 +41,8 @@ namespace
 	const std::string kUpStName = "Stage1-3";
 }
 
-Stage1_1::Stage1_1(GameManager& mgr) :
-	StageBase(mgr),
+Stage1_1::Stage1_1(GameManager& mgr, Input& input) :
+	StageBase(mgr, input),
 	m_createFrame(0)
 {
 	m_stageName = "Stage1-1";
@@ -112,7 +115,7 @@ void Stage1_1::ChangeStage(Input& input)
 	{
 		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_2> nextStage;
-		nextStage = std::make_shared<Stage1_2>(m_mgr);
+		nextStage = std::make_shared<Stage1_2>(m_mgr, input);
 
 		SlideLeft(nextStage);
 
@@ -121,7 +124,7 @@ void Stage1_1::ChangeStage(Input& input)
 	if (m_mgr.GetStage()->IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_3> nextStage;
-		nextStage = std::make_shared<Stage1_3>(m_mgr);
+		nextStage = std::make_shared<Stage1_3>(m_mgr, input);
 
 		SlideUp(nextStage);
 
@@ -157,14 +160,14 @@ int Stage1_1::DrawStageConditions(int drawY)
 	if (!m_isLeftClear)
 	{
 
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"左　%d秒間生き残る\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"左　%d秒間生き残る\n(%d / %d)",
 			kLeftExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kLeftExsitTime);
 
 		drawY += 48;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"上　%d秒間生き残る\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"上　%d秒間生き残る\n(%d / %d)",
 			kUpExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kUpExsitTime);
 
 		drawY += 48;

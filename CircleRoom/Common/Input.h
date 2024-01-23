@@ -28,6 +28,9 @@ private:
 	InputTable_t m_commandTable;
 	std::vector<std::string> m_exclusiveKeyConfigCommands;
 
+	// 値と名前の対応表
+	std::unordered_map<InputType, std::unordered_map<int , std::wstring>> m_corrTable;
+
 	// コマンドの入力を覚えておく
 	std::map<std::string, bool> m_inputDate;		// 現在の入力
 	std::map<std::string, bool> m_lastInputDate;	// 直前の入力
@@ -37,6 +40,9 @@ private:
 	// 何かしらのボタン押された情報
 	bool m_isAnyPush;
 	bool m_isLastAnyPush;
+
+	// 最後に押されたのがキーボードかパッドかを覚えておく
+	InputType m_lastType;
 
 	const InputTable_t GetCommandTable() const;
 	std::vector<std::string> GetExclusiveCommandTable() const { return m_exclusiveKeyConfigCommands; }
@@ -76,6 +82,9 @@ public:
 	/// <param name="command">コマンド文字列</param>
 	/// <returns>true:離された瞬間 / false:それ以外</returns>
 	bool IsReleased(const char* command) const;
+
+	InputType GetType() const { return m_lastType; }
+	std::wstring GetHardDataName(const std::string cmd, InputType type) const;
 
 	void Save(const std::string& path);
 	void Load(const std::wstring& path);

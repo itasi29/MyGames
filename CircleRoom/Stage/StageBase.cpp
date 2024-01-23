@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <cassert>
 #include "Application.h"
 #include "Input.h"
 #include "StringUtility.h"
@@ -11,6 +12,8 @@
 #include "FileSystem/FileBase.h"
 #include "FileSystem/FontSystem.h"
 #include "FileSystem/SoundSystem.h"
+#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyBase.h"
@@ -18,6 +21,9 @@
 
 namespace
 {
+	// フレームの色
+	constexpr unsigned int kFrameColor = 0xd80032;
+
 	// フィールドサイズの倍率
 	// フィールドはwindowsizeの縦幅に倍率をかけたものとする
 	constexpr float kSizeScale = 0.4f;
@@ -35,8 +41,9 @@ namespace
 	constexpr int kSoundFade = 30;
 }
 
-StageBase::StageBase(GameManager& mgr) :
+StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_mgr(mgr),
+	m_input(input),
 	m_size(Application::GetInstance().GetWindowSize()),
 	m_fieldSize(m_size.h* kSizeScale),
 	m_centerPos({m_size.w * 0.5f, m_size.h * 0.5f}),
@@ -57,6 +64,9 @@ StageBase::StageBase(GameManager& mgr) :
 	m_bFrameImg = file->LoadGraphic(L"UI/backFrame.png");
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
+
+	m_bt = std::make_shared<BottansFile>(file);
+	m_key = std::make_shared<KeyFile>(file);
 }
 
 StageBase::~StageBase()
@@ -283,6 +293,8 @@ void StageBase::DrawSelect()
 
 	// 矢印の描画
 	DrawArrow();
+
+	DrawImage();
 }
 
 void StageBase::DrawPlaying()
@@ -599,6 +611,23 @@ void StageBase::DrawWall()
 	DrawBox(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
 		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		0xffffff, false);
+}
+
+void StageBase::DrawImage()
+{
+	DrawBox(1000, 600, 1280, 632, kFrameColor, true);
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName("OK", InputType::keybd), 1016, 600, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName("OK", InputType::pad), 1016, 600, 2.0);
+		break;
+	}
+	DrawStringToHandle(1064, 600, L"選択", kStrColor, m_mgr.GetFont()->GetHandle(32));
 }
 
 void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage)

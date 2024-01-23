@@ -12,6 +12,8 @@ class Player;
 class EnemyBase;
 class BossBase;
 class Input;
+class BottansFile;
+class KeyFile;
 struct size;
 struct StageData;
 enum class StageDir;
@@ -19,7 +21,7 @@ enum class StageDir;
 class StageBase
 {
 public:
-	StageBase(GameManager& mgr);
+	StageBase(GameManager& mgr, Input& input);
 	virtual ~StageBase();
 
 	void Update(Input& input);
@@ -174,6 +176,11 @@ private:
 	/// </summary>
 	void DrawWall();
 
+	/// <summary>
+	/// ‘I‘ð“™‚Ì‰æ‘œ‚Ì•`‰æ
+	/// </summary>
+	void DrawImage();
+
 protected:
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
@@ -219,5 +226,11 @@ protected:
 
 	// ‘Ò‹@ŽžŠÔ
 	int m_waitFrame;
+
+	// 
+	std::shared_ptr<BottansFile> m_bt;
+	std::shared_ptr<KeyFile> m_key;
+
+	const Input& m_input;
 };
 

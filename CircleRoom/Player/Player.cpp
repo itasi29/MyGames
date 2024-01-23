@@ -10,10 +10,6 @@
 
 #include "Player.h"
 
-// MEMO:グラフだと左右反転させたときに画像ががびがびになったため
-// 今のところDrawTriangleで描画中
-#define NGRAPH
-
 namespace
 {
 	// 当たり判定の半径の大きさ
@@ -24,7 +20,7 @@ namespace
 	// プレイヤーのスピード
 	constexpr float kSpeed = 4.0f;
 	// プレイヤーの中心から判定をどのくらい動かすか
-#ifdef _GRAPH
+#ifdef false
 	constexpr float kColShift = -kSize * 0.12f;
 #else
 	constexpr float kColShift = kSize * 0.32f;
@@ -106,13 +102,9 @@ void Player::Init()
 
 	// 方向の設定
 	m_front = Vec2::Up();
-#ifdef _GRAPH
-	m_angle = 0.0;
-#else
 	m_dir.front = m_front * kSize;
 	m_dir.right = m_front.Right() * kSize * 0.5f;
 	m_dir.left = m_front.Left() * kSize * 0.5f;
-#endif
 
 	// 当たり判定の更新
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
@@ -183,7 +175,7 @@ void Player::Update(Input& input, Ability ability)
 	InRange();
 
 	// 当たり判定の更新
-#ifdef _GRAPH
+#ifdef false
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
 #else
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
@@ -214,39 +206,31 @@ void Player::Draw()
 				rate = 1.0f - (m_logFrame + i + 1) / static_cast<double>(m_logFrame + kDashLogNum);
 				alpha = static_cast<int>(128 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-#ifdef _GRAPH
+#ifdef false
 				DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, m_angleLog[i], m_charImg->GetHandle(), true);
 #else
 				DrawTriangle(static_cast<int>(m_dirLog[i].front.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].front.y + m_posLog[i].y),
 					static_cast<int>(m_dirLog[i].left.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].left.y + m_posLog[i].y),
 					static_cast<int>(m_dirLog[i].right.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].right.y + m_posLog[i].y),
 					0xffffff, true);
-#endif // _GRAPH
+#endif
 			}
 		}
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		// 現在のプレイヤーを描画
-#ifdef _GRAPH
-		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charImg->GetHandle(), true);
-#else
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			0xffffff, true);
-#endif	// _GRAPH
 	}
 	else
 	{
-#ifdef _GRAPH
-		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle, m_charDeathImg->GetHandle(), true);
-#else
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			0xff0000, true);
-#endif	// _GRAPH
 	}
 
 	// 死亡時のエフェクト
@@ -315,7 +299,7 @@ void Player::Move(Input& input)
 		float effY = -m_vec.y + (GetRand(10) * 0.1f - 0.5f);
 		m_effs.push_back({ {effX, effY}, m_pos });
 
-#ifdef _GRAPH
+#ifdef false
 		m_angle = atan2(m_front.x, -m_front.y);
 #else
 		m_front = m_vec;

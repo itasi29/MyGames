@@ -16,6 +16,9 @@
 
 namespace
 {
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+
 	// 殺された種類の基準描画位置
 	constexpr int kKillTypePosX = 144;
 	constexpr int kKillTypePosY = 152;
@@ -25,8 +28,8 @@ namespace
 	const std::string kDownStName = "Stage1-4";
 }
 
-Stage1_5::Stage1_5(GameManager& mgr) :
-	StageBase(mgr),
+Stage1_5::Stage1_5(GameManager& mgr, Input& input) :
+	StageBase(mgr, input),
 	m_createFrame(0)
 {
 	m_stageName = "Stage1-5";
@@ -94,7 +97,7 @@ void Stage1_5::ChangeStage(Input& input)
 	if (m_mgr.GetStage()->IsClearStage(kDownStName) && input.IsTriggered("down"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
-		nextStage = std::make_shared<Stage1_4>(m_mgr);
+		nextStage = std::make_shared<Stage1_4>(m_mgr, input);
 
 		SlideDown(nextStage);
 
@@ -121,7 +124,7 @@ int Stage1_5::DrawStageConditions(int drawY)
 
 	if (!m_isDownClear)
 	{
-		DrawFormatStringToHandle(128, drawY, 0xffffff, fontHandle, L"下　%d種類の敵に\n　　殺される\n(%d / %d)",
+		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"下　%d種類の敵に\n　　殺される\n(%d / %d)",
 			kDownKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kDownKilledNum);
 
 		drawY += 72;
@@ -130,13 +133,13 @@ int Stage1_5::DrawStageConditions(int drawY)
 	// FIXME: ここに追加で書いているけれどあとで別のところに処理を変更する
 	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
 	{
-		DrawStringToHandle(128, drawY, L"clear", 0xffffff, fontHandle);
+		DrawStringToHandle(128, drawY, L"clear", kStrColor, fontHandle);
 
 		drawY += 48;
 	}
 	else
 	{
-		DrawStringToHandle(128, drawY, L"ボスを倒せ！", 0xffffff, fontHandle);
+		DrawStringToHandle(128, drawY, L"ボスを倒せ！", kStrColor, fontHandle);
 
 		drawY += 72;
 	}

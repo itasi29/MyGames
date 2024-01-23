@@ -36,6 +36,7 @@ void GameManager::Init()
 	m_stage->Init();
 	m_sound->Init();
 	m_font->Init();
+	m_scene->Init();
 }
 
 void GameManager::DeleteData()

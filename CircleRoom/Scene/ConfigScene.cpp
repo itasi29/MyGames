@@ -16,6 +16,15 @@
 
 namespace
 {
+	// フレームの色
+	constexpr unsigned int kFrameColor = 0xd80032;
+	// 通常文字列の色
+	constexpr unsigned int kStrColor = 0xf0ece5;
+	// 選択時文字列の色
+	constexpr unsigned int kSelectStrColor = 0x161a30;
+	// 点滅間隔
+	constexpr int kFlashInterval = 40;
+
 	constexpr int kMenuMargin = 120;
 
 	constexpr int kMenuLineInterval = 128;
@@ -63,6 +72,8 @@ void ConfigScene::Update(Input& input)
 			m_optionScn->ChangeScene(std::make_shared<PadConfigScene>(m_mgr, input, m_optionScn));
 			break;
 		}
+
+		return;
 	}
 
 	m_frame++;
@@ -87,7 +98,7 @@ void ConfigScene::Draw()
 
 	DrawBox(128, y,
 		kMenuMargin + 800, y + 40,
-		0xff0000, true);
+		kFrameColor, true);
 
 	y = kMenuMargin + 42;
 
@@ -104,15 +115,15 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 
 	if (m_currentLineIndex == index)
 	{
-		float frame = (m_frame % 80) - 40.0f;
-		float rate = fabsf(frame) / 40.0f;
+		float frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+		float rate = fabsf(frame) / kFlashInterval;
 		int alpha = static_cast <int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-		DrawStringToHandle(132, drawY, str.c_str(), 0x000000, fontHandle);
+		DrawStringToHandle(132, drawY, str.c_str(), kSelectStrColor, fontHandle);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 	else
 	{
-		DrawStringToHandle(132, drawY, str.c_str(), 0xffffff, fontHandle);
+		DrawStringToHandle(132, drawY, str.c_str(), kStrColor, fontHandle);
 	}
 }
