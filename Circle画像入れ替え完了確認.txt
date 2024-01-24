@@ -1,0 +1,13 @@
+画像入れ替え
+未
+Title
+StageSelect
+SoundOption
+PadConfig
+OtherOption
+Option
+KeyConfig
+Config
+(以降追加されたら追記)
+
+済

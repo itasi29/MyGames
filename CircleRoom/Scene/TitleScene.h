@@ -43,11 +43,12 @@ private:
 	DrawFunc_t m_drawFunc;
 
 	// 画像群
-	std::shared_ptr<FileBase> m_logoImg;
-	std::shared_ptr<FileBase> m_bgImg;
+	std::shared_ptr<FileBase> m_logo;
+	std::shared_ptr<FileBase> m_bg;
+	std::shared_ptr<FileBase> m_frame;
 
 	// 全体フレーム
-	int m_frame;
+	int m_fadeFrame;
 	// メニュー選択カーソル位置
 	int m_currentLinePos;
 

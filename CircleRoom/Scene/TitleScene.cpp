@@ -28,7 +28,7 @@ namespace
 	constexpr int kFadeFrame = 60;
 
 	// フレームの色
-	constexpr unsigned int kFrameColor = 0xd80032;
+	constexpr unsigned int kFrameColor = 0xd2001a;
 	// 通常文字列の色
 	constexpr unsigned int kStrColor = 0xf0ece5;
 	// 選択時文字列の色
@@ -74,7 +74,7 @@ namespace
 
 TitleScene::TitleScene(GameManager& mgr) :
 	Scene(mgr),
-	m_frame(kFadeFrame),
+	m_fadeFrame(kFadeFrame),
 	m_currentLinePos(0),
 	m_logoAngle(0),
 	m_bgFrame(0)
@@ -83,8 +83,9 @@ TitleScene::TitleScene(GameManager& mgr) :
 	m_drawFunc = &TitleScene::FadeDraw;
 
 	auto& file = mgr.GetFile();
-	m_logoImg = file->LoadGraphic(L"logo.png");
-	m_bgImg = file->LoadGraphic(L"BG/bg.png");
+	m_logo = file->LoadGraphic(L"logo.png");
+	m_bg = file->LoadGraphic(L"BG/bg.png");
+	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
 
 	m_soundSys = mgr.GetSound();
 	m_bgm = file->LoadSound(L"Bgm/title.mp3");
@@ -112,34 +113,34 @@ void TitleScene::Draw()
 
 void TitleScene::FadeInUpdate(Input&)
 {
-	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_frame / static_cast<float>(kFadeFrame));
-	m_frame--;
-	if (m_frame <= 0) // 遷移条件
+	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_fadeFrame / static_cast<float>(kFadeFrame));
+	m_fadeFrame--;
+	if (m_fadeFrame <= 0) // 遷移条件
 	{
 		// 次の遷移先
 		m_updateFunc = &TitleScene::NormalUpdate;
 		m_drawFunc = &TitleScene::NormalDraw;
 
-		m_frame = 0;
+		m_fadeFrame = 0;
 	}
 }
 
 void TitleScene::NormalUpdate(Input& input)
 {
 	m_sound->PlayBgm(m_bgm->GetHandle());
-	m_frame++;
+	m_fadeFrame++;
 
 	if (input.IsTriggered("up"))
 	{
 		// 現在のラインの位置をメニューのラインの数で繰り返す
 		m_currentLinePos = (kMenuLineNum + m_currentLinePos - 1) % kMenuLineNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLinePos = (m_currentLinePos + 1) % kMenuLineNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 
@@ -154,14 +155,14 @@ void TitleScene::NormalUpdate(Input& input)
 			{
 				m_updateFunc = &TitleScene::StartSelectUpdate;
 				m_drawFunc = &TitleScene::StartSelectDraw;
-				m_frame = 0;
+				m_fadeFrame = 0;
 			}
 			// してなければ強制スタート
 			else
 			{
 				m_updateFunc = &TitleScene::FadeOutUpdate;
 				m_drawFunc = &TitleScene::FadeDraw;
-				m_frame = 0;
+				m_fadeFrame = 0;
 
 				// 画面外に飛ばす
 				m_currentLinePos = -10;
@@ -186,27 +187,27 @@ void TitleScene::NormalUpdate(Input& input)
 
 void TitleScene::StartSelectUpdate(Input& input)
 {
-	m_frame++;
+	m_fadeFrame++;
 
 	if (input.IsTriggered("cancel"))
 	{
 		m_updateFunc = &TitleScene::NormalUpdate;
 		m_drawFunc = &TitleScene::NormalDraw;
 
-		m_frame = 0;
+		m_fadeFrame = 0;
 	}
 
 	if (input.IsTriggered("up"))
 	{
 		// 現在のラインの位置をメニューのラインの数で繰り返す
 		m_currentLinePos = (kStartSelectNum + m_currentLinePos - 1) % kStartSelectNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLinePos = (m_currentLinePos + 1) % kStartSelectNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 
@@ -230,7 +231,7 @@ void TitleScene::StartSelectUpdate(Input& input)
 
 		m_updateFunc = &TitleScene::FadeOutUpdate;
 		m_drawFunc = &TitleScene::FadeDraw;
-		m_frame = 0;
+		m_fadeFrame = 0;
 
 		return;
 	}
@@ -238,9 +239,9 @@ void TitleScene::StartSelectUpdate(Input& input)
 
 void TitleScene::FadeOutUpdate(Input& input)
 {
-	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_frame / static_cast<float>(kFadeFrame));
-	m_frame++;
-	if (m_frame > kFadeFrame)
+	m_sound->PlayFadeBgm(m_bgm->GetHandle(), 1.0f - m_fadeFrame / static_cast<float>(kFadeFrame));
+	m_fadeFrame++;
+	if (m_fadeFrame > kFadeFrame)
 	{
 		m_sound->Stop();
 		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr, input), false);
@@ -254,7 +255,7 @@ void TitleScene::FadeDraw()
 
 	const auto& size = Application::GetInstance().GetWindowSize();
 	// その後にフェード暗幕を描画
-	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
+	int alpha = static_cast<int>(255 * (static_cast<float>(m_fadeFrame) / 60.0f));
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
 	DrawBox(0, 0, size.w, size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -264,9 +265,11 @@ void TitleScene::NormalDraw()
 {
 	DrawLogo();
 	
-	int y = static_cast<int>(184 + m_currentLinePos * kMenuLineInterval);
-	// メニューラインの描画
-	DrawBox(kStrDrawX, y, kStrDrawX + kMenuLength, y + 32, kFrameColor, true);
+	int y = static_cast<int>(180 + m_currentLinePos * kMenuLineInterval);
+
+	// フレームの描画
+	DrawGraph(kStrDrawX + kMenuLength, y, m_frame->GetHandle(), true);
+	DrawBox(kStrDrawX, y, kStrDrawX + kMenuLength, y + 40, kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
@@ -276,7 +279,7 @@ void TitleScene::NormalDraw()
 	{
 		if (m_currentLinePos == i)
 		{
-			int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+			int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
@@ -297,7 +300,9 @@ void TitleScene::StartSelectDraw()
 	DrawLogo();
 
 	int y = static_cast<int>(212 + m_currentLinePos * 40);
-	// 選択場所の描画
+
+	// フレームの描画
+	DrawGraph(kStrDrawX + 64 + kMenuLength, y, m_frame->GetHandle(), true);
 	DrawBox(kStrDrawX + 64, y, kStrDrawX + 64 + kMenuLength, y + 40, kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
@@ -307,7 +312,7 @@ void TitleScene::StartSelectDraw()
 	{
 		if (m_currentLinePos == i)
 		{
-			int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+			int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
@@ -334,5 +339,5 @@ void TitleScene::StartSelectDraw()
 void TitleScene::DrawLogo()
 {
 	int y = kLogoDrawY + static_cast<int>(kLogoShitY * sinf(m_logoAngle));
-	DrawRotaGraph(kLogoDrawX, y, 1.0, 0.0, m_logoImg->GetHandle(), true);
+	DrawRotaGraph(kLogoDrawX, y, 1.0, 0.0, m_logo->GetHandle(), true);
 }
