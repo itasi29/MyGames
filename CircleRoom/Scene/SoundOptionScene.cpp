@@ -13,11 +13,12 @@
 
 #include "SoundOptionScene.h"
 
+// ここはフレームの描画の仕方が違うから後で確認
 
 namespace
 {
 	// フレームの色
-	constexpr unsigned int kFrameColor = 0xd80032;
+	constexpr unsigned int kFrameColor = 0xd2001a;
 	// フレーム点滅時の色の差(RGB別)
 	constexpr unsigned int kFrameColorDeffR = 0x1f;
 	constexpr unsigned int kFrameColorDeffG = 0x8c;
@@ -50,12 +51,14 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr) :
 	Scene(mgr),
 	m_currentLineIndex(0),
 	m_isEdit(false),
-	m_frame(0)
+	m_fadeFrame(0)
 {
 	m_updateFunc = &SoundOptionScene::NormalUpdate;
 
 	m_soundSys = mgr.GetSound();
 	auto& file = m_mgr.GetFile();
+	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
+
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
@@ -85,7 +88,7 @@ void SoundOptionScene::Draw()
 	}
 	else
 	{
-		int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+		int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 		unsigned int addR = static_cast<unsigned int>(kFrameColorDeffR * rate) << (4 * 4);
 		unsigned int addG = static_cast<unsigned int>(kFrameColorDeffG * rate) << (4 * 2);
@@ -118,25 +121,25 @@ void SoundOptionScene::NormalUpdate(Input& input)
 	{
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 		m_isEdit = true;
-		m_frame = kFlashInterval;
+		m_fadeFrame = kFlashInterval;
 		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 		optionScene->InverseIsEdit();
 
 		m_updateFunc = &SoundOptionScene::EditUpdate;
 	}
 
-	m_frame++;
+	m_fadeFrame++;
 
 	if (input.IsTriggered("up"))
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + kMax) % kMax;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % kMax;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 }
@@ -183,7 +186,7 @@ void SoundOptionScene::EditUpdate(Input& input)
 		}
 	}
 
-	m_frame++;
+	m_fadeFrame++;
 }
 
 void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
@@ -194,7 +197,7 @@ void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
 	{
 		if (!m_isEdit)
 		{
-			int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+			int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);

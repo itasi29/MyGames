@@ -24,6 +24,8 @@ private:
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 
+	// ‰æ‘œ
+	std::shared_ptr<FileBase> m_frame;
 	std::shared_ptr<FileBase> m_rightNotationImg;
 	// Se
 	std::shared_ptr<FileBase> m_cursorUpSe;
@@ -31,6 +33,6 @@ private:
 
 	int m_currentLineIndex;
 
-	int m_frame;
+	int m_fadeFrame;
 };
 

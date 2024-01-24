@@ -23,7 +23,7 @@
 namespace
 {
 	// フレームの色
-	constexpr unsigned int kFrameColor = 0xd80032;
+	constexpr unsigned int kFrameColor = 0xd2001a;
 	// 通常文字列の色
 	constexpr unsigned int kStrColor = 0xf0ece5;
 	// 選択時文字列の色

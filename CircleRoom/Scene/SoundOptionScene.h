@@ -39,7 +39,10 @@ private:
 	int m_currentLineIndex;
 	bool m_isEdit;
 
-	int m_frame;
+	int m_fadeFrame;
+
+	// ‰æ‘œŠÖŒW
+	std::shared_ptr<FileBase> m_frame;
 
 	// ‰¹ŠÖŒW
 	std::shared_ptr<SoundSystem> m_soundSys;

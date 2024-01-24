@@ -17,7 +17,7 @@
 namespace
 {
 	// フレームの色
-	constexpr unsigned int kFrameColor = 0xd80032;
+	constexpr unsigned int kFrameColor = 0xd2001a;
 	// 通常文字列の色
 	constexpr unsigned int kStrColor = 0xf0ece5;
 	// 選択時文字列の色
@@ -41,11 +41,13 @@ ConfigScene::ConfigScene(GameManager& mgr, std::shared_ptr<SceneManager> scene) 
 	Scene(mgr),
 	m_optionScn(scene),
 	m_currentLineIndex(0),
-	m_frame(0)
+	m_fadeFrame(0)
 {
 	m_soundSys = mgr.GetSound();
 
 	auto& file = m_mgr.GetFile();
+	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
+
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
@@ -76,18 +78,18 @@ void ConfigScene::Update(Input& input)
 		return;
 	}
 
-	m_frame++;
+	m_fadeFrame++;
 
 	if (input.IsTriggered("up"))
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + kMax) % kMax;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % kMax;
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 }
@@ -96,6 +98,7 @@ void ConfigScene::Draw()
 {
 	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
 
+	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
 	DrawBox(128, y,
 		kMenuMargin + 800, y + 40,
 		kFrameColor, true);
@@ -115,7 +118,7 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 
 	if (m_currentLineIndex == index)
 	{
-		float frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+		float frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 		float rate = fabsf(frame) / kFlashInterval;
 		int alpha = static_cast <int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);

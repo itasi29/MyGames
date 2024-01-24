@@ -22,8 +22,10 @@ private:
 	std::shared_ptr<SceneManager> m_optionScn;
 	int m_currentLineIndex;
 
-	int m_frame;
+	int m_fadeFrame;
 
+	// ‰æ‘œŠÖŒW
+	std::shared_ptr<FileBase> m_frame;
 	// ‰¹ŠÖŒW
 	std::shared_ptr<SoundSystem> m_soundSys;
 	// ‘I‘ğSe
