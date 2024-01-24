@@ -194,6 +194,7 @@ protected:
 	std::shared_ptr<FileBase> m_arrow;
 	std::shared_ptr<FileBase> m_arrowFlash;
 	std::shared_ptr<FileBase> m_arrowNo;
+	std::shared_ptr<FileBase> m_startFrame;
 
 	// Œã‚ë‚ÌƒtƒŒ[ƒ€‚ğ•`‰æ‚·‚é‚æ‚¤
 	std::shared_ptr<FileBase> m_bFrameImg;

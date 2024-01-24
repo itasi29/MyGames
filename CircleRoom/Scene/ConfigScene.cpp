@@ -118,8 +118,8 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 
 	if (m_currentLineIndex == index)
 	{
-		float frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
-		float rate = fabsf(frame) / kFlashInterval;
+		int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
+		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 		int alpha = static_cast <int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		DrawStringToHandle(132, drawY, str.c_str(), kSelectStrColor, fontHandle);

@@ -68,6 +68,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_arrow = file->LoadGraphic(L"UI/arrow.png");
 	m_arrowFlash = file->LoadGraphic(L"UI/arrowFlash.png");
 	m_arrowNo = file->LoadGraphic(L"UI/arrowNo.png");
+	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 	m_bFrameImg = file->LoadGraphic(L"UI/backFrame.png");
 
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
@@ -367,7 +368,7 @@ void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName
 		handle = m_arrowNo->GetHandle();
 	}
 
-	DrawRotaGraph(m_size.w * 0.5f - 150, m_size.h * 0.5f, 1.0, -kRad90, handle, true);
+	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f - 150), static_cast<int>(m_size.h * 0.5f), 1.0, -kRad90, handle, true);
 }
 
 void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStName) const
@@ -390,7 +391,7 @@ void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStNam
 	}
 
 	// MEMO:何故かReverXをtrueにするとがびらないからしておいてる
-	DrawRotaGraph(m_size.w * 0.5f + 150, m_size.h * 0.5f, 1.0, kRad90, handle, true, true);
+	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f + 150), static_cast<int>(m_size.h * 0.5f), 1.0, kRad90, handle, true, true);
 }
 
 void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) const
@@ -412,7 +413,7 @@ void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) 
 		handle = m_arrowNo->GetHandle();
 	}
 
-	DrawRotaGraph(m_size.w * 0.5f, m_size.h * 0.5f - 150, 1.0, 0.0, handle, true);
+	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f - 150), 1.0, 0.0, handle, true);
 }
 
 void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const
@@ -434,7 +435,7 @@ void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName
 		handle = m_arrowNo->GetHandle();
 	}
 
-	DrawRotaGraph(m_size.w * 0.5f, m_size.h * 0.5f + 150, 1.0, 0.0, handle, true, false, true);
+	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f + 150), 1.0, 0.0, handle, true, false, true);
 }
 
 void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
@@ -603,8 +604,8 @@ void StageBase::BossDeath()
 
 void StageBase::DrawWall()
 {
-	float centerX = m_size.w * 0.5f;
-	float centerY = m_size.h * 0.5f;
+	int centerX = static_cast<int>(m_size.w * 0.5f);
+	int centerY = static_cast<int>(m_size.h * 0.5f);
 
 #if false
 	// 色は仮
@@ -620,7 +621,10 @@ void StageBase::DrawWall()
 
 void StageBase::DrawImage()
 {
+#if false
 	DrawBox(1000, 600, 1280, 632, kFrameColor, true);
+#endif
+	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
 	switch (m_input.GetType())
 	{
 	case InputType::keybd:
@@ -632,7 +636,7 @@ void StageBase::DrawImage()
 		m_bt->DrawBottan(m_input.GetHardDataName("OK", InputType::pad), 1016, 600, 2.0);
 		break;
 	}
-	DrawStringToHandle(1064, 600, L"選択", kStrColor, m_mgr.GetFont()->GetHandle(32));
+	DrawStringToHandle(1064, 600, L"スタート", kStrColor, m_mgr.GetFont()->GetHandle(32));
 }
 
 void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage)

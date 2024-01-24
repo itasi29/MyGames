@@ -23,6 +23,7 @@ namespace
 	constexpr unsigned int kFrameColorDeffR = 0x1f;
 	constexpr unsigned int kFrameColorDeffG = 0x8c;
 	constexpr unsigned int kFrameColorDeffB = 0x70;
+	constexpr unsigned int kFrameColorDeff = 0x1f8c70;
 
 	// 通常文字列の色
 	constexpr unsigned int kStrColor = 0xf0ece5;
@@ -77,27 +78,24 @@ void SoundOptionScene::Draw()
 {	
 	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
 
-	// FIXME:なんか色がむっちゃ気持ち悪いからこれは絶対直せ
-	// 
 	// 選択している場所を描画
-	if (!m_isEdit)
-	{
-		DrawBox(128, y,
-			kMenuMargin + 800, y + 40,
-			kFrameColor, true);
-	}
-	else
+	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
+	DrawBox(128, y,
+		kMenuMargin + 800, y + 40,
+		kFrameColor, true);
+
+	// 選択中の場合は色を追加して点滅させる
+	if (m_isEdit)
 	{
 		int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
-		unsigned int addR = static_cast<unsigned int>(kFrameColorDeffR * rate) << (4 * 4);
-		unsigned int addG = static_cast<unsigned int>(kFrameColorDeffG * rate) << (4 * 2);
-		unsigned int addB = static_cast<unsigned int>(kFrameColorDeffB * rate);
-		unsigned int color = kFrameColor + addR + addG + addB;
-
+		int add = 255 * static_cast<int>(rate);
+		SetDrawBlendMode(DX_BLENDMODE_ADD, add);
+		// FIXME:フレームの方の画像が追加されていないためそれは追加する
 		DrawBox(128, y,
 			kMenuMargin + 800, y + 40,
-			color, true);
+			kFrameColorDeff, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
