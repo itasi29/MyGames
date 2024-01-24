@@ -21,8 +21,12 @@ private:
 	int m_indexRow;
 	int m_indexLine;
 
-	int m_frame = 0;
+	int m_fadeFrame;
 
+	// ‰æ‘œŠÖŒW
+	std::shared_ptr<FileBase> m_frame;
+	std::shared_ptr<FileBase> m_nowPos;
+	std::shared_ptr<FileBase> m_lock;
 	// ‰¹ŠÖŒW
 	std::shared_ptr<SoundSystem> m_soundSys;
 	// ‘I‘ğSe

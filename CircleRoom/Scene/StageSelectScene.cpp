@@ -28,7 +28,7 @@ namespace
 	constexpr int kStageSize = 64;
 	// ステージ枠とフレームの差
 	// MEMO:後で画像に変更するためおそらく消す
-	constexpr int kStageFrameSize = 16;
+	constexpr int kStageFrameSize = 14;
 	// フレームの太さ
 	constexpr int kStageFrameThickness = 4;
 	// ステージ間の空白
@@ -52,10 +52,17 @@ namespace
 StageSelectScene::StageSelectScene(GameManager& mgr) :
 	Scene(mgr),
 	m_indexRow(0),
-	m_indexLine(0)
+	m_indexLine(0),
+	m_fadeFrame(0)
 {
 	m_soundSys = mgr.GetSound();
-	m_selectSe = mgr.GetFile()->LoadSound(L"Se/select.mp3");
+
+	auto& file = mgr.GetFile();
+	m_frame = file->LoadGraphic(L"UI/selectFrame.png");
+	m_nowPos = file->LoadGraphic(L"UI/nowPos.png");
+	m_lock = file->LoadGraphic(L"UI/lock.png");
+
+	m_selectSe = file->LoadSound(L"Se/select.mp3");
 }
 
 StageSelectScene::~StageSelectScene()
@@ -64,30 +71,30 @@ StageSelectScene::~StageSelectScene()
 
 void StageSelectScene::Update(Input& input)
 {
-	m_frame++;
+	m_fadeFrame++;
 
 	// 上下のインデックスの変更
 	if (input.IsTriggered("up"))
 	{
 		m_indexLine = (m_indexLine - 1 + kLineNum) % kLineNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_indexLine = (m_indexLine + 1) % kLineNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 	}
 
 	// 左右のインデックスの変更
 	if (input.IsTriggered("left"))
 	{
 		m_indexRow = (m_indexRow - 1 + kRowNum) % kRowNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 	}
 	if (input.IsTriggered("right"))
 	{
 		m_indexRow = (m_indexRow + 1) % kRowNum;
-		m_frame = 0;
+		m_fadeFrame = 0;
 	}
 
 	if (input.IsTriggered("OK"))
@@ -136,14 +143,11 @@ void StageSelectScene::Draw()
 			// フレームの描画
 			if (isIndexRow && m_indexLine == y)
 			{
-				int frame = (m_frame % 80) - 40;
+				int frame = (m_fadeFrame % 80) - 40;
 				float rate = fabsf(static_cast<float>(frame)) / 40.0f;
 				int alpha = static_cast<int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-				// FIXE:現状大きめの枠を描画しているがのちは画像に変更
-				DrawBoxAA(static_cast<float>(drawX - kStageFrameSize), kStartY + kStageMargine * y - kStageFrameSize,
-					static_cast<float>(drawX + kStageFrameSize + kStageSize), kStartY + kStageMargine * y + kStageSize + kStageFrameSize,
-					0xffff00, false, kStageFrameThickness);
+				DrawGraph(drawX - kStageFrameSize, kStartY + kStageMargine * y - kStageFrameSize, m_frame->GetHandle(), true);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			}
 
@@ -154,11 +158,14 @@ void StageSelectScene::Draw()
 
 			// 現在選択しているステージ
 			// FIXME:仮として円を描画しているので、グラフィックが出来次第変更
-
 			std::string stageName = "Stage" + kStageStr[y][x];
 			if ((stageName) == m_mgr.GetStage()->GetStageName())
 			{
+#if false
 				DrawCircle(static_cast<int>(drawX + kStageSize * 0.5f), static_cast<int>(drawY + kStageSize * 0.5f), 16, 0xff8800, true);
+#endif
+				DrawRotaGraph(static_cast<int>(drawX + kStageSize * 0.5f), static_cast<int>(drawY + kStageSize * 0.5f),
+					1.0, 0.0, m_nowPos->GetHandle(), true);
 			}
 
 			// MEMO:アンチエイリアス付きにすると線の太さを指定可能
@@ -174,6 +181,8 @@ void StageSelectScene::Draw()
 				DrawBoxAA(static_cast<float>(drawX), static_cast<float>(drawY),
 					static_cast<float>(drawX + kStageSize), static_cast<float>(drawY + kStageSize),
 					0xff0000, false, kStageFrameThickness);
+
+				DrawGraph(drawX + 16, drawY + 12, m_lock->GetHandle(), true);
 			}
 		}
 	}
