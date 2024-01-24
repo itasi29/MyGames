@@ -171,6 +171,8 @@ private:
 	/// /// <param name="nextStage">次のステージのポインタ</param>
 	void ChangeClearData(const std::shared_ptr<StageBase>& nextStage) const;
 
+	
+
 	/// <summary>
 	/// 壁の描画
 	/// </summary>
@@ -187,6 +189,14 @@ protected:
 
 	GameManager& m_mgr;
 
+	// 画像
+	std::shared_ptr<FileBase> m_field;
+	std::shared_ptr<FileBase> m_arrow;
+	std::shared_ptr<FileBase> m_arrowFlash;
+	std::shared_ptr<FileBase> m_arrowNo;
+
+	// 後ろのフレームを描画するよう
+	std::shared_ptr<FileBase> m_bFrameImg;
 	// サウンド
 	std::shared_ptr<SoundSystem> m_sound;
 	int m_soundFrame;
@@ -197,8 +207,6 @@ protected:
 	// 文字列を描画する用の画面ハンドル
 	int m_strHandle;
 
-	// 後ろのフレームを描画するよう
-	std::shared_ptr<FileBase> m_bFrameImg;
 
 	// ウィンドウサイズ
 	const size& m_size;

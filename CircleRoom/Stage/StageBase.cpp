@@ -39,6 +39,9 @@ namespace
 
 	// サウンドのフェードフレーム
 	constexpr int kSoundFade = 30;
+
+	// ラジアンでの90度
+	constexpr double kRad90 = DX_PI / 2;
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
@@ -61,7 +64,12 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_sound = m_mgr.GetSound();
 
 	auto& file = m_mgr.GetFile();
+	m_field = file->LoadGraphic(L"field.png");
+	m_arrow = file->LoadGraphic(L"UI/arrow.png");
+	m_arrowFlash = file->LoadGraphic(L"UI/arrowFlash.png");
+	m_arrowNo = file->LoadGraphic(L"UI/arrowNo.png");
 	m_bFrameImg = file->LoadGraphic(L"UI/backFrame.png");
+
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
 
@@ -342,100 +350,91 @@ void StageBase::DrawPlaying()
 
 void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	unsigned int color = 0;
-	// クリアしている場合は濃いめで
+	int handle;
 	if (m_mgr.GetStage()->IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
-			color = 0xffffff;
+			handle = m_arrow->GetHandle();
 		}
 		else
 		{
-			color = 0xffff08;
+			handle = m_arrowFlash->GetHandle();
 		}
 	}
-	// クリアしていない場合は薄めで
 	else
 	{
-		color = 0x808080;
+		handle = m_arrowNo->GetHandle();
 	}
-	DrawTriangle(m_size.w / 2 - 150, m_size.h / 2,
-		m_size.w / 2 - 100, m_size.h / 2 + 25,
-		m_size.w / 2 - 100, m_size.h / 2 - 25,
-		color, true);
+
+	DrawRotaGraph(m_size.w * 0.5f - 150, m_size.h * 0.5f, 1.0, -kRad90, handle, true);
 }
 
 void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	unsigned int color = 0;
+	int handle;
 	if (m_mgr.GetStage()->IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
-			color = 0xffffff;
+			handle = m_arrow->GetHandle();
 		}
 		else
 		{
-			color = 0xffff08;
+			handle = m_arrowFlash->GetHandle();
 		}
 	}
 	else
 	{
-		color = 0x808080;
+		handle = m_arrowNo->GetHandle();
 	}
-	DrawTriangle(m_size.w / 2 + 150, m_size.h / 2,
-		m_size.w / 2 + 100, m_size.h / 2 + 25,
-		m_size.w / 2 + 100, m_size.h / 2 - 25,
-		color, true);
+
+	// MEMO:何故かReverXをtrueにするとがびらないからしておいてる
+	DrawRotaGraph(m_size.w * 0.5f + 150, m_size.h * 0.5f, 1.0, kRad90, handle, true, true);
 }
 
 void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	unsigned int color = 0;
+	int handle;
 	if (m_mgr.GetStage()->IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
-			color = 0xffffff;
+			handle = m_arrow->GetHandle();
 		}
 		else
 		{
-			color = 0xffff08;
+			handle = m_arrowFlash->GetHandle();
 		}
 	}
 	else
 	{
-		color = 0x808080;
+		handle = m_arrowNo->GetHandle();
 	}
-	DrawTriangle(m_size.w / 2, m_size.h / 2 - 150,
-		m_size.w / 2 + 25, m_size.h / 2 - 100,
-		m_size.w / 2 - 25, m_size.h / 2 - 100,
-		color, true);
+
+	DrawRotaGraph(m_size.w * 0.5f, m_size.h * 0.5f - 150, 1.0, 0.0, handle, true);
 }
 
 void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	unsigned int color;
+	int handle;
 	if (m_mgr.GetStage()->IsClearStage(nextStName))
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
-			color = 0xffffff;
+			handle = m_arrow->GetHandle();
 		}
 		else
 		{
-			color = 0xffff08;
+			handle = m_arrowFlash->GetHandle();
 		}
 	}
 	else
 	{
-		color = 0x808080;
+		handle = m_arrowNo->GetHandle();
 	}
-	DrawTriangle(m_size.w / 2, m_size.h / 2 + 150,
-		m_size.w / 2 + 25, m_size.h / 2 + 100,
-		m_size.w / 2 - 25, m_size.h / 2 + 100,
-		color, true);
+
+	DrawRotaGraph(m_size.w * 0.5f, m_size.h * 0.5f + 150, 1.0, 0.0, handle, true, false, true);
 }
 
 void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
@@ -607,10 +606,16 @@ void StageBase::DrawWall()
 	float centerX = m_size.w * 0.5f;
 	float centerY = m_size.h * 0.5f;
 
+#if false
 	// 色は仮
 	DrawBox(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
 		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
 		0xffffff, false);
+#else
+	// 画像中心を元にした描画をするために
+	// Rotaにしている
+	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_field->GetHandle(), true);
+#endif
 }
 
 void StageBase::DrawImage()
