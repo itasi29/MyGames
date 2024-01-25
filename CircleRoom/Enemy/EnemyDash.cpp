@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <cmath>
 #include "Application.h"
 
 #include "GameManager.h"
@@ -65,9 +66,19 @@ void EnemyDash::Init(const Vec2& pos)
 	m_frame = 0;
 
 	// Œ‚‚Â•ûŒü‚ðƒ‰ƒ“ƒ_ƒ€‚ÅŒˆ‚ß‚é
-	float moveX = (GetRand(16) - 8) * 0.125f;
-	float moveY = (GetRand(16) - 8) * 0.125f;
-	m_vec = Vec2{ moveX, moveY };
+	do
+	{
+		float moveX = (GetRand(16) - 8) * 0.125f;
+		float moveY = (GetRand(16) - 8) * 0.125f;
+
+		double angle = atan2(moveX, -moveY);
+
+		if (angle >= (DX_PI / 180 * 135)) continue;
+		if (angle <= -(DX_PI / 180 * 135)) continue;
+
+
+		m_vec = Vec2{ moveX, moveY };
+	} while (false);
 
 	// ƒ[ƒƒxƒNƒgƒ‹‚Å‚È‚¢‚È‚ç³‹K‰»
 	if (m_vec.SqLength() > 0)

@@ -92,11 +92,11 @@ void OneShotScene::MoveDraw()
 	int y = kDrawY - static_cast<int>((1.0f - m_frame / static_cast<float>(kApeearFrame)) * size.h);
 
 	DrawRotaGraph3(kDrawX, y,
-		0, 0, m_sizeW, m_sizeH, 0.0, m_handle, false);
+		0, 0, m_sizeW, m_sizeH, 0.0, m_handle, true);
 }
 
 void OneShotScene::NormalDraw()
 {
 	DrawRotaGraph3(kDrawX, kDrawY,
-		0, 0, m_sizeW, m_sizeH, 0.0, m_handle, false);
+		0, 0, m_sizeW, m_sizeH, 0.0, m_handle, true);
 }

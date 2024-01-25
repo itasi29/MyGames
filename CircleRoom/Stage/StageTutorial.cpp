@@ -22,6 +22,9 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
+
 	const std::string kStageName = "Stage1-1";
 	constexpr int kExsitTime = 2;
 
@@ -42,7 +45,7 @@ StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	m_handle[kClear] = m_mgr.GetFile()->LoadGraphic(L"UI/clearExplanation.png");
 	m_handle[kClearAnother] = m_mgr.GetFile()->LoadGraphic(L"UI/clearExplanation.png");
 
-	m_stageName = "StageTutorial";
+	m_stageName = "Tutorial";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成
@@ -190,8 +193,7 @@ void StageTutorial::CheckStageConditions()
 
 int StageTutorial::DrawStageConditions(int drawY)
 {
-	DrawFormatStringToHandle(128, drawY, kWhiteColor, m_mgr.GetFont()->GetHandle(24), L"左　%d秒間生き残る\n(%d / %d)",
-		kExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kExsitTime);
+	DrawTimeConditions(kConditionsPosX, drawY, m_mgr.GetFont()->GetHandle(28), kExsitTime);
 
 	return 0;
 }
