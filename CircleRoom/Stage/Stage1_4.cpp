@@ -17,12 +17,18 @@
 
 namespace
 {
+	// ラジアンでの90度
+	constexpr double kRad90 = DX_PI / 2;
+
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
 
 	// 殺された種類の基準描画位置
-	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 152;
+	constexpr int kKillTypePosX = 156;
+	constexpr int kKillTypePosY = 200;
 
 	// クリア時間
 	constexpr int kRightKilledNum = 3;
@@ -132,6 +138,7 @@ void Stage1_4::CheckStageConditions()
 		if (m_mgr.GetStage()->GetEnemyTypeCount() >= kRightKilledNum)
 		{
 			m_mgr.GetStage()->SaveClear(kRightStName);
+			AddAchivedStr(L"右");
 		}
 	}
 	if (!m_mgr.GetStage()->IsClearStage(kUpStName))
@@ -139,6 +146,7 @@ void Stage1_4::CheckStageConditions()
 		if (m_mgr.GetStage()->GetEnemyTypeCount() >= kUpKilledNum)
 		{
 			m_mgr.GetStage()->SaveClear(kUpStName);
+			AddAchivedStr(L"上");
 		}
 	}
 }
@@ -146,24 +154,24 @@ void Stage1_4::CheckStageConditions()
 int Stage1_4::DrawStageConditions(int drawY)
 {
 	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(24);
+	int fontHandle = m_mgr.GetFont()->GetHandle(28);
 
 	if (!m_isRightClear)
 	{
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"右　%d種類の敵に\n　　殺される\n(%d / %d)",
-			kRightKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kRightKilledNum);
+		DrawArrowConditions(kRightStName, kConditionsPosX, drawY, kRad90);
+		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kRightKilledNum);
 
-		drawY += 72;
+		drawY += 68;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"上　%d種類の敵に\n　　殺される\n(%d / %d)",
-			kUpKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kUpKilledNum);
+		DrawArrowConditions(kUpStName, kConditionsPosX, drawY, 0.0);
+		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kUpKilledNum);
 
-		drawY += 72;
+		drawY += 68;
 	}
 
-	return drawY - startY - 48;
+	return drawY - startY - 68;
 }
 
 void Stage1_4::DrawArrow() const
@@ -185,29 +193,29 @@ void Stage1_4::DrawKilledEnemyType() const
 
 	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, true);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, false);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, false);
 	}
 
 	if (m_mgr.GetStage()->IsKilledEnemy("Create"))
 	{
-		DrawCircle(kKillTypePosX + 96, kKillTypePosY, 16, 0xffff08, true);
+		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xffff08, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 96, kKillTypePosY, 16, 0xffff08, false);
+		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xffff08, false);
 	}
 
 	if (m_mgr.GetStage()->IsKilledEnemy("Child"))
 	{
-		DrawCircle(kKillTypePosX + 144, kKillTypePosY, 12, 0xf0f008, true);
+		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 12, 0xf0f008, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 144, kKillTypePosY, 12, 0xf0f008, false);
+		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 12, 0xf0f008, false);
 	}
 }
 

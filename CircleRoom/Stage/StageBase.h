@@ -18,6 +18,14 @@ struct size;
 struct StageData;
 enum class StageDir;
 
+struct Achived
+{
+	// 文字列
+	std::wstring str;
+	// フレーム
+	int frame;
+};
+
 class StageBase
 {
 public:
@@ -110,6 +118,11 @@ protected:
 	/// </summary>
 	void DrawPlaying();
 
+
+	void DrawArrowConditions(const std::string& nextStName, int x, int y, double angle, bool isReverseX = false, bool isReverxeY = false);
+	void DrawTimeConditions(int x, int y, int handle, int existTime);
+	void DrawKilledConditions(int x, int y, int handle, int killedNum);
+
 	/// <summary>
 	/// 左矢印の描画
 	/// </summary>
@@ -126,6 +139,12 @@ protected:
 	/// 下矢印の描画
 	/// </summary>
 	void DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const;
+
+	/// <summary>
+	/// クリアした文字の描画群に追加
+	/// </summary>
+	/// <param name="dir">方向</param>
+	void AddAchivedStr(const std::wstring& dir);
 
 	/// <summary>
 	/// 左に画面をスライドする処理
@@ -171,7 +190,18 @@ private:
 	/// /// <param name="nextStage">次のステージのポインタ</param>
 	void ChangeClearData(const std::shared_ptr<StageBase>& nextStage) const;
 
-	
+	/// <summary>
+	/// 現在のタイムを描画
+	/// </summary>
+	/// <param name="x">X描画位置</param>
+	/// <param name="y">Y描画位置</param>
+	/// <param name="handle">フォントハンドル</param>
+	void DrawTime(int x, int y, int handle);
+
+	/// <summary>
+	/// 条件達成の描画
+	/// </summary>
+	void DrawConditionsAchived();
 
 	/// <summary>
 	/// 壁の描画
@@ -194,6 +224,7 @@ protected:
 	std::shared_ptr<FileBase> m_arrow;
 	std::shared_ptr<FileBase> m_arrowFlash;
 	std::shared_ptr<FileBase> m_arrowNo;
+	std::shared_ptr<FileBase> m_arrowConditions;
 	std::shared_ptr<FileBase> m_startFrame;
 
 	// 後ろのフレームを描画するよう
@@ -208,7 +239,6 @@ protected:
 	// 文字列を描画する用の画面ハンドル
 	int m_strHandle;
 
-
 	// ウィンドウサイズ
 	const size& m_size;
 	// フィールドサイズ
@@ -220,6 +250,9 @@ protected:
 
 	// ステージ名
 	std::string m_stageName;
+
+	// 達成の文字の描画用
+	std::list<Achived> m_achived;
 
 	// プレイヤー
 	std::shared_ptr<Player> m_player;

@@ -18,7 +18,7 @@
 namespace
 {
 	// 文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
 	// フェード時間
 	constexpr int kFadeFrame = 60;
@@ -131,7 +131,7 @@ void GameClearScene::FadeDraw()
 
 void GameClearScene::NormalDraw()
 {
-	DrawStringToHandle(550, 50, L"リザルト", kStrColor, m_mgr.GetFont()->GetHandle(48));
+	DrawStringToHandle(550, 50, L"リザルト", kWhiteColor, m_mgr.GetFont()->GetHandle(48));
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
 	int drawY = 150;
@@ -143,7 +143,7 @@ void GameClearScene::NormalDraw()
 			float rate = (fabs(static_cast<float>(val)) / kTextInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(500, drawY, L"～　PressAnyKey　～", kStrColor, fontHandle);
+			DrawStringToHandle(500, drawY, L"～　PressAnyKey　～", kWhiteColor, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			break;
 		}
@@ -155,13 +155,13 @@ void GameClearScene::NormalDraw()
 			int y = drawY - static_cast<int>(100 * (1 - rate));
 
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawFormatStringToHandle(kDrawResultX, y, kStrColor, fontHandle, L"%s", kResultStr[i].c_str());
+			DrawFormatStringToHandle(kDrawResultX, y, kWhiteColor, fontHandle, L"%s", kResultStr[i].c_str());
 			DrawInf(i, y, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawFormatStringToHandle(kDrawResultX, drawY, kStrColor, fontHandle, L"%s", kResultStr[i].c_str());
+			DrawFormatStringToHandle(kDrawResultX, drawY, kWhiteColor, fontHandle, L"%s", kResultStr[i].c_str());
 			DrawInf(i, drawY, fontHandle);
 		}
 
@@ -178,14 +178,14 @@ void GameClearScene::DrawInf(int index, int drawY, int handle)
 		int sec = (data.playTime / 60) % 60;
 		int min = (data.playTime / 3600) % 60;
 		int hour = (data.playTime / 21600);
-		DrawFormatStringToHandle(kDrawResultDataX, drawY, kStrColor, handle, L"%02d時間%02d分%02d秒", hour, min, sec);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kWhiteColor, handle, L"%02d時間%02d分%02d秒", hour, min, sec);
 	}
 	else if (index == 1)
 	{
-		DrawFormatStringToHandle(kDrawResultDataX, drawY, kStrColor, handle, L"%-3d回", data.deathCount);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kWhiteColor, handle, L"%-3d回", data.deathCount);
 	}
 	else
 	{
-		DrawFormatStringToHandle(kDrawResultDataX, drawY, kStrColor, handle, L"%-3d回", data.dashCount);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kWhiteColor, handle, L"%-3d回", data.dashCount);
 	}
 }

@@ -17,15 +17,23 @@
 
 namespace
 {
+	// ラジアンでの90度
+	constexpr double kRad90 = DX_PI / 2;
+
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	// 黄色文字列の色
+	constexpr unsigned int kYellowColor = 0xffde00;
+
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
 
 	// 右側生存時間
 	constexpr int kRightExsitTime = 10;
 
 	// 殺された種類の基準描画位置
-	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 152;
+	constexpr int kKillTypePosX = 156;
+	constexpr int kKillTypePosY = 200;
 
 	// 大きい敵生成間隔フレーム
 	constexpr int kCreateLageFrame = 60 * 10;
@@ -123,6 +131,7 @@ void Stage1_2::CheckStageConditions()
 		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kRightExsitTime * 60)
 		{
 			m_mgr.GetStage()->SaveClear(kRightStName);
+			AddAchivedStr(L"右");
 		}
 	}
 }
@@ -132,15 +141,15 @@ int Stage1_2::DrawStageConditions(int drawY)
 	int startY = drawY;
 	if (!m_isRightClear)
 	{
-		int fontHandle = m_mgr.GetFont()->GetHandle(24);
+		int fontHandle = m_mgr.GetFont()->GetHandle(28);
 
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"右　%d秒間生き残る\n(%d / %d)",
-			kRightExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kRightExsitTime);
+		DrawArrowConditions(kRightStName, kConditionsPosX, drawY, kRad90);
+		DrawTimeConditions(kConditionsPosX, drawY, fontHandle, kRightExsitTime);
 
-		drawY += 48;
+		drawY += 68;
 	}
 
-	return drawY - startY - 48;
+	return drawY - startY - 68;
 }
 
 void Stage1_2::DrawArrow() const
@@ -161,20 +170,20 @@ void Stage1_2::DrawKilledEnemyType() const
 
 	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, true);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, false);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, false);
 	}
 
 	if (m_mgr.GetStage()->IsKilledEnemy("Large"))
 	{
-		DrawCircle(kKillTypePosX + 96, kKillTypePosY, 20, 0xffffff, true);
+		DrawCircle(kKillTypePosX + 76, kKillTypePosY, 20, 0xffffff, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 96, kKillTypePosY, 20, 0xffffff, false);
+		DrawCircle(kKillTypePosX + 76, kKillTypePosY, 20, 0xffffff, false);
 	}
 }
 

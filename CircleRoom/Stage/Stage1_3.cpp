@@ -15,12 +15,18 @@
 
 namespace
 {
+	// ラジアンでの90度
+	constexpr double kRad90 = DX_PI / 2;
+
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
 
 	// 殺された種類の基準描画位置
-	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 152;
+	constexpr int kKillTypePosX = 156;
+	constexpr int kKillTypePosY = 200;
 
 	// クリア時間
 	constexpr int kDownExsitTime = 15;
@@ -127,6 +133,7 @@ void Stage1_3::CheckStageConditions()
 		if (m_mgr.GetStage()->GetEnemyTypeCount() >= kLeftKilledNum)
 		{
 			m_mgr.GetStage()->SaveClear(kLeftStName);
+			AddAchivedStr(L"左");
 		}
 	}
 	// 下をまだクリアしていない場合
@@ -135,6 +142,7 @@ void Stage1_3::CheckStageConditions()
 		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kDownExsitTime * 60)
 		{
 			m_mgr.GetStage()->SaveClear(kDownStName);
+			AddAchivedStr(L"下");
 		}
 	}
 }
@@ -142,24 +150,24 @@ void Stage1_3::CheckStageConditions()
 int Stage1_3::DrawStageConditions(int drawY)
 {
 	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(24);
+	int fontHandle = m_mgr.GetFont()->GetHandle(28);
 
 	if (!m_isLeftClear)
 	{
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"左　%d種類の敵に\n　　殺される\n(%d / %d)",
-			kLeftKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kLeftKilledNum);
+		DrawArrowConditions(kLeftStName, kConditionsPosX, drawY, -kRad90);
+		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kLeftKilledNum);
 
-		drawY += 72;
+		drawY += 68;
 	}
 	if (!m_isDownClear)
 	{
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"下　%d秒間生き残る\n(%d / %d)", 
-			kDownExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kDownExsitTime);
+		DrawArrowConditions(kDownStName, kConditionsPosX, drawY, DX_PI);
+		DrawTimeConditions(kConditionsPosX, drawY, fontHandle, kDownExsitTime);
 
-		drawY += 48;
+		drawY += 68;
 	}
 
-	return drawY - startY - 48;
+	return drawY - startY - 68;
 }
 
 void Stage1_3::DrawArrow() const
@@ -181,11 +189,11 @@ void Stage1_3::DrawKilledEnemyType() const
 
 	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, true);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, false);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, false);
 	}
 }
 

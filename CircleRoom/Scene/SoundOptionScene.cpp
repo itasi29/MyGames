@@ -19,14 +19,11 @@ namespace
 {
 	// フレームの色
 	constexpr unsigned int kFrameColor = 0xd2001a;
-	// フレーム点滅時の色の差(RGB別)
-	constexpr unsigned int kFrameColorDeffR = 0x1f;
-	constexpr unsigned int kFrameColorDeffG = 0x8c;
-	constexpr unsigned int kFrameColorDeffB = 0x70;
-	constexpr unsigned int kFrameColorDeff = 0x1f8c70;
+	// フレーム点滅時の色の差
+	constexpr unsigned int kFrameColorDeff = 0x225036;
 
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
 	constexpr unsigned int kSelectStrColor = 0x161a30;
 	// 点滅間隔
@@ -59,6 +56,7 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr) :
 	m_soundSys = mgr.GetSound();
 	auto& file = m_mgr.GetFile();
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
+	m_addFrame = file->LoadGraphic(L"UI/addFrame.png");
 
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
@@ -89,9 +87,9 @@ void SoundOptionScene::Draw()
 	{
 		int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
-		int add = 255 * static_cast<int>(rate);
+		int add = static_cast<int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ADD, add);
-		// FIXME:フレームの方の画像が追加されていないためそれは追加する
+		DrawGraph(kMenuMargin + 800, y, m_addFrame->GetHandle(), true);
 		DrawBox(128, y,
 			kMenuMargin + 800, y + 40,
 			kFrameColorDeff, true);
@@ -103,13 +101,13 @@ void SoundOptionScene::Draw()
 	y = kMenuMargin + 42;
 	auto rate = m_mgr.GetSound()->GetBgmVolRate();
 	DrawName(y, kBgm, L"BGM");
-	DrawFormatStringToHandle(200, y, kStrColor, fontHandle, L"%3d％", static_cast<int>(rate * 100));
+	DrawFormatStringToHandle(200, y, kWhiteColor, fontHandle, L"%3d％", static_cast<int>(rate * 100));
 	DrawGauge(500, y, rate);
 
 	y += kMenuLineInterval;
 	rate = m_mgr.GetSound()->GetSeVolRate();
 	DrawName(y, kSe, L"SE");
-	DrawFormatStringToHandle(200, y, kStrColor, fontHandle, L"%3d％", static_cast<int>(rate * 100));
+	DrawFormatStringToHandle(200, y, kWhiteColor, fontHandle, L"%3d％", static_cast<int>(rate * 100));
 	DrawGauge(500, y, rate);
 }
 
@@ -205,7 +203,7 @@ void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
 	}
 	else
 	{
-		DrawStringToHandle(132, drawY, str.c_str(), kStrColor, fontHandle);
+		DrawStringToHandle(132, drawY, str.c_str(), kWhiteColor, fontHandle);
 	}
 }
 

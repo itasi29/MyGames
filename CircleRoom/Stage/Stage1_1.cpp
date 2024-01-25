@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "StageManager.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/FileBase.h"
 #include "Stage1_1.h"
 #include "Stage1_2.h"
 #include "Stage1_3.h"
@@ -15,12 +16,20 @@
 
 namespace
 {
+	// ラジアンでの90度
+	constexpr double kRad90 = DX_PI / 2;
+
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	// 黄色文字列の色
+	constexpr unsigned int kYellowColor = 0xffde00;
+
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
 
 	// 殺された種類の基準描画位置
-	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 152;
+	constexpr int kKillTypePosX = 156;
+	constexpr int kKillTypePosY = 200;
 
 	// 初めに生成する敵の数
 	constexpr int kStartCreatNum = 4;
@@ -141,6 +150,7 @@ void Stage1_1::CheckStageConditions()
 		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kLeftExsitTime * 60)
 		{
 			m_mgr.GetStage()->SaveClear(kLeftStName);
+			AddAchivedStr(L"左");
 		}
 	}
 	// 上をまだクリアしていない場合
@@ -149,6 +159,7 @@ void Stage1_1::CheckStageConditions()
 		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kUpExsitTime * 60)
 		{
 			m_mgr.GetStage()->SaveClear(kUpStName);
+			AddAchivedStr(L"上");
 		}
 	}
 }
@@ -156,24 +167,23 @@ void Stage1_1::CheckStageConditions()
 int Stage1_1::DrawStageConditions(int drawY)
 {
 	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(24);
+	int fontHandle = m_mgr.GetFont()->GetHandle(28);
 	if (!m_isLeftClear)
 	{
+		DrawArrowConditions(kLeftStName, kConditionsPosX, drawY, -kRad90);
+		DrawTimeConditions(kConditionsPosX, drawY, fontHandle, kLeftExsitTime);
 
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"左　%d秒間生き残る\n(%d / %d)",
-			kLeftExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kLeftExsitTime);
-
-		drawY += 48;
+		drawY += 68;
 	}
 	if (!m_isUpClear)
 	{
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"上　%d秒間生き残る\n(%d / %d)",
-			kUpExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kUpExsitTime);
+		DrawArrowConditions(kUpStName, kConditionsPosX, drawY, 0.0);
+		DrawTimeConditions(kConditionsPosX, drawY, fontHandle, kUpExsitTime);
 
-		drawY += 48;
+		drawY += 68;
 	}
 
-	return drawY - startY - 48;
+	return drawY - startY - 68;
 }
 
 void Stage1_1::DrawArrow() const
@@ -195,11 +205,11 @@ void Stage1_1::DrawKilledEnemyType() const
 
 	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, true);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x888888, false);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, false);
 	}
 }
 

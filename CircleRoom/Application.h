@@ -50,5 +50,7 @@ private:
 
 	// ゲーム終了フラグ
 	bool m_isEnd;
+
+	bool m_isWindows;
 };
 

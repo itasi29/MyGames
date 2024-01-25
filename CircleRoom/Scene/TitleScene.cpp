@@ -30,7 +30,7 @@ namespace
 	// フレームの色
 	constexpr unsigned int kFrameColor = 0xd2001a;
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
 	constexpr unsigned int kSelectStrColor = 0x161a30;
 
@@ -288,7 +288,7 @@ void TitleScene::NormalDraw()
 		}
 		else
 		{
-			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kStrColor, fontHandle);
+			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kWhiteColor, fontHandle);
 		}
 
 		y += kMenuLineInterval;
@@ -321,7 +321,7 @@ void TitleScene::StartSelectDraw()
 		}
 		else
 		{
-			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), kStrColor, fontHandle);
+			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), kWhiteColor, fontHandle);
 		}
 
 		y += 40;
@@ -330,7 +330,7 @@ void TitleScene::StartSelectDraw()
 	y = 184;
 	for (int i = 0; i < kMenuLineNum; i++)
 	{
-		DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kStrColor, fontHandle);
+		DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kWhiteColor, fontHandle);
 
 		y += kMenuLineInterval;
 	}

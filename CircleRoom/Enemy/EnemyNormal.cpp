@@ -45,7 +45,8 @@ void EnemyNormal::Init(const Vec2& pos)
 
 	// 撃つ方向をランダムで決める
 	float moveX = (GetRand(16) - 8) * 0.125f;
-	float moveY = (GetRand(16) - 8) * 0.125f;
+	float moveY = (GetRand(12) - 8) * 0.125f;
+
 	m_vec = Vec2{ moveX, moveY };
 
 	// ゼロベクトルでないなら正規化

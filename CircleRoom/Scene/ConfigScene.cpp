@@ -19,7 +19,7 @@ namespace
 	// フレームの色
 	constexpr unsigned int kFrameColor = 0xd2001a;
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
 	constexpr unsigned int kSelectStrColor = 0x161a30;
 	// 点滅間隔
@@ -127,6 +127,6 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 	}
 	else
 	{
-		DrawStringToHandle(132, drawY, str.c_str(), kStrColor, fontHandle);
+		DrawStringToHandle(132, drawY, str.c_str(), kWhiteColor, fontHandle);
 	}
 }

@@ -20,10 +20,13 @@
 namespace
 {
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
 	const std::string kStageName = "Stage1-1";
 	constexpr int kExsitTime = 2;
+
+	// 生成時間
+	constexpr int kCreateFrame = 300;
 
 
 	// プレイヤー死亡時の画面の揺れフレーム
@@ -32,7 +35,8 @@ namespace
 
 StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	StageBase(mgr, input),
-	m_explanation(kOperation)
+	m_explanation(kOperation),
+	m_createFrame(0)
 {
 	m_handle[kOperation] = m_mgr.GetFile()->LoadGraphic(L"UI/operationExplanation.png");
 	m_handle[kClear] = m_mgr.GetFile()->LoadGraphic(L"UI/clearExplanation.png");
@@ -54,6 +58,7 @@ StageTutorial::~StageTutorial()
 void StageTutorial::Init()
 {
 	m_frame = 0;
+	m_createFrame = 0;
 	m_isUpdateTime = true;
 
 	m_player->Init();
@@ -80,6 +85,13 @@ void StageTutorial::ChangeStage(Input& input)
 void StageTutorial::UpdateSelect(Input& input)
 {
 	m_waitFrame++;
+
+	m_player->Update(input, kNone);
+
+	for (auto& enemy : m_enemy)
+	{
+		enemy->Update();
+	}
 
 	switch (m_explanation)
 	{
@@ -123,6 +135,7 @@ void StageTutorial::UpdatePlaying(Input& input)
 	bool playerIsExsit = m_player->IsExsit();
 	const Collision& playerCol = m_player->GetRect();
 
+	CreateEnemy();
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Update();
@@ -177,7 +190,7 @@ void StageTutorial::CheckStageConditions()
 
 int StageTutorial::DrawStageConditions(int drawY)
 {
-	DrawFormatStringToHandle(128, drawY, kStrColor, m_mgr.GetFont()->GetHandle(24), L"左　%d秒間生き残る\n(%d / %d)",
+	DrawFormatStringToHandle(128, drawY, kWhiteColor, m_mgr.GetFont()->GetHandle(24), L"左　%d秒間生き残る\n(%d / %d)",
 		kExsitTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, kExsitTime);
 
 	return 0;
@@ -186,6 +199,19 @@ int StageTutorial::DrawStageConditions(int drawY)
 void StageTutorial::DrawArrow() const
 {
 	DrawUpArrow(false, kStageName);
+}
+
+void StageTutorial::CreateEnemy()
+{
+	m_createFrame++;
+
+	if (m_createFrame > kCreateFrame)
+	{
+		m_createFrame = 0;
+
+		m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
+		m_enemy.back()->Init(m_centerPos);
+	}
 }
 
 void StageTutorial::UpdateTime()

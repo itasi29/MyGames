@@ -17,14 +17,12 @@
 namespace
 {
 	// フレームの色
-	constexpr unsigned int kFrameColor = 0xd80032;
+	constexpr unsigned int kFrameColor = 0xd2001a;
 	// フレーム点滅時の色の差(RGB別)
-	constexpr unsigned int kFrameColorDeffR = 0x1f;
-	constexpr unsigned int kFrameColorDeffG = 0x8c;
-	constexpr unsigned int kFrameColorDeffB = 0x70;
+	constexpr unsigned int kFrameColorDeff = 0x225036;
 
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
 	constexpr unsigned int kSelectStrColor = 0x161a30;
 	// 点滅間隔
@@ -32,6 +30,8 @@ namespace
 
 	constexpr unsigned int kDefColor = 0xffffff;
 	constexpr int kMenuMargin = 120;
+
+	constexpr int kMenuLineInterval = 48;
 
 	constexpr double kExtendRate = 1.5;
 }
@@ -42,7 +42,7 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	m_input(input),
 	m_currentLineIndex(0),
 	m_isEdit(false),
-	m_frame(0),
+	m_fadeFrame(0),
 	m_cancleFrame(0)
 {
 	m_updateFunc = &PadConfigScene::EditEndUpdate;
@@ -72,6 +72,9 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	optionScene->InverseIsEdit();
 
 	auto& file = m_mgr.GetFile();
+	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
+	m_addFrame = file->LoadGraphic(L"UI/addFrame.png");
+
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 }
@@ -98,27 +101,27 @@ void PadConfigScene::Draw()
 {
 	DrawStringToHandle(100, kMenuMargin + 10, L"パッド変更", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 
-	// FIXME:なんか色がむっちゃ気持ち悪いからこれは絶対直せ
-	// 
 	// 選択している場所を描画
-	if (!m_isEdit)
-	{
-		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
-			kFrameColor, true);
-	}
-	else
-	{
-		int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
-		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
-		unsigned int addR = static_cast<unsigned int>(kFrameColorDeffR * rate) << (4 * 4);
-		unsigned int addG = static_cast<unsigned int>(kFrameColorDeffG * rate) << (4 * 2);
-		unsigned int addB = static_cast<unsigned int>(kFrameColorDeffB * rate);
-		unsigned int color = kFrameColor + addR + addG + addB;
+	int y = kMenuMargin + 64 + m_currentLineIndex * kMenuLineInterval;
 
-		DrawBox(128, static_cast<int>(kMenuMargin + 64 + m_currentLineIndex * 48),
-			kMenuMargin + 800, static_cast<int>(kMenuMargin + 64 + 48 + m_currentLineIndex * 48),
-			color, true);
+	// 選択している場所を描画
+	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
+	DrawBox(128, y,
+		kMenuMargin + 800, y + 40,
+		kFrameColor, true);
+
+	// 選択中の場合は色を追加して点滅させる
+	if (m_isEdit)
+	{
+		int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
+		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
+		int add = static_cast<int>(255 * rate);
+		SetDrawBlendMode(DX_BLENDMODE_ADD, add);
+		DrawGraph(kMenuMargin + 800, y, m_addFrame->GetHandle(), true);
+		DrawBox(128, y,
+			kMenuMargin + 800, y + 40,
+			kFrameColorDeff, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
 	DrawCommandList();
@@ -135,29 +138,29 @@ void PadConfigScene::NormalUpdate(Input& input)
 	{
 		m_isEdit = true;
 		m_updateFunc = &PadConfigScene::EditUpdate;
-		m_frame = kFlashInterval;
+		m_fadeFrame = kFlashInterval;
 		m_cancleFrame = 0;
 	}
 
-	m_frame++;
+	m_fadeFrame++;
 
 	if (input.IsTriggered("up"))
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(m_menuTable.size())) % static_cast<int>(m_menuTable.size());
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % m_menuTable.size();
-		m_frame = 0;
+		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 }
 
 void PadConfigScene::EditUpdate(Input& input)
 {
-	m_frame++;
+	m_fadeFrame++;
 
 	// 現在選択しているコマンドのデータを参照
 	const auto& strItem = m_menuTable[m_currentLineIndex];
@@ -170,7 +173,7 @@ void PadConfigScene::EditUpdate(Input& input)
 		{
 			m_updateFunc = &PadConfigScene::NormalUpdate;
 			m_isEdit = false;
-			m_frame = 0;
+			m_fadeFrame = 0;
 		}
 		return;
 	}
@@ -221,7 +224,7 @@ void PadConfigScene::EditEndUpdate(Input& input)
 	if (input.IsNotPress("OK") && !input.IsReleased("OK"))
 	{
 		m_updateFunc = &PadConfigScene::NormalUpdate;
-		m_frame = 0;
+		m_fadeFrame = 0;
 	}
 }
 
@@ -243,7 +246,7 @@ void PadConfigScene::DrawCommandList()
 		{
 			if (!m_isEdit)
 			{
-				int frame = (m_frame % (kFlashInterval * 2)) - kFlashInterval;
+				int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 				float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 				int alpha = static_cast <int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
@@ -253,12 +256,12 @@ void PadConfigScene::DrawCommandList()
 		}
 		else
 		{
-			DrawFormatStringToHandle(kMenuMargin + 50, y, kStrColor, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kWhiteColor, fontHandle, L"%s", cmdName.c_str());
 		}
 
 		m_btImg->DrawBottan(GetPadName(cmd.at(InputType::pad)), kMenuMargin + 50 + 376, y, kExtendRate);
 
-		y += 48;
+		y += kMenuLineInterval;
 	}
 }
 

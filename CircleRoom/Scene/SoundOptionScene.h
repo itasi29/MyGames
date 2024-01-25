@@ -43,6 +43,7 @@ private:
 
 	// ‰æ‘œŠÖŒW
 	std::shared_ptr<FileBase> m_frame;
+	std::shared_ptr<FileBase> m_addFrame;
 
 	// ‰¹ŠÖŒW
 	std::shared_ptr<SoundSystem> m_soundSys;

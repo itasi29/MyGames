@@ -56,14 +56,16 @@ private:
 	int m_currentLineIndex;
 	// 編集中
 	bool m_isEdit;
-	int m_frame;
+	int m_fadeFrame;
 	// キャンセル確認フレーム
 	int m_cancleFrame;
-
 
 	// MEMO:これは変更させる可能性高い
 	std::unordered_map<int, std::wstring> m_keynameTable;
 
+	// 画像
+	std::shared_ptr<FileBase> m_frame;
+	std::shared_ptr<FileBase> m_addFrame;
 	// Se
 	std::shared_ptr<FileBase> m_cursorUpSe;
 	std::shared_ptr<FileBase> m_cursorDownSe;

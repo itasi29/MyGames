@@ -16,12 +16,18 @@
 
 namespace
 {
+	// ラジアンでの90度
+	constexpr double kRad90 = DX_PI / 2;
+
 	// 通常文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
 
 	// 殺された種類の基準描画位置
-	constexpr int kKillTypePosX = 144;
-	constexpr int kKillTypePosY = 152;
+	constexpr int kKillTypePosX = 156;
+	constexpr int kKillTypePosY = 200;
 
 	constexpr int kDownKilledNum = 5;
 
@@ -113,6 +119,7 @@ void Stage1_5::CheckStageConditions()
 		if (m_mgr.GetStage()->GetEnemyTypeCount() >= kDownKilledNum)
 		{
 			m_mgr.GetStage()->SaveClear(kDownStName);
+			AddAchivedStr(L"下");
 		}
 	}
 }
@@ -120,31 +127,31 @@ void Stage1_5::CheckStageConditions()
 int Stage1_5::DrawStageConditions(int drawY)
 {
 	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(24);
+	int fontHandle = m_mgr.GetFont()->GetHandle(28);
 
 	if (!m_isDownClear)
 	{
-		DrawFormatStringToHandle(128, drawY, kStrColor, fontHandle, L"下　%d種類の敵に\n　　殺される\n(%d / %d)",
-			kDownKilledNum, m_mgr.GetStage()->GetEnemyTypeCount(), kDownKilledNum);
+		DrawArrowConditions(kDownStName, kConditionsPosX, drawY, DX_PI);
+		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kDownKilledNum);
 
-		drawY += 72;
+		drawY += 68;
 	}
 
 	// FIXME: ここに追加で書いているけれどあとで別のところに処理を変更する
 	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
 	{
-		DrawStringToHandle(128, drawY, L"clear", kStrColor, fontHandle);
+		DrawStringToHandle(kConditionsPosX, drawY + 14, L"clear", kWhiteColor, fontHandle);
 
-		drawY += 48;
+		drawY += 68;
 	}
 	else
 	{
-		DrawStringToHandle(128, drawY, L"ボスを倒せ！", kStrColor, fontHandle);
+		DrawStringToHandle(kConditionsPosX, drawY + 14, L"ボスを倒せ！", kWhiteColor, fontHandle);
 
-		drawY += 72;
+		drawY += 68;
 	}
 
-	return drawY - startY - 48;
+	return drawY - startY - 68;
 }
 
 void Stage1_5::DrawArrow() const
@@ -165,29 +172,29 @@ void Stage1_5::DrawKilledEnemyType() const
 
 	if (m_mgr.GetStage()->IsKilledEnemy("BossArmored"))
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x08ff08, true);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x08ff08, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 48, kKillTypePosY, 16, 0x08ff08, false);
+		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x08ff08, false);
 	}
 
 	if (m_mgr.GetStage()->IsKilledEnemy("BossStrongArmored"))
 	{
-		DrawCircle(kKillTypePosX + 96, kKillTypePosY, 16, 0xaaffaa, true);
+		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xaaffaa, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 96, kKillTypePosY, 16, 0xaaffaa, false);
+		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xaaffaa, false);
 	}
 
 	if (m_mgr.GetStage()->IsKilledEnemy("SplitTwoBound"))
 	{
-		DrawCircle(kKillTypePosX + 144, kKillTypePosY, 14, 0xffffff, true);
+		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 14, 0xffffff, true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + 144, kKillTypePosY, 14, 0xffffff, false);
+		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 14, 0xffffff, false);
 	}
 }
 

@@ -28,8 +28,12 @@ namespace
 	// フィールドはwindowsizeの縦幅に倍率をかけたものとする
 	constexpr float kSizeScale = 0.4f;
 
-	// 文字列の色
-	constexpr unsigned int kStrColor = 0xf0ece5;
+	// 通常文字列の色
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	// 強調文字列の色
+	constexpr unsigned int kYellowColor = 0xffde00;
+	// バックフレームの色
+	constexpr unsigned int kBackFrameColor = 0x161a30;
 
 	// 矢印の点滅間隔
 	constexpr int kFlashInterval = 20;
@@ -42,6 +46,9 @@ namespace
 
 	// ラジアンでの90度
 	constexpr double kRad90 = DX_PI / 2;
+
+	// 条件達成時の描画時間("○の条件達成の文字")
+	constexpr int kAchivedFrame = 120;
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
@@ -68,6 +75,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_arrow = file->LoadGraphic(L"UI/arrow.png");
 	m_arrowFlash = file->LoadGraphic(L"UI/arrowFlash.png");
 	m_arrowNo = file->LoadGraphic(L"UI/arrowNo.png");
+	m_arrowConditions = file->LoadGraphic(L"UI/arrowConditions.png");
 	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 	m_bFrameImg = file->LoadGraphic(L"UI/backFrame.png");
 
@@ -126,6 +134,17 @@ void StageBase::UpdateSelect(Input& input)
 	{
 		m_boss->Update();
 	}
+
+	for (auto& achived : m_achived)
+	{
+		achived.frame++;
+	}
+	m_achived.remove_if(
+		[](const auto& achived)
+		{
+			return achived.frame > kAchivedFrame;
+		}
+	);
 
 	if (input.IsPress("OK"))
 	{
@@ -257,53 +276,55 @@ void StageBase::DrawSelect()
 	m_player->Draw();
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ステージ名の描画
-	DrawFormatStringToHandle(128, 16, kStrColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
+	DrawFormatStringToHandle(128, 16, kWhiteColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
 	// 時間の描画
-	int minSec = (m_frame * 1000 / 60) % 1000;
-	int sec = (m_frame / 60) % 60;
-	int min = m_frame / 3600;
-	DrawFormatStringToHandle(128, 96, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
+	DrawTime(20, 160, fontHandle);
 	// 殺されたことがある敵の描画
+	DrawStringToHandle(136, 160, L"> Circle", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
 	DrawKilledEnemyType();
 	SetDrawScreen(DX_SCREEN_BACK);
 	// 上下反転して描画フレーム
-	DrawRotaGraph(155, 120, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
-	DrawBox(0, 120 + 30, 211 + 100, 120 + 30 + 30, 0xB6BBC4, true);
+	DrawRotaGraph(155, 168, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
+	DrawBox(0, 198, 211 + 100, 198 + 30, kBackFrameColor, true);
 	DrawGraph(0, 0, m_strHandle, true);
 
 	// ステージ条件の描画
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
-	auto y = DrawStageConditions(196);
+	auto y = DrawStageConditions(256);
 	SetDrawScreen(DX_SCREEN_BACK);
 	// 条件後ろにあるフレーム背景を描画する
 	if (y >= 0)
 	{
-		DrawBox(0, 196, 311, 196 + y, 0xb6bbc4, true);
-		DrawGraph(0, 196 + y, m_bFrameImg->GetHandle(), true);
+		DrawBox(0, 244, 311, 244 + y, kBackFrameColor, true);
+		DrawGraph(0, 244 + y, m_bFrameImg->GetHandle(), true);
 	}
 	DrawGraph(0, 0, m_strHandle, true);
 
 	// フレーム描画
-	DrawRotaGraph(m_size.w - 128, 48, 1.0, 0.0, m_bFrameImg->GetHandle(), true, true, true);
-	DrawBox(m_size.w - 128 - 156, 78, m_size.w, 144, 0xb6bbc4, true);
+	DrawRotaGraph(m_size.w - 128, 128, 1.0, 0.0, m_bFrameImg->GetHandle(), true, true, true);
+	DrawBox(m_size.w - 128 - 156, 158, m_size.w, 224, kBackFrameColor, true);
 	// ベストタイムの描画
 	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
-	minSec = (bestTime * 1000 / 60) % 1000;
-	sec = (bestTime / 60) % 60;
-	min = bestTime / 3600;
-	DrawExtendStringToHandle(m_size.w - 256, 32, 1.5, 1.5, L"ベストタイム", kStrColor, fontHandle);
-	DrawExtendFormatStringToHandle(m_size.w - 256, 32 + 48, 2, 2, kStrColor, fontHandle, L"%02d:%02d.%03d", min, sec, minSec);
+	int minSec = (bestTime * 1000 / 60) % 1000;
+	int sec = (bestTime / 60) % 60;
+	int min = bestTime / 3600;
+	DrawStringToHandle(m_size.w - 256, 112, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
+	DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kWhiteColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
 
 	// 矢印の描画
 	DrawArrow();
 
+	// スタートの画像の描画
 	DrawImage();
+
+	// 条件達成時のを描画
+	DrawConditionsAchived();
 }
 
 void StageBase::DrawPlaying()
@@ -320,33 +341,51 @@ void StageBase::DrawPlaying()
 	}
 	m_player->Draw();
 
-	// 時間の描画
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
-	int minSec = (m_frame * 1000 / 60) % 1000;
-	int sec = (m_frame / 60) % 60;
-	int min = m_frame / 3600;
-	DrawExtendFormatString(128, 32,	// 表示位置
-		2, 2,	// 拡大率
-		kStrColor, // 色
-		L"%02d:%02d.%03d", min, sec, minSec);	// 文字列
+	// 時間の描画
+	DrawTime(20, 144, m_mgr.GetFont()->GetHandle(64));
 	SetDrawScreen(DX_SCREEN_BACK);
-	DrawRotaGraph(155, 48, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
+	DrawRotaGraph(155, 168, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
+	DrawBox(0, 168 + 30, 211 + 100, 168 + 30 + 30, kBackFrameColor, true);
 	DrawGraph(0, 0, m_strHandle, true);
 
 	// 条件の描画
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
-	auto y = DrawStageConditions(196+24);
+	auto y = DrawStageConditions(196+16+20 + 48);
 	SetDrawScreen(DX_SCREEN_BACK);
 	// MEMO:条件後ろにあるフレーム背景を描画する
 	if (y >= 0)
 	{
-		DrawBox(0, 196 + 24, 311, 196 + 24 + y, 0xb6bbc4, true);
-		DrawGraph(0, 196 + 24 + y, m_bFrameImg->GetHandle(), true);
+		DrawBox(0, 196 + 48 + 24, 311, 196 + 48 + 24 + y, kBackFrameColor, true);
+		DrawGraph(0, 196 + 48 + 24 + y, m_bFrameImg->GetHandle(), true);
 	}
 	DrawGraph(0, 0, m_strHandle, true);
 
+}
+
+void StageBase::DrawArrowConditions(const std::string& nextStName, int x, int y, double angle, bool isReverseX, bool isReverxeY)
+{
+	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kFlashInterval) % 2 != 0)
+	{
+		DrawBox(x, y, x + 28, y + 28, 0xffde00, true);
+	}
+	DrawRotaGraph(x + 14, y + 14, 1.0, angle, m_arrowConditions->GetHandle(), true, isReverseX, isReverxeY);
+}
+
+void StageBase::DrawTimeConditions(int x, int y, int handle, int existTime)
+{
+	DrawStringToHandle(x, y, L"　　   秒間生き残る\n　　(         )", kWhiteColor, handle);
+	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"　　%2d\n　　 %2d / %2d",
+		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, existTime);
+}
+
+void StageBase::DrawKilledConditions(int x, int y, int handle, int killedNum)
+{
+	DrawStringToHandle(x, y, L"　　   種類の敵に殺される\n　　(         )", kWhiteColor, handle);
+	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"　　%2d\n　　 %2d / %2d", 
+		killedNum, m_mgr.GetStage()->GetEnemyTypeCount(), killedNum);
 }
 
 void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const
@@ -436,6 +475,11 @@ void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName
 	}
 
 	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f + 150), 1.0, 0.0, handle, true, false, true);
+}
+
+void StageBase::AddAchivedStr(const std::wstring& dir)
+{
+	m_achived.push_back({ dir + L"の条件達成！", 0 });
 }
 
 void StageBase::SlideLeft(std::shared_ptr<StageBase> nextStage)
@@ -602,43 +646,6 @@ void StageBase::BossDeath()
 	m_enemy.clear();
 }
 
-void StageBase::DrawWall()
-{
-	int centerX = static_cast<int>(m_size.w * 0.5f);
-	int centerY = static_cast<int>(m_size.h * 0.5f);
-
-#if false
-	// 色は仮
-	DrawBox(static_cast<int>(centerX - m_fieldSize), static_cast<int>(centerY - m_fieldSize),
-		static_cast<int>(centerX + m_fieldSize), static_cast<int>(centerY + m_fieldSize),
-		0xffffff, false);
-#else
-	// 画像中心を元にした描画をするために
-	// Rotaにしている
-	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_field->GetHandle(), true);
-#endif
-}
-
-void StageBase::DrawImage()
-{
-#if false
-	DrawBox(1000, 600, 1280, 632, kFrameColor, true);
-#endif
-	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
-	switch (m_input.GetType())
-	{
-	case InputType::keybd:
-		m_key->DrawKey(m_input.GetHardDataName("OK", InputType::keybd), 1016, 600, 2.0);
-		break;
-	default:
-		assert(false);
-	case InputType::pad:
-		m_bt->DrawBottan(m_input.GetHardDataName("OK", InputType::pad), 1016, 600, 2.0);
-		break;
-	}
-	DrawStringToHandle(1064, 600, L"スタート", kStrColor, m_mgr.GetFont()->GetHandle(32));
-}
-
 void StageBase::SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage)
 {
 	// 現在の画面を保存するよう
@@ -657,4 +664,64 @@ void StageBase::ChangeClearData(const std::shared_ptr<StageBase>& nextStage) con
 {
 	m_mgr.GetStage()->SaveClear(nextStage->GetStageName());
 	nextStage->StartCheck();
+}
+
+void StageBase::DrawTime(int x, int y, int handle)
+{
+	DrawStringToHandle(x, y, L"> タイム", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
+	y += 24;
+	int minSec = (m_frame * 1000 / 60) % 1000;
+	int sec = (m_frame / 60) % 60;
+	int min = m_frame / 3600;
+	DrawFormatStringToHandle(x, y, kWhiteColor, handle, L"%01d:%02d.%03d", min, sec, minSec);
+}
+
+void StageBase::DrawConditionsAchived()
+{
+	int y = 180;
+	for (const auto& achived : m_achived)
+	{
+		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
+		{
+			DrawStringToHandle(540, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+		}
+		else
+		{
+			float rate = (kAchivedFrame - achived.frame) / (kAchivedFrame * 0.5f);
+			int alpha = 255 * rate;
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			DrawStringToHandle(540, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+
+		y += 64;
+	}
+}
+
+void StageBase::DrawWall()
+{
+	int centerX = static_cast<int>(m_size.w * 0.5f);
+	int centerY = static_cast<int>(m_size.h * 0.5f);
+
+	// 画像中心を元にした描画をするために
+	// Rotaにしている
+	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_field->GetHandle(), true);
+}
+
+void StageBase::DrawImage()
+{
+
+	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName("OK", InputType::keybd), 1016, 600, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName("OK", InputType::pad), 1016, 600, 2.0);
+		break;
+	}
+	DrawStringToHandle(1064, 600, L"スタート", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
 }

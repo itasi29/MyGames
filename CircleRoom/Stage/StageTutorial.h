@@ -33,7 +33,7 @@ private:
 	int DrawStageConditions(int drawY) override;
 	void DrawArrow() const override;
 	void DrawKilledEnemyType() const override {}
-	void CreateEnemy() override {}
+	void CreateEnemy() override;
 
 	void UpdateTime() override;
 
@@ -43,5 +43,6 @@ private:
 	std::array<std::shared_ptr<FileBase>, kEnd> m_handle;
 
 	Explanation m_explanation;
+	int m_createFrame;
 };
 

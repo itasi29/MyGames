@@ -48,6 +48,7 @@ bool Application::Init()
 {
 #ifdef _DEBUG
     ChangeWindowMode(true); // ウィンドウモードにします
+    m_isWindows = true;
 #endif
 
     SetGraphMode(m_size.w, m_size.h, 16);
@@ -99,6 +100,12 @@ void Application::Run()
             if (m_isEnd)
             {
                 break;
+            }
+
+            if (CheckHitKey(KEY_INPUT_U))
+            {
+                m_isWindows = !m_isWindows;
+                ChangeWindowMode(m_isWindows);
             }
 
             while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
