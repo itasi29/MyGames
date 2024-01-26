@@ -13,10 +13,11 @@ namespace
 	constexpr int kShakeSize = 10;
 }
 
-SceneManager::SceneManager(bool isMoveBg) :
+SceneManager::SceneManager(bool isDrawBg) :
 	m_isShake(false),
 	m_shakeFrame(0),
-	m_shakeSize(kShakeSize)
+	m_shakeSize(kShakeSize),
+	m_isDrawBg(isDrawBg)
 {
 	const size size = Application::GetInstance().GetWindowSize();
 	m_shakeHandle = MakeScreen(size.w, size.h);
@@ -32,7 +33,7 @@ void SceneManager::Init()
 	if (m_bg) return;
 
 	auto& file = GameManager::GetInstance().GetFile();
-	m_bg = std::make_shared<BackgroundScene>(file, true);
+	m_bg = std::make_shared<BackgroundScene>(file, true, m_isDrawBg);
 }
 
 void SceneManager::Update(Input& input)

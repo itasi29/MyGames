@@ -4,9 +4,10 @@
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 
-BackgroundScene::BackgroundScene(std::shared_ptr<FileManager> mgr,  bool isMove) :
+BackgroundScene::BackgroundScene(std::shared_ptr<FileManager> mgr,  bool isMove, bool isDraw) :
 	m_frame(0),
-	m_isMove(isMove)
+	m_isMove(isMove),
+	m_isDraw(isDraw)
 {
 	ChangeFunc();
 
@@ -19,11 +20,15 @@ BackgroundScene::~BackgroundScene()
 
 void BackgroundScene::Update()
 {
+	if (!m_isDraw) return;
+
 	(this->*m_updateFunc)();
 }
 
 void BackgroundScene::Draw() const
 {
+	if (!m_isDraw) return;
+
 	(this->*m_drawFunc)();
 }
 

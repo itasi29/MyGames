@@ -14,7 +14,7 @@ class BackgroundScene;
 class SceneManager
 {
 public:
-	SceneManager(bool isMoveBg = true);
+	SceneManager(bool isDrawBg = true);
 	~SceneManager();
 
 	void Init();
@@ -86,5 +86,7 @@ private:
 
 	// îwåióp
 	std::shared_ptr<BackgroundScene> m_bg;
+
+	bool m_isDrawBg;
 };
 

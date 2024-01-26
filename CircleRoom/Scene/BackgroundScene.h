@@ -7,7 +7,7 @@ class FileManager;
 class BackgroundScene
 {
 public:
-	BackgroundScene(std::shared_ptr<FileManager> mgr, bool isMove = true);
+	BackgroundScene(std::shared_ptr<FileManager> mgr, bool isMove = true, bool isDraw = true);
 	~BackgroundScene();
 
 	void Update();
@@ -48,5 +48,7 @@ private:
 
 	int m_frame;
 	bool m_isMove;
+
+	bool m_isDraw;
 };
 
