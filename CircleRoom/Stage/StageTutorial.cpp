@@ -79,7 +79,7 @@ void StageTutorial::ChangeStage(Input& input)
 	{
 		std::shared_ptr<Stage1_1> nextStage = std::make_shared<Stage1_1>(m_mgr, input);
 
-		SlideUp(nextStage);
+		m_mgr.GetStage()->ChangeStage(nextStage);
 
 		return;
 	}

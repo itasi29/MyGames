@@ -118,7 +118,6 @@ protected:
 	/// </summary>
 	void DrawPlaying();
 
-
 	void DrawArrowConditions(const std::string& nextStName, int x, int y, double angle, bool isReverseX = false, bool isReverxeY = false);
 	void DrawTimeConditions(int x, int y, int handle, int existTime);
 	void DrawKilledConditions(int x, int y, int handle, int killedNum);
@@ -146,27 +145,6 @@ protected:
 	/// <param name="dir">方向</param>
 	void AddAchivedStr(const std::wstring& dir);
 
-	/// <summary>
-	/// 左に画面をスライドする処理
-	/// </summary>
-	/// <param name="nextStage">次のステージのshared_ptr</param>
-	void SlideLeft(std::shared_ptr<StageBase> nextStage);
-	/// <summary>
-	/// 右に画面をスライドする処理
-	/// </summary>
-	/// <param name="nextStage">次のステージのshared_ptr</param>
-	void SlideRight(std::shared_ptr<StageBase> nextStage);
-	/// <summary>
-	/// 上に画面をスライドする処理
-	/// </summary>
-	/// <param name="nextStage">次のステージのshared_ptr</param>
-	void SlideUp(std::shared_ptr<StageBase> nextStage);
-	/// <summary>
-	/// 下に画面をスライドする処理
-	/// </summary>
-	/// <param name="nextStage">次のステージのshared_ptr</param>
-	void SlideDown(std::shared_ptr<StageBase> nextStage);
-
 	void ChangeSelectFunc();
 	void ChangePlayingFunc();
 
@@ -175,20 +153,6 @@ private:
 	/// ボスの死亡処理
 	/// </summary>
 	void BossDeath();
-
-	/// <summary>
-	/// スライド処理の全体共通処理
-	/// </summary>
-	/// <param name="now">現在の画面を保存するための画面「ハンドル</param>
-	/// <param name="next">次の画面を保存するための画面ハンドル</param>
-	/// <param name="nextStage">次のステージのポインタ</param>
-	void SlideStart(int& now, int& next, const std::shared_ptr<StageBase>& nextStage);
-
-	/// <summary>
-	/// 進む方向先のクリア情報もクリアしているとする
-	/// </summary>
-	/// /// <param name="nextStage">次のステージのポインタ</param>
-	void ChangeClearData(const std::shared_ptr<StageBase>& nextStage) const;
 
 	/// <summary>
 	/// 現在のタイムを描画

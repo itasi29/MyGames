@@ -222,7 +222,7 @@ void TitleScene::StartSelectUpdate(Input& input)
 		if (m_currentLinePos == 1)
 		{
 			// ƒf[ƒ^‚Ìíœ
-			m_mgr.GetStage()->DeleteData();
+			m_mgr.GetStage()->InitData();
 			m_mgr.DeleteData();
 		}
 

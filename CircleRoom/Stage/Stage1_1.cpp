@@ -122,11 +122,10 @@ void Stage1_1::ChangeStage(Input& input)
 
 	if (m_mgr.GetStage()->IsClearStage(kLeftStName) && input.IsTriggered("left"))
 	{
-		// 初めに次のステージを作成する
 		std::shared_ptr<Stage1_2> nextStage;
 		nextStage = std::make_shared<Stage1_2>(m_mgr, input);
 
-		SlideLeft(nextStage);
+		m_mgr.GetStage()->ChangeStage(nextStage);
 
 		return;
 	}
@@ -135,7 +134,7 @@ void Stage1_1::ChangeStage(Input& input)
 		std::shared_ptr<Stage1_3> nextStage;
 		nextStage = std::make_shared<Stage1_3>(m_mgr, input);
 
-		SlideUp(nextStage);
+		m_mgr.GetStage()->ChangeStage(nextStage);
 
 		return;
 	}

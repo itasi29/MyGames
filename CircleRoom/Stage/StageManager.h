@@ -48,7 +48,7 @@ public:
 	void Init();
 
 	// 後で変更or消す
-	void DeleteData();
+	void InitData();
 
 	void Update(Input& input);
 	void Draw();
@@ -60,17 +60,6 @@ public:
 	/// </summary>
 	/// <param name="nextStage">次のステージ</param>
 	void ChangeStage(std::shared_ptr<StageBase> nextStage);
-
-	/// <summary>
-	/// ステージを次のとこまでうまく動かすよう
-	/// コメント変だから書き直す
-	/// </summary>
-	/// <param name="pos">動かすベクトル</param>
-	/// <param name="handle">画像ハンドル</param>
-	void StartMove(StageManager::StageDir dir, int handle);
-
-	int GetSlideVolumeX(StageDir dir) const;
-	int GetSlideVolumeY(StageDir dir) const;
 
 	/// <summary>
 	/// クリア情報を保存する
@@ -163,14 +152,25 @@ public:
 	/// <param name="ability">アビリティ番号</param>
 	void ChangeAbility(Ability ability);
 
-private:
-	void UpdateMove();
-	void DrawMove();
+	// 通常の描画
+	void NormalUpdate(Input& input);
+	// 移動の描画
+	void MoveUpdate(Input& input);
 
-	void ResetVecX();
-	void ResetVecY();
+	// 通常の描画
+	void NormalDraw() const;
+	// 移動時の描画
+	void MoveDraw() const;
+
+	Vec2 GetPos(const std::string& stage);
 
 private:
+	using UpdateFunc_t = void(StageManager::*)(Input&);
+	using DrawFunc_t = void(StageManager::*)() const;
+
+	UpdateFunc_t m_updateFunc;
+	DrawFunc_t m_drawFunc;
+
 	const size& m_size;
 
 	// ステージのクリア情報群
@@ -188,17 +188,25 @@ private:
 
 	// ステージのポインタ
 	std::shared_ptr<StageBase> m_stage;
+	// 次のステージのポインタ
+	std::shared_ptr<StageBase> m_nextStage;
 
-	// 画像を動かしているフレーム
-	int m_frame;
-	// 画面を動かしているか
-	bool m_isStageMove;
+	// 画面が動いているか
+	bool m_isMove;
+
 	// 画面を動かすベクトル
 	Vec2 m_vec;
-	// 場所
+	// 現在のステージの場所
 	Vec2 m_pos;
-	// 画面の画像ハンドル
-	int m_stageHandle;
+	// 次のステージの場所
+	Vec2 m_targetPos;
+
+	// 画面描画用ハンドル
+	int m_drawScreen;
+	// 移動時の画面ハンドル
+	int m_screen;
+	// キープ用画面ハンドル
+	int m_keepScreen;
 
 	// ダッシュ説明画像クラス
 	std::shared_ptr<FileBase> m_dashImg;

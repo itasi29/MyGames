@@ -25,27 +25,61 @@ namespace
 {
 	// ステージ間の移動にかかる時間
 	constexpr int kStageMoveFrame = 30;
+
+	// 移動スピード
+	constexpr float kSpeed = 100.0f;
+
+	// ゆっくりになる距離
+	constexpr float kSlowDis = 1280.0f;
+
+	// 下限速度
+	constexpr float kLimitSlowSpeed = 5.0f;
+
+	// ステージの縦横数
+	constexpr int kLine = 3;
+	constexpr int kRow = 2;
+
+	// ステージ間の間隔
+	constexpr int kStageMarginX = 1280;
+	constexpr int kStageMarginY = 720;
+
+	// 名前の場所
+	const std::string kStName[kLine][kRow] =
+	{
+		{"Stage1-5", "none"},
+		{"Stage1-4", "Stage1-3"},
+		{"Stage1-2", "Stage1-1"}
+	};
 }
 
 StageManager::StageManager() :
-	m_frame(0),
-	m_isStageMove(false),
-	m_stageHandle(-1),
-	m_size(Application::GetInstance().GetWindowSize())
+	m_size(Application::GetInstance().GetWindowSize()),
+	m_isMove(false)
 {
 	// 初期化(読み込みに失敗した場合は初プレイと同じとする)
-	m_stageSaveData.clear();
-	m_killedEnemyNameTable.clear();
-	m_killedEnemyCount = 0;
-	m_clearBossTable.clear();
-	m_ability = kNone;
-	m_abilityActive.clear();
-
+	InitData();
 	Load(L"Data/Bin/stg.inf");
+
+	m_drawScreen = MakeScreen(m_size.w, m_size.h, true);
+	m_screen = MakeScreen(m_size.w * kRow + kStageMarginX * kRow, m_size.h * kLine + kStageMarginY * kLine, true);
+	m_keepScreen = MakeScreen(m_size.w * kRow + kStageMarginX * kRow, m_size.h * kLine + kStageMarginY * kLine, true);
+
+	m_updateFunc = &StageManager::NormalUpdate;
+	m_drawFunc = &StageManager::NormalDraw;
+
+	m_stage = nullptr;
+	m_nextStage = nullptr;
+
+	m_pos = GetPos("Stage1-1");
+	m_targetPos = {};
+	m_vec = {};
 }
 
 StageManager::~StageManager()
 {
+	DeleteGraph(m_drawScreen);
+	DeleteGraph(m_screen);
+	DeleteGraph(m_keepScreen);
 	Save("Data/Bin/stg.inf");
 }
 
@@ -55,7 +89,7 @@ void StageManager::Init()
 	m_dashImg = mgr->LoadGraphic(L"UI/operationExplanation.png");
 }
 
-void StageManager::DeleteData()
+void StageManager::InitData()
 {
 	m_stageSaveData.clear();
 	m_killedEnemyNameTable.clear();
@@ -67,21 +101,12 @@ void StageManager::DeleteData()
 
 void StageManager::Update(Input& input)
 {
-	UpdateMove();
-	m_stage->Update(input);
-	m_stage->ChangeStage(input);
+	(this->*m_updateFunc)(input);
 }
 
 void StageManager::Draw()
 {
-	if (m_isStageMove)
-	{
-		DrawMove();
-	}
-	else
-	{
-		m_stage->Draw();
-	}
+	(this->*m_drawFunc)();
 }
 
 std::string StageManager::GetStageName() const
@@ -91,82 +116,71 @@ std::string StageManager::GetStageName() const
 
 void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 {
-	m_stage = nextStage;
+	// 初回のみ、ただ入れるだけ
+	if (!m_stage)
+	{
+		m_stage = nextStage;
+		return;
+	}
+
+	Vec2 pos;
+
+	float dis = (m_targetPos - m_pos).Length();
+
+	if (!m_isMove || dis < kSlowDis)
+	{
+		// 描画用スクリーンに現在いるステージを描画
+		SetDrawScreen(m_drawScreen);
+		ClearDrawScreen();
+		m_stage->Draw();
+
+		// キープ用のスクリーンに場所を指定してさっきのを描画
+		SetDrawScreen(m_keepScreen);
+		ClearDrawScreen();
+		pos = GetPos(m_stage->GetStageName());
+
+		DrawGraph(pos.x, pos.y, m_drawScreen, true);
+
+		// 現在のステージのポインタを変更する
+		m_stage = nextStage;
+	}
+
+	// 描画用スクリーンに次のステージの描画
+	SetDrawScreen(m_drawScreen);
+	ClearDrawScreen();
+	nextStage->Draw();
+
+	// 移動中描画スクリーンに場所を指定してさっきのを描画
+	SetDrawScreen(m_screen);
+	ClearDrawScreen();
+	pos = GetPos(nextStage->GetStageName());
+
+	DrawGraph(pos.x, pos.y, m_drawScreen, true);
+
+	// キープにあるものを描画
+	DrawGraph(0, 0, m_keepScreen, true);
+
+	// 移動ベクトルの計算
+	m_vec = (pos - m_pos).GetNormalized() * kSpeed;
+
+	// 向かう先の場所の保存
+	m_targetPos = pos;
+
+	// メンバ関数ポインタの更新
+	m_updateFunc = &StageManager::MoveUpdate;
+	m_drawFunc = &StageManager::MoveDraw;
+
+	// 次のステージの保存
+	m_nextStage = nextStage;
+	SaveClear(m_nextStage->GetStageName());
+	m_nextStage->StartCheck();
+
+	// 動いていることに
+	m_isMove = true;
+
+	// 現在の描画先へと戻す(本来は)
+	SetDrawScreen(DX_SCREEN_BACK);
 }
-
-void StageManager::StartMove(StageManager::StageDir dir, int handle)
-{
-	m_isStageMove = true;
-	m_frame = 0;
-
-	switch (dir)
-	{
-	case StageManager::kStageLeft:
-		// 位置を調整する
-		// 除算の割る方を+1しているのは1280まで余りを出せるようにするため
-		m_pos.x = static_cast<float>((static_cast<int>(m_pos.x) + m_size.w) % (m_size.w + 1));
-
-		m_vec.x = (0 - m_pos.x) / kStageMoveFrame;
-		ResetVecY();
-		break;
-	case StageManager::kStageRight:
-		// こちらは位置を調整しない
-
-		m_vec.x = static_cast<float>((m_size.w - static_cast<int>(m_pos.x)) % (m_size.w + 1) / kStageMoveFrame);
-		ResetVecY();
-		break;
-	case StageManager::kStageUp:
-		m_pos.y = static_cast<float>((static_cast<int>(m_pos.y) + m_size.h) % (m_size.h + 1));
-		
-		m_vec.y = (0 - m_pos.y) / kStageMoveFrame;
-		ResetVecX();
-		break;
-	case StageManager::kStageDown:
-
-		m_vec.y = static_cast<float>((m_size.h - static_cast<int>(m_pos.y)) % (m_size.h + 1) / kStageMoveFrame);
-		ResetVecX();
-		break;
-	default:
-		assert(false);
-		break;
-	}
-
-	// 中身が入っていたらそれを消す
-	if (m_stageHandle != 0)
-	{
-		DeleteGraph(m_stageHandle);
-	}
-	m_stageHandle = handle;
-}
-
-int StageManager::GetSlideVolumeX(StageDir dir) const
-{
-	if (dir == kStageRight && m_vec.x > 0.0f)
-	{
-		return static_cast<int>(m_size.w);
-	}
-	if (dir == kStageLeft && m_vec.x < 0.0f)
-	{
-		return static_cast<int>(m_size.w);
-	}
-
-	return 0;
-}
-
-int StageManager::GetSlideVolumeY(StageDir dir) const
-{
-	if (dir == kStageDown && m_vec.y > 0.0f)
-	{
-		return static_cast<int>(m_size.h);
-	}
-	if (dir == kStageUp && m_vec.y < 0.0f)
-	{
-		return static_cast<int>(m_size.h);
-	}
-
-	return 0;
-}
-
 
 void StageManager::Save(const std::string& path)
 {
@@ -500,65 +514,83 @@ void StageManager::ChangeAbility(Ability ability)
 	}
 }
 
-void StageManager::UpdateMove()
+void StageManager::NormalUpdate(Input& input)
 {
-	if (!m_isStageMove) return;
+	m_stage->Update(input);
+	m_stage->ChangeStage(input);
+}
 
-	// フレームの更新
-	m_frame++;
+void StageManager::MoveUpdate(Input& input)
+{
+	m_nextStage->Update(input);
+	m_nextStage->ChangeStage(input);
+
 	// 場所の更新
 	m_pos += m_vec;
 
-	// 一定フレームたったら動かし完了とする
-	if (m_frame >= kStageMoveFrame)
-	{
-		m_isStageMove = false;
+	// 距離の計算
+	Vec2 vel = (m_targetPos - m_pos);
+	float dis = vel.Length();
 
-		// 位置、ベクトルも初期化しておく
-		m_pos = { 0.0f, 0.0f };
-		m_vec = { 0.0f, 0.0f };
+	// おそくする距離になったら
+	if (dis < kSlowDis)
+	{
+		// 速度が0以下になったら移動終了
+		if (dis < kLimitSlowSpeed)
+		{
+			m_updateFunc = &StageManager::NormalUpdate;
+			m_drawFunc = &StageManager::NormalDraw;
+
+			m_pos = m_targetPos;
+
+			m_stage = m_nextStage;
+
+			m_isMove = false;
+		}
+
+		// スピードの計算
+		float speed = (dis / kSlowDis) * kSpeed;
+		// スピードの調整
+		m_vec = vel.GetNormalized() * speed;
 	}
 }
 
-void StageManager::DrawMove()
+void StageManager::NormalDraw() const
 {
-	DrawRectGraph(0, 0, static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_size.w, m_size.h,
-		m_stageHandle, true);
+	m_stage->Draw();
+}
+
+void StageManager::MoveDraw() const
+{
+	// MEMO:画面上を動かすからマイナスにしておく
+	DrawGraph(-m_pos.x, -m_pos.y, m_screen, true);
 
 #ifdef _DEBUG
-	DrawFormatString(32, 32, 0xff0808, L"ステージ移動中 %d", m_frame);
-	DrawFormatString(32, 48, 0xff0808, L"座標(%.2f, %.2f)", m_pos.x, m_pos.y);
+//	DrawFormatString(100, 100, 0xffffff, L"pos(%.2f, %.2f)");
+	DrawFormatString(100, 100, 0xffffff, L"dis:%.2f", (m_targetPos - m_pos).Length());
 #endif
 }
 
-void StageManager::ResetVecX()
+Vec2 StageManager::GetPos(const std::string& stage)
 {
-	// 左に動いている
-	if (m_vec.x < 0.0f)
-	{
-		m_vec.x = -m_pos.x / kStageMoveFrame;
-		return;
-	}
-	// 右に動いている
-	if (m_vec.x > 0.0f)
-	{
-		m_vec.x = static_cast<float>((m_size.w - static_cast<int>(m_pos.x)) % (m_size.w + 1) / kStageMoveFrame);
-		return;
-	}
-}
+	Vec2 pos;
 
-void StageManager::ResetVecY()
-{
-	// 上に動いている
-	if (m_vec.y < 0.0f)
+	for (int x = 0; x < kRow; x++)
 	{
-		m_vec.y = -m_pos.y / kStageMoveFrame;
-		return;
+		for (int y = 0; y < kLine; y++)
+		{
+			// ステージ名が一致したら
+			if (kStName[y][x] == stage)
+			{
+				// 場所の保存
+				pos.x = 1280 * x + kStageMarginX * x;
+				pos.y = 720 * y + kStageMarginY * y;
+
+				// 探すの終了
+				break;
+			}
+		}
 	}
-	// 下に動いている
-	if (m_vec.y > 0.0f)
-	{
-		m_vec.y = static_cast<float>((m_size.h - static_cast<int>(m_pos.y)) % (m_size.h + 1) / kStageMoveFrame);
-		return;
-	}
+
+	return pos;
 }

@@ -116,7 +116,7 @@ void Stage1_2::ChangeStage(Input& input)
 		std::shared_ptr<Stage1_1> nextStage;
 		nextStage = std::make_shared<Stage1_1>(m_mgr, input);
 
-		SlideRight(nextStage);
+		m_mgr.GetStage()->ChangeStage(nextStage);
 
 		return;
 	}

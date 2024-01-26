@@ -59,7 +59,7 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 
 	// ステージの設定
 	// チュートリアルステージを通常ステージに
-	if (m_mgr.GetStage()->IsClearStage("StageTutorial"))
+	if (m_mgr.GetStage()->IsClearStage("Tutorial"))
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
 	}
