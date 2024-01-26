@@ -238,6 +238,13 @@ void StageBase::UpdatePlaying(Input& input)
 		}
 	}
 
+	if (CheckHitKey(KEY_INPUT_U))
+	{
+		for (int i = 0; i < 60; i++)
+		{
+			UpdateTime();
+		}
+	}
 	UpdateTime();
 
 	if (!m_player->IsExsit())

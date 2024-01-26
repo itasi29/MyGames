@@ -105,12 +105,6 @@ void Application::Run()
                 break;
             }
 
-            if (CheckHitKey(KEY_INPUT_U))
-            {
-                m_isWindows = !m_isWindows;
-                ChangeWindowMode(m_isWindows);
-            }
-
             while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
         }
     }
