@@ -151,7 +151,7 @@ void TitleScene::NormalUpdate(Input& input)
 		if (m_currentLinePos == 0)
 		{
 			// チュートリアルをクリアしていたら続きからor初めから
-			if (m_mgr.GetStage()->IsClearStage("StageTutorial"))
+			if (m_mgr.GetStage()->IsClearStage("Tutorial"))
 			{
 				m_updateFunc = &TitleScene::StartSelectUpdate;
 				m_drawFunc = &TitleScene::StartSelectDraw;

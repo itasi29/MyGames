@@ -6,6 +6,7 @@ class Application;
 class Input;
 class Scene;
 class FileBase;
+class BackgroundScene;
 
 /// <summary>
 /// ŠeƒV[ƒ“‚Ì‘JˆÚ‚ğƒRƒ“ƒgƒ[ƒ‹‚·‚éƒNƒ‰ƒX
@@ -13,7 +14,7 @@ class FileBase;
 class SceneManager
 {
 public:
-	SceneManager(bool isDrawBg = true);
+	SceneManager(bool isMoveBg = true);
 	~SceneManager();
 
 	void Init();
@@ -71,9 +72,6 @@ public:
 	std::shared_ptr<Scene> GetTopScene();
 
 private:
-	void DrawBg();
-
-private:
 	// ƒV[ƒ“‚ğ“ü‚ê‚é
 	std::list<std::shared_ptr<Scene>> m_scenes;
 
@@ -86,14 +84,7 @@ private:
 	// ‰æ–Ê‚ğ—h‚ç‚·‚©
 	bool m_isShake;
 
-	std::shared_ptr<FileBase> m_bg;
-
-	// ”wŒi‚Ì“®‚©‚·ƒtƒŒ[ƒ€
-	int m_bgFrame;
-	// ”wŒi‚ğ“®‚©‚·‚©
-	bool m_isMoveBg;
-
-	// ”wŒi‚Ì•`‰æ‚ğ‚·‚é‚©
-	bool m_isDrawBg;
+	// ”wŒi—p
+	std::shared_ptr<BackgroundScene> m_bg;
 };
 
