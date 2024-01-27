@@ -38,6 +38,14 @@ namespace
 	// 矢印の点滅間隔
 	constexpr int kFlashInterval = 20;
 
+
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
+
+	// 殺された種類の基準描画位置
+	constexpr int kKillTypePosX = 156;
+	constexpr int kKillTypePosY = 200;
+
 	// プレイヤー死亡時の画面の揺れフレーム
 	constexpr int kShakeFrameDeath = 10;
 
@@ -238,6 +246,8 @@ void StageBase::UpdatePlaying(Input& input)
 		}
 	}
 
+#ifdef _DEBUG
+	// デバッグ用として高速で時間が進むように
 	if (CheckHitKey(KEY_INPUT_U))
 	{
 		for (int i = 0; i < 60; i++)
@@ -245,6 +255,7 @@ void StageBase::UpdatePlaying(Input& input)
 			UpdateTime();
 		}
 	}
+#endif
 	UpdateTime();
 
 	if (!m_player->IsExsit())
@@ -373,69 +384,39 @@ void StageBase::DrawPlaying()
 
 }
 
-void StageBase::DrawArrowConditions(const std::string& nextStName, int x, int y, double angle, bool isReverseX, bool isReverxeY)
+void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY)
 {
 	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kFlashInterval) % 2 != 0)
 	{
-		DrawBox(x, y, x + 28, y + 28, 0xffde00, true);
+		DrawBox(kConditionsPosX, y, kConditionsPosX + 28, y + 28, 0xffde00, true);
 	}
-	DrawRotaGraph(x + 14, y + 14, 1.0, angle, m_arrowConditions->GetHandle(), true, isReverseX, isReverxeY);
+	DrawRotaGraph(kConditionsPosX + 14, y + 14, 1.0, angle, m_arrowConditions->GetHandle(), true, isReverseX, isReverxeY);
 }
 
-void StageBase::DrawTimeConditions(int x, int y, int handle, int existTime)
+void StageBase::DrawTimeConditions(int y, int handle, int existTime)
 {
-	DrawStringToHandle(x, y, L"　　   秒間生き残る\n　　(         )", kWhiteColor, handle);
-	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"　　%2d\n　　 %2d / %2d",
+	DrawStringToHandle(kConditionsPosX, y, L"　　   秒間生き残る\n　　(          )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
 		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, existTime);
 }
 
-void StageBase::DrawKilledConditions(int x, int y, int handle, int killedNum)
+void StageBase::DrawKilledConditions(int y, int handle, int killedNum)
 {
-	DrawStringToHandle(x, y, L"　　   種類の敵に殺される\n　　(         )", kWhiteColor, handle);
-	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"　　%2d\n　　 %2d / %2d", 
+	DrawStringToHandle(kConditionsPosX, y, L"　　   種類の敵に殺される\n　　(          )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
 		killedNum, m_mgr.GetStage()->GetEnemyTypeCount(), killedNum);
 }
 
 void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	int handle;
-	if (m_mgr.GetStage()->IsClearStage(nextStName))
-	{
-		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
-		{
-			handle = m_arrow->GetHandle();
-		}
-		else
-		{
-			handle = m_arrowFlash->GetHandle();
-		}
-	}
-	else
-	{
-		handle = m_arrowNo->GetHandle();
-	}
+	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
 	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f - 150), static_cast<int>(m_size.h * 0.5f), 1.0, -kRad90, handle, true);
 }
 
 void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	int handle;
-	if (m_mgr.GetStage()->IsClearStage(nextStName))
-	{
-		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
-		{
-			handle = m_arrow->GetHandle();
-		}
-		else
-		{
-			handle = m_arrowFlash->GetHandle();
-		}
-	}
-	else
-	{
-		handle = m_arrowNo->GetHandle();
-	}
+	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
 	// MEMO:何故かReverXをtrueにするとがびらないからしておいてる
 	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f + 150), static_cast<int>(m_size.h * 0.5f), 1.0, kRad90, handle, true, true);
@@ -443,46 +424,28 @@ void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStNam
 
 void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	int handle;
-	if (m_mgr.GetStage()->IsClearStage(nextStName))
-	{
-		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
-		{
-			handle = m_arrow->GetHandle();
-		}
-		else
-		{
-			handle = m_arrowFlash->GetHandle();
-		}
-	}
-	else
-	{
-		handle = m_arrowNo->GetHandle();
-	}
+	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
 	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f - 150), 1.0, 0.0, handle, true);
 }
 
 void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const
 {
-	int handle;
-	if (m_mgr.GetStage()->IsClearStage(nextStName))
+	int handle = GetArrowHandle(isAlreadyClear, nextStName);
+
+	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f + 150), 1.0, 0.0, handle, true, false, true);
+}
+
+void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius) const
+{
+	if (m_mgr.GetStage()->IsKilledEnemy(enemyName))
 	{
-		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
-		{
-			handle = m_arrow->GetHandle();
-		}
-		else
-		{
-			handle = m_arrowFlash->GetHandle();
-		}
+		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, true);
 	}
 	else
 	{
-		handle = m_arrowNo->GetHandle();
+		DrawCircle(kKillTypePosX + addX, kKillTypePosY , radius, color, false);
 	}
-
-	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f + 150), 1.0, 0.0, handle, true, false, true);
 }
 
 void StageBase::AddAchivedStr(const std::wstring& dir)
@@ -510,7 +473,6 @@ void StageBase::BossDeath()
 		CreateStrongBoss();
 		return;
 	}
-
 
 	m_mgr.GetStage()->m_clear = true;
 
@@ -585,4 +547,27 @@ void StageBase::DrawImage()
 		break;
 	}
 	DrawStringToHandle(1064, 600, L"スタート", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
+}
+
+int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const
+{
+	int handle;
+
+	if (m_mgr.GetStage()->IsClearStage(nextStName))
+	{
+		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
+		{
+			handle = m_arrow->GetHandle();
+		}
+		else
+		{
+			handle = m_arrowFlash->GetHandle();
+		}
+	}
+	else
+	{
+		handle = m_arrowNo->GetHandle();
+	}
+
+	return handle;
 }

@@ -19,7 +19,7 @@ public:
 	/// 初期化処理
 	/// </summary>
 	/// <param name="pos">初期位置</param>
-	void Init(const Vec2& pos) override;
+	void Init(const Vec2& pos, bool isStart = false) override;
 
 	/// <summary>
 	/// ダメージ処理

@@ -34,7 +34,7 @@ EnemyNormal::~EnemyNormal()
 {
 }
 
-void EnemyNormal::Init(const Vec2& pos)
+void EnemyNormal::Init(const Vec2& pos, bool isStart)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ð‰ŠúˆÊ’u‚É
 	m_pos = pos;
@@ -50,10 +50,14 @@ void EnemyNormal::Init(const Vec2& pos)
 		float moveX = (GetRand(16) - 8) * 0.125f;
 		float moveY = (GetRand(16) - 8) * 0.125f;
 
-		double angle = atan2(moveX, -moveY);
+		// ‰‰ñ‚Ì‚Ý‰º•ûŒü‚É”ò‚ñ‚Å‚±‚È‚¢‚æ‚¤‚É‚·‚é
+		if (isStart)
+		{
+			double angle = atan2(moveX, -moveY);
 
-		if (angle >= (DX_PI / 180 * 135)) continue;
-		if (angle <= -(DX_PI / 180 * 135)) continue;
+			if (angle >= (DX_PI / 180 * 135)) continue;
+			if (angle <= -(DX_PI / 180 * 135)) continue;
+		}
 
 
 		m_vec = Vec2{ moveX, moveY };

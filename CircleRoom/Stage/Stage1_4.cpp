@@ -23,13 +23,6 @@ namespace
 	// ’Êí•¶Žš—ñ‚ÌF
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
-	// ðŒ‚Ì•`‰æŠî€ˆÊ’u
-	constexpr int kConditionsPosX = 20;
-
-	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
-	constexpr int kKillTypePosX = 156;
-	constexpr int kKillTypePosY = 200;
-
 	// ƒNƒŠƒAŽžŠÔ
 	constexpr int kRightKilledNum = 3;
 	constexpr int kUpKilledNum = 5;
@@ -158,15 +151,15 @@ int Stage1_4::DrawStageConditions(int drawY)
 
 	if (!m_isRightClear)
 	{
-		DrawArrowConditions(kRightStName, kConditionsPosX, drawY, kRad90);
-		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kRightKilledNum);
+		DrawArrowConditions(kRightStName, drawY, kRad90);
+		DrawKilledConditions(drawY, fontHandle, kRightKilledNum);
 
 		drawY += 68;
 	}
 	if (!m_isUpClear)
 	{
-		DrawArrowConditions(kUpStName, kConditionsPosX, drawY, 0.0);
-		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kUpKilledNum);
+		DrawArrowConditions(kUpStName, drawY, 0.0);
+		DrawKilledConditions(drawY, fontHandle, kUpKilledNum);
 
 		drawY += 68;
 	}
@@ -182,41 +175,13 @@ void Stage1_4::DrawArrow() const
 
 void Stage1_4::DrawKilledEnemyType() const
 {
-	if (m_mgr.GetStage()->IsKilledEnemy("Normal"))
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0xffffff, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0xffffff, true);
-	}
+	DrawKilledEnemy("Normal", 0, 0xffffff);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, false);
-	}
+	DrawKilledEnemy("MoveWall", 36, 0x888888);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("Create"))
-	{
-		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xffff08, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xffff08, false);
-	}
+	DrawKilledEnemy("Create", 72, 0xffff08);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("Child"))
-	{
-		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 12, 0xf0f008, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 12, 0xf0f008, false);
-	}
+	DrawKilledEnemy("Child", 108, 0xf0f008, 12);
 }
 
 void Stage1_4::CreateEnemy()

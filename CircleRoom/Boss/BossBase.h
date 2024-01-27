@@ -16,7 +16,7 @@ public:
 	BossBase(const size& windowSize, float fieldSize, int maxHp);
 	virtual ~BossBase();
 
-	virtual void Init(const Vec2& pos) = 0;
+	virtual void Init(const Vec2& pos, bool isStart = false) = 0;
 	void Update();
 	void Draw() const;
 

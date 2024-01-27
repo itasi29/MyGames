@@ -21,13 +21,6 @@ namespace
 	// ’Êí•¶Žš—ñ‚ÌF
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
-	// ðŒ‚Ì•`‰æŠî€ˆÊ’u
-	constexpr int kConditionsPosX = 20;
-
-	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
-	constexpr int kKillTypePosX = 156;
-	constexpr int kKillTypePosY = 200;
-
 	// ƒNƒŠƒAŽžŠÔ
 	constexpr int kDownExsitTime = 15;
 	constexpr int kLeftKilledNum = 3;
@@ -154,15 +147,15 @@ int Stage1_3::DrawStageConditions(int drawY)
 
 	if (!m_isLeftClear)
 	{
-		DrawArrowConditions(kLeftStName, kConditionsPosX, drawY, -kRad90);
-		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kLeftKilledNum);
+		DrawArrowConditions(kLeftStName, drawY, -kRad90);
+		DrawKilledConditions(drawY, fontHandle, kLeftKilledNum);
 
 		drawY += 68;
 	}
 	if (!m_isDownClear)
 	{
-		DrawArrowConditions(kDownStName, kConditionsPosX, drawY, DX_PI);
-		DrawTimeConditions(kConditionsPosX, drawY, fontHandle, kDownExsitTime);
+		DrawArrowConditions(kDownStName, drawY, DX_PI);
+		DrawTimeConditions(drawY, fontHandle, kDownExsitTime);
 
 		drawY += 68;
 	}
@@ -178,23 +171,9 @@ void Stage1_3::DrawArrow() const
 
 void Stage1_3::DrawKilledEnemyType() const
 {
-	if (m_mgr.GetStage()->IsKilledEnemy("Dash"))
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0x0808ff, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0x0808ff, false);
-	}
+	DrawKilledEnemy("Dash", 0, 0x0808ff);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, false);
-	}
+	DrawKilledEnemy("MoveWall", 36, 0x888888);
 }
 
 void Stage1_3::CreateEnemy()

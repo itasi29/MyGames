@@ -30,7 +30,7 @@ EnemyChild::~EnemyChild()
 {
 }
 
-void EnemyChild::Init(const Vec2& pos)
+void EnemyChild::Init(const Vec2& pos, bool isStart)
 {
 	// ˆø”‚Å“n‚³‚ê‚½ˆÊ’u‚ğ‰ŠúˆÊ’u‚É
 	m_pos = pos;

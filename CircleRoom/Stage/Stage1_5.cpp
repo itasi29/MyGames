@@ -25,10 +25,6 @@ namespace
 	// ðŒ‚Ì•`‰æŠî€ˆÊ’u
 	constexpr int kConditionsPosX = 20;
 
-	// ŽE‚³‚ê‚½Ží—Þ‚ÌŠî€•`‰æˆÊ’u
-	constexpr int kKillTypePosX = 156;
-	constexpr int kKillTypePosY = 200;
-
 	constexpr int kDownKilledNum = 5;
 
 	const std::string kDownStName = "Stage1-4";
@@ -131,8 +127,8 @@ int Stage1_5::DrawStageConditions(int drawY)
 
 	if (!m_isDownClear)
 	{
-		DrawArrowConditions(kDownStName, kConditionsPosX, drawY, DX_PI);
-		DrawKilledConditions(kConditionsPosX, drawY, fontHandle, kDownKilledNum);
+		DrawArrowConditions(kDownStName, drawY, DX_PI);
+		DrawKilledConditions(drawY, fontHandle, kDownKilledNum);
 
 		drawY += 68;
 	}
@@ -161,41 +157,13 @@ void Stage1_5::DrawArrow() const
 
 void Stage1_5::DrawKilledEnemyType() const
 {
-	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0x888888, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0x888888, true);
-	}
+	DrawKilledEnemy("MoveWall", 0, 0x888888);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("BossArmored"))
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x08ff08, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x08ff08, false);
-	}
+	DrawKilledEnemy("BossArmored", 36, 0x08ff08);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("BossStrongArmored"))
-	{
-		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xaaffaa, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 72, kKillTypePosY, 16, 0xaaffaa, false);
-	}
+	DrawKilledEnemy("BossStrongArmored", 72, 0xaaffaa);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("SplitTwoBound"))
-	{
-		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 14, 0xffffff, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 108, kKillTypePosY, 14, 0xffffff, false);
-	}
+	DrawKilledEnemy("SplitTwoBound", 108, 0xffffff, 14);
 }
 
 void Stage1_5::CreateEnemy()

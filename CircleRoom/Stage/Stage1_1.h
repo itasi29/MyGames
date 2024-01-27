@@ -18,7 +18,7 @@ private:
 	void DrawKilledEnemyType() const override;
 	void CreateEnemy() override;
 
-	void CreateNormal();
+	void CreateNormal(bool isStart);
 	void UpdateTime() override;
 
 private:

@@ -24,13 +24,6 @@ namespace
 	// ‰©F•¶š—ñ‚ÌF
 	constexpr unsigned int kYellowColor = 0xffde00;
 
-	// ğŒ‚Ì•`‰æŠî€ˆÊ’u
-	constexpr int kConditionsPosX = 20;
-
-	// E‚³‚ê‚½í—Ş‚ÌŠî€•`‰æˆÊ’u
-	constexpr int kKillTypePosX = 156;
-	constexpr int kKillTypePosY = 200;
-
 	// ‰‚ß‚É¶¬‚·‚é“G‚Ì”
 	constexpr int kStartCreatNum = 4;
 	// ‰‚ß‚Ì¶¬ŠÔŠuƒtƒŒ[ƒ€
@@ -100,10 +93,10 @@ void Stage1_1::Init()
 	vec.y = 1;
 	m_enemy.back()->Init(vec);
 
-	// “G‚ğˆê‘Ì’Ç‰Á
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
-	m_enemy.back()->Init(m_centerPos);
-	m_createNum++;
+	//// “G‚ğˆê‘Ì’Ç‰Á
+	//m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
+	//m_enemy.back()->Init(m_centerPos);
+	//m_createNum++;
 }
 
 void Stage1_1::StartCheck()
@@ -169,15 +162,15 @@ int Stage1_1::DrawStageConditions(int drawY)
 	int fontHandle = m_mgr.GetFont()->GetHandle(28);
 	if (!m_isLeftClear)
 	{
-		DrawArrowConditions(kLeftStName, kConditionsPosX, drawY, -kRad90);
-		DrawTimeConditions(kConditionsPosX, drawY, fontHandle, kLeftExsitTime);
+		DrawArrowConditions(kLeftStName, drawY, -kRad90);
+		DrawTimeConditions(drawY, fontHandle, kLeftExsitTime);
 
 		drawY += 68;
 	}
 	if (!m_isUpClear)
 	{
-		DrawArrowConditions(kUpStName, kConditionsPosX, drawY, 0.0);
-		DrawTimeConditions(kConditionsPosX, drawY, fontHandle, kUpExsitTime);
+		DrawArrowConditions(kUpStName, drawY, 0.0);
+		DrawTimeConditions(drawY, fontHandle, kUpExsitTime);
 
 		drawY += 68;
 	}
@@ -193,23 +186,9 @@ void Stage1_1::DrawArrow() const
 
 void Stage1_1::DrawKilledEnemyType() const
 {
-	if (m_mgr.GetStage()->IsKilledEnemy("Normal"))
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0xffffff, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX, kKillTypePosY, 16, 0xffffff, false);
-	}
+	DrawKilledEnemy("Normal", 0, 0xffffff);
 
-	if (m_mgr.GetStage()->IsKilledEnemy("MoveWall"))
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, true);
-	}
-	else
-	{
-		DrawCircle(kKillTypePosX + 36, kKillTypePosY, 16, 0x888888, false);
-	}
+	DrawKilledEnemy("MoveWall", 36, 0x888888);
 }
 
 void Stage1_1::CreateEnemy()
@@ -220,7 +199,7 @@ void Stage1_1::CreateEnemy()
 	// ‰‚ß‚Í¶¬ŠÔŠu‚ª‘‚ß
 	if (m_createNum < kStartCreatNum && m_createFrame > kStartCreateFrame)
 	{
-		CreateNormal();
+		CreateNormal(true);
 
 		// ¶¬‚·‚¤‘‰Á
 		m_createNum++;
@@ -230,17 +209,17 @@ void Stage1_1::CreateEnemy()
 
 	if (m_createFrame > kCreateFrame)
 	{
-		CreateNormal();
+		CreateNormal(false);
 	}
 }
 
-void Stage1_1::CreateNormal()
+void Stage1_1::CreateNormal(bool isStart)
 {
 	// ¶¬ŠÔ‚Ì‰Šú‰»
 	m_createFrame = 0;
 	// ”z—ñ‚ÌÅŒã‚É“G‚ğ’Ç‰Á
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
-	m_enemy.back()->Init(m_centerPos);
+	m_enemy.back()->Init(m_centerPos, isStart);
 }
 
 void Stage1_1::UpdateTime()

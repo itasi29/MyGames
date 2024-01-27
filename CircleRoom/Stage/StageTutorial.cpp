@@ -22,9 +22,6 @@ namespace
 	// ’Êí•¶Žš—ñ‚ÌF
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
-	// ðŒ‚Ì•`‰æŠî€ˆÊ’u
-	constexpr int kConditionsPosX = 20;
-
 	const std::string kStageName = "Stage1-1";
 	constexpr int kExsitTime = 2;
 
@@ -193,7 +190,7 @@ void StageTutorial::CheckStageConditions()
 
 int StageTutorial::DrawStageConditions(int drawY)
 {
-	DrawTimeConditions(kConditionsPosX, drawY, m_mgr.GetFont()->GetHandle(28), kExsitTime);
+	DrawTimeConditions(drawY, m_mgr.GetFont()->GetHandle(28), kExsitTime);
 
 	return 0;
 }

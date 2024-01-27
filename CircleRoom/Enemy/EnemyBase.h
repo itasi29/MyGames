@@ -18,7 +18,7 @@ public:
 	EnemyBase(const size& windowSize, float fieldSize);
 	virtual ~EnemyBase();
 
-	virtual void Init(const Vec2&) {}
+	virtual void Init(const Vec2&, bool isStart = false) {}
 	void Update();
 	void Draw();
 

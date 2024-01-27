@@ -32,7 +32,7 @@ EnemyMoveWall::~EnemyMoveWall()
 {
 }
 
-void EnemyMoveWall::Init(const Vec2& vec)
+void EnemyMoveWall::Init(const Vec2& vec, bool isStart)
 {
 	// ƒtƒŒ[ƒ€‚Ì‰Šú‰»
 	m_frame = 0;

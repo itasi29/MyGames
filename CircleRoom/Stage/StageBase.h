@@ -68,6 +68,26 @@ protected:
 	using DrawFunc_t = void (StageBase::*)();
 
 	/// <summary>
+	/// 選択中の更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	virtual void UpdateSelect(Input& input);
+	/// <summary>
+	/// プレイ中の更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	virtual void UpdatePlaying(Input& input);
+
+	/// <summary>
+	/// 選択中の描画処理
+	/// </summary>
+	void DrawSelect();
+	/// <summary>
+	/// プレイ中の描画処理
+	/// </summary>
+	void DrawPlaying();
+
+	/// <summary>
 	/// ステージのクリア確認
 	/// </summary>
 	virtual void CheckStageConditions() = 0;
@@ -99,28 +119,28 @@ protected:
 	virtual void UpdateTime() {}
 
 	/// <summary>
-	/// 選択中の更新処理
+	/// クリア条件にある矢印の描画
 	/// </summary>
-	/// <param name="input">入力情報</param>
-	virtual void UpdateSelect(Input& input);
+	/// <param name="nextStName">次ステージのｐ名前</param>
+	/// <param name="y">Y座標</param>
+	/// <param name="angle">矢印角度(上基準の時計回り)</param>
+	/// <param name="isReverseX">反転X</param>
+	/// <param name="isReverxeY">反転Y/param>
+	void DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX = false, bool isReverxeY = false);
 	/// <summary>
-	/// プレイ中の更新処理
+	/// クリア条件のタイムを描画
 	/// </summary>
-	/// <param name="input">入力情報</param>
-	virtual void UpdatePlaying(Input& input);
-
+	/// <param name="y">Y座標</param>
+	/// <param name="handle">フォントハンドル</param>
+	/// <param name="existTime">クリアタイム</param>
+	void DrawTimeConditions(int y, int handle, int existTime);
 	/// <summary>
-	/// 選択中の描画処理
+	/// クリア条件の敵タイプを描画
 	/// </summary>
-	void DrawSelect();
-	/// <summary>
-	/// プレイ中の描画処理
-	/// </summary>
-	void DrawPlaying();
-
-	void DrawArrowConditions(const std::string& nextStName, int x, int y, double angle, bool isReverseX = false, bool isReverxeY = false);
-	void DrawTimeConditions(int x, int y, int handle, int existTime);
-	void DrawKilledConditions(int x, int y, int handle, int killedNum);
+	/// <param name="y">Y座標</param>
+	/// <param name="handle">フォントハンドル</param>
+	/// <param name="killedNum">倒される種類数</param>
+	void DrawKilledConditions(int y, int handle, int killedNum);
 
 	/// <summary>
 	/// 左矢印の描画
@@ -138,6 +158,8 @@ protected:
 	/// 下矢印の描画
 	/// </summary>
 	void DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const;
+
+	void DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius = 16) const;
 
 	/// <summary>
 	/// クリアした文字の描画群に追加
@@ -176,6 +198,8 @@ private:
 	/// 選択等の画像の描画
 	/// </summary>
 	void DrawImage();
+
+	int GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const;
 
 protected:
 	UpdateFunc_t m_updateFunc;
