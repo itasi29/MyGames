@@ -519,7 +519,7 @@ void StageBase::DrawConditionsAchived()
 		else
 		{
 			float rate = (kAchivedFrame - achived.frame) / (kAchivedFrame * 0.5f);
-			int alpha = 255 * rate;
+			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawStringToHandle(540, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

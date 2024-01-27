@@ -227,6 +227,32 @@ bool Input::IsReleased(const char* command) const
     return !m_inputDate.at(command) && m_lastInputDate.at(command);
 }
 
+bool Input::IsReepat(const char* command, int& frame, int frameInterval) const
+{
+    // ‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢Žž‚ÍƒtƒŒ[ƒ€‚Ì‰Šú‰»‚Ì‚Ýs‚¤
+    if (IsNotPress(command))
+    {
+        frame = 0;
+        return false;
+    }
+    // ‰Ÿ‚³‚ê‚½uŠÔ‚Íture
+    if (IsTriggered(command))
+    {
+        frame = 0;
+        return true;
+    }
+
+    frame++;
+    // ŠÔŠuŽžŠÔ‚ð’´‚¦‚½‚çtrue‚Æ‚·‚é
+    if (frame > frameInterval)
+    {
+        frame = 0;
+        return true;
+    }
+
+    return false;
+}
+
 std::wstring Input::GetHardDataName(const std::string cmd, InputType type) const
 {
     return m_corrTable.at(type).at(m_commandTable.at(cmd).at(type));

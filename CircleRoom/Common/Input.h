@@ -82,6 +82,14 @@ public:
 	/// <param name="command">コマンド文字列</param>
 	/// <returns>true:離された瞬間 / false:それ以外</returns>
 	bool IsReleased(const char* command) const;
+	/// <summary>
+	/// 押された瞬間＋押されて行って時間が経過されている
+	/// </summary>
+	/// <param name="command">コマンド文字列</param>
+	/// <param name="frame">フレームの参照</param>
+	/// <param name="frameInterval">フレームの間隔</param>
+	/// <returns></returns>
+	bool IsReepat(const char* command, int& frame, int frameInterval) const;
 
 	InputType GetType() const { return m_lastType; }
 	std::wstring GetHardDataName(const std::string cmd, InputType type) const;

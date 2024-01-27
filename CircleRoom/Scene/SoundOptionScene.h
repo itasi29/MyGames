@@ -39,7 +39,11 @@ private:
 	int m_currentLineIndex;
 	bool m_isEdit;
 
+	// フェードフレーム
 	int m_fadeFrame;
+	// リピート確認フレーム
+	int m_repeatUpFrame;
+	int m_repeatDownFrame;
 
 	// 画像関係
 	std::shared_ptr<FileBase> m_frame;

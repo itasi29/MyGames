@@ -141,7 +141,7 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 		ClearDrawScreen();
 		pos = GetPos(m_stage->GetStageName());
 
-		DrawGraph(pos.x, pos.y, m_drawScreen, true);
+		DrawGraph(static_cast<int>(pos.x), static_cast<int>(pos.y), m_drawScreen, true);
 
 		// 現在のステージのポインタを変更する
 		m_stage = nextStage;
@@ -157,7 +157,7 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 	ClearDrawScreen();
 	pos = GetPos(nextStage->GetStageName());
 
-	DrawGraph(pos.x, pos.y, m_drawScreen, true);
+	DrawGraph(static_cast<int>(pos.x), static_cast<int>(pos.y), m_drawScreen, true);
 
 	// キープにあるものを描画
 	DrawGraph(0, 0, m_keepScreen, true);
@@ -559,7 +559,7 @@ void StageManager::NormalDraw() const
 void StageManager::MoveDraw() const
 {
 	// MEMO:画面上を動かすからマイナスにしておく
-	DrawGraph(-m_pos.x, -m_pos.y, m_screen, true);
+	DrawGraph(static_cast <int>(-m_pos.x), static_cast <int>(-m_pos.y), m_screen, true);
 
 #ifdef _DEBUG
 	DrawFormatString(100, 100, 0xffffff, L"dis:%.2f", (m_targetPos - m_pos).Length());
@@ -578,14 +578,14 @@ void StageManager::MoveGamePlaingDraw() const
 	ClearDrawScreen();
 	Vec2 pos = GetPos(m_stage->GetStageName());
 
-	DrawGraph(pos.x, pos.y, m_drawScreen, true);
+	DrawGraph(static_cast<int>(pos.x), static_cast<int>(pos.y), m_drawScreen, true);
 
 	// キープにあるものを描画
 	DrawGraph(0, 0, m_keepScreen, true);
 
 	SetDrawScreen(m_mgr->GetScreenHandle());
 
-	DrawGraph(-m_pos.x, -m_pos.y, m_screen, true);
+	DrawGraph(static_cast<int>(-m_pos.x), static_cast<int>(-m_pos.y), m_screen, true);
 }
 
 Vec2 StageManager::GetPos(const std::string& stage) const
@@ -600,8 +600,8 @@ Vec2 StageManager::GetPos(const std::string& stage) const
 			if (kStName[y][x] == stage)
 			{
 				// 場所の保存
-				pos.x = 1280 * x + kStageMarginX * x;
-				pos.y = 720 * y + kStageMarginY * y;
+				pos.x = static_cast <float>(1280 * x + kStageMarginX * x);
+				pos.y = static_cast <float>(720 * y + kStageMarginY * y);
 
 				// 探すの終了
 				break;

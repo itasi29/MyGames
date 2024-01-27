@@ -34,6 +34,9 @@ namespace
 
 	constexpr int kMenuLineInterval = 128;
 
+	// 音声リピート間隔
+	constexpr int kRepeatInterval = 6;
+
 	// ゲージの長さ
 	constexpr int kGaugeLength = 100;
 
@@ -49,7 +52,9 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr) :
 	Scene(mgr),
 	m_currentLineIndex(0),
 	m_isEdit(false),
-	m_fadeFrame(0)
+	m_fadeFrame(0),
+	m_repeatUpFrame(0),
+	m_repeatDownFrame(0)
 {
 	m_updateFunc = &SoundOptionScene::NormalUpdate;
 
@@ -151,7 +156,8 @@ void SoundOptionScene::EditUpdate(Input& input)
 		m_updateFunc = &SoundOptionScene::NormalUpdate;
 	}
 
-	if (input.IsTriggered("right"))
+
+	if (input.IsReepat("right", m_repeatUpFrame, kRepeatInterval))
 	{
 		switch (m_currentLineIndex)
 		{
@@ -166,7 +172,7 @@ void SoundOptionScene::EditUpdate(Input& input)
 			break;
 		}
 	}
-	if (input.IsTriggered("left"))
+	if (input.IsReepat("left", m_repeatDownFrame, kRepeatInterval))
 	{
 		switch (m_currentLineIndex)
 		{
