@@ -27,7 +27,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kStrColor = 0xf0ece5;
 	// 選択時文字列の色
-	constexpr unsigned int kSelectStrColor = 0x161a30;
+	constexpr unsigned int kYellowColor = 0xffde00;
 
 	// フェード時間
 	constexpr int kAppeaInterval = 5;
@@ -253,7 +253,7 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 		color = kStrColor;
 		if (m_currentMenuLine == i)
 		{
-			color = kSelectStrColor;
+			color = kYellowColor;
 		}
 		DrawStringToHandle(x + width * i, kMenuMargin, strs[i].c_str(), color, fontHandle);
 	}

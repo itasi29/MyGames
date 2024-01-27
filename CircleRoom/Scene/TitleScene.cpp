@@ -32,7 +32,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
-	constexpr unsigned int kSelectStrColor = 0x161a30;
+	constexpr unsigned int kYellowColor = 0xffde00;
 
 
 	// メニューラインの数
@@ -283,7 +283,7 @@ void TitleScene::NormalDraw()
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kSelectStrColor, fontHandle);
+			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kYellowColor, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
@@ -316,7 +316,7 @@ void TitleScene::StartSelectDraw()
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), kSelectStrColor, fontHandle);
+			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), kYellowColor, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else

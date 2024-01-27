@@ -23,7 +23,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 黄色文字列の色
-	constexpr unsigned int kYellowColor = 0xffde00;
+	constexpr unsigned int kYellowColor = 0xffde00;;
 
 	// 右側生存時間
 	constexpr int kRightExsitTime = 10;

@@ -43,6 +43,17 @@ public:
 
 	const size& GetWindowSize() const;
 
+	/// <summary>
+	/// ウィンドモードの切り替え
+	/// </summary>
+	void ChangeWindows();
+
+	/// <summary>
+	/// 現在のウィンドモードの状態を取得
+	/// </summary>
+	/// <returns>ウィンドウモード</returns>
+	bool IsWindows() const { return m_isWindows; }
+
 private:
 	size m_size;
 	// FPS固定用
@@ -51,6 +62,7 @@ private:
 	// ゲーム終了フラグ
 	bool m_isEnd;
 
+	// ウィンドウフラグ
 	bool m_isWindows;
 };
 

@@ -31,7 +31,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 強調文字列の色
-	constexpr unsigned int kYellowColor = 0xffde00;
+	constexpr unsigned int kYellowColor = 0xffde00;;
 	// バックフレームの色
 	constexpr unsigned int kBackFrameColor = 0x161a30;
 
@@ -116,6 +116,11 @@ void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 
 void StageBase::UpdateSelect(Input& input)
 {
+	// 待機フレームの増加
+	m_waitFrame++;
+
+	if (m_waitFrame < kWaitChangeFrame) return;
+
 	if (m_soundFrame > kSoundFade)
 	{
 		m_sound->PlayBgm(m_selectBgm->GetHandle());
@@ -154,8 +159,11 @@ void StageBase::UpdateSelect(Input& input)
 		}
 	);
 
-	if (input.IsPress("OK"))
+	if (input.IsTriggered("OK"))
 	{
+		// 移動中であっても即時移動
+		m_mgr.GetStage()->ImmediatelyChange();
+
 		// メンバ関数ポインタの更新
 		m_updateFunc = &StageBase::UpdatePlaying;
 		m_drawFunc = &StageBase::DrawPlaying;
@@ -168,9 +176,6 @@ void StageBase::UpdateSelect(Input& input)
 	}
 
 	m_mgr.GetStage()->ChangeAbility(kDash);
-
-	// フレームの増加
-	m_waitFrame++;
 }
 
 void StageBase::UpdatePlaying(Input& input)
@@ -298,6 +303,7 @@ void StageBase::DrawSelect()
 	DrawFormatStringToHandle(64, 32, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
+	int drawScreenHandle = m_mgr.GetScene()->GetScreenHandle();
 
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
@@ -306,7 +312,7 @@ void StageBase::DrawSelect()
 	// 殺されたことがある敵の描画
 	DrawStringToHandle(136, 160, L"> Circle", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
 	DrawKilledEnemyType();
-	SetDrawScreen(DX_SCREEN_BACK);
+	SetDrawScreen(drawScreenHandle);
 	// 上下反転して描画フレーム
 	DrawRotaGraph(155, 168, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
 	DrawBox(0, 198, 310, 198 + 30, kBackFrameColor, true);
@@ -316,7 +322,7 @@ void StageBase::DrawSelect()
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
 	auto y = DrawStageConditions(256);
-	SetDrawScreen(DX_SCREEN_BACK);
+	SetDrawScreen(drawScreenHandle);
 	// 条件後ろにあるフレーム背景を描画する
 	if (y >= 0)
 	{
@@ -360,11 +366,13 @@ void StageBase::DrawPlaying()
 	}
 	m_player->Draw();
 
+	int drawScreenHandle = m_mgr.GetScene()->GetScreenHandle();
+
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
 	// 時間の描画
 	DrawTime(20, 144, m_mgr.GetFont()->GetHandle(64));
-	SetDrawScreen(DX_SCREEN_BACK);
+	SetDrawScreen(drawScreenHandle);
 	DrawRotaGraph(155, 168, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
 	DrawBox(0, 198, 310, 198 + 36, kBackFrameColor, true);
 	DrawGraph(0, 0, m_strHandle, true);
@@ -373,7 +381,7 @@ void StageBase::DrawPlaying()
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
 	auto y = DrawStageConditions(244+16+20);
-	SetDrawScreen(DX_SCREEN_BACK);
+	SetDrawScreen(drawScreenHandle);
 	// MEMO:条件後ろにあるフレーム背景を描画する
 	if (y >= 0)
 	{

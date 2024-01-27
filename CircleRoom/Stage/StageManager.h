@@ -6,6 +6,7 @@
 #include "Vec2.h"
 
 class Input;
+class SceneManager;
 class StageBase;
 class FileBase;
 struct size;
@@ -42,7 +43,7 @@ public:
 		kStageMax,
 	};
 
-	StageManager();
+	StageManager(std::shared_ptr<SceneManager>& mgr);
 	~StageManager();
 
 	void Init();
@@ -60,6 +61,11 @@ public:
 	/// </summary>
 	/// <param name="nextStage">次のステージ</param>
 	void ChangeStage(std::shared_ptr<StageBase> nextStage);
+
+	/// <summary>
+	/// ステージの即時変更
+	/// </summary>
+	void ImmediatelyChange();
 
 	/// <summary>
 	/// クリア情報を保存する
@@ -152,17 +158,25 @@ public:
 	/// <param name="ability">アビリティ番号</param>
 	void ChangeAbility(Ability ability);
 
-	// 通常の描画
+private:
+
+	// 通常の更新
 	void NormalUpdate(Input& input);
-	// 移動の描画
+	// 移動の更新
 	void MoveUpdate(Input& input);
+	// 移動かつプレイの更新
+	void MoveGamePlaingUpdate(Input& input);
 
 	// 通常の描画
 	void NormalDraw() const;
 	// 移動時の描画
 	void MoveDraw() const;
+	// 移動かつプレイの描画
+	void MoveGamePlaingDraw() const;
 
-	Vec2 GetPos(const std::string& stage);
+	Vec2 GetPos(const std::string& stage) const;
+
+	void CheckEnd();
 
 private:
 	using UpdateFunc_t = void(StageManager::*)(Input&);
@@ -172,6 +186,8 @@ private:
 	DrawFunc_t m_drawFunc;
 
 	const size& m_size;
+
+	std::shared_ptr<SceneManager>& m_mgr;
 
 	// ステージのクリア情報群
 	std::unordered_map<std::string, StageData> m_stageSaveData;

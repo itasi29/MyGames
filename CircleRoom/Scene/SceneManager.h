@@ -71,6 +71,12 @@ public:
 	/// </summary>
 	std::shared_ptr<Scene> GetTopScene();
 
+	/// <summary>
+	/// 現在描画している先を入手
+	/// </summary>
+	/// <returns>描画先ハンドル</returns>
+	int GetScreenHandle() const;
+
 private:
 	// シーンを入れる
 	std::list<std::shared_ptr<Scene>> m_scenes;

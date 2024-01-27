@@ -25,9 +25,14 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
-	constexpr unsigned int kSelectStrColor = 0x161a30;
+	constexpr unsigned int kYellowColor = 0xffde00;;
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
+
+	// X座標描画基準
+	constexpr int kDrawX = 132;
+	// フレーム幅
+	constexpr int kFrameWidht = 800;
 
 	// フェードフレーム
 	constexpr int kFadeFrame = 60;
@@ -40,11 +45,13 @@ namespace
 	enum
 	{
 		kTitle,
+		kWindowsMode,
 		kRightsNotation,
 		kEnd
 	};
 
 	const std::vector<std::wstring> kGameMenu = { L"タイトルへ",
+		L"フルスクリーン",
 		L"権利表記",
 		L"終了"
 	};
@@ -125,6 +132,10 @@ void OtherOptionScene::NormalUpdate(Input& input)
 			m_drawFunc = &OtherOptionScene::FadeDraw;
 			break;
 
+		case kWindowsMode:
+			Application::GetInstance().ChangeWindows();
+			break;
+
 		case kRightsNotation:
 			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_rightNotationImg->GetHandle()));
 			break;
@@ -153,16 +164,16 @@ void OtherOptionScene::FadeDraw()
 void OtherOptionScene::NormalDraw()
 {
 	// 選択している場所を描画
-	int y = kMenuMargin + 60 + m_currentLineIndex * kMenuLineInterval;
+	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
 
-	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
-	DrawBox(kMenuMargin + 200, y,
-		kMenuMargin + 800, y + 40,
+	DrawGraph(kDrawX + kFrameWidht, y, m_frame->GetHandle(), true);
+	DrawBox(kDrawX, y,
+		kDrawX + kFrameWidht, y + 40,
 		kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
-	y = kMenuMargin + 64;
+	y = kMenuMargin + 42;
 
 	// メニューの文字列群
 	for (int i = 0; i < kGameMenu.size(); i++)
@@ -173,14 +184,30 @@ void OtherOptionScene::NormalDraw()
 			float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(kMenuMargin + 200, y, kGameMenu[i].c_str(), kSelectStrColor, fontHandle);
+			DrawStringToHandle(kDrawX, y, kGameMenu[i].c_str(), kYellowColor, fontHandle);
+			DrawWindowMode(i, fontHandle, y, kYellowColor);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawStringToHandle(kMenuMargin + 200, y, kGameMenu[i].c_str(), kWhiteColor, fontHandle);
+			DrawWindowMode(i, fontHandle, y, kWhiteColor);
+			DrawStringToHandle(kDrawX, y, kGameMenu[i].c_str(), kWhiteColor, fontHandle);
 		}
 
 		y += kMenuLineInterval;
+	}
+}
+
+void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int color)
+{
+	if (index != kWindowsMode) return;
+
+	if (Application::GetInstance().IsWindows())
+	{
+		DrawStringToHandle(500, y, L"ウィンドウ", color, handle);
+	}
+	else
+	{
+		DrawStringToHandle(500, y, L"フルスクリーン", color, handle);
 	}
 }

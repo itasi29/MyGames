@@ -159,6 +159,13 @@ protected:
 	/// </summary>
 	void DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const;
 
+	/// <summary>
+	/// 敵タイプの描画
+	/// </summary>
+	/// <param name="enemyName">名前</param>
+	/// <param name="addX">X座標の追加値</param>
+	/// <param name="color">色</param>
+	/// <param name="radius">半径 : def = 16</param>
 	void DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius = 16) const;
 
 	/// <summary>
@@ -233,7 +240,7 @@ protected:
 	float m_fieldSize;
 
 	// ステージ変更可能までの待機時間
-	const int kWaitChangeFrame = 30;
+	const int kWaitChangeFrame = 10;
 	const Vec2 m_centerPos;
 
 	// ステージ名

@@ -34,7 +34,12 @@ int MyLoadGraph(const wchar_t* path)
 
 Application::Application() :
     m_time(0),
-    m_isEnd(false)
+    m_isEnd(false),
+#ifdef _DEBUG
+    m_isWindows(true)
+#else
+    m_isWindows(false)
+#endif
 {
     m_size = size{kScreenWidth, kScreenHeight};
 }
@@ -48,13 +53,15 @@ bool Application::Init()
 {
 #ifdef _DEBUG
     ChangeWindowMode(true); // ウィンドウモードにします
-    m_isWindows = true;
 #endif
 
     // ウィンドウモードを変更したときに画像が消去されないようにする
     SetChangeScreenModeGraphicsSystemResetFlag(false);
 
-    SetGraphMode(m_size.w, m_size.h, 16);
+    // 背景色の指定 5f6976
+    SetBackgroundColor(0x5f, 0x69, 0x76);
+
+    SetGraphMode(m_size.w, m_size.h, 32);
     SetWindowText(L"CircleRoom");
     if (DxLib_Init() == -1)
     {
@@ -90,15 +97,6 @@ void Application::Run()
             manager.GetScene()->Draw();
             ScreenFlip();
 
-#if false
-            auto data = manager.GetData(); 
-            int sec = (data.playTime / 60) % 60;
-            int min = (data.playTime / 3600) % 60;
-            int hour = (data.playTime / 21600);
-            clsDx();
-            printfDx(L"%02d時間%02d分%02d秒", hour, min, sec);
-#endif
-
             // 終了フラグが立っていれば終了する
             if (m_isEnd)
             {
@@ -120,4 +118,10 @@ void Application::End()
 const size& Application::GetWindowSize() const
 {
     return m_size;
+}
+
+void Application::ChangeWindows()
+{
+    m_isWindows = !m_isWindows;
+    ChangeWindowMode(m_isWindows);
 }

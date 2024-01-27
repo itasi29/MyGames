@@ -10,8 +10,8 @@
 
 GameManager::GameManager() :
 	m_file(std::make_shared<FileManager>()),
-	m_stage(std::make_shared<StageManager>()),
 	m_scene(std::make_shared<SceneManager>()),
+	m_stage(std::make_shared<StageManager>(m_scene)),
 	m_sound(std::make_shared<SoundSystem>()),
 	m_font(std::make_shared<FontSystem>())
 {
@@ -58,14 +58,14 @@ std::shared_ptr<FileManager>& GameManager::GetFile()
 	return m_file;
 }
 
-std::shared_ptr<StageManager>& GameManager::GetStage()
-{
-	return m_stage;
-}
-
 std::shared_ptr<SceneManager>& GameManager::GetScene()
 {
 	return m_scene;
+}
+
+std::shared_ptr<StageManager>& GameManager::GetStage()
+{
+	return m_stage;
 }
 
 std::shared_ptr<SoundSystem>& GameManager::GetSound()

@@ -22,7 +22,7 @@ namespace
 	// ’Êí•¶š—ñ‚ÌF
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// ‰©F•¶š—ñ‚ÌF
-	constexpr unsigned int kYellowColor = 0xffde00;
+	constexpr unsigned int kYellowColor = 0xffde00;;
 
 	// ‰‚ß‚É¶¬‚·‚é“G‚Ì”
 	constexpr int kStartCreatNum = 4;

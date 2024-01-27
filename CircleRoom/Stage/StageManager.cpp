@@ -4,6 +4,7 @@
 #include "Application.h"
 
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "Scene/SceneManager.h"
@@ -52,7 +53,8 @@ namespace
 	};
 }
 
-StageManager::StageManager() :
+StageManager::StageManager(std::shared_ptr<SceneManager>& mgr) :
+	m_mgr(mgr),
 	m_size(Application::GetInstance().GetWindowSize()),
 	m_isMove(false)
 {
@@ -180,6 +182,16 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 
 	// 現在の描画先へと戻す(本来は)
 	SetDrawScreen(DX_SCREEN_BACK);
+}
+
+void StageManager::ImmediatelyChange()
+{
+	if (!m_isMove) return;
+
+	m_updateFunc = &StageManager::MoveGamePlaingUpdate;
+	m_drawFunc = &StageManager::MoveGamePlaingDraw;
+
+	m_stage = m_nextStage;
 }
 
 void StageManager::Save(const std::string& path)
@@ -504,7 +516,6 @@ void StageManager::UpdateEnemyType(const std::string& name)
 	}
 }
 
-
 void StageManager::ChangeAbility(Ability ability)
 {
 	// アビリティが有効になっていたら変更させる
@@ -528,6 +539,81 @@ void StageManager::MoveUpdate(Input& input)
 	// 場所の更新
 	m_pos += m_vec;
 
+	CheckEnd();
+}
+
+void StageManager::MoveGamePlaingUpdate(Input& input)
+{
+	m_stage->Update(input);
+
+	m_pos += m_vec;
+
+	CheckEnd();
+}
+
+void StageManager::NormalDraw() const
+{
+	m_stage->Draw();
+}
+
+void StageManager::MoveDraw() const
+{
+	// MEMO:画面上を動かすからマイナスにしておく
+	DrawGraph(-m_pos.x, -m_pos.y, m_screen, true);
+
+#ifdef _DEBUG
+	DrawFormatString(100, 100, 0xffffff, L"dis:%.2f", (m_targetPos - m_pos).Length());
+#endif
+}
+
+void StageManager::MoveGamePlaingDraw() const
+{
+	// 描画用スクリーンに次のステージの描画
+	SetDrawScreen(m_drawScreen);
+	ClearDrawScreen();
+	m_stage->Draw();
+
+	// 移動中描画スクリーンに場所を指定してさっきのを描画
+	SetDrawScreen(m_screen);
+	ClearDrawScreen();
+	Vec2 pos = GetPos(m_stage->GetStageName());
+
+	DrawGraph(pos.x, pos.y, m_drawScreen, true);
+
+	// キープにあるものを描画
+	DrawGraph(0, 0, m_keepScreen, true);
+
+	SetDrawScreen(m_mgr->GetScreenHandle());
+
+	DrawGraph(-m_pos.x, -m_pos.y, m_screen, true);
+}
+
+Vec2 StageManager::GetPos(const std::string& stage) const
+{
+	Vec2 pos;
+
+	for (int x = 0; x < kRow; x++)
+	{
+		for (int y = 0; y < kLine; y++)
+		{
+			// ステージ名が一致したら
+			if (kStName[y][x] == stage)
+			{
+				// 場所の保存
+				pos.x = 1280 * x + kStageMarginX * x;
+				pos.y = 720 * y + kStageMarginY * y;
+
+				// 探すの終了
+				break;
+			}
+		}
+	}
+
+	return pos;
+}
+
+void StageManager::CheckEnd()
+{
 	// 距離の計算
 	Vec2 vel = (m_targetPos - m_pos);
 	float dis = vel.Length();
@@ -553,44 +639,4 @@ void StageManager::MoveUpdate(Input& input)
 		// スピードの調整
 		m_vec = vel.GetNormalized() * speed;
 	}
-}
-
-void StageManager::NormalDraw() const
-{
-	m_stage->Draw();
-}
-
-void StageManager::MoveDraw() const
-{
-	// MEMO:画面上を動かすからマイナスにしておく
-	DrawGraph(-m_pos.x, -m_pos.y, m_screen, true);
-
-#ifdef _DEBUG
-//	DrawFormatString(100, 100, 0xffffff, L"pos(%.2f, %.2f)");
-	DrawFormatString(100, 100, 0xffffff, L"dis:%.2f", (m_targetPos - m_pos).Length());
-#endif
-}
-
-Vec2 StageManager::GetPos(const std::string& stage)
-{
-	Vec2 pos;
-
-	for (int x = 0; x < kRow; x++)
-	{
-		for (int y = 0; y < kLine; y++)
-		{
-			// ステージ名が一致したら
-			if (kStName[y][x] == stage)
-			{
-				// 場所の保存
-				pos.x = 1280 * x + kStageMarginX * x;
-				pos.y = 720 * y + kStageMarginY * y;
-
-				// 探すの終了
-				break;
-			}
-		}
-	}
-
-	return pos;
 }

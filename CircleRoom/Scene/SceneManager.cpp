@@ -126,3 +126,15 @@ std::shared_ptr<Scene> SceneManager::GetTopScene()
 {
 	return m_scenes.back();
 }
+
+int SceneManager::GetScreenHandle() const
+{
+	if (m_isShake)
+	{
+		return m_shakeHandle;
+	}
+	else
+	{
+		return DX_SCREEN_BACK;
+	}
+}

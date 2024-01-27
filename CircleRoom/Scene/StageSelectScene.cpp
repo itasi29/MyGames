@@ -3,6 +3,7 @@
 
 #include "Vec2.h"
 #include "GameManager.h"
+#include "SceneManager.h"
 #include "Stage/StageManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/SoundSystem.h"
@@ -128,6 +129,8 @@ void StageSelectScene::Update(Input& input)
 		{
 			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr, input));
 		}
+
+		m_mgr.GetScene()->PopScene();
 	}
 }
 

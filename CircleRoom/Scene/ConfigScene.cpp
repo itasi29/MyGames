@@ -21,7 +21,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
-	constexpr unsigned int kSelectStrColor = 0x161a30;
+	constexpr unsigned int kYellowColor = 0xffde00;
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
 
@@ -122,7 +122,7 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 		float rate = fabsf(static_cast<float>(frame)) / kFlashInterval;
 		int alpha = static_cast <int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-		DrawStringToHandle(132, drawY, str.c_str(), kSelectStrColor, fontHandle);
+		DrawStringToHandle(132, drawY, str.c_str(), kYellowColor, fontHandle);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 	else

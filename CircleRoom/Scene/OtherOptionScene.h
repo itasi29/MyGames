@@ -17,6 +17,8 @@ private:
 	void FadeDraw();
 	void NormalDraw();
 
+	void DrawWindowMode(int index, int handle, int y, unsigned int color);
+
 private:
 	using UpdateFunc_t = void(OtherOptionScene::*)(Input&);
 	using DrawFunc_t = void(OtherOptionScene::*)();

@@ -24,7 +24,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 選択時文字列の色
-	constexpr unsigned int kSelectStrColor = 0x161a30;
+	constexpr unsigned int kYellowColor = 0xffde00;
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
 
@@ -251,7 +251,7 @@ void PadConfigScene::DrawCommandList()
 				int alpha = static_cast <int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			}
-			DrawFormatStringToHandle(kMenuMargin + 50, y, kSelectStrColor, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kYellowColor, fontHandle, L"%s", cmdName.c_str());
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
