@@ -68,13 +68,6 @@ StageManager::StageManager(std::shared_ptr<SceneManager>& mgr) :
 
 	m_updateFunc = &StageManager::NormalUpdate;
 	m_drawFunc = &StageManager::NormalDraw;
-
-	m_stage = nullptr;
-	m_nextStage = nullptr;
-
-	m_pos = GetPos("Stage1-1");
-	m_targetPos = {};
-	m_vec = {};
 }
 
 StageManager::~StageManager()
@@ -99,6 +92,17 @@ void StageManager::InitData()
 	m_clearBossTable.clear();
 	m_ability = kNone;
 	m_abilityActive.clear();
+
+	m_stage = nullptr;
+	m_nextStage = nullptr;
+
+	m_pos = GetPos("Stage1-1");
+	if (IsClearStage("Tutorial"))
+	{
+		m_pos.y += m_size.h + kStageMarginY;
+	}
+	m_targetPos = {};
+	m_vec = {};
 }
 
 void StageManager::Update(Input& input)
@@ -599,8 +603,8 @@ Vec2 StageManager::GetPos(const std::string& stage) const
 			if (kStName[y][x] == stage)
 			{
 				// êŠ‚Ì•Û‘¶
-				pos.x = static_cast <float>(1280 * x + kStageMarginX * x);
-				pos.y = static_cast <float>(720 * y + kStageMarginY * y);
+				pos.x = static_cast <float>(m_size.w * x + kStageMarginX * x);
+				pos.y = static_cast <float>(m_size.h * y + kStageMarginY * y);
 
 				// ’T‚·‚ÌI—¹
 				break;

@@ -457,7 +457,7 @@ void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double
 
 void StageBase::DrawTimeConditions(int y, int handle, int existTime)
 {
-	DrawStringToHandle(kConditionsPosX, y, L"　　   秒間生き残る\n　　(          )", kWhiteColor, handle);
+	DrawStringToHandle(kConditionsPosX, y, L"　　   秒間生き残る\n　　(           )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
 		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, existTime);
 }
@@ -483,7 +483,7 @@ void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int
 	// 秒に戻す
 	sumTime /= 60;
 
-	DrawStringToHandle(kConditionsPosX, y, L"　　合計   秒間生き残る\n　　　　(          )", kWhiteColor, handle);
+	DrawStringToHandle(kConditionsPosX, y, L"　　合計    秒間生き残る\n　　　　(           )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　　　%02d\n　　　　  %2d / %2d",
 		existTime, sumTime, existTime);
 }

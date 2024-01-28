@@ -125,7 +125,7 @@ int Stage1_9::DrawStageConditions(int drawY)
 	}
 	if (!m_isDownClear)
 	{
-		DrawArrowConditions(kDownStName, drawY, 0.0);
+		DrawArrowConditions(kDownStName, drawY, DX_PI);
 		DrawKilledConditions(drawY, fontHandle, kDownExsitTime);
 
 		drawY += 68;
@@ -135,13 +135,13 @@ int Stage1_9::DrawStageConditions(int drawY)
 	{
 		DrawStringToHandle(kConditionsPosX, drawY + 14, L"clear", kWhiteColor, fontHandle);
 
-		drawY += 128;
+		drawY += 70;
 	}
 	else
 	{
 		DrawStringToHandle(kConditionsPosX, drawY + 14, L"É{ÉXÇì|ÇπÅI", kWhiteColor, fontHandle);
 
-		drawY += 128;
+		drawY += 70;
 	}
 
 	return drawY - startY - 68;
@@ -150,7 +150,7 @@ int Stage1_9::DrawStageConditions(int drawY)
 void Stage1_9::DrawArrow() const
 {
 	DrawRightArrow(m_isRightClear, kRightStName);
-	DrawUpArrow(m_isDownClear, kDownStName);
+	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
 void Stage1_9::DrawKilledEnemyType() const
