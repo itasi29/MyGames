@@ -139,7 +139,7 @@ int Stage1_3::DrawStageConditions(int drawY)
 
 	if (!m_isRightClear)
 	{
-		DrawArrowConditions(kRightStName, drawY, -kRad90);
+		DrawArrowConditions(kRightStName, drawY, kRad90);
 		DrawKilledConditions(drawY, fontHandle, kRightKilledNum);
 
 		drawY += 68;
@@ -182,6 +182,7 @@ void Stage1_3::CreateEnemy()
 
 	if (m_createNum < kCreateNum)
 	{
+		m_createNum++;
 		CreateDash(m_createFrame, true);
 		return;
 	}

@@ -427,6 +427,25 @@ void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNu
 	}
 }
 
+void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int exsitTime, const std::wstring& dir)
+{
+	auto& stage = m_mgr.GetStage();
+	int sumTime = 0;
+
+	// 確認するステージのすべてのタイムを加算する
+	for (const auto& name : names)
+	{
+		sumTime += stage->GetBestTime(name);
+	}
+
+	// 加算した時間が超えているか
+	if (sumTime >= exsitTime * 60)
+	{
+		stage->SaveClear(stageName);
+		AddAchivedStr(dir);
+	}
+}
+
 void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY)
 {
 	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kFlashInterval) % 2 != 0)
@@ -448,6 +467,25 @@ void StageBase::DrawKilledConditions(int y, int handle, int killedNum)
 	DrawStringToHandle(kConditionsPosX, y, L"　　   種類の敵に殺される\n　　(          )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
 		killedNum, m_mgr.GetStage()->GetEnemyTypeCount(), killedNum);
+}
+
+void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime)
+{
+	auto& stage = m_mgr.GetStage();
+	int sumTime = 0;
+
+	// 確認するステージのすべてのタイムを加算する
+	for (const auto& name : names)
+	{
+		sumTime += stage->GetBestTime(name);
+	}
+
+	// 秒に戻す
+	sumTime /= 60;
+
+	DrawStringToHandle(kConditionsPosX, y, L"　　合計   秒間生き残る\n　　　　(          )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　　　%02d\n　　　　  %2d / %2d",
+		existTime, sumTime, existTime);
 }
 
 void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const

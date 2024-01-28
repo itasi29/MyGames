@@ -42,7 +42,7 @@ namespace
 	constexpr int kUpExsitTime = 10;
 
 	const std::string kRightStName = "Stage1-1";
-	const std::string kUpStName = "Stage1-2";
+	const std::string kUpStName = "Stage1-3";
 }
 
 Stage1_2::Stage1_2(GameManager& mgr, Input& input) :
@@ -93,8 +93,9 @@ void Stage1_2::Init()
 
 void Stage1_2::StartCheck()
 {
-	m_isRightClear = m_mgr.GetStage()->IsClearStage(kRightStName);
-	m_isUpClear = m_mgr.GetStage()->IsClearStage(kUpStName);
+	auto& stage = m_mgr.GetStage();
+	m_isRightClear = stage->IsClearStage(kRightStName);
+	m_isUpClear = stage->IsClearStage(kUpStName);
 }
 
 void Stage1_2::ChangeStage(Input& input)

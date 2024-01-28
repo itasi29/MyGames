@@ -19,7 +19,7 @@ namespace
 	// ’Êí•¶š—ñ‚ÌF
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
-	constexpr int kCreateFrame = 3;
+	constexpr int kCreateFrame = 60 * 3;
 	constexpr int kCreateNum = 5;
 
 

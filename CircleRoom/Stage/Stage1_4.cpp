@@ -43,6 +43,18 @@ namespace
 	const std::string kRightStName = "Stage1-6";
 	const std::string kUpStName = "Stage1-9";
 	const std::string kDownStName = "Stage1-1";
+
+	const std::vector<std::string> kNames =
+	{
+		"Stage1-1",
+		"Stage1-2",
+		"Stage1-3",
+		"Stage1-4",
+		"Stage1-5",
+		"Stage1-6",
+		"Stage1-7",
+		"Stage1-8"
+	};
 }
 
 Stage1_4::Stage1_4(GameManager& mgr, Input& input) :
@@ -152,6 +164,7 @@ void Stage1_4::CheckStageConditions()
 
 	CheckConditionsTime(kLeftStName, kLeftExsitTime, L"ç∂");
 	CheckConditionsTime(kRightStName, kRightExsitTime, L"âE");
+	CheckConditionsSumTime(kUpStName, kNames, kUpExistTime, L"è„");
 	CheckConditionsKilled(kDownStName, kDownKilledNum, L"â∫");
 }
 
@@ -177,8 +190,7 @@ int Stage1_4::DrawStageConditions(int drawY)
 	if (!m_isUpClear)
 	{
 		DrawArrowConditions(kUpStName, drawY, 0.0);
-		// FIXME:è„ï˚å¸à·Ç§ÇØÇ«âºÇ≈Ç®Ç¢ÇƒÇ®Ç≠
-		DrawTimeConditions(drawY, fontHandle, kUpExistTime);
+		DrawSumTimeConditions(kNames, drawY, fontHandle, kUpExistTime);
 
 		drawY += 68;
 	}

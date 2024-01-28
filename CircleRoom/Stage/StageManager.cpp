@@ -416,7 +416,6 @@ int StageManager::GetBestTime(const std::string& stgName) const
 	// ステージを見つけられなかったら0を返す
 	if (it == m_stageSaveData.end())
 	{
-		assert(false);
 		return 0;
 	}
 

@@ -35,6 +35,18 @@ namespace
 
 	const std::string kLeftStName = "Stage1-9";
 	const std::string kDownStName = "Stage1-6";
+
+	const std::vector<std::string> kNames =
+	{
+		"Stage1-1",
+		"Stage1-2",
+		"Stage1-3",
+		"Stage1-4",
+		"Stage1-5",
+		"Stage1-6",
+		"Stage1-7",
+		"Stage1-8"
+	};
 }
 
 Stage1_7::Stage1_7(GameManager& mgr, Input& input) :
@@ -113,7 +125,7 @@ void Stage1_7::ChangeStage(Input& input)
 
 void Stage1_7::CheckStageConditions()
 {
-	CheckConditionsTime(kLeftStName, kLeftExsitTime, L"ç∂");
+	CheckConditionsSumTime(kLeftStName, kNames, kLeftExsitTime, L"ç∂");
 	CheckConditionsKilled(kDownStName, kDownExsitTime, L"â∫");
 }
 
@@ -124,13 +136,13 @@ int Stage1_7::DrawStageConditions(int drawY)
 	if (!m_isLeftClear)
 	{
 		DrawArrowConditions(kLeftStName, drawY, -kRad90);
-		DrawTimeConditions(drawY, fontHandle, kLeftExsitTime);
+		DrawSumTimeConditions(kNames, drawY, fontHandle, kLeftExsitTime);
 
 		drawY += 68;
 	}
 	if (!m_isDownClear)
 	{
-		DrawArrowConditions(kDownStName, drawY, 0.0);
+		DrawArrowConditions(kDownStName, drawY, DX_PI);
 		DrawKilledConditions(drawY, fontHandle, kDownExsitTime);
 
 		drawY += 68;
@@ -142,7 +154,7 @@ int Stage1_7::DrawStageConditions(int drawY)
 void Stage1_7::DrawArrow() const
 {
 	DrawLeftArrow(m_isLeftClear, kLeftStName);
-	DrawUpArrow(m_isDownClear, kDownStName);
+	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
 void Stage1_7::DrawKilledEnemyType() const

@@ -132,6 +132,14 @@ protected:
 	/// <param name="killedNum">殺される種類数</param>
 	/// <param name="dir">方向名</param>
 	void CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir);
+	/// <summary>
+	/// あるステージ全ての生存時間がクリア時間を超えているか
+	/// </summary>
+	/// <param name="stageName">クリアにするステージの名前</param>
+	/// <param name="names">確認するステージ群情報</param>
+	/// <param name="exsitTime">クリア時間(秒)</param>
+	/// <param name="dir">方向名</param>
+	void CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int exsitTime, const std::wstring& dir);
 
 	/// <summary>
 	/// クリア条件にある矢印の描画
@@ -156,6 +164,14 @@ protected:
 	/// <param name="handle">フォントハンドル</param>
 	/// <param name="killedNum">倒される種類数</param>
 	void DrawKilledConditions(int y, int handle, int killedNum);
+	/// <summary>
+	/// クリア条件の合計時間のやつ描画
+	/// </summary>
+	/// <param name="names">確認するステージ群情報</param>
+	/// <param name="y">Y座標</param>
+	/// <param name="handle">フォントハンドル</param>
+	/// <param name="existTime">合計クリア時間</param>
+	void DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime);
 
 	/// <summary>
 	/// 左矢印の描画
