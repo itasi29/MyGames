@@ -21,10 +21,13 @@ private:
 private:
 	// 敵生成時間
 	int m_createNormalFrame;
-	int m_createCreateFrame;
+	int m_createDashFrame;
+	int m_createLargeFrame;
 
 	// ステージに入った時点でのクリア情報を保持
+	bool m_isLeftClear;
 	bool m_isRightClear;
 	bool m_isUpClear;
+	bool m_isDownClear;
 };
 

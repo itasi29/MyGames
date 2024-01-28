@@ -17,6 +17,12 @@
 
 #include "Player/Player.h"
 #include "Enemy/EnemyBase.h"
+#include "Enemy/EnemyMoveWall.h"
+#include "Enemy/EnemyNormal.h"
+#include "Enemy/EnemyLarge.h"
+#include "Enemy/EnemyDash.h"
+#include "Enemy/EnemyCreate.h"
+#include "Enemy/EnemyDivision.h"
 #include "Boss/BossBase.h"
 
 namespace
@@ -392,6 +398,35 @@ void StageBase::DrawPlaying()
 
 }
 
+void StageBase::CheckConditionsTime(const std::string& stageName, int exsitTime, const std::wstring& dir)
+{
+	auto& stage = m_mgr.GetStage();
+
+	// 既にクリアしていたら確認しない
+	if (stage->IsClearStage(stageName)) return;
+
+	// ベストタイムが条件時間を超えているか
+	if (stage->GetBestTime(m_stageName) > exsitTime * 60)
+	{
+		stage->SaveClear(stageName);
+		AddAchivedStr(dir);
+	}
+}
+
+void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir)
+{
+	auto& stage = m_mgr.GetStage();
+
+	// 既にクリアしていたら確認しない
+	if (stage->IsClearStage(stageName)) return;
+
+	if (stage->GetEnemyTypeCount() >= killedNum)
+	{
+		stage->SaveClear(stageName);
+		AddAchivedStr(dir);
+	}
+}
+
 void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY)
 {
 	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kFlashInterval) % 2 != 0)
@@ -459,6 +494,57 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned
 void StageBase::AddAchivedStr(const std::wstring& dir)
 {
 	m_achived.push_back({ dir + L"の条件達成！", 0 });
+}
+
+void StageBase::CreateMoveWall()
+{
+	// 上側
+	auto enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
+	enemy->Init({ 0, -1 });
+	m_enemy.push_back(enemy);
+	enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
+	enemy->Init({ 0, 1 });
+	m_enemy.push_back(enemy);
+}
+
+void StageBase::CreateNormal(int& frame, bool isStart)
+{
+	frame = 0;
+	auto enemy = std::make_shared<EnemyNormal>(m_size, m_fieldSize);
+	enemy->Init(m_centerPos, isStart);
+	m_enemy.push_back(enemy);
+}
+
+void StageBase::CreateLarge(int& frame, bool isStart)
+{
+	frame = 0;
+	auto enemy = std::make_shared<EnemyLarge>(m_size, m_fieldSize);
+	enemy->Init(m_centerPos, isStart);
+	m_enemy.push_back(enemy);
+}
+
+void StageBase::CreateDash(int& frame, bool isStart)
+{
+	frame = 0;
+	auto enemy = std::make_shared<EnemyDash>(m_size, m_fieldSize, m_player);
+	enemy->Init(m_centerPos, isStart);
+	m_enemy.push_back(enemy);
+}
+
+void StageBase::CreateEneCreate(int& frame, bool isStart)
+{
+	frame = 0;
+	auto enemy = std::make_shared<EnemyCreate>(m_size, m_fieldSize, this);
+	enemy->Init(m_centerPos, isStart);
+	m_enemy.push_back(enemy);
+}
+
+void StageBase::CreateDivision(int& frame, bool isStart)
+{
+	frame = 0;
+	auto enemy = std::make_shared<EnemyDivision>(m_size, m_fieldSize, this);
+	enemy->Init(m_centerPos, isStart);
+	m_enemy.push_back(enemy);
 }
 
 void StageBase::ChangeSelectFunc()

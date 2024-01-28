@@ -41,12 +41,13 @@ namespace
 
 	// ステージの縦横の数
 	constexpr int kLineNum = 3;
-	constexpr int kRowNum = 2;
+	constexpr int kRowNum = 3;
 	// ステージ名簿
-	const std::string kStageStr[kLineNum][kRowNum] = {
-		{"1-5", "None"},
-		{"1-4", "1-3"},
-		{"1-2", "1-1"}
+	const std::string kStageStr[kLineNum][kRowNum] =
+	{
+		{"Stage1-5", "Stage1-9", "Stage1-7"},
+		{"Stage1-3", "Stage1-4", "Stage1-6"},
+		{"Stage1-2", "Stage1-1", "Stage1-8"}
 	};
 }
 
@@ -102,7 +103,7 @@ void StageSelectScene::Update(Input& input)
 	{
 		// ステージがないなら終了
 		if (kStageStr[m_indexLine][m_indexRow] == "None") return;
-		auto stgName = "Stage" + kStageStr[m_indexLine][m_indexRow];
+		auto stgName = kStageStr[m_indexLine][m_indexRow];
 
 		// そのステージがクリアされていなければ終了
 		if (!m_mgr.GetStage()->IsClearStage(stgName)) return;
@@ -161,7 +162,7 @@ void StageSelectScene::Draw()
 
 			// 現在選択しているステージ
 			// FIXME:仮として円を描画しているので、グラフィックが出来次第変更
-			std::string stageName = "Stage" + kStageStr[y][x];
+			const std::string& stageName = kStageStr[y][x];
 			if ((stageName) == m_mgr.GetStage()->GetStageName())
 			{
 #if false

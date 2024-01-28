@@ -119,6 +119,21 @@ protected:
 	virtual void UpdateTime() {}
 
 	/// <summary>
+	/// クリア時間を超えているかの確認
+	/// </summary>
+	/// <param name="stageName">確認するステージの名前</param>
+	/// <param name="exsitTime">クリア時間(秒)</param>
+	/// <param name="dir">方向名</param>
+	void CheckConditionsTime(const std::string& stageName, int exsitTime, const std::wstring& dir);
+	/// <summary>
+	/// 殺された数が超えているかの確認
+	/// </summary>
+	/// <param name="stageName">確認するステージの名前</param>
+	/// <param name="killedNum">殺される種類数</param>
+	/// <param name="dir">方向名</param>
+	void CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir);
+
+	/// <summary>
 	/// クリア条件にある矢印の描画
 	/// </summary>
 	/// <param name="nextStName">次ステージのｐ名前</param>
@@ -173,6 +188,14 @@ protected:
 	/// </summary>
 	/// <param name="dir">方向</param>
 	void AddAchivedStr(const std::wstring& dir);
+
+	/*敵の各種生成*/
+	void CreateMoveWall();
+	void CreateNormal(int& frame, bool isStart = false);
+	void CreateLarge(int& frame, bool isStart = false);
+	void CreateDash(int& frame, bool isStart = false);
+	void CreateEneCreate(int& frame, bool isStart = false);
+	void CreateDivision(int& frame, bool isStart = false);
 
 	void ChangeSelectFunc();
 	void ChangePlayingFunc();

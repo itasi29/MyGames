@@ -8,11 +8,9 @@
 #include "FileSystem/FileBase.h"
 #include "Stage1_1.h"
 #include "Stage1_2.h"
-#include "Stage1_3.h"
+#include "Stage1_4.h"
 
 #include "Player/Player.h"
-#include "Enemy/EnemyNormal.h"
-#include "Enemy/EnemyMoveWall.h"
 
 namespace
 {
@@ -33,14 +31,14 @@ namespace
 	constexpr int kCreateFrame = 60 * 6;
 
 	// 左クリア条件　生存時間
-	constexpr int kLeftExsitTime = 10;
+	constexpr int kLeftExsitTime = 5;
 	// 上クリア条件　生存時間
-	constexpr int kUpExsitTime = 15;
+	constexpr int kUpKilledNum = 4;
 
 	// 左の部屋の名前
 	const std::string kLeftStName = "Stage1-2";
 	// 上の部屋の名前
-	const std::string kUpStName = "Stage1-3";
+	const std::string kUpStName = "Stage1-4";
 }
 
 Stage1_1::Stage1_1(GameManager& mgr, Input& input) :
@@ -82,21 +80,7 @@ void Stage1_1::Init()
 	m_enemy.clear();
 
 	// 壁動く敵の作成
-	Vec2 vec;
-	// 上側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
-	vec.x = 0;
-	vec.y = -1;
-	m_enemy.back()->Init(vec);
-	// 下側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
-	vec.y = 1;
-	m_enemy.back()->Init(vec);
-
-	//// 敵を一体追加
-	//m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
-	//m_enemy.back()->Init(m_centerPos);
-	//m_createNum++;
+	CreateMoveWall();
 }
 
 void Stage1_1::StartCheck()
@@ -113,21 +97,22 @@ void Stage1_1::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage()->IsClearStage(kLeftStName) && input.IsTriggered("left"))
+	auto& stage = m_mgr.GetStage();
+	if (stage->IsClearStage(kLeftStName) && input.IsTriggered("left"))
 	{
 		std::shared_ptr<Stage1_2> nextStage;
 		nextStage = std::make_shared<Stage1_2>(m_mgr, input);
 
-		m_mgr.GetStage()->ChangeStage(nextStage);
+		stage->ChangeStage(nextStage);
 
 		return;
 	}
-	if (m_mgr.GetStage()->IsClearStage(kUpStName) && input.IsTriggered("up"))
+	if (stage->IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
-		std::shared_ptr<Stage1_3> nextStage;
-		nextStage = std::make_shared<Stage1_3>(m_mgr, input);
+		std::shared_ptr<Stage1_4> nextStage;
+		nextStage = std::make_shared<Stage1_4>(m_mgr, input);
 
-		m_mgr.GetStage()->ChangeStage(nextStage);
+		stage->ChangeStage(nextStage);
 
 		return;
 	}
@@ -135,25 +120,8 @@ void Stage1_1::ChangeStage(Input& input)
 
 void Stage1_1::CheckStageConditions()
 {
-	// 左をまだクリアしていない場合
-	if (!m_mgr.GetStage()->IsClearStage(kLeftStName))
-	{
-		// 条件確認
-		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kLeftExsitTime * 60)
-		{
-			m_mgr.GetStage()->SaveClear(kLeftStName);
-			AddAchivedStr(L"左");
-		}
-	}
-	// 上をまだクリアしていない場合
-	if (!m_mgr.GetStage()->IsClearStage(kUpStName))
-	{
-		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kUpExsitTime * 60)
-		{
-			m_mgr.GetStage()->SaveClear(kUpStName);
-			AddAchivedStr(L"上");
-		}
-	}
+	CheckConditionsTime(kLeftStName, kLeftExsitTime, L"左");
+	CheckConditionsKilled(kUpStName, kUpKilledNum, L"上");
 }
 
 int Stage1_1::DrawStageConditions(int drawY)
@@ -170,7 +138,7 @@ int Stage1_1::DrawStageConditions(int drawY)
 	if (!m_isUpClear)
 	{
 		DrawArrowConditions(kUpStName, drawY, 0.0);
-		DrawTimeConditions(drawY, fontHandle, kUpExsitTime);
+		DrawKilledConditions(drawY, fontHandle, kUpKilledNum);
 
 		drawY += 68;
 	}
@@ -199,9 +167,7 @@ void Stage1_1::CreateEnemy()
 	// 初めは生成間隔が早め
 	if (m_createNum < kStartCreatNum && m_createFrame > kStartCreateFrame)
 	{
-		CreateNormal(true);
-
-		// 生成すう増加
+		CreateNormal(m_createFrame, true);
 		m_createNum++;
 
 		return;
@@ -209,17 +175,8 @@ void Stage1_1::CreateEnemy()
 
 	if (m_createFrame > kCreateFrame)
 	{
-		CreateNormal(false);
+		CreateNormal(m_createFrame);
 	}
-}
-
-void Stage1_1::CreateNormal(bool isStart)
-{
-	// 生成時間の初期化
-	m_createFrame = 0;
-	// 配列の最後に敵を追加
-	m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));
-	m_enemy.back()->Init(m_centerPos, isStart);
 }
 
 void Stage1_1::UpdateTime()

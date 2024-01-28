@@ -6,8 +6,9 @@
 #include "StageManager.h"
 #include "FileSystem/FontSystem.h"
 #include "Stage1_3.h"
-#include "Stage1_1.h"
 #include "Stage1_4.h"
+#include "Stage1_2.h"
+#include "Stage1_5.h"
 
 #include "Player/Player.h"
 #include "Enemy/EnemyMoveWall.h"
@@ -20,16 +21,21 @@ namespace
 
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	// 生成間隔フレーム
+	constexpr int kCreateFrame = 60 * 5.5;
+
+	// 生成数
+	constexpr int kCreateNum = 2;
 
 	// クリア時間
-	constexpr int kDownExsitTime = 15;
-	constexpr int kLeftKilledNum = 3;
+	constexpr int kRightKilledNum = 4;
+	constexpr int kDownExsitTime = 10;
+	constexpr int kUpExsitTime = 10;
 
-	// 生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 6;
 
-	const std::string kDownStName = "Stage1-1";
-	const std::string kLeftStName = "Stage1-4";
+	const std::string kRightStName = "Stage1-4";
+	const std::string kDownStName = "Stage1-2";
+	const std::string kUpStName = "Stage1-5";
 }
 
 Stage1_3::Stage1_3(GameManager& mgr, Input& input) :
@@ -60,6 +66,9 @@ void Stage1_3::Init()
 	// 生成フレームの初期化
 	m_createFrame = 0;
 
+	// 生成数初期化
+	m_createNum = 0;
+
 	// プレイヤーの初期化
 	m_player->Init();
 
@@ -67,27 +76,15 @@ void Stage1_3::Init()
 	m_enemy.clear();
 
 	// 壁動く敵の作成
-	Vec2 vec;
-	// 上側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
-	vec.x = 0;
-	vec.y = -1;
-	m_enemy.back()->Init(vec);
-	// 下側
-	m_enemy.push_back(std::make_shared<EnemyMoveWall>(m_size, m_fieldSize));
-	vec.y = 1;
-	m_enemy.back()->Init(vec);
-
-	m_enemy.push_back(std::make_shared<EnemyDash>(m_size, m_fieldSize, m_player));
-	m_enemy.back()->Init(m_centerPos);
-	m_enemy.push_back(std::make_shared<EnemyDash>(m_size, m_fieldSize, m_player));
-	m_enemy.back()->Init(m_centerPos);
+	CreateMoveWall();
 }
 
 void Stage1_3::StartCheck()
 {
-	m_isDownClear = m_mgr.GetStage()->IsClearStage(kDownStName);
-	m_isLeftClear = m_mgr.GetStage()->IsClearStage(kLeftStName);
+	auto& stage = m_mgr.GetStage();
+	m_isRightClear = stage->IsClearStage(kRightStName);
+	m_isDownClear = stage->IsClearStage(kDownStName);
+	m_isUpClear = stage->IsClearStage(kUpStName);
 }
 
 void Stage1_3::ChangeStage(Input& input)
@@ -98,21 +95,31 @@ void Stage1_3::ChangeStage(Input& input)
 	// 死亡直後は変わらないようにする
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-	if (m_mgr.GetStage()->IsClearStage(kLeftStName) && input.IsTriggered("left"))
+	auto& stage = m_mgr.GetStage();
+	if (stage->IsClearStage(kRightStName) && input.IsTriggered("right"))
 	{
 		std::shared_ptr<Stage1_4> nextStage;
 		nextStage = std::make_shared<Stage1_4>(m_mgr, input);
 
-		m_mgr.GetStage()->ChangeStage(nextStage);
+		stage->ChangeStage(nextStage);
 
 		return;
 	}
-	if (m_mgr.GetStage()->IsClearStage(kDownStName) && input.IsTriggered("down"))
+	if (stage->IsClearStage(kDownStName) && input.IsTriggered("down"))
 	{
-		std::shared_ptr<Stage1_1> nextStage;
-		nextStage = std::make_shared<Stage1_1>(m_mgr, input);
+		std::shared_ptr<Stage1_2> nextStage;
+		nextStage = std::make_shared<Stage1_2>(m_mgr, input);
 
-		m_mgr.GetStage()->ChangeStage(nextStage);
+		stage->ChangeStage(nextStage);
+
+		return;
+	}
+	if (stage->IsClearStage(kUpStName) && input.IsTriggered("up"))
+	{
+		std::shared_ptr<Stage1_5> nextStage;
+		nextStage = std::make_shared<Stage1_5>(m_mgr, input);
+
+		stage->ChangeStage(nextStage);
 
 		return;
 	}
@@ -120,24 +127,9 @@ void Stage1_3::ChangeStage(Input& input)
 
 void Stage1_3::CheckStageConditions()
 {
-	// 左をまだクリアしていない場合
-	if (!m_mgr.GetStage()->IsClearStage(kLeftStName))
-	{
-		if (m_mgr.GetStage()->GetEnemyTypeCount() >= kLeftKilledNum)
-		{
-			m_mgr.GetStage()->SaveClear(kLeftStName);
-			AddAchivedStr(L"左");
-		}
-	}
-	// 下をまだクリアしていない場合
-	if (!m_mgr.GetStage()->IsClearStage(kDownStName))
-	{
-		if (m_mgr.GetStage()->GetBestTime(m_stageName) > kDownExsitTime * 60)
-		{
-			m_mgr.GetStage()->SaveClear(kDownStName);
-			AddAchivedStr(L"下");
-		}
-	}
+	CheckConditionsKilled(kRightStName, kRightKilledNum, L"右");
+	CheckConditionsTime(kDownStName, kDownExsitTime, L"下");
+	CheckConditionsTime(kUpStName, kUpExsitTime, L"上");
 }
 
 int Stage1_3::DrawStageConditions(int drawY)
@@ -145,10 +137,10 @@ int Stage1_3::DrawStageConditions(int drawY)
 	int startY = drawY;
 	int fontHandle = m_mgr.GetFont()->GetHandle(28);
 
-	if (!m_isLeftClear)
+	if (!m_isRightClear)
 	{
-		DrawArrowConditions(kLeftStName, drawY, -kRad90);
-		DrawKilledConditions(drawY, fontHandle, kLeftKilledNum);
+		DrawArrowConditions(kRightStName, drawY, -kRad90);
+		DrawKilledConditions(drawY, fontHandle, kRightKilledNum);
 
 		drawY += 68;
 	}
@@ -159,14 +151,22 @@ int Stage1_3::DrawStageConditions(int drawY)
 
 		drawY += 68;
 	}
+	if (!m_isUpClear)
+	{
+		DrawArrowConditions(kUpStName, drawY, 0.0);
+		DrawTimeConditions(drawY, fontHandle, kUpExsitTime);
+
+		drawY += 68;
+	}
 
 	return drawY - startY - 68;
 }
 
 void Stage1_3::DrawArrow() const
 {
-	DrawLeftArrow(m_isLeftClear, kLeftStName);
+	DrawRightArrow(m_isRightClear, kRightStName);
 	DrawDownArrow(m_isDownClear, kDownStName);
+	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
 void Stage1_3::DrawKilledEnemyType() const
@@ -180,11 +180,15 @@ void Stage1_3::CreateEnemy()
 {
 	m_createFrame++;
 
+	if (m_createNum < kCreateNum)
+	{
+		CreateDash(m_createFrame, true);
+		return;
+	}
+
 	if (m_createFrame > kCreateFrame)
 	{
-		m_createFrame = 0;
-		m_enemy.push_back(std::make_shared<EnemyDash>(m_size, m_fieldSize, m_player));
-		m_enemy.back()->Init(m_centerPos);
+		CreateDash(m_createFrame);
 	}
 }
 

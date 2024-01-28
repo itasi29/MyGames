@@ -38,7 +38,7 @@ namespace
 
 	// ステージの縦横数
 	constexpr int kLine = 3;
-	constexpr int kRow = 2;
+	constexpr int kRow = 3;
 
 	// ステージ間の間隔
 	constexpr int kStageMarginX = 1280;
@@ -47,9 +47,9 @@ namespace
 	// 名前の場所
 	const std::string kStName[kLine][kRow] =
 	{
-		{"Stage1-5", "none"},
-		{"Stage1-4", "Stage1-3"},
-		{"Stage1-2", "Stage1-1"}
+		{"Stage1-5", "Stage1-9", "Stage1-7"},
+		{"Stage1-3", "Stage1-4", "Stage1-6"},
+		{"Stage1-2", "Stage1-1", "Stage1-8"}
 	};
 }
 
