@@ -10,6 +10,11 @@ Stage3::Stage3(StageManager& mgr) :
 
 void Stage3::Update()
 {
+	if (CheckHitKey(KEY_INPUT_M))
+	{
+		m_mgr.DeathMoveScreen({ -1, -1 });
+	}
+
 	if (CheckHitKey(KEY_INPUT_LEFT))
 	{
 		auto next = std::make_shared<Stage2>(m_mgr);

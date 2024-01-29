@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <list>
+#include "Vec2.h"
 
 class Application;
 class Input;
@@ -65,6 +66,11 @@ public:
 	/// <param name="frame">揺らすフレーム</param>
 	/// <param name="size">揺らす際の幅</param>
 	void ShakeScreen(int frame, int size);
+	/// <summary>
+	/// 画面を指定ベクトルに動かす
+	/// </summary>
+	/// <param name="vec">ベクトル</param>
+	void MoveScreen(const Vec2& vec);
 
 	/// <summary>
 	/// 末尾のSceneを取得
@@ -78,6 +84,21 @@ public:
 	int GetScreenHandle() const;
 
 private:
+	void NormalUpdate(Input& input);
+	void ShakeUpdate(Input& input);
+	void MoveUpdate(Input& input);
+
+	void NormalDraw() const;
+	void ShakeDraw() const;
+	void MoveDraw() const;
+
+private:
+	using UpdateFunc_t = void(SceneManager::*)(Input&);
+	using DrawFunc_t = void(SceneManager::*)() const;
+
+	UpdateFunc_t m_updateFunc;
+	DrawFunc_t m_drawFunc;
+
 	// シーンを入れる
 	std::list<std::shared_ptr<Scene>> m_scenes;
 
@@ -89,6 +110,15 @@ private:
 	int m_shakeSize;
 	// 画面を揺らすか
 	bool m_isShake;
+
+	int m_moveScreen;
+
+	// 画面を動かすベクトル
+	Vec2 m_vec;
+	// 動かす基準がX軸か
+	bool m_isBaseX;
+	// sinfを使うよう
+	double m_angle;
 
 	// 背景用
 	std::shared_ptr<BackgroundScene> m_bg;

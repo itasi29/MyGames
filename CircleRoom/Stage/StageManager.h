@@ -163,15 +163,15 @@ private:
 
 	// 通常の更新
 	void NormalUpdate(Input& input);
-	// 移動の更新
-	void MoveUpdate(Input& input);
+	// ステージ移動の更新
+	void StageMoveUpdate(Input& input);
 	// 移動かつプレイの更新
 	void MoveGamePlaingUpdate(Input& input);
 
 	// 通常の描画
 	void NormalDraw() const;
-	// 移動時の描画
-	void MoveDraw() const;
+	// ステージ移動時の描画
+	void StageMoveDraw() const;
 	// 移動かつプレイの描画
 	void MoveGamePlaingDraw() const;
 

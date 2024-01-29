@@ -185,11 +185,7 @@ void GamePlayingScene::DrawNormal()
 void GamePlayingScene::StartStage(Input& input)
 {
 	const auto& nowStage = m_mgr.GetNowStage();
-	if (nowStage == "Stage1-1")
-	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
-		return;
-	}
+	
 	if (nowStage == "Stage1-2")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr, input));
@@ -230,5 +226,9 @@ void GamePlayingScene::StartStage(Input& input)
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
 		return;
 	}
+
+	// ‚Ç‚±‚É‚à“ü‚ç‚È‚©‚Á‚½‚ç1-1‚É“ü‚é‚æ‚¤‚É‚·‚é
+	m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
+	return;
 }
 
