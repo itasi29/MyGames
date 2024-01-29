@@ -27,7 +27,7 @@ namespace
 	constexpr float kSwing = 1.5f;
 
 	// 半径
-	constexpr float kRadius = 48.0f;
+	constexpr float kRadius = 80.0f;
 
 	// カラー
 	constexpr int kColor = 0x08ff08;
@@ -79,6 +79,9 @@ void BossArmored::Init(const Vec2& pos, bool isStart)
 
 	// ラジアンの初期化
 	m_radian = 0;
+
+	// 回転初期化
+	m_angle = 0.0;
 
 	// フレームの初期化
 	m_frame = 0;
@@ -205,6 +208,7 @@ void BossArmored::NormalUpdate()
 	{
 		m_radian = 0;
 	}
+	m_angle -= kRad;
 
 	m_conversionVec.x = m_vec.x * cosf(m_radian);
 	m_conversionVec.y = m_vec.y * sinf(m_radian);
@@ -221,7 +225,7 @@ void BossArmored::NormalUpdate()
 
 void BossArmored::NormalDraw() const
 {
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 
 	// ダメージオブジェクトの描画

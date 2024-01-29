@@ -7,7 +7,7 @@
 namespace
 {
 	// ”¼Œa
-	constexpr float kRadius = 8.0f;
+	constexpr float kRadius = 20.0f;
 
 	// ƒJƒ‰[
 	constexpr int kColor = 0xf0f008;
@@ -39,6 +39,9 @@ void EnemyChild::Init(const Vec2& pos, bool isStart)
 	// ƒtƒŒ[ƒ€‚Ì‰Šú‰»
 	m_frame = 0;
 
+	// ‰ñ“]‰Šú‰»
+	m_angle = 0.0;
+
 	// ‰‚ß‚©‚ç”»’è‚ðŽ‚Â
 	m_col.SetCenter(m_pos, m_radius);
 
@@ -54,6 +57,7 @@ void EnemyChild::StartUpdate()
 void EnemyChild::NormalUpdate()
 {
 	m_frame++;
+	m_angle -= kRad;
 
 	if (m_frame > kDeleteFrame)
 	{

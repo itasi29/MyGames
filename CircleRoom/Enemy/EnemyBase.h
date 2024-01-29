@@ -1,5 +1,5 @@
 #pragma once
-
+#include <DxLib.h>
 #include <string>
 #include <memory>
 #include <list>
@@ -71,6 +71,9 @@ protected:
 
 
 protected:
+	// 1度を弧度法に
+	const double kRad = DX_PI / 180;
+
 	// メンバ関数ポインタ
 	using updateFunc_t = void(EnemyBase::*)();
 	using drawFunc_t = void(EnemyBase::*)();
@@ -112,6 +115,8 @@ protected:
 
 	// 生存判定
 	bool m_isExsit;
+
+	double m_angle;
 
 	// フレーム
 	int m_frame;

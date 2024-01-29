@@ -171,9 +171,8 @@ void Stage1_3::DrawArrow() const
 
 void Stage1_3::DrawKilledEnemyType() const
 {
-	DrawKilledEnemy("Dash", 0, 0x0808ff);
-
-	DrawKilledEnemy("MoveWall", 36, 0x888888);
+	DrawKilledEnemy("Dash", 0, 0x0b60b0);
+	DrawKilledEnemy("MoveWall", 36, 0xb6bbc4);
 }
 
 void Stage1_3::CreateEnemy()

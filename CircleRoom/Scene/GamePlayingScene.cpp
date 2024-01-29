@@ -139,15 +139,15 @@ void GamePlayingScene::UpdateFadeOut(Input& input)
 
 void GamePlayingScene::UpdateNormal(Input& input)
 {
-	m_mgr.GetStage()->Update(input);
-	// プレイ時間のアップデート
-	m_mgr.UpdatePlaytime();
-
 	// pauseボタンが押されたらポーズ画面を開く
 	if (input.IsPress("pause"))
 	{
 		m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input));
 	}
+
+	m_mgr.GetStage()->Update(input);
+	// プレイ時間のアップデート
+	m_mgr.UpdatePlaytime();
 
 	// 簡易実装
 	if (m_mgr.GetStage()->m_clear)

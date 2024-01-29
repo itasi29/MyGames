@@ -16,7 +16,7 @@ namespace
 	// 動くスピード
 	constexpr float kSpeed = 4.0f;
 	// 半径
-	constexpr float kRadius = 24.0f;
+	constexpr float kRadius = 43.0f;
 
 	// カラー
 	constexpr int kColor = 0x0808ff;
@@ -77,6 +77,9 @@ void EnemyDash::Init(const Vec2& pos, bool isStart)
 	m_pos = pos;
 	m_radius = kRadius;
 
+	// 回転初期化
+	m_angle = 0.0;
+
 	// フレームの初期化
 	m_frame = 0;
 
@@ -132,6 +135,7 @@ void EnemyDash::NormalUpdate()
 {
 	Dash();
 	m_pos += m_vec;
+	m_angle -= kRad;
 	m_dashEffFrame--;
 
 	// 反射したかつ、ダッシュ状態なら通常状態に戻す
@@ -164,13 +168,13 @@ void EnemyDash::NormalDraw()
 			//auto alpha = (255 - (m_logFrame + i) * (255 / kDashLogNum));
 			auto alpha = 255 / (i + m_logFrame + 1);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, 0.0,
+			DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, m_angle,
 				m_charImg->GetHandle(), true);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
 
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 
 	DrawDashEff();

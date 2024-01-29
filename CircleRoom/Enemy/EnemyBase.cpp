@@ -37,7 +37,6 @@ namespace
 
 	// ‚¸‚ç‚·—Ê
 	constexpr int kWallEffectSlide = 32;
-
 }
 
 EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
@@ -47,7 +46,8 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_radius(0),
 	m_isExsit(true),
 	m_frame(0),
-	m_lineType(0)
+	m_lineType(0),
+	m_angle(0)
 {
 	m_updateFunc = &EnemyBase::StartUpdate;
 	m_drawFunc = &EnemyBase::StartDraw;
@@ -227,7 +227,7 @@ void EnemyBase::StartDraw()
 
 void EnemyBase::NormalDraw()
 {
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 
 	DrawHitWallEffect();

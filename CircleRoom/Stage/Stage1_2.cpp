@@ -166,11 +166,9 @@ void Stage1_2::DrawArrow() const
 
 void Stage1_2::DrawKilledEnemyType() const
 {
-	DrawKilledEnemy("Normal", 0, 0xffffff);
-
-	DrawKilledEnemy("MoveWall", 36, 0x888888);
-
-	DrawKilledEnemy("Large", 76, 0xffffff, 20);
+	DrawKilledEnemy("Normal", 0, 0xfffae7);
+	DrawKilledEnemy("MoveWall", 36, 0xb6bbc4);
+	DrawKilledEnemy("Large", 76, 0xfffae7, 20);
 }
 
 void Stage1_2::CreateEnemy()

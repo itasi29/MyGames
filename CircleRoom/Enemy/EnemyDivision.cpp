@@ -16,7 +16,7 @@ namespace
 	// 動くスピード
 	constexpr float kSpeed = 4.0f;
 	// 半径
-	constexpr float kRadius = 24.0f;
+	constexpr float kRadius = 43.0f;
 
 	// カラー
 	constexpr int kColor = 0xffffff;
@@ -27,7 +27,9 @@ namespace
 	constexpr int kDivisionFrame = 60 * 8;
 
 	// 分裂する前の待機フレーム
-	constexpr int kDivisionWaitFrame = 30;
+	constexpr int kDivisionWaitFrame = 60;
+	// 分裂前回転フレーム
+	constexpr int kRotationFrame = 40;
 }
 
 EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -74,6 +76,9 @@ void EnemyDivision::Init(const Vec2& pos, bool isStart)
 		m_vec = Vec2{ moveX, moveY };
 	} while (false);
 
+	// 回転初期化
+	m_angle = GetRand(359) * kRad;
+
 	// ゼロベクトルでないなら正規化
 	if (m_vec.SqLength() > 0)
 	{
@@ -112,6 +117,10 @@ void EnemyDivision::NormalUpdate()
 	if (m_isDivisionWait)
 	{
 		m_divisionWaitFrame++;
+		if (m_divisionWaitFrame < kRotationFrame)
+		{
+			m_angle -= (kRad * 20);
+		}
 
 		// 待機時間を超えたら分裂する
 		if (m_divisionWaitFrame > kDivisionWaitFrame)
@@ -119,7 +128,7 @@ void EnemyDivision::NormalUpdate()
 			m_isExsit = false;
 
 			// ベクトルを保存する
-			Vec2 vec = m_vec.GetNormalized();
+			Vec2 vec = { cosf(m_angle), sinf(m_angle) };
 			for (int i = 0; i < kDivisionNum; i++)
 			{
 				std::shared_ptr<EnemySplit> split;
@@ -137,6 +146,7 @@ void EnemyDivision::NormalUpdate()
 	}
 
 	m_pos += m_vec;
+	m_angle -= kRad;
 	Reflection();
 
 	m_col.SetCenter(m_pos, m_radius);

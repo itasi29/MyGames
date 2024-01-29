@@ -19,7 +19,7 @@ namespace
 	// 動くスピード
 	constexpr float kSpeed = 3.0f;
 	// 半径
-	constexpr float kRadius = 24.0f;
+	constexpr float kRadius = 43.0f;
 
 	// カラー
 	constexpr int kColor = 0xffff08;
@@ -57,6 +57,9 @@ void EnemyCreate::Init(const Vec2& pos, bool isStart)
 
 	// ラジアンの初期化
 	m_radian = 0;
+
+	// 回転初期化
+	m_angle = 0.0;
 
 	// フレームの初期化
 	m_frame = 0;
@@ -117,6 +120,7 @@ void EnemyCreate::NormalUpdate()
 	{
 		m_radian = 0.0f;
 	}
+	m_angle -= kRad;
 
 	// 現在のベクトルを垂直方向にコサインカーブの値分ずらす
 	m_conversionVec = m_vec * kSpeed + m_vec.Right() * cosf(m_radian) * kSwingHeight;

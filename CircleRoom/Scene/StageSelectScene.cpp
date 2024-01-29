@@ -160,7 +160,7 @@ void StageSelectScene::Update(Input& input)
 		}
 		if (stgName == "Stage1-9")
 		{
-//			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
+			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
 		}
 
 		m_mgr.GetScene()->PopScene();

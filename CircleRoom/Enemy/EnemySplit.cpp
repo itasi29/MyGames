@@ -9,7 +9,7 @@ namespace
 	// 動くスピード
 	constexpr float kSpeed = 6.0f;
 	// 半径
-	constexpr float kRadius = 12.0f;
+	constexpr float kRadius = 20.0f;
 
 	// カラー
 	constexpr int kColor = 0xffffff;
@@ -39,6 +39,9 @@ void EnemySplit::Init(const Vec2& pos, Vec2& vec)
 	m_vec = vec;
 	m_vec *= kSpeed;
 
+	// 回転初期化
+	m_angle = 0.0;
+
 	// フレームの初期化
 	m_frame = 0;
 
@@ -55,6 +58,7 @@ void EnemySplit::StartUpdate()
 void EnemySplit::NormalUpdate()
 {
 	m_pos += m_vec;
+	m_angle -= kRad;
 	Reflection();
 
 	m_col.SetCenter(m_pos, m_radius);

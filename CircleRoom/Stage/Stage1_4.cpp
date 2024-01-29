@@ -214,13 +214,10 @@ void Stage1_4::DrawArrow() const
 
 void Stage1_4::DrawKilledEnemyType() const
 {
-	DrawKilledEnemy("Normal", 0, 0xffffff);
-
-	DrawKilledEnemy("MoveWall", 36, 0x888888);
-
-	DrawKilledEnemy("Dash", 72, 0xffff08);
-
-	DrawKilledEnemy("Large", 108, 0xf0f008, 12);
+	DrawKilledEnemy("Normal", 0, 0xfffae7);
+	DrawKilledEnemy("MoveWall", 36, 0xb6bbc4);
+	DrawKilledEnemy("Dash", 72, 0x0b60b0);
+	DrawKilledEnemy("Large", 112, 0xfffae7, 20);
 }
 
 void Stage1_4::CreateEnemy()

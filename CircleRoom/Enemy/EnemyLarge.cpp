@@ -12,7 +12,7 @@ namespace
 	// 動くスピード
 	constexpr float kSpeed = 2.5f;
 	// 半径
-	constexpr float kRadius = 48.0f;
+	constexpr float kRadius = 80.0f;
 
 	// カラー
 	constexpr int kColor = 0xffffff;
@@ -37,6 +37,9 @@ void EnemyLarge::Init(const Vec2& pos, bool isStart)
 	// 引数で渡された位置を初期位置に
 	m_pos = pos;
 	m_radius = kRadius;
+
+	// 回転初期化
+	m_angle = 0.0;
 
 	// フレームの初期化
 	m_frame = 0;
@@ -91,6 +94,7 @@ void EnemyLarge::StartUpdate()
 void EnemyLarge::NormalUpdate()
 {
 	m_pos += m_vec;
+	m_angle -= kRad;
 	Reflection(0.8f);
 
 	m_col.SetCenter(m_pos, m_radius);

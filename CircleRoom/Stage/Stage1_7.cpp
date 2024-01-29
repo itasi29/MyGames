@@ -159,9 +159,9 @@ void Stage1_7::DrawArrow() const
 
 void Stage1_7::DrawKilledEnemyType() const
 {
-	DrawKilledEnemy("MoveWall", 0, 0x888888);
-	DrawKilledEnemy("Division", 36, 0x00ff00);
-	DrawKilledEnemy("Split", 70, 0x00ff00, 14);
+	DrawKilledEnemy("MoveWall", 0, 0xb6bbc4);
+	DrawKilledEnemy("Division", 36, 0x80bcbd);
+	DrawKilledEnemy("Split", 68, 0xd5f0c1, 12);
 }
 
 void Stage1_7::CreateEnemy()

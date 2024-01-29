@@ -1,4 +1,5 @@
 #pragma once
+#include <DxLib.h>
 #include <string>
 #include <memory>
 #include "Vec2.h"
@@ -91,6 +92,8 @@ protected:
 	void DrawDamageEffect() const;
 
 protected:
+	const double kRad = DX_PI / 180;
+
 	// ダメージを受けた際のフレーム
 	const int kOnDamageFrame = 33;
 
@@ -99,6 +102,8 @@ protected:
 
 	// 実体化するまでの時間
 	static const int kApeearFrame = 30;
+
+	double m_angle;
 
 	// スクリーンサイズ
 	const size& m_size;
