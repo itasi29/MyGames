@@ -26,8 +26,8 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_shakeSize(kShakeSize),
 	m_isDrawBg(isDrawBg)
 {
-	m_updateFunc = SceneManager::NormalUpdate;
-	m_drawFunc = SceneManager::NormalDraw;
+	m_updateFunc = &SceneManager::NormalUpdate;
+	m_drawFunc = &SceneManager::NormalDraw;
 
 	const size size = Application::GetInstance().GetWindowSize();
 	m_shakeHandle = MakeScreen(size.w, size.h);
@@ -97,8 +97,8 @@ void SceneManager::ShakeScreen(int frame, int size = kShakeSize)
 	m_shakeSize = size;
 	m_isShake = true;
 
-	m_updateFunc = SceneManager::ShakeUpdate;
-	m_drawFunc = SceneManager::ShakeDraw;
+	m_updateFunc = &SceneManager::ShakeUpdate;
+	m_drawFunc = &SceneManager::ShakeDraw;
 }
 
 void SceneManager::MoveScreen(const Vec2& vec)
@@ -141,8 +141,8 @@ void SceneManager::ShakeUpdate(Input& input)
 	{
 		m_isShake = false;
 
-		m_updateFunc = SceneManager::NormalUpdate;
-		m_drawFunc = SceneManager::NormalDraw;
+		m_updateFunc = &SceneManager::NormalUpdate;
+		m_drawFunc = &SceneManager::NormalDraw;
 	}
 }
 
@@ -154,8 +154,8 @@ void SceneManager::MoveUpdate(Input& input)
 
 	if (m_angle >= DX_PI)
 	{
-		m_updateFunc = SceneManager::NormalUpdate;
-		m_drawFunc = SceneManager::NormalDraw;
+		m_updateFunc = &SceneManager::NormalUpdate;
+		m_drawFunc = &SceneManager::NormalDraw;
 	}
 }
 
