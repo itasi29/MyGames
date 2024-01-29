@@ -9,7 +9,7 @@
 
 #include "Player/Player.h"
 #include "Stage1_7.h"
-#include "Stage1_9.h"
+#include "Stage1_8.h"
 #include "Stage1_6.h"
 
 namespace
@@ -33,7 +33,7 @@ namespace
 	constexpr int kDownExsitTime = 10;
 	constexpr int kLeftExsitTime = 90;
 
-	const std::string kLeftStName = "Stage1-9";
+	const std::string kLeftStName = "Stage1-8";
 	const std::string kDownStName = "Stage1-6";
 
 	const std::vector<std::string> kNames =
@@ -105,8 +105,8 @@ void Stage1_7::ChangeStage(Input& input)
 	auto& stage = m_mgr.GetStage();
 	if (stage->IsClearStage(kLeftStName) && input.IsTriggered("left"))
 	{
-		std::shared_ptr<Stage1_9> nextStage;
-		nextStage = std::make_shared<Stage1_9>(m_mgr, input);
+		std::shared_ptr<Stage1_8> nextStage;
+		nextStage = std::make_shared<Stage1_8>(m_mgr, input);
 
 		stage->ChangeStage(nextStage);
 
@@ -159,6 +159,9 @@ void Stage1_7::DrawArrow() const
 
 void Stage1_7::DrawKilledEnemyType() const
 {
+	DrawKilledEnemy("MoveWall", 0, 0x888888);
+	DrawKilledEnemy("Division", 36, 0x00ff00);
+	DrawKilledEnemy("Split", 70, 0x00ff00, 14);
 }
 
 void Stage1_7::CreateEnemy()

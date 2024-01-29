@@ -11,6 +11,7 @@
 #include "Stage1_6.h"
 #include "Stage1_4.h"
 #include "Stage1_7.h"
+#include "Stage1_9.h"
 
 namespace
 {
@@ -31,12 +32,14 @@ namespace
 	constexpr int kCreateNum = 2;
 
 
-	// クリア時間
+	// クリア条件
 	constexpr int kLeftExsitTime = 5;
 	constexpr int kUpExsitTime = 10;
+	constexpr int kDownKilledNum = 11;
 
 	const std::string kLeftStName = "Stage1-4";
 	const std::string kUpStName = "Stage1-7";
+	const std::string kDownStName = "Stage1-9";
 }
 
 Stage1_6::Stage1_6(GameManager& mgr, Input& input) :
@@ -80,6 +83,7 @@ void Stage1_6::StartCheck()
 	auto& stage = m_mgr.GetStage();
 	m_isLeftClear = stage->IsClearStage(kLeftStName);
 	m_isUpClear = stage->IsClearStage(kUpStName);
+	m_isDownClear = stage->IsClearStage(kDownStName);
 }
 
 void Stage1_6::ChangeStage(Input& input)
@@ -109,12 +113,22 @@ void Stage1_6::ChangeStage(Input& input)
 
 		return;
 	}
+	if (stage->IsClearStage(kDownStName) && input.IsTriggered("down"))
+	{
+		std::shared_ptr<Stage1_9> nextStage;
+		nextStage = std::make_shared<Stage1_9>(m_mgr, input);
+
+		m_mgr.GetStage()->ChangeStage(nextStage);
+
+		return;
+	}
 }
 
 void Stage1_6::CheckStageConditions()
 {
 	CheckConditionsTime(kLeftStName, kLeftExsitTime, L"左");
 	CheckConditionsTime(kUpStName, kUpExsitTime, L"上");
+	CheckConditionsKilled(kDownStName, kDownKilledNum, L"下");
 }
 
 int Stage1_6::DrawStageConditions(int drawY)
@@ -135,6 +149,13 @@ int Stage1_6::DrawStageConditions(int drawY)
 
 		drawY += 68;
 	}
+	if (!m_isDownClear)
+	{
+		DrawArrowConditions(kDownStName, drawY, DX_PI);
+		DrawKilledConditions(drawY, fontHandle, kDownKilledNum);
+
+		drawY += 68;
+	}
 
 	return drawY - startY - 68;
 }
@@ -143,10 +164,15 @@ void Stage1_6::DrawArrow() const
 {
 	DrawLeftArrow(m_isLeftClear, kLeftStName);
 	DrawUpArrow(m_isUpClear, kUpStName);
+	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
 void Stage1_6::DrawKilledEnemyType() const
 {
+	DrawKilledEnemy("Normal", 0, 0xffffff);
+	DrawKilledEnemy("MoveWall", 36, 0x888888);
+	DrawKilledEnemy("Create", 72, 0xffff08);
+	DrawKilledEnemy("Child", 104, 0xf0f008, 12);
 }
 
 void Stage1_6::CreateEnemy()

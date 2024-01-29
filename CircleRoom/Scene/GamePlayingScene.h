@@ -50,6 +50,8 @@ private:
     /// </summary>
     void DrawNormal();
 
+    void StartStage(Input& input);
+
 private:
     // ステージを動かすときの画面のハンドル
     int m_screenHandle;

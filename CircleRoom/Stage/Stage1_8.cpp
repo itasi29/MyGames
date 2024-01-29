@@ -8,7 +8,11 @@
 #include "FileSystem/FileBase.h"
 
 #include "Player/Player.h"
+#include "Boss/BossStrongArmored.h"
+#include "Boss/BossArmored.h"
 #include "Stage1_8.h"
+#include "Stage1_7.h"
+#include "Stage1_4.h"
 
 namespace
 {
@@ -18,23 +22,21 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
-	// クリア時間
-	constexpr int kDownExsitTime = 15;
-	constexpr int kLeftKilledNum = 3;
-
+	// 条件の描画基準位置
+	constexpr int kConditionsPosX = 20;
 	// 生成間隔フレーム
-	constexpr int kCreateEneCreateFrame = 60 * 14;
-	constexpr int kCreateDashFrame = 60 * 13;
-
-	// ディレイフレーム
-	constexpr int kDeleyFrame1 = 60 * -3;
-	constexpr int kDeleyFrame2 = 60 * -6;
+	constexpr int kCreateFrame = 60 * 5.5;
 
 	// 生成数
 	constexpr int kCreateNum = 2;
 
-	const std::string kDownStName = "Stage1-1";
-	const std::string kLeftStName = "Stage1-4";
+
+	// クリア時間
+	constexpr int kRightExsitTime = 10;
+	constexpr int kDownExsitTime = 15;
+
+	const std::string kRightStName = "Stage1-4";
+	const std::string kDownStName = "Stage1-7";
 }
 
 Stage1_8::Stage1_8(GameManager& mgr, Input& input) :
@@ -57,78 +59,127 @@ Stage1_8::~Stage1_8()
 void Stage1_8::Init()
 {
 	m_frame = 0;
-	m_isUpdateTime = true;
-
-	m_createEneCreateFrame1 = 0;
-	m_createEneCreateFrame2 = 0;
-	m_createDashFrame = 0;
-
-	m_createNum = 0;
+	m_isUpdateTime = false;
 
 	m_player->Init();
 	m_enemy.clear();
 
 	CreateMoveWall();
-	CreateDash(m_createDashFrame, true);
+
+	m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
+	m_boss->Init(m_centerPos);
 }
 
 void Stage1_8::StartCheck()
 {
+	m_isRightClear = m_mgr.GetStage()->IsClearStage(kRightStName);
+	m_isDownClear = m_mgr.GetStage()->IsClearStage(kDownStName);
 }
 
 void Stage1_8::ChangeStage(Input& input)
 {
+	// プレイヤーが生存している間は変わらないようにする
+	if (m_player->IsExsit()) return;
+
+	// 死亡直後は変わらないようにする
+	if (m_waitFrame < kWaitChangeFrame) return;
+
+	auto& stage = m_mgr.GetStage();
+	if (stage->IsClearStage(kRightStName) && input.IsTriggered("right"))
+	{
+		std::shared_ptr<Stage1_7> nextStage;
+		nextStage = std::make_shared<Stage1_7>(m_mgr, input);
+
+		stage->ChangeStage(nextStage);
+
+		return;
+	}
+	if (stage->IsClearStage(kDownStName) && input.IsTriggered("down"))
+	{
+		std::shared_ptr<Stage1_4> nextStage;
+		nextStage = std::make_shared<Stage1_4>(m_mgr, input);
+
+		stage->ChangeStage(nextStage);
+
+		return;
+	}
 }
 
 void Stage1_8::CheckStageConditions()
 {
+	CheckConditionsTime(kRightStName, kRightExsitTime, L"右");
+	CheckConditionsKilled(kDownStName, kDownExsitTime, L"下");
 }
 
 int Stage1_8::DrawStageConditions(int drawY)
 {
-	return 0;
+	int startY = drawY;
+	int fontHandle = m_mgr.GetFont()->GetHandle(28);
+
+	if (!m_isRightClear)
+	{
+		DrawArrowConditions(kRightStName, drawY, -kRad90);
+		DrawTimeConditions(drawY, fontHandle, kRightExsitTime);
+
+		drawY += 68;
+	}
+	if (!m_isDownClear)
+	{
+		DrawArrowConditions(kDownStName, drawY, DX_PI);
+		DrawKilledConditions(drawY, fontHandle, kDownExsitTime);
+
+		drawY += 68;
+	}
+
+	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
+	{
+		DrawStringToHandle(kConditionsPosX, drawY + 14, L"clear", kWhiteColor, fontHandle);
+
+		drawY += 70;
+	}
+	else
+	{
+		DrawStringToHandle(kConditionsPosX, drawY + 14, L"ボスを倒せ！", kWhiteColor, fontHandle);
+
+		drawY += 70;
+	}
+
+	return drawY - startY - 68;
 }
 
 void Stage1_8::DrawArrow() const
 {
+	DrawRightArrow(m_isRightClear, kRightStName);
+	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
 void Stage1_8::DrawKilledEnemyType() const
 {
+	DrawKilledEnemy("MoveWall", 0, 0x888888);
+	DrawKilledEnemy("BossArmored", 40, 0x08ff08, 20);
+	DrawKilledEnemy("BossStrongArmored", 84, 0xaaffaa, 20);
+	DrawKilledEnemy("SplitTwoBound", 120, 0xffffff, 14);
 }
 
 void Stage1_8::CreateEnemy()
 {
-	m_createDashFrame++;
-	m_createEneCreateFrame1++;
-	m_createEneCreateFrame2++;
+}
 
-	if (m_createDashFrame > kCreateDashFrame)
-	{
-		CreateDash(m_createDashFrame);
-	}
+void Stage1_8::CreateStrongBoss()
+{
+	std::shared_ptr<BossStrongArmored> strong;
+	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
+	strong->Init(m_boss->GetPos());
 
-	if (m_createNum < kCreateNum)
-	{
-		m_createNum++;
-		CreateEneCreate(m_createEneCreateFrame1, true);
-		m_createEneCreateFrame1 = kDeleyFrame1;
-		m_createEneCreateFrame2 = kDeleyFrame2;
-	}
-	else
-	{
-		if (m_createEneCreateFrame1 > kCreateEneCreateFrame)
-		{
-			CreateEneCreate(m_createEneCreateFrame1);
-		}
-		if (m_createEneCreateFrame2 > kCreateEneCreateFrame)
-		{
-			CreateEneCreate(m_createEneCreateFrame2);
-		}
-	}
+	m_boss = strong;
 }
 
 void Stage1_8::UpdateTime()
 {
-	m_frame++;
+	if (m_isUpdateTime)
+	{
+		// 一秒追加
+		m_frame += 60;
+		m_isUpdateTime = false;
+	}
 }

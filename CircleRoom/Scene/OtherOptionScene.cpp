@@ -155,7 +155,7 @@ void OtherOptionScene::FadeDraw()
 	const auto& size = Application::GetInstance().GetWindowSize();
 
 	float rate = m_fadeFrame / static_cast<float>(kFadeFrame);
-	int alpha = 255 * static_cast<int>(rate);
+	int alpha = static_cast<int>(255 * rate);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
 	DrawBox(0, 0, size.w, size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

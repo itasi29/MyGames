@@ -18,6 +18,11 @@ public:
 	void Draw();
 
 private:
+	void DrawInf(const std::string& st);
+
+	void CurrosrPos();
+
+private:
 	int m_indexRow;
 	int m_indexLine;
 

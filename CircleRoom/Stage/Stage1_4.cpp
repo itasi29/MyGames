@@ -8,7 +8,7 @@
 #include "Stage1_4.h"
 #include "Stage1_3.h"
 #include "Stage1_6.h"
-#include "Stage1_9.h"
+#include "Stage1_8.h"
 #include "Stage1_1.h"
 
 #include "Player/Player.h"
@@ -41,7 +41,7 @@ namespace
 
 	const std::string kLeftStName = "Stage1-3";
 	const std::string kRightStName = "Stage1-6";
-	const std::string kUpStName = "Stage1-9";
+	const std::string kUpStName = "Stage1-8";
 	const std::string kDownStName = "Stage1-1";
 
 	const std::vector<std::string> kNames =
@@ -52,8 +52,7 @@ namespace
 		"Stage1-4",
 		"Stage1-5",
 		"Stage1-6",
-		"Stage1-7",
-		"Stage1-8"
+		"Stage1-7"
 	};
 }
 
@@ -140,8 +139,8 @@ void Stage1_4::ChangeStage(Input& input)
 	}
 	if (stage->IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
-		std::shared_ptr<Stage1_9> nextStage;
-		nextStage = std::make_shared<Stage1_9>(m_mgr, input);
+		std::shared_ptr<Stage1_8> nextStage;
+		nextStage = std::make_shared<Stage1_8>(m_mgr, input);
 
 		stage->ChangeStage(nextStage);
 
@@ -219,9 +218,9 @@ void Stage1_4::DrawKilledEnemyType() const
 
 	DrawKilledEnemy("MoveWall", 36, 0x888888);
 
-	DrawKilledEnemy("Create", 72, 0xffff08);
+	DrawKilledEnemy("Dash", 72, 0xffff08);
 
-	DrawKilledEnemy("Child", 108, 0xf0f008, 12);
+	DrawKilledEnemy("Large", 108, 0xf0f008, 12);
 }
 
 void Stage1_4::CreateEnemy()

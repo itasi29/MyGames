@@ -124,11 +124,7 @@ void Stage1_5::DrawKilledEnemyType() const
 {
 	DrawKilledEnemy("MoveWall", 0, 0x888888);
 
-	DrawKilledEnemy("BossArmored", 36, 0x08ff08);
-
-	DrawKilledEnemy("BossStrongArmored", 72, 0xaaffaa);
-
-	DrawKilledEnemy("SplitTwoBound", 108, 0xffffff, 14);
+	DrawKilledEnemy("Large", 40, 0xffffff, 20);
 }
 
 void Stage1_5::CreateEnemy()

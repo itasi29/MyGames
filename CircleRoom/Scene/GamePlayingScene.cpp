@@ -15,6 +15,14 @@
 #include "FileSystem/ImageFile.h"
 
 #include "Stage/Stage1_1.h"
+#include "Stage/Stage1_2.h"
+#include "Stage/Stage1_3.h"
+#include "Stage/Stage1_4.h"
+#include "Stage/Stage1_5.h"
+#include "Stage/Stage1_6.h"
+#include "Stage/Stage1_7.h"
+#include "Stage/Stage1_8.h"
+#include "Stage/Stage1_9.h"
 #include "Stage/StageTutorial.h"
 
 
@@ -61,7 +69,7 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 	// チュートリアルステージを通常ステージに
 	if (m_mgr.GetStage()->IsClearStage("Tutorial"))
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
+		StartStage(input);
 	}
 	// していなければチュートリアルステージに
 	else
@@ -172,5 +180,55 @@ void GamePlayingScene::DrawFade()
 void GamePlayingScene::DrawNormal()
 {
 	m_mgr.GetStage()->Draw();
+}
+
+void GamePlayingScene::StartStage(Input& input)
+{
+	const auto& nowStage = m_mgr.GetNowStage();
+	if (nowStage == "Stage1-1")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-2")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-3")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_3>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-4")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_4>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-5")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-6")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_6>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-7")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_7>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-8")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_8>(m_mgr, input));
+		return;
+	}
+	if (nowStage == "Stage1-9")
+	{
+		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
+		return;
+	}
 }
 

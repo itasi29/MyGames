@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <memory>
 
 class FileManager;
@@ -42,7 +43,7 @@ public:
 	~GameManager();
 
 	void Init();
-	void DeleteData();
+	void InitData();
 
 	/// <summary>
 	/// ゲームマネージャークラスのインスタンスを返す
@@ -58,7 +59,9 @@ public:
 
 	VolumeData GetVolume() const { return m_data.volume; }
 	AccountData GetData() const;
+	const std::string& GetNowStage() const { return m_nowStage; }
 
+	void UpdateNowStage(const std::string& name) { m_nowStage = name; }
 	void UpdateVolume(const VolumeData& data) { m_data.volume = data; }
 	void UpdatePlaytime() { m_data.playTime++; }
 	void UpdateDeathCcount() { m_data.deathCount++; }
@@ -76,5 +79,6 @@ private:
 	std::shared_ptr<FontSystem> m_font;
 
 	AccountData m_data;
+	std::string m_nowStage;
 };
 

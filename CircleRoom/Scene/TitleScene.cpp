@@ -223,7 +223,8 @@ void TitleScene::StartSelectUpdate(Input& input)
 		{
 			// データの削除
 			m_mgr.GetStage()->InitData();
-			m_mgr.DeleteData();
+			m_mgr.GetStage()->InitPos();
+			m_mgr.InitData();
 		}
 
 		// 画面外に飛ばす

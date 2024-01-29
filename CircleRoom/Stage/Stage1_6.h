@@ -31,5 +31,6 @@ private:
 	// ステージに入った時点でのクリア情報を保持
 	bool m_isLeftClear;
 	bool m_isUpClear;
+	bool m_isDownClear;
 };
 

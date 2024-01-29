@@ -17,19 +17,12 @@ private:
 	void DrawKilledEnemyType() const override;
 
 	void CreateEnemy() override;
+	void CreateStrongBoss() override;
 	void UpdateTime() override;
 
 private:
-	// 生成数
-	int m_createNum;
-
-	// 敵生成時間
-	int m_createEneCreateFrame1;
-	int m_createEneCreateFrame2;
-	int m_createDashFrame;
-
 	// ステージに入った時点でのクリア情報を保持
-	bool m_isLeftClear;
-	bool m_isUpClear;
+	bool m_isDownClear;
+	bool m_isRightClear;
 };
 

@@ -6,13 +6,10 @@
 #include "StageManager.h"
 #include "FileSystem/FontSystem.h"
 #include "FileSystem/FileBase.h"
+#include "Stage1_9.h"
+#include "Stage1_6.h"
 
 #include "Player/Player.h"
-#include "Boss/BossStrongArmored.h"
-#include "Boss/BossArmored.h"
-#include "Stage1_9.h"
-#include "Stage1_7.h"
-#include "Stage1_4.h"
 
 namespace
 {
@@ -21,22 +18,22 @@ namespace
 
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	// 黄色文字列の色
+	constexpr unsigned int kYellowColor = 0xffde00;;
 
-	// 条件の描画基準位置
-	constexpr int kConditionsPosX = 20;
-	// 生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 5.5;
+	// 初めに生成する敵の数
+	constexpr int kStartCreatNum = 4;
+	// 初めの生成間隔フレーム
+	constexpr int kStartCreateFrame = 10;
 
-	// 生成数
-	constexpr int kCreateNum = 2;
+	// 敵生成間隔フレーム
+	constexpr int kCreateFrame = 60 * 6;
 
+	// 上クリア条件　生存時間
+	constexpr int kUpExistTime = 5;
 
-	// クリア時間
-	constexpr int kRightExsitTime = 10;
-	constexpr int kDownExsitTime = 15;
-
-	const std::string kRightStName = "Stage1-4";
-	const std::string kDownStName = "Stage1-7";
+	// 上の部屋の名前
+	const std::string kUpStName = "Stage1-6";
 }
 
 Stage1_9::Stage1_9(GameManager& mgr, Input& input) :
@@ -47,6 +44,8 @@ Stage1_9::Stage1_9(GameManager& mgr, Input& input) :
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
+	// 1-1に関しては初めからクリアしていることとする
+	//m_mgr.GetStage()->SaveClear(m_stageName);
 	CheckStageConditions();
 
 	StartCheck();
@@ -58,22 +57,30 @@ Stage1_9::~Stage1_9()
 
 void Stage1_9::Init()
 {
+	// 経過時間の初期化
 	m_frame = 0;
-	m_isUpdateTime = false;
+	// 経過を行うかを初期化
+	m_isUpdateTime = true;
 
+	// 生成フレームの初期化
+	m_createFrame = 0;
+	// 生成数の初期化
+	m_createNum = 0;
+
+	// プレイヤーの初期化
 	m_player->Init();
+
+	// 敵の配列を初期化
 	m_enemy.clear();
 
+	// 壁動く敵の作成
 	CreateMoveWall();
-
-	m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
-	m_boss->Init(m_centerPos);
 }
 
 void Stage1_9::StartCheck()
 {
-	m_isRightClear = m_mgr.GetStage()->IsClearStage(kRightStName);
-	m_isDownClear = m_mgr.GetStage()->IsClearStage(kDownStName);
+	auto& stage = m_mgr.GetStage();
+	m_isUpClear = stage->IsClearStage(kUpStName);
 }
 
 void Stage1_9::ChangeStage(Input& input)
@@ -85,19 +92,10 @@ void Stage1_9::ChangeStage(Input& input)
 	if (m_waitFrame < kWaitChangeFrame) return;
 
 	auto& stage = m_mgr.GetStage();
-	if (stage->IsClearStage(kRightStName) && input.IsTriggered("right"))
+	if (stage->IsClearStage(kUpStName) && input.IsTriggered("up"))
 	{
-		std::shared_ptr<Stage1_7> nextStage;
-		nextStage = std::make_shared<Stage1_7>(m_mgr, input);
-
-		stage->ChangeStage(nextStage);
-
-		return;
-	}
-	if (stage->IsClearStage(kDownStName) && input.IsTriggered("down"))
-	{
-		std::shared_ptr<Stage1_4> nextStage;
-		nextStage = std::make_shared<Stage1_4>(m_mgr, input);
+		std::shared_ptr<Stage1_6> nextStage;
+		nextStage = std::make_shared<Stage1_6>(m_mgr, input);
 
 		stage->ChangeStage(nextStage);
 
@@ -107,41 +105,19 @@ void Stage1_9::ChangeStage(Input& input)
 
 void Stage1_9::CheckStageConditions()
 {
-	CheckConditionsTime(kRightStName, kRightExsitTime, L"右");
-	CheckConditionsKilled(kDownStName, kDownExsitTime, L"下");
+	CheckConditionsTime(kUpStName, kUpExistTime, L"上");
 }
 
 int Stage1_9::DrawStageConditions(int drawY)
 {
 	int startY = drawY;
 	int fontHandle = m_mgr.GetFont()->GetHandle(28);
-
-	if (!m_isRightClear)
+	if (!m_isUpClear)
 	{
-		DrawArrowConditions(kRightStName, drawY, -kRad90);
-		DrawTimeConditions(drawY, fontHandle, kRightExsitTime);
+		DrawArrowConditions(kUpStName, drawY, -kRad90);
+		DrawTimeConditions(drawY, fontHandle, kUpExistTime);
 
 		drawY += 68;
-	}
-	if (!m_isDownClear)
-	{
-		DrawArrowConditions(kDownStName, drawY, DX_PI);
-		DrawKilledConditions(drawY, fontHandle, kDownExsitTime);
-
-		drawY += 68;
-	}
-
-	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
-	{
-		DrawStringToHandle(kConditionsPosX, drawY + 14, L"clear", kWhiteColor, fontHandle);
-
-		drawY += 70;
-	}
-	else
-	{
-		DrawStringToHandle(kConditionsPosX, drawY + 14, L"ボスを倒せ！", kWhiteColor, fontHandle);
-
-		drawY += 70;
 	}
 
 	return drawY - startY - 68;
@@ -149,8 +125,7 @@ int Stage1_9::DrawStageConditions(int drawY)
 
 void Stage1_9::DrawArrow() const
 {
-	DrawRightArrow(m_isRightClear, kRightStName);
-	DrawDownArrow(m_isDownClear, kDownStName);
+	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
 void Stage1_9::DrawKilledEnemyType() const
@@ -161,21 +136,7 @@ void Stage1_9::CreateEnemy()
 {
 }
 
-void Stage1_9::CreateStrongBoss()
-{
-	std::shared_ptr<BossStrongArmored> strong;
-	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
-	strong->Init(m_boss->GetPos());
-
-	m_boss = strong;
-}
-
 void Stage1_9::UpdateTime()
 {
-	if (m_isUpdateTime)
-	{
-		// 一秒追加
-		m_frame += 60;
-		m_isUpdateTime = false;
-	}
+	m_frame++;
 }

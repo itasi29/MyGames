@@ -181,11 +181,7 @@ void StageTutorial::UpdatePlaying(Input& input)
 
 void StageTutorial::CheckStageConditions()
 {
-	if (m_mgr.GetStage()->GetBestTime(m_stageName) > kExsitTime * 60)
-	{
-		m_mgr.GetStage()->SaveClear(kStageName);
-		m_explanation = kClearAnother;
-	}
+	CheckConditionsTime(kStageName, kExsitTime, L"è„");
 }
 
 int StageTutorial::DrawStageConditions(int drawY)

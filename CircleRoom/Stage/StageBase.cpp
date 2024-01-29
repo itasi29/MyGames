@@ -37,7 +37,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 強調文字列の色
-	constexpr unsigned int kYellowColor = 0xffde00;;
+	constexpr unsigned int kYellowColor = 0xffde00;
 	// バックフレームの色
 	constexpr unsigned int kBackFrameColor = 0x161a30;
 
@@ -432,6 +432,9 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 	auto& stage = m_mgr.GetStage();
 	int sumTime = 0;
 
+	// 既にクリアしていたら確認しない
+	if (stage->IsClearStage(stageName)) return;
+
 	// 確認するステージのすべてのタイムを加算する
 	for (const auto& name : names)
 	{
@@ -483,8 +486,8 @@ void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int
 	// 秒に戻す
 	sumTime /= 60;
 
-	DrawStringToHandle(kConditionsPosX, y, L"　　合計    秒間生き残る\n　　　　(           )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　　　%02d\n　　　　  %2d / %2d",
+	DrawStringToHandle(kConditionsPosX, y, L"　　合計    秒間生き残る\n　　(           )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　　　%02d\n　　  %2d / %2d",
 		existTime, sumTime, existTime);
 }
 
@@ -633,19 +636,19 @@ void StageBase::DrawTime(int x, int y, int handle)
 
 void StageBase::DrawConditionsAchived()
 {
-	int y = 180;
+	int y = 240;
 	for (const auto& achived : m_achived)
 	{
 		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
 		{
-			DrawStringToHandle(540, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(924, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
 		}
 		else
 		{
 			float rate = (kAchivedFrame - achived.frame) / (kAchivedFrame * 0.5f);
 			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(540, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(924, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 

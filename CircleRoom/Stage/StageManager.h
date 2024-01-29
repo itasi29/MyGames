@@ -50,6 +50,7 @@ public:
 
 	// å„Ç≈ïœçXorè¡Ç∑
 	void InitData();
+	void InitPos();
 
 	void Update(Input& input);
 	void Draw();

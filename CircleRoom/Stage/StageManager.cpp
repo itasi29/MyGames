@@ -37,7 +37,7 @@ namespace
 	constexpr float kLimitSlowSpeed = 5.0f;
 
 	// ステージの縦横数
-	constexpr int kLine = 3;
+	constexpr int kLine = 4;
 	constexpr int kRow = 3;
 
 	// ステージ間の間隔
@@ -47,9 +47,10 @@ namespace
 	// 名前の場所
 	const std::string kStName[kLine][kRow] =
 	{
-		{"Stage1-5", "Stage1-9", "Stage1-7"},
+		{"Stage1-5", "Stage1-8", "Stage1-7"},
 		{"Stage1-3", "Stage1-4", "Stage1-6"},
-		{"Stage1-2", "Stage1-1", "Stage1-8"}
+		{"Stage1-2", "Stage1-1", "Stage1-9"},
+		{"none", "Tutorial", "none"}
 	};
 }
 
@@ -82,6 +83,8 @@ void StageManager::Init()
 {
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_dashImg = mgr->LoadGraphic(L"UI/operationExplanation.png");
+
+	InitPos();
 }
 
 void StageManager::InitData()
@@ -92,14 +95,21 @@ void StageManager::InitData()
 	m_clearBossTable.clear();
 	m_ability = kNone;
 	m_abilityActive.clear();
+}
 
+void StageManager::InitPos()
+{
 	m_stage = nullptr;
 	m_nextStage = nullptr;
 
-	m_pos = GetPos("Stage1-1");
 	if (IsClearStage("Tutorial"))
 	{
-		m_pos.y += m_size.h + kStageMarginY;
+		const auto& stageName = GameManager::GetInstance().GetNowStage();
+		m_pos = GetPos(stageName);
+	}
+	else
+	{
+		m_pos = GetPos("Tutorial");
 	}
 	m_targetPos = {};
 	m_vec = {};
@@ -183,6 +193,9 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 
 	// 動いていることに
 	m_isMove = true;
+
+	// 現在いるステージの更新
+	GameManager::GetInstance().UpdateNowStage(m_nextStage->GetStageName());
 
 	// 現在の描画先へと戻す(本来は)
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -593,6 +606,7 @@ void StageManager::MoveGamePlaingDraw() const
 
 Vec2 StageManager::GetPos(const std::string& stage) const
 {
+
 	Vec2 pos;
 
 	for (int x = 0; x < kRow; x++)

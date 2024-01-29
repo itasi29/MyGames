@@ -16,9 +16,7 @@ GameManager::GameManager() :
 	m_font(std::make_shared<FontSystem>())
 {
 	// 初期データ
-	m_data.playTime = 0;
-	m_data.deathCount = 0;
-	m_data.dashCount = 0;
+	InitData();
 	m_data.volume = { 255, 255 };
 	Load();
 }
@@ -39,9 +37,10 @@ void GameManager::Init()
 	m_scene->Init();
 }
 
-void GameManager::DeleteData()
+void GameManager::InitData()
 {
 	// プレイデータの初期化
+	m_nowStage = "Tutorial";
 	m_data.playTime = 0;
 	m_data.deathCount = 0;
 	m_data.dashCount = 0;	
@@ -94,6 +93,11 @@ void GameManager::Save()
 		return;
 	}
 
+	// 現在のステージの書き込み
+	uint8_t size = static_cast<uint8_t>(m_nowStage.size());
+	fwrite(&size, sizeof(size), 1, fp);
+	fwrite(m_nowStage.data(), size, 1, fp);
+
 	// アカウントデータの書き込み
 	fwrite(&m_data, sizeof(m_data), 1, fp);
 
@@ -108,6 +112,12 @@ void GameManager::Load()
 	{
 		return;
 	}
+
+	// 現在のステージの読み込み
+	uint8_t size;
+	FileRead_read(&size, sizeof(size), handle);
+	m_nowStage.resize(size);
+	FileRead_read(m_nowStage.data(), size, handle);
 
 	// アカウントデータの読み込み
 	FileRead_read(&m_data, sizeof(m_data), handle);

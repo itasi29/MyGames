@@ -85,8 +85,9 @@ void Stage1_1::Init()
 
 void Stage1_1::StartCheck()
 {
-	m_isLeftClear = m_mgr.GetStage()->IsClearStage(kLeftStName);
-	m_isUpClear = m_mgr.GetStage()->IsClearStage(kUpStName);
+	auto& stage = m_mgr.GetStage();
+	m_isLeftClear = stage->IsClearStage(kLeftStName);
+	m_isUpClear = stage->IsClearStage(kUpStName);
 }
 
 void Stage1_1::ChangeStage(Input& input)
