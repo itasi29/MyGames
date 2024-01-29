@@ -31,7 +31,7 @@ namespace
 	// 1エフェクト何フレームか
 	constexpr int kWallEffectInterval = 3;
 	// 壁に当たったエフェクトをするフレーム
-	constexpr int kWallHitFrame = 8 * kWallEffectInterval;
+	constexpr int kWallHitFrame = 19 * kWallEffectInterval;
 	// 画像サイズ
 	constexpr int kWallEffectGraphSize = 64;
 	// 拡大率
@@ -44,6 +44,17 @@ namespace
 	constexpr int kLine[kEffectTypeNum] = {
 		0, 4, 7, 8
 	};
+
+	// ダメージエフェクトの画像サイズ
+	constexpr int kDamageGraphSize = 64;
+	// ダメージエフェクトサイズ
+	constexpr double kDamageSize = 2.0;
+	// ダメージエフェクトの画像の縦切り取り位置
+	constexpr int kSrcY = 8 * kDamageGraphSize;
+	// 横の数
+	constexpr int kDamageRow = 11;
+	// 1エフェクト何フレーム
+	constexpr int kDamageEffInterval = 3;
 
 	// ずらす量
 	constexpr int kWallEffectSlide = 32;
@@ -244,6 +255,8 @@ void BossBase::NormalDraw() const
 
 	DrawHitWallEffect();
 
+	DrawDamageEffect();
+
 #ifdef _DEBUG
 	// 当たり判定の描画
 	m_col.Draw(0xff0000, false);
@@ -280,7 +293,22 @@ void BossBase::DrawHitWallEffect() const
 		int srcX = kWallEffectGraphSize * (index % kRow);
 		int srcY = kWallEffectGraphSize * kLine[m_lineType];
 
-		DrawRectRotaGraph(x, y, srcX, srcY, static_cast<int>(kWallEffectGraphSize * kExtRate), static_cast<int>(kWallEffectGraphSize * kExtRate), kExtRate, 0.0, m_wallEffect->GetHandle(), true);
+		DrawRectRotaGraph(x, y, srcX, srcY, kWallEffectGraphSize, kWallEffectGraphSize, kExtRate, 0.0, m_wallEffect->GetHandle(), true);
+	}
+}
+
+void BossBase::DrawDamageEffect() const
+{
+	if (m_onDamagetFrame > 0)
+	{
+		int x = m_drawOnDamagetX - static_cast<int>(kDamageGraphSize * 0.5f - kDamageGraphSize * kDamageSize * 0.5f);
+		int y = m_drawOnDamagetY - static_cast<int>(kDamageGraphSize * 0.5f - kDamageGraphSize * kDamageSize * 0.5f);
+
+		int index = (kOnDamageFrame - m_onDamagetFrame) / kDamageEffInterval;
+		int srcX = kDamageGraphSize * (index % kDamageRow);
+
+		DrawRectRotaGraph(x, y, srcX, kSrcY, kDamageGraphSize, kDamageGraphSize,
+			kDamageSize, 0.0, m_damageEffect->GetHandle(), true);
 	}
 }
 

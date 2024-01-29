@@ -88,8 +88,12 @@ protected:
 	/// </summary>
 	void DrawHpBar() const;
 	void DrawHitWallEffect() const;
+	void DrawDamageEffect() const;
 
 protected:
+	// ダメージを受けた際のフレーム
+	const int kOnDamageFrame = 33;
+
 	updateFunc_t m_updateFunc;
 	drawFunc_t m_drawFunc;
 

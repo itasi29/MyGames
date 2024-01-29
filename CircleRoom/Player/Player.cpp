@@ -12,6 +12,10 @@
 
 namespace
 {
+	// 色
+	constexpr unsigned int kExsitColor = 0xFFFAE7;
+	constexpr unsigned int kDeathColor = 0xD2001A;
+
 	// 当たり判定の半径の大きさ
 	constexpr float kColRadius = 10.0f;
 
@@ -212,7 +216,7 @@ void Player::Draw()
 				DrawTriangle(static_cast<int>(m_dirLog[i].front.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].front.y + m_posLog[i].y),
 					static_cast<int>(m_dirLog[i].left.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].left.y + m_posLog[i].y),
 					static_cast<int>(m_dirLog[i].right.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].right.y + m_posLog[i].y),
-					0xffffff, true);
+					kExsitColor, true);
 #endif
 			}
 		}
@@ -223,14 +227,14 @@ void Player::Draw()
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
-			0xffffff, true);
+			kExsitColor, true);
 	}
 	else
 	{
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
-			0xff0000, true);
+			kDeathColor, true);
 	}
 
 	// 死亡時のエフェクト

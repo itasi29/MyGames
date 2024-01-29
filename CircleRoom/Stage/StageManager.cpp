@@ -480,14 +480,14 @@ void StageManager::UpdateClearBoss(const std::string& name)
 	return;
 }
 
-void StageManager::UpdateBestTime(const std::string& stgName, int bestTime)
+bool StageManager::UpdateBestTime(const std::string& stgName, int bestTime)
 {
 	auto it = m_stageSaveData.find(stgName);
 	// ステージを見つけられなかったら何もしない
 	if (it == m_stageSaveData.end())
 	{
 		assert(false);
-		return;
+		return false;
 	}
 
 	auto& time = m_stageSaveData[stgName].bestTime;
@@ -495,11 +495,12 @@ void StageManager::UpdateBestTime(const std::string& stgName, int bestTime)
 	// 現在保存されているタイムが更新タイムより大きければ更新は行わない
 	if (time > bestTime)
 	{
-		return;
+		return false;
 	}
 
 	// タイムの更新
 	time = bestTime;
+	return true;
 }
 
 void StageManager::UpdateEnemyType(const std::string& name)

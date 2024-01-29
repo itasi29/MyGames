@@ -124,7 +124,7 @@ void GameClearScene::FadeDraw()
 	NormalDraw();
 
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_frame) / 60.0f));
-	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	DrawBox(0, 0, 1280, 720, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }

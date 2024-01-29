@@ -303,6 +303,9 @@ protected:
 	// 待機時間
 	int m_waitFrame;
 
+	// ベストタイム点滅
+	bool m_isUpdateBestTime;
+
 	// 
 	std::shared_ptr<BottansFile> m_bt;
 	std::shared_ptr<KeyFile> m_key;

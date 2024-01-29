@@ -257,7 +257,7 @@ void TitleScene::FadeDraw()
 	const auto& size = Application::GetInstance().GetWindowSize();
 	// その後にフェード暗幕を描画
 	int alpha = static_cast<int>(255 * (static_cast<float>(m_fadeFrame) / 60.0f));
-	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	DrawBox(0, 0, size.w, size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }

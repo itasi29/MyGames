@@ -156,7 +156,7 @@ void OtherOptionScene::FadeDraw()
 
 	float rate = m_fadeFrame / static_cast<float>(kFadeFrame);
 	int alpha = static_cast<int>(255 * rate);
-	SetDrawBlendMode(DX_BLENDMODE_MULA, alpha);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	DrawBox(0, 0, size.w, size.h, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }

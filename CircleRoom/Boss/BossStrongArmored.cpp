@@ -24,7 +24,7 @@ namespace
 	constexpr int kDamageObjectNum = 1;
 
 	// 敵生成数
-	constexpr int kCreateNum = 8;
+	constexpr int kCreateNum = 9;
 	// 生成間隔フレーム
 	constexpr int kCreateFrame = static_cast<int>(60 * 2.5);
 	// 生成前待機フレーム
@@ -113,7 +113,8 @@ void BossStrongArmored::NormalDraw() const
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
 		m_charImg->GetHandle(), true);
 
-	// ダメージエフェクト
+	DrawDamageEffect();
+
 	DrawHitWallEffect();
 
 	// ダメージオブジェクトの描画

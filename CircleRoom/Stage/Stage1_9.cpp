@@ -22,12 +22,18 @@ namespace
 	constexpr unsigned int kYellowColor = 0xffde00;;
 
 	// 初めに生成する敵の数
-	constexpr int kStartCreatNum = 4;
-	// 初めの生成間隔フレーム
-	constexpr int kStartCreateFrame = 10;
+	constexpr int kCreatDashNum = 2;
+	constexpr int kCreatEneCreateNum = 4;
+	constexpr int kCreateLargeNum = 3;
 
-	// 敵生成間隔フレーム
-	constexpr int kCreateFrame = 60 * 6;
+	// 生成間隔
+	constexpr int kCreateDashInterval = 60 * 6.5;
+	constexpr int kCreateEneCreateInterval = 60 * 12;
+	constexpr int kCreateDivisionInterval = 60 * 8;
+	constexpr int kCreateLargeInterval = 60 * 4;
+
+	// ディレイフレーム
+	constexpr int kDeleyFrame = 60 * 6;
 
 	// 上クリア条件　生存時間
 	constexpr int kUpExistTime = 5;
@@ -62,10 +68,11 @@ void Stage1_9::Init()
 	// 経過を行うかを初期化
 	m_isUpdateTime = true;
 
-	// 生成フレームの初期化
-	m_createFrame = 0;
-	// 生成数の初期化
-	m_createNum = 0;
+	// 生成関係の初期化
+	m_createDashNum = 0;
+	m_createEneCreateNum = 0;
+	m_createLargeNum = 0;
+	m_createDivisionFrame = kDeleyFrame;
 
 	// プレイヤーの初期化
 	m_player->Init();
@@ -134,6 +141,54 @@ void Stage1_9::DrawKilledEnemyType() const
 
 void Stage1_9::CreateEnemy()
 {
+	m_createDashFrame++;
+	m_createEneCreateFrame++;
+	m_createLargeFrame++;
+	m_createDivisionFrame++;
+
+	if (m_createDashNum < kCreatDashNum)
+	{
+		m_createDashNum++;
+		CreateDash(m_createDashFrame);
+	}
+	else
+	{
+		if (m_createDashFrame > kCreateDashInterval)
+		{
+			CreateDash(m_createDashFrame);
+		}
+	}
+
+	if (m_createEneCreateNum < kCreatEneCreateNum)
+	{
+		m_createEneCreateNum++;
+		CreateEneCreate(m_createEneCreateFrame);
+	}
+	else
+	{
+		if (m_createEneCreateFrame > kCreateEneCreateInterval)
+		{
+			CreateEneCreate(m_createEneCreateFrame);
+		}
+	}
+
+	if (m_createLargeNum < kCreateLargeNum)
+	{
+		m_createLargeNum++;
+		CreateLarge(m_createLargeFrame);
+	}
+	else
+	{
+		if (m_createLargeFrame > kCreateLargeInterval)
+		{
+			CreateLarge(m_createLargeFrame);
+		}
+	}
+
+	if (m_createDivisionFrame > kCreateDivisionInterval)
+	{
+		CreateDivision(m_createDivisionFrame);
+	}
 }
 
 void Stage1_9::UpdateTime()

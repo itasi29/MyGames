@@ -32,6 +32,19 @@ namespace
 	constexpr int kWaitDashFrame = 60 * 5;
 	// ダッシュを開始するまでのフレーム
 	constexpr int kStartWaitDashFrame = 30;
+
+	// ダッシュエフェクトの間隔
+	constexpr int kDasshEffInterval = 3;
+	// 行数
+	constexpr int kDashRow = 10;
+	// ダッシュエフェクトフレーム
+	constexpr int kDashEffFrame = kDasshEffInterval * kDashRow;
+	// 画像サイズ
+	constexpr int kDashGraphSize = 64;
+	// 拡大率
+	constexpr double kDashExtRate = 2.0;
+	// Y座標の切り抜き位置
+	constexpr int kDashSrcY = kDashGraphSize * 8;
 }
 
 EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Player>& player) :
@@ -40,7 +53,8 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 	m_logFrame(kDashLogNum),
 	m_isDash(false),
 	m_waitDashFrame(kWaitDashFrame),
-	m_startWaitDashFrame(kStartWaitDashFrame)
+	m_startWaitDashFrame(kStartWaitDashFrame),
+	m_dashEffFrame(0)
 {
 	m_name = "Dash";
 	m_color = kColor;
@@ -48,6 +62,7 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Dash.png");
+	m_dashEff = mgr->LoadGraphic(L"Enemy/damageEffect.png");
 
 	m_dashSe = mgr->LoadSound(L"Se/enemyDash.mp3");
 }
@@ -117,12 +132,16 @@ void EnemyDash::NormalUpdate()
 {
 	Dash();
 	m_pos += m_vec;
+	m_dashEffFrame--;
 
 	// 反射したかつ、ダッシュ状態なら通常状態に戻す
 	if (Reflection() && m_isDash)
 	{
 		// ダッシュ終了
 		m_isDash = false;
+
+		m_dashEffFrame = kDashEffFrame;
+		m_dashEffPos = m_pos;
 
 		// ダッシュ状態から通常速度に戻る
 		m_vec = m_vec.GetNormalized() * kSpeed;
@@ -154,7 +173,11 @@ void EnemyDash::NormalDraw()
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
 		m_charImg->GetHandle(), true);
 
+	DrawDashEff();
+
 	DrawHitWallEffect();
+
+	DrawDashEff();
 
 #ifdef _DEBUG
 	// 当たり判定の描画
@@ -217,5 +240,19 @@ void EnemyDash::Dash()
 			log = m_pos;
 		}
 		m_logFrame = 0;
+	}
+}
+
+void EnemyDash::DrawDashEff() const
+{
+	if (m_dashEffFrame > 0)
+	{
+		int x = m_dashEffPos.x - static_cast<int>(kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
+		int y = m_dashEffPos.y - static_cast<int>(kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
+
+		int index = (kDashEffFrame - m_dashEffFrame) / kDasshEffInterval;
+		int srcX = kDashGraphSize * (index % kDashRow);
+
+		DrawRectRotaGraph(x, y, srcX, kDashSrcY, kDashGraphSize, kDashGraphSize, kDashExtRate, 0.0, m_dashEff->GetHandle(), true);
 	}
 }

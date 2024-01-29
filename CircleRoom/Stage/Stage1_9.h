@@ -23,10 +23,15 @@ private:
 
 private:
 	// 生成数
-	int m_createNum;
+	int m_createDashNum;
+	int m_createEneCreateNum;
+	int m_createLargeNum;
 
 	// 敵生成時間
-	int m_createFrame;
+	int m_createDashFrame;
+	int m_createEneCreateFrame;
+	int m_createDivisionFrame;
+	int m_createLargeFrame;
 
 	// ステージに入った時点でのクリア情報を保持
 	bool m_isUpClear;

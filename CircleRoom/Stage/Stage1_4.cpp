@@ -193,9 +193,9 @@ int Stage1_4::DrawStageConditions(int drawY)
 
 		drawY += 68;
 	}
-	if (!m_isRightClear)
+	if (!m_isDownClear)
 	{
-		DrawArrowConditions(kRightStName, drawY, DX_PI);
+		DrawArrowConditions(kDownStName, drawY, DX_PI);
 		DrawKilledConditions(drawY, fontHandle, kDownKilledNum);
 
 		drawY += 68;

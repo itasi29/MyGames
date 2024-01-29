@@ -30,11 +30,15 @@ private:
 	// ダッシュに関する処理
 	void Dash();
 
+	void DrawDashEff() const;
+
 private:
 	std::shared_ptr<Player>& m_player;
 
 	// ダッシュSe
 	std::shared_ptr<FileBase> m_dashSe;
+	// ダッシュ状態で壁に当たった時のエフェクト
+	std::shared_ptr<FileBase> m_dashEff;
 
 	// 位置ログ
 	std::vector<Vec2> m_posLog;
@@ -46,5 +50,10 @@ private:
 	int m_waitDashFrame;
 	// ダッシュを開始するまでのフレーム
 	int m_startWaitDashFrame;
+
+	// ダッシュの位置
+	Vec2 m_dashEffPos;
+	// ダッシュエフェクトのフレーム
+	int m_dashEffFrame;
 };
 

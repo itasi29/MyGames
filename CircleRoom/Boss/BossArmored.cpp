@@ -47,19 +47,10 @@ namespace
 	// 生成するときの角度
 	constexpr float kCreateRadian = 45.0f * (kPai / 180.0f);
 
-	// ダメージを受けた際のフレーム
-	constexpr int kOnDamageFrame = 33;
 	// ダメージを受けた際画面を揺らす時間
 	constexpr int kShakeFrame = 5;
 	// 揺らすサイズ
 	constexpr int kShakeSize = 20;
-
-	// ダメージエフェクトの画像サイズ
-	constexpr int kDamageGraphSize = 32;
-	// ダメージエフェクトサイズ
-	constexpr double kDamageSize = 2.0;
-	// ダメージエフェクトの画像の縦切り取り位置
-	constexpr int kSrcY = 8 * 64;
 }
 
 BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -239,7 +230,8 @@ void BossArmored::NormalDraw() const
 		obj->Draw();
 	}
 
-	// ダメージエフェクト
+	DrawDamageEffect();
+
 	DrawHitWallEffect();
 
 	DrawHpBar();
@@ -274,7 +266,7 @@ void BossArmored::CreateEnemy()
 				// 現在の角度を得る
 				float radian = atan2f(vec.x, vec.y);
 
-				for (int i = 0; i < kCreateNum * 2; i++)
+				for (int i = 0; i < kCreateNum * 2 + 1; i++)
 				{
 					std::shared_ptr<EnemySplitTwoBound> split;
 					split = std::make_shared<EnemySplitTwoBound>(m_size, m_fieldSize);

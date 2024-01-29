@@ -144,7 +144,7 @@ public:
 	/// </summary>
 	/// <param name="stgName">ステージ名</param>
 	/// <param name="bestTime">更新タイム</param>
-	void UpdateBestTime(const std::string& stgName, int bestTime);
+	bool UpdateBestTime(const std::string& stgName, int bestTime);
 
 	/// <summary>
 	/// プレイヤーを殺した敵がすでに殺したことがあるかの確認

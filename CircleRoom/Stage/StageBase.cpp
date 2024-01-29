@@ -38,6 +38,8 @@ namespace
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	// 強調文字列の色
 	constexpr unsigned int kYellowColor = 0xffde00;
+	// さらに強調文字列の色
+	constexpr unsigned int kRedColor = 0xd2001a;
 	// バックフレームの色
 	constexpr unsigned int kBackFrameColor = 0x161a30;
 
@@ -74,7 +76,8 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_soundFrame(kSoundFade),
 	m_frame(0),
 	m_waitFrame(kWaitChangeFrame),
-	m_isUpdateTime(false)
+	m_isUpdateTime(false),
+	m_isUpdateBestTime(false)
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
@@ -175,6 +178,7 @@ void StageBase::UpdateSelect(Input& input)
 		m_drawFunc = &StageBase::DrawPlaying;
 
 		m_sound->Stop(m_selectBgm->GetHandle());
+		m_isUpdateBestTime = false;
 		m_soundFrame = 0;
 
 		// 各種初期化処理
@@ -283,7 +287,10 @@ void StageBase::UpdatePlaying(Input& input)
 		m_waitFrame = 0;
 
 		// ベストタイムの更新
-		m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame);
+		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
+		{
+			m_isUpdateBestTime = true;
+		}
 
 		// クリアしているかの確認
 		CheckStageConditions();
@@ -346,7 +353,14 @@ void StageBase::DrawSelect()
 	int sec = (bestTime / 60) % 60;
 	int min = bestTime / 3600;
 	DrawStringToHandle(m_size.w - 256, 112, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
-	DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+	if (m_isUpdateBestTime && ((m_waitFrame / 30) % 2) == 1)
+	{
+		DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+	}
+	else
+	{
+		DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+	}
 
 	// 矢印の描画
 	DrawArrow();
@@ -391,7 +405,7 @@ void StageBase::DrawPlaying()
 	// MEMO:条件後ろにあるフレーム背景を描画する
 	if (y >= 0)
 	{
-		DrawBox(0, 268, 311, 268 + y, kBackFrameColor, true);
+		DrawBox(0, 268, 310, 268 + y, kBackFrameColor, true);
 		DrawGraph(0, 268 + y, m_bFrameImg->GetHandle(), true);
 	}
 	DrawGraph(0, 0, m_strHandle, true);
