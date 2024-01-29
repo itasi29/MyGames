@@ -251,8 +251,8 @@ void EnemyDash::DrawDashEff() const
 {
 	if (m_dashEffFrame > 0)
 	{
-		int x = m_dashEffPos.x - static_cast<int>(kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
-		int y = m_dashEffPos.y - static_cast<int>(kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
+		int x = static_cast<int>(m_dashEffPos.x - kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
+		int y = static_cast<int>(m_dashEffPos.y - kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
 
 		int index = (kDashEffFrame - m_dashEffFrame) / kDasshEffInterval;
 		int srcX = kDashGraphSize * (index % kDashRow);

@@ -27,7 +27,7 @@ namespace
 	constexpr int kCreateLargeNum = 3;
 
 	// ê∂ê¨ä‘äu
-	constexpr int kCreateDashInterval = 60 * 6.5;
+	constexpr int kCreateDashInterval = static_cast<int>(60 * 6.5);
 	constexpr int kCreateEneCreateInterval = 60 * 12;
 	constexpr int kCreateDivisionInterval = 60 * 8;
 	constexpr int kCreateLargeInterval = 60 * 4;

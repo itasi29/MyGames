@@ -244,7 +244,6 @@ void StageBase::UpdatePlaying(Input& input)
 		// ボスの死亡処理
 		if (!m_boss->IsExsit())
 		{
-			// 初回のみクリア処理に移動する
 			BossDeath();
 		}
 		// ボスが生存していれば
@@ -273,7 +272,7 @@ void StageBase::UpdatePlaying(Input& input)
 #endif
 	UpdateTime();
 
-	if (!m_player->IsExsit())
+	if (!m_player->IsExsit() || (m_boss && !m_boss->IsExsit()))
 	{
 		// メンバ関数ポインタを選択の方に戻す
 		m_updateFunc = &StageBase::UpdateSelect;
@@ -625,15 +624,10 @@ void StageBase::BossDeath()
 
 	m_mgr.GetStage()->m_clear = true;
 
-	// メンバ関数ポインタを選択の方に戻す
-	m_updateFunc = &StageBase::UpdateSelect;
-	m_drawFunc = &StageBase::DrawSelect;
-
 	// 倒した情報の追加
 	m_mgr.GetStage()->UpdateClearBoss(m_boss->GetName());
+	Init();
 
-	// ボスを消す
-	m_boss.reset();
 	// 敵全て消す
 	m_enemy.clear();
 }

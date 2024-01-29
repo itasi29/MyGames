@@ -25,7 +25,7 @@ namespace
 	// ğŒ‚Ì•`‰æŠî€ˆÊ’u
 	constexpr int kConditionsPosX = 20;
 	// ¶¬ŠÔŠuƒtƒŒ[ƒ€
-	constexpr int kCreateFrame = 60 * 5.5;
+	constexpr int kCreateFrame = static_cast<int>(60 * 5.5);
 
 	// ¶¬”
 	constexpr int kCreateNum = 2;

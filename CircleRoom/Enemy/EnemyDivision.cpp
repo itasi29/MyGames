@@ -128,7 +128,7 @@ void EnemyDivision::NormalUpdate()
 			m_isExsit = false;
 
 			// ƒxƒNƒgƒ‹‚ð•Û‘¶‚·‚é
-			Vec2 vec = { cosf(m_angle), sinf(m_angle) };
+			Vec2 vec = { cosf(static_cast<float>(m_angle)), sinf(static_cast<float>(m_angle)) };
 			for (int i = 0; i < kDivisionNum; i++)
 			{
 				std::shared_ptr<EnemySplit> split;

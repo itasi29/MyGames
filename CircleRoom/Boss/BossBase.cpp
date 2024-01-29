@@ -48,7 +48,7 @@ namespace
 	// ダメージエフェクトの画像サイズ
 	constexpr int kDamageGraphSize = 64;
 	// ダメージエフェクトサイズ
-	constexpr double kDamageSize = 2.0;
+	constexpr double kDamageSize = 3.0;
 	// ダメージエフェクトの画像の縦切り取り位置
 	constexpr int kSrcY = 8 * kDamageGraphSize;
 	// 横の数
