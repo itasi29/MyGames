@@ -100,7 +100,7 @@ void OtherOptionScene::FadeUpdate(Input& input)
 
 	if (m_fadeFrame > kFadeFrame)
 	{
-		m_mgr.GetScene()->ChangeSceneWithClear(std::make_shared<TitleScene>(m_mgr));
+		m_mgr.GetScene()->ChangeSceneWithClear(std::make_shared<TitleScene>(m_mgr), 1.0f);
 		return;
 	}
 }

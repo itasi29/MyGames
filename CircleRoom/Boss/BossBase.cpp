@@ -1,6 +1,7 @@
 #include <DxLib.h>
 #include "Application.h"
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
 #include "FileSystem/FontSystem.h"
@@ -87,8 +88,12 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_lineType(0),
 	m_isEndPerformance(false)
 {
+	m_rippleScreen = MakeScreen(m_size.w, m_size.h, true);
+
 	m_updateFunc = &BossBase::StartUpdate;
 	m_drawFunc = &BossBase::StartDraw;
+	m_deathUpdateFunc = &BossBase::ExplotionUpdate;
+	m_deathDrawFunc = &BossBase::ExplotionDraw;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_wallEffect = mgr->LoadGraphic(L"Enemy/wallEffect.png");
@@ -105,6 +110,7 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 
 BossBase::~BossBase()
 {
+	DeleteGraph(m_rippleScreen);
 }
 
 void BossBase::Update()
@@ -262,24 +268,26 @@ void BossBase::OnDeath()
 	m_isShake = false;
 	m_isScatter = false;
 
+	m_ripple1 = 64;
+	m_ripple2 = 32;
+	m_ripple3 = 16;
+
 	m_updateFunc = &BossBase::DeathUpdate;
 	m_drawFunc = &BossBase::DeathDraw;
 }
 
+void BossBase::HitStopUpdate()
+{
+	if (m_hitStopFrame > kHitStopFrame)
+	{
+		m_updateFunc = &BossBase::NormalUpdate;
+	}
+	m_hitStopFrame++;
+}
+
 void BossBase::DeathUpdate()
 {
-	// TODO:とりあえず下ので実装してみる
-	// 死亡したら真ん中によって行く
-	// その途中で爆発エフェクトをおこす
-
-	// 一定時間(だいたい4～6？)たったら
-	// 本体を震わせ爆発させて
-	// 波紋を描画
-
-	// そのあとにフェードアウトしてリザルトへ
-
-	m_endPerformanceFrame++;
-	m_pos += m_vec;
+	(this->*m_deathUpdateFunc)();
 
 	for (auto& eff : m_performanceEff)
 	{
@@ -295,50 +303,65 @@ void BossBase::DeathUpdate()
 			return eff.isEnd;
 		}
 	);
+}
 
-	// 爆発エフェクト
-	if (m_performanceNum < kPerformaceNum && m_endPerformanceFrame > kPerformanceInterval)
+void BossBase::ExplotionUpdate()
+{
+	m_pos += m_vec;
+	m_endPerformanceFrame++;
+
+	if (m_endPerformanceFrame > 10)
+	{
+		m_isShake = false;
+	}
+
+	if (m_endPerformanceFrame > kPerformanceInterval)
 	{
 		m_performanceNum++;
 		m_endPerformanceFrame = 0;
 		Vec2 pos = m_pos;
 		pos.x += (GetRand(30) - 15) * 10;
 		pos.y += (GetRand(30) - 15) * 10;
-		m_performanceEff.push_back({pos, 0, false});
+		m_performanceEff.push_back({ pos, 0, false });
+		// 震わせる
+		m_isShake = true;
 
 		// 最後の爆発エフェクト立った場合
 		if (m_performanceNum >= kPerformaceNum)
 		{
-			// 移動しないように
-			m_vec = {};
-			// 震わせる
-			m_isShake = true;
+			m_deathUpdateFunc = &BossBase::ShakeUpdate;
+			m_deathDrawFunc = &BossBase::ShakeDraw;
 		}
-		return;
-	}
-
-	// 震わせ中待機
-	if (m_isShake && m_endPerformanceFrame > kShakeFrame)
-	{
-		m_isScatter = true;
-		m_isShake = false;
-		m_endPerformanceFrame = 0;
-	}
-
-	// 少ししたら終了とする
-	if (m_isScatter && m_endPerformanceFrame > 30)
-	{
-		m_isEndPerformance = true;
 	}
 }
 
-void BossBase::HitStopUpdate()
+void BossBase::ShakeUpdate()
 {
-	if (m_hitStopFrame > kHitStopFrame)
+	m_endPerformanceFrame++;
+
+	if (m_endPerformanceFrame > kShakeFrame)
 	{
-		m_updateFunc = &BossBase::NormalUpdate;
+		m_endPerformanceFrame = 0;
+
+		m_deathUpdateFunc = &BossBase::LastUpdate;
+		m_deathDrawFunc = &BossBase::LastDraw;
 	}
-	m_hitStopFrame++;
+}
+
+void BossBase::LastUpdate()
+{
+	m_endPerformanceFrame++;
+	int kRippleSpeed = 14;
+
+	m_ripple1 += kRippleSpeed;
+	m_ripple2 += kRippleSpeed;
+	m_ripple3 += kRippleSpeed;
+
+	if (m_endPerformanceFrame > 30)
+	{
+		m_isEndPerformance = true;
+	}
+
 }
 
 void BossBase::StartDraw() const
@@ -368,31 +391,7 @@ void BossBase::NormalDraw() const
 
 void BossBase::DeathDraw() const
 {
-	if (!m_isScatter)
-	{
-		int x = static_cast<int>(m_pos.x);
-		int y = static_cast<int>(m_pos.y);
-
-		if (m_isShake)
-		{
-			x += GetRand(30) - 15;
-			y += GetRand(30) - 15;
-		}
-
-		DrawRotaGraph(x, y, 1.0, m_angle,
-			m_charImg->GetHandle(), true);
-	}
-	else
-	{
-		int x = static_cast<int>(m_pos.x);
-		int y = static_cast<int>(m_pos.y);
-
-		// TODO:波紋っぽくするところから
-
-		DrawCircle(x, y, m_ripple3, 0x789461);
-		DrawCircle(x, y, m_ripple2, 0x50623a);
-		DrawCircle(x, y, m_ripple1, 0x294b29);
-	}
+	(this->*m_deathDrawFunc)();
 
 	for (const auto& eff : m_performanceEff)
 	{
@@ -402,6 +401,56 @@ void BossBase::DeathDraw() const
 		DrawRectRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), srcX, srcY, 64, 64,
 			3.0, 0.0, m_performance->GetHandle(), true);
 	}
+}
+
+void BossBase::ExplotionDraw() const
+{
+	int x = static_cast<int>(m_pos.x);
+	int y = static_cast<int>(m_pos.y);
+
+	if (m_isShake)
+	{
+		x += GetRand(30) - 15;
+		y += GetRand(30) - 15;
+	}
+
+	DrawRotaGraph(x, y, 1.0, m_angle,
+		m_charImg->GetHandle(), true);
+}
+
+void BossBase::ShakeDraw() const
+{
+	int x = static_cast<int>(m_pos.x);
+	int y = static_cast<int>(m_pos.y);
+
+	x += GetRand(30) - 15;
+	y += GetRand(30) - 15;
+
+	DrawRotaGraph(x, y, 1.0, m_angle,
+		m_charImg->GetHandle(), true);
+}
+
+void BossBase::LastDraw() const
+{
+	int x = static_cast<int>(m_pos.x);
+	int y = static_cast<int>(m_pos.y);
+
+	// TODO:波紋っぽくするところから
+	int kLineThickness = 3;
+
+	SetDrawScreen(m_rippleScreen);
+	SetDrawBlendMode(DX_BLENDMODE_SUB, 128);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x010101, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	DrawCircle(x, y, m_ripple3, 0x789461, false, kLineThickness);
+	DrawCircle(x, y, m_ripple2, 0x50623a, false, kLineThickness);
+	DrawCircle(x, y, m_ripple1, 0x294b29, false, kLineThickness);
+
+	int screenHandle = GameManager::GetInstance().GetScene()->GetScreenHandle();
+	SetDrawScreen(screenHandle);
+
+	DrawGraph(0, 0, m_rippleScreen, true);
 }
 
 void BossBase::DrawHpBar() const

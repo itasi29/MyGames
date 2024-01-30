@@ -77,7 +77,7 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 		m_mgr.GetStage()->ChangeStage(std::make_shared<StageTutorial>(m_mgr, input));
 	}
 
-	m_mgr.GetStage()->m_clear = false;
+	m_mgr.GetStage()->ResetClear();
 
 	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp3");
 
@@ -129,6 +129,7 @@ void GamePlayingScene::UpdateFadeIn(Input& input)
 
 void GamePlayingScene::UpdateFadeOut(Input& input)
 {
+	m_mgr.GetStage()->Update(input);
 	m_frame++;
 	if (m_frame > kFadeFrame)
 	{
@@ -150,7 +151,7 @@ void GamePlayingScene::UpdateNormal(Input& input)
 	m_mgr.UpdatePlaytime();
 
 	// ŠÈˆÕŽÀ‘•
-	if (m_mgr.GetStage()->m_clear)
+	if (m_mgr.GetStage()->IsClear())
 	{
 		m_updateFunc = &GamePlayingScene::UpdateFadeOut;
 		m_drawFunc = &GamePlayingScene::DrawFade;

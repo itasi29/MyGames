@@ -349,18 +349,10 @@ void StageBase::UpdateBossDeath(Input& input)
 	}
 
 	m_boss->Update();
-//	m_player->Update(input, m_mgr.GetStage()->GetAbility());
 
-#ifdef _DEBUG
-	// ‚±‚ê‰¼ŽÀ‘•
-	if (input.IsTriggered("cancel"))
-	{
-		m_mgr.GetStage()->m_clear = true;
-	}
-#endif
 	if (m_boss->IsEndPerformance())
 	{
-		m_mgr.GetStage()->m_clear = true;
+		m_mgr.GetStage()->OnClear();
 	}
 }
 

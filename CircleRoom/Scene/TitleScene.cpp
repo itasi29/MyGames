@@ -55,7 +55,7 @@ namespace
 	constexpr int kLogoDrawX = 374;
 	constexpr int kLogoDrawY = 336;
 	// ã‰º‚É“®‚©‚·•
-	constexpr int kLogoShitY = 50;
+	constexpr int kLogoShitY = 25;
 	// 1“x‚¸‚Â‚ÌƒAƒ“ƒOƒ‹
 	constexpr float kLogoAngle = DX_PI_F / 180.0f;
 

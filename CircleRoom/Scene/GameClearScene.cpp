@@ -115,7 +115,7 @@ void GameClearScene::FadeOutUpdate(Input&)
 	if (kFadeFrame <= m_frame)
 	{
 		m_sound->Stop(m_bgm->GetHandle());
-		m_mgr.GetScene()->ChangeScene(std::make_shared<TitleScene>(m_mgr));
+		m_mgr.GetScene()->ChangeScene(std::make_shared<TitleScene>(m_mgr), 1.0f);
 	}
 }
 

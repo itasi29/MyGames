@@ -99,12 +99,22 @@ protected:
 
 	virtual void StartUpdate() = 0;
 	virtual void NormalUpdate() = 0;
-	void DeathUpdate();
 	void HitStopUpdate();
+	void DeathUpdate();
+
+	/*死亡演出時の更新関数*/
+	void ExplotionUpdate();
+	void ShakeUpdate();
+	void LastUpdate();
 
 	virtual void StartDraw() const;
 	virtual void NormalDraw() const;
 	void DeathDraw() const;
+
+	/*死亡演出時の描画関数*/
+	void ExplotionDraw() const;
+	void ShakeDraw() const;
+	void LastDraw() const;
 
 	/// <summary>
 	/// HPバーの描画
@@ -124,6 +134,8 @@ protected:
 
 	updateFunc_t m_updateFunc;
 	drawFunc_t m_drawFunc;
+	updateFunc_t m_deathUpdateFunc;
+	drawFunc_t m_deathDrawFunc;
 
 	// 実体化するまでの時間
 	static const int kApeearFrame = 30;
@@ -218,5 +230,7 @@ protected:
 	int m_ripple1;
 	int m_ripple2;
 	int m_ripple3;
+	// 半径の色を残す用
+	int m_rippleScreen;
 };
 

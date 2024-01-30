@@ -28,10 +28,6 @@ enum Ability
 /// </summary>
 class StageManager
 {
-	// これはダメだけどめんどくさいから簡易実装
-public:
-	bool m_clear = false;
-
 public:
 	// FIXME:名前は変える
 	enum StageDir
@@ -56,6 +52,10 @@ public:
 	void Draw();
 
 	std::string GetStageName() const;
+
+	bool IsClear() const { return m_isClear; }
+	void OnClear() { m_isClear = true; }
+	void ResetClear() { m_isClear = false; }
 
 	/// <summary>
 	///  ステージの切り替え
@@ -202,6 +202,9 @@ private:
 	Ability m_ability;
 	// アビリティの有効無効
 	std::unordered_map<Ability, bool> m_abilityActive;
+
+	// ステージクリア
+	bool m_isClear;
 
 	// ステージのポインタ
 	std::shared_ptr<StageBase> m_stage;

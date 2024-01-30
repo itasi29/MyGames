@@ -85,16 +85,28 @@ void Application::Run()
         manager.GetScene()->ChangeScene(std::make_shared<TitleScene>(manager));
 #endif
 
+#ifdef _DEBUG
+        // 現在フレームが動いているか確認するよう
+        int i = 0;
+#endif
+
         Input input;
         while (ProcessMessage() != -1)
         {
             // 新しいゲームループを始めた時間を記憶
             m_time = GetNowHiPerformanceCount();
 
+            i++;
+
             ClearDrawScreen();
             input.Update(); // 入力を更新
             manager.GetScene()->Update(input);
             manager.GetScene()->Draw();
+
+#ifdef _DEBUG
+            DrawFormatString(1200, 650, 0xffffff, L"%d", i);
+#endif
+
             ScreenFlip();
 
             // 終了フラグが立っていれば終了する
