@@ -31,9 +31,9 @@ namespace
 
 	// ƒNƒŠƒAŽžŠÔ
 	constexpr int kDownExsitTime = 10;
-	constexpr int kLeftExsitTime = 90;
+	constexpr int kLeftExsitTime = 60;
 
-	const std::string kLeftStName = "Stage1-8";
+	const std::string kLeftStName = "StageBoss";
 	const std::string kDownStName = "Stage1-6";
 
 	const std::vector<std::string> kNames =
@@ -44,8 +44,7 @@ namespace
 		"Stage1-4",
 		"Stage1-5",
 		"Stage1-6",
-		"Stage1-7",
-		"Stage1-8"
+		"Stage1-7"
 	};
 }
 
@@ -138,7 +137,7 @@ int Stage1_7::DrawStageConditions(int drawY)
 		DrawArrowConditions(kLeftStName, drawY, -kRad90);
 		DrawSumTimeConditions(kNames, drawY, fontHandle, kLeftExsitTime);
 
-		drawY += 68;
+		drawY += 102;
 	}
 	if (!m_isDownClear)
 	{
@@ -153,15 +152,15 @@ int Stage1_7::DrawStageConditions(int drawY)
 
 void Stage1_7::DrawArrow() const
 {
-	DrawLeftArrow(m_isLeftClear, kLeftStName);
+	DrawLeftArrow(m_isLeftClear, kLeftStName, true, m_mgr.GetStage()->IsClearStage(kLeftStName));
 	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
 void Stage1_7::DrawKilledEnemyType() const
 {
 	DrawKilledEnemy("MoveWall", 0, 0xb6bbc4);
-	DrawKilledEnemy("Division", 36, 0x80bcbd);
-	DrawKilledEnemy("Split", 68, 0xd5f0c1, 12);
+	DrawKilledEnemy("Division", 42, 0x80bcbd);
+	DrawKilledEnemy("Split", 84, 0xd5f0c1, 12);
 }
 
 void Stage1_7::CreateEnemy()

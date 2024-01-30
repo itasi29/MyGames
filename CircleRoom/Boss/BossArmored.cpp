@@ -16,7 +16,11 @@
 namespace
 {
 	// 最大HP
+#ifdef _DEBUG
+	constexpr int kMaxHp = 1;
+#else
 	constexpr int kMaxHp = 10;
+#endif
 
 	// FIXME:確かDxLibでπが定義されてたはずだけど忘れたから自分で定義しておく
 	constexpr float kPai = 3.1415927f;
@@ -76,6 +80,9 @@ void BossArmored::Init(const Vec2& pos, bool isStart)
 
 	// hpの初期化
 	m_hp = m_maxHp;
+	// バーの初期化
+	m_hpWidth = kHpBarWidth;
+	m_hpDownWidth = kHpBarWidth;
 
 	// ラジアンの初期化
 	m_radian = 0;
@@ -141,6 +148,7 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 			m_radian = 0;
 
 			m_hp--;
+			m_hpWidth = static_cast<int>(kHpBarWidth * (m_hp / static_cast<float>(m_maxHp)));
 
 			obj->Used();
 
@@ -152,6 +160,7 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 				// バーの描画問題でHPを0にしておく
 				m_hp = 0;
 				m_isExsit = false;
+				OnDeath();
 
 				return isHit;
 			}
@@ -221,6 +230,16 @@ void BossArmored::NormalUpdate()
 	Reflection();
 
 	m_col.SetCenter(m_pos, m_radius);
+
+	for (const auto& obj : m_objects)
+	{
+		obj->Update();
+	}
+
+	if (m_hpDownWidth > m_hpWidth)
+	{
+		m_hpDownWidth--;
+	}
 }
 
 void BossArmored::NormalDraw() const

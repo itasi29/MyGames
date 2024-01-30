@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <unordered_map>
 #include <memory>
 #include <string>
 #include "Vec2.h"
@@ -77,6 +78,13 @@ protected:
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	virtual void UpdatePlaying(Input& input);
+	
+	// FIXME:とりあえず仮実装させたいから名前は後で変更させる
+	/// <summary>
+	/// ボス倒した後の更新処理
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	void UpdateBossDeath(Input& input);
 
 	/// <summary>
 	/// 選択中の描画処理
@@ -86,6 +94,12 @@ protected:
 	/// プレイ中の描画処理
 	/// </summary>
 	void DrawPlaying();
+
+	// FIXME:とりあえず仮実装させたいから名前は後で変更させる
+	/// <summary>
+	/// ボス倒した後の描画処理
+	/// </summary>
+	void DrawBossDeath();
 
 	/// <summary>
 	/// ステージのクリア確認
@@ -176,19 +190,19 @@ protected:
 	/// <summary>
 	/// 左矢印の描画
 	/// </summary>
-	void DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const;
+	void DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
 	/// <summary>
 	/// 右矢印の描画
 	/// </summary>
-	void DrawRightArrow(bool isAlreadyClear, const std::string& nextStName) const;
+	void DrawRightArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
 	/// <summary>
 	/// 上矢印の描画
 	/// </summary>
-	void DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) const;
+	void DrawUpArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
 	/// <summary>
 	/// 下矢印の描画
 	/// </summary>
-	void DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const;
+	void DrawDownArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
 
 	/// <summary>
 	/// 敵タイプの描画
@@ -233,7 +247,13 @@ private:
 	/// <summary>
 	/// 条件達成の描画
 	/// </summary>
-	void DrawConditionsAchived();
+	/// <param name="y">Y描画位置</param>
+	void DrawConditionsAchived(int y);
+
+	/// <summary>
+	/// 矢印の上に鍵の描画
+	/// </summary>
+	void DrawArrowLock(int x, int y, bool isBossStage, bool isClear) const;
 
 	/// <summary>
 	/// 壁の描画
@@ -258,8 +278,10 @@ protected:
 	std::shared_ptr<FileBase> m_arrow;
 	std::shared_ptr<FileBase> m_arrowFlash;
 	std::shared_ptr<FileBase> m_arrowNo;
+	std::shared_ptr<FileBase> m_arrowLock;
 	std::shared_ptr<FileBase> m_arrowConditions;
 	std::shared_ptr<FileBase> m_startFrame;
+	std::unordered_map<std::string, std::shared_ptr<FileBase>> m_enemysImg;
 
 	// 後ろのフレームを描画するよう
 	std::shared_ptr<FileBase> m_bFrameImg;
@@ -302,6 +324,9 @@ protected:
 
 	// 待機時間
 	int m_waitFrame;
+
+	// 文字ウェーブ用の角度
+	double m_waveAngle;
 
 	// ベストタイム点滅
 	bool m_isUpdateBestTime;

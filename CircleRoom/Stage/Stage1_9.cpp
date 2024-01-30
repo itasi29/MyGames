@@ -45,7 +45,7 @@ namespace
 Stage1_9::Stage1_9(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
-	m_stageName = "Stage1-9";
+	m_stageName = "Master";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// ƒf[ƒ^‚Ì¶¬

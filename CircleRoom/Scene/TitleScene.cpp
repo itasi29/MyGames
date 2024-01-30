@@ -42,6 +42,9 @@ namespace
 	// ラインの長さ
 	constexpr int kMenuLength = 256;
 
+	// フレームの左余白
+	constexpr int kFrameMargin = 16;
+
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
 
@@ -245,7 +248,7 @@ void TitleScene::FadeOutUpdate(Input& input)
 	if (m_fadeFrame > kFadeFrame)
 	{
 		m_sound->Stop();
-		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr, input), false);
+		m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr, input), 0.5f);
 	}
 }
 
@@ -266,11 +269,11 @@ void TitleScene::NormalDraw()
 {
 	DrawLogo();
 	
-	int y = static_cast<int>(180 + m_currentLinePos * kMenuLineInterval);
+	int y = static_cast<int>(178 + m_currentLinePos * kMenuLineInterval);
 
 	// フレームの描画
 	DrawGraph(kStrDrawX + kMenuLength, y, m_frame->GetHandle(), true);
-	DrawBox(kStrDrawX, y, kStrDrawX + kMenuLength, y + 40, kFrameColor, true);
+	DrawBox(kStrDrawX - kFrameMargin, y, kStrDrawX + kMenuLength, y + 44, kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
@@ -300,15 +303,15 @@ void TitleScene::StartSelectDraw()
 {
 	DrawLogo();
 
-	int y = static_cast<int>(212 + m_currentLinePos * 40);
+	int y = static_cast<int>(214 + m_currentLinePos * 40);
 
 	// フレームの描画
 	DrawGraph(kStrDrawX + 64 + kMenuLength, y, m_frame->GetHandle(), true);
-	DrawBox(kStrDrawX + 64, y, kStrDrawX + 64 + kMenuLength, y + 40, kFrameColor, true);
+	DrawBox(kStrDrawX + 64 - kFrameMargin, y, kStrDrawX + 64 + kMenuLength, y + 44, kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
-	y = 216;
+	y = 220;
 	for (int i = 0; i < kStartSelectNum; i++)
 	{
 		if (m_currentLinePos == i)
@@ -340,5 +343,6 @@ void TitleScene::StartSelectDraw()
 void TitleScene::DrawLogo()
 {
 	int y = kLogoDrawY + static_cast<int>(kLogoShitY * sinf(m_logoAngle));
+
 	DrawRotaGraph(kLogoDrawX, y, 1.0, 0.0, m_logo->GetHandle(), true);
 }

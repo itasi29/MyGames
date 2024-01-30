@@ -36,12 +36,12 @@ namespace
 	// ƒNƒŠƒAŽžŠÔ
 	constexpr int kLeftExsitTime = 10;
 	constexpr int kRightExsitTime = 5;
-	constexpr int kUpExistTime = 90;
+	constexpr int kUpExistTime = 60;
 	constexpr int kDownKilledNum = 4;
 
 	const std::string kLeftStName = "Stage1-3";
 	const std::string kRightStName = "Stage1-6";
-	const std::string kUpStName = "Stage1-8";
+	const std::string kUpStName = "StageBoss";
 	const std::string kDownStName = "Stage1-1";
 
 	const std::vector<std::string> kNames =
@@ -191,7 +191,7 @@ int Stage1_4::DrawStageConditions(int drawY)
 		DrawArrowConditions(kUpStName, drawY, 0.0);
 		DrawSumTimeConditions(kNames, drawY, fontHandle, kUpExistTime);
 
-		drawY += 68;
+		drawY += 102;
 	}
 	if (!m_isDownClear)
 	{
@@ -208,7 +208,7 @@ void Stage1_4::DrawArrow() const
 {
 	DrawLeftArrow(m_isLeftClear, kLeftStName);
 	DrawRightArrow(m_isRightClear, kRightStName);
-	DrawUpArrow(m_isUpClear, kUpStName);
+	DrawUpArrow(m_isUpClear, kUpStName, true, m_mgr.GetStage()->IsClearStage(kUpStName));
 	DrawDownArrow(m_isDownClear, kDownStName);
 }
 

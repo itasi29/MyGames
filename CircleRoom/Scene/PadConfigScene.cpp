@@ -28,6 +28,9 @@ namespace
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
 
+	// フレームの左余白
+	constexpr int kFrameMargin = 16;
+
 	constexpr unsigned int kDefColor = 0xffffff;
 	constexpr int kMenuMargin = 120;
 
@@ -53,8 +56,7 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 		"dash",		// ダッシュ
 		"OK",		// 選択or確定
 		"cancel",	// キャンセル
-		"pause",	// ポーズボタン
-		"keyconf"	// キーコンフィグボタン
+		"pause"		// ポーズボタン
 	};
 
 	m_bottanTable[PAD_INPUT_A] = L"ＡBottan";
@@ -102,12 +104,12 @@ void PadConfigScene::Draw()
 	DrawStringToHandle(100, kMenuMargin + 10, L"パッド変更", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 
 	// 選択している場所を描画
-	int y = kMenuMargin + 64 + m_currentLineIndex * kMenuLineInterval;
+	int y = kMenuMargin + 62 + m_currentLineIndex * kMenuLineInterval;
 
 	// 選択している場所を描画
 	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
-	DrawBox(128, y,
-		kMenuMargin + 800, y + 40,
+	DrawBox(128 - kFrameMargin, y,
+		kMenuMargin + 800, y + 44,
 		kFrameColor, true);
 
 	// 選択中の場合は色を追加して点滅させる
@@ -118,7 +120,7 @@ void PadConfigScene::Draw()
 		int add = static_cast<int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ADD, add);
 		DrawGraph(kMenuMargin + 800, y, m_addFrame->GetHandle(), true);
-		DrawBox(128, y,
+		DrawBox(128 - kFrameMargin, y,
 			kMenuMargin + 800, y + 40,
 			kFrameColorDeff, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

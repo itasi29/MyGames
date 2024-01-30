@@ -32,7 +32,9 @@ namespace
 	// X座標描画基準
 	constexpr int kDrawX = 132;
 	// フレーム幅
-	constexpr int kFrameWidht = 800;
+	constexpr int kFrameWidht = 788;
+	// フレームの左余白
+	constexpr int kFrameMargin = 20;
 
 	// フェードフレーム
 	constexpr int kFadeFrame = 60;
@@ -164,11 +166,11 @@ void OtherOptionScene::FadeDraw()
 void OtherOptionScene::NormalDraw()
 {
 	// 選択している場所を描画
-	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
+	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
 	DrawGraph(kDrawX + kFrameWidht, y, m_frame->GetHandle(), true);
-	DrawBox(kDrawX, y,
-		kDrawX + kFrameWidht, y + 40,
+	DrawBox(kDrawX - kFrameMargin, y,
+		kDrawX + kFrameWidht, y + 44,
 		kFrameColor, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);

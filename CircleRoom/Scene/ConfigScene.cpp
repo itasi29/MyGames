@@ -27,6 +27,9 @@ namespace
 
 	constexpr int kMenuMargin = 120;
 
+	// ƒtƒŒ[ƒ€‚Ì¶—]”’
+	constexpr int kFrameMargin = 16;
+
 	constexpr int kMenuLineInterval = 128;
 
 	enum
@@ -96,11 +99,11 @@ void ConfigScene::Update(Input& input)
 
 void ConfigScene::Draw()
 {
-	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
+	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
 	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
-	DrawBox(128, y,
-		kMenuMargin + 800, y + 40,
+	DrawBox(128 - kFrameMargin, y,
+		kMenuMargin + 800, y + 44,
 		kFrameColor, true);
 
 	y = kMenuMargin + 42;

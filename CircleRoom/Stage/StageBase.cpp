@@ -53,6 +53,24 @@ namespace
 	// 殺された種類の基準描画位置
 	constexpr int kKillTypePosX = 156;
 	constexpr int kKillTypePosY = 200;
+	// デフォルト拡大率
+	constexpr double kKillTypeDefExtRate = 0.372;
+	// 大きめ拡大率
+	constexpr double kKillTypeLargeExtRate = 0.6;
+	// それに対応する名前
+	const std::vector<std::string> kLargeTypeName = {
+		"Child",
+		"Split",
+		"SplitTwoBound"
+	};
+	// 小さめ拡大率
+	constexpr double kKillTypeSmallExtRate = 0.25;
+	// それに対応する名前
+	const std::vector<std::string> kSmallTypeName = {
+		"Large",
+		"BossArmored",
+		"BossStrongArmored"
+	};
 
 	// プレイヤー死亡時の画面の揺れフレーム
 	constexpr int kShakeFrameDeath = 10;
@@ -65,6 +83,12 @@ namespace
 
 	// 条件達成時の描画時間("○の条件達成の文字")
 	constexpr int kAchivedFrame = 120;
+
+	// スタート文字のウェーブスピード
+	constexpr double kWaveSpeed = DX_PI / 180 * 5;
+	// ウェーブの間隔
+	constexpr double kWaveInterval = DX_PI / 15;
+
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
@@ -76,6 +100,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_soundFrame(kSoundFade),
 	m_frame(0),
 	m_waitFrame(kWaitChangeFrame),
+	m_waveAngle(DX_PI),
 	m_isUpdateTime(false),
 	m_isUpdateBestTime(false)
 {
@@ -92,9 +117,21 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_arrow = file->LoadGraphic(L"UI/arrow.png");
 	m_arrowFlash = file->LoadGraphic(L"UI/arrowFlash.png");
 	m_arrowNo = file->LoadGraphic(L"UI/arrowNo.png");
+	m_arrowLock = file->LoadGraphic(L"UI/lock.png");
 	m_arrowConditions = file->LoadGraphic(L"UI/arrowConditions.png");
 	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 	m_bFrameImg = file->LoadGraphic(L"UI/backFrame.png");
+	m_enemysImg["Normal"] = file->LoadGraphic(L"Enemy/Normal.png");
+	m_enemysImg["MoveWall"] = file->LoadGraphic(L"Enemy/Wall.png");
+	m_enemysImg["Large"] = file->LoadGraphic(L"Enemy/Large.png");
+	m_enemysImg["Division"] = file->LoadGraphic(L"Enemy/Division.png");
+	m_enemysImg["Dash"] = file->LoadGraphic(L"Enemy/Dash.png");
+	m_enemysImg["Create"] = file->LoadGraphic(L"Enemy/Create.png");
+	m_enemysImg["Child"] = file->LoadGraphic(L"Enemy/Child.png");
+	m_enemysImg["Split"] = file->LoadGraphic(L"Enemy/Split.png");
+	m_enemysImg["SplitTwoBound"] = file->LoadGraphic(L"Enemy/Split.png");
+	m_enemysImg["BossArmored"] = file->LoadGraphic(L"Enemy/BossArmored.png");
+	m_enemysImg["BossStrongArmored"] = file->LoadGraphic(L"Enemy/BossStrongArmored.png");
 
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
@@ -125,11 +162,6 @@ void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 
 void StageBase::UpdateSelect(Input& input)
 {
-	// 待機フレームの増加
-	m_waitFrame++;
-
-	if (m_waitFrame < kWaitChangeFrame) return;
-
 	if (m_soundFrame > kSoundFade)
 	{
 		m_sound->PlayBgm(m_selectBgm->GetHandle());
@@ -139,6 +171,13 @@ void StageBase::UpdateSelect(Input& input)
 		m_soundFrame++;
 		m_sound->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
+
+	// 待機フレームの増加
+	m_waitFrame++;
+	m_waveAngle -= kWaveSpeed;
+
+	if (m_waitFrame < kWaitChangeFrame) return;
+
 
 	m_player->Update(input, kNone);
 
@@ -272,7 +311,7 @@ void StageBase::UpdatePlaying(Input& input)
 #endif
 	UpdateTime();
 
-	if (!m_player->IsExsit() || (m_boss && !m_boss->IsExsit()))
+	if (!m_player->IsExsit())
 	{
 		// メンバ関数ポインタを選択の方に戻す
 		m_updateFunc = &StageBase::UpdateSelect;
@@ -284,6 +323,7 @@ void StageBase::UpdatePlaying(Input& input)
 
 		// フレームの初期化
 		m_waitFrame = 0;
+		m_waveAngle = 0.0;
 
 		// ベストタイムの更新
 		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
@@ -293,6 +333,34 @@ void StageBase::UpdatePlaying(Input& input)
 
 		// クリアしているかの確認
 		CheckStageConditions();
+	}
+}
+
+void StageBase::UpdateBossDeath(Input& input)
+{
+	if (m_soundFrame > kSoundFade)
+	{
+		m_sound->PlayBgm(m_playBgm->GetHandle());
+	}
+	else
+	{
+		m_soundFrame++;
+		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+	}
+
+	m_boss->Update();
+//	m_player->Update(input, m_mgr.GetStage()->GetAbility());
+
+#ifdef _DEBUG
+	// これ仮実装
+	if (input.IsTriggered("cancel"))
+	{
+		m_mgr.GetStage()->m_clear = true;
+	}
+#endif
+	if (m_boss->IsEndPerformance())
+	{
+		m_mgr.GetStage()->m_clear = true;
 	}
 }
 
@@ -368,7 +436,7 @@ void StageBase::DrawSelect()
 	DrawImage();
 
 	// 条件達成時のを描画
-	DrawConditionsAchived();
+	DrawConditionsAchived(y);
 }
 
 void StageBase::DrawPlaying()
@@ -409,6 +477,14 @@ void StageBase::DrawPlaying()
 	}
 	DrawGraph(0, 0, m_strHandle, true);
 
+}
+
+void StageBase::DrawBossDeath()
+{
+	DrawWall();
+
+//	m_player->Draw();
+	m_boss->Draw();
 }
 
 void StageBase::CheckConditionsTime(const std::string& stageName, int exsitTime, const std::wstring& dir)
@@ -499,49 +575,84 @@ void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int
 	// 秒に戻す
 	sumTime /= 60;
 
-	DrawStringToHandle(kConditionsPosX, y, L"　　合計    秒間生き残る\n　　(           )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　　　%02d\n　　  %2d / %2d",
+	DrawStringToHandle(kConditionsPosX, y, L"　　全ステージ合計\n　　    秒間生き残る\n　　(           )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"\n　　%02d\n　　  %2d / %2d",
 		existTime, sumTime, existTime);
 }
 
-void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName) const
+void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
 {
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
-	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f - 150), static_cast<int>(m_size.h * 0.5f), 1.0, -kRad90, handle, true);
+	int x = static_cast<int>(m_size.w * 0.5f - 150);
+	int y = static_cast<int>(m_size.h * 0.5f);
+	DrawRotaGraph(x, y, 1.0, -kRad90, handle, true);
+	DrawArrowLock(x, y, isBossStage, isClear);
 }
 
-void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStName) const
+void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
 {
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
+	int x = static_cast<int>(m_size.w * 0.5f + 150);
+	int y = static_cast<int>(m_size.h * 0.5f);
 	// MEMO:何故かReverXをtrueにするとがびらないからしておいてる
-	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f + 150), static_cast<int>(m_size.h * 0.5f), 1.0, kRad90, handle, true, true);
+	DrawRotaGraph(x, y, 1.0, kRad90, handle, true, true);
+	DrawArrowLock(x, y, isBossStage, isClear);
 }
 
-void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName) const
+void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
 {
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
-	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f - 150), 1.0, 0.0, handle, true);
+	int x = static_cast<int>(m_size.w * 0.5f);
+	int y = static_cast<int>(m_size.h * 0.5f - 150);
+	DrawRotaGraph(x, y, 1.0, 0.0, handle, true);
+	DrawArrowLock(x, y, isBossStage, isClear);
 }
 
-void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName) const
+void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
 {
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
-	DrawRotaGraph(static_cast<int>(m_size.w * 0.5f), static_cast<int>(m_size.h * 0.5f + 150), 1.0, 0.0, handle, true, false, true);
+	int x = static_cast<int>(m_size.w * 0.5f);
+	int y = static_cast<int>(m_size.h * 0.5f + 150);
+	DrawRotaGraph(x, y, 1.0, 0.0, handle, true, false, true);
+	DrawArrowLock(x, y, isBossStage, isClear);
 }
 
 void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius) const
 {
+	double extRate = kKillTypeDefExtRate;
+	for (const auto& name : kSmallTypeName)
+	{
+		if (name == enemyName)
+		{
+			extRate = kKillTypeSmallExtRate;
+			break;
+		}
+	}
+	for (const auto& name : kLargeTypeName)
+	{
+		if (name == enemyName)
+		{
+			extRate = kKillTypeLargeExtRate;
+			break;
+		}
+	}
+
+	auto& file = m_enemysImg.at(enemyName);
 	if (m_mgr.GetStage()->IsKilledEnemy(enemyName))
 	{
-		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, true);
+		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, extRate, 0.0, file->GetHandle(), true);
 	}
 	else
 	{
-		DrawCircle(kKillTypePosX + addX, kKillTypePosY , radius, color, false);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
+		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, extRate, 0.0, file->GetHandle(), true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, false);
 	}
 }
 
@@ -622,14 +733,24 @@ void StageBase::BossDeath()
 		return;
 	}
 
-	m_mgr.GetStage()->m_clear = true;
+//	m_mgr.GetStage()->m_clear = true;
+	// ベストタイムの更新
+	if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
+	{
+		m_isUpdateBestTime = true;
+	}
+
+	// クリアしているかの確認
+	CheckStageConditions();
 
 	// 倒した情報の追加
 	m_mgr.GetStage()->UpdateClearBoss(m_boss->GetName());
-	Init();
 
 	// 敵全て消す
 	m_enemy.clear();
+
+	m_updateFunc = &StageBase::UpdateBossDeath;
+	m_drawFunc = &StageBase::DrawBossDeath;
 }
 
 void StageBase::DrawTime(int x, int y, int handle)
@@ -642,26 +763,34 @@ void StageBase::DrawTime(int x, int y, int handle)
 	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"%01d:%02d.%03d", min, sec, minSec);
 }
 
-void StageBase::DrawConditionsAchived()
+void StageBase::DrawConditionsAchived(int y)
 {
-	int y = 240;
+	y += 244 + 100;
+
 	for (const auto& achived : m_achived)
 	{
 		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
 		{
-			DrawStringToHandle(924, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(kConditionsPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
 		}
 		else
 		{
 			float rate = (kAchivedFrame - achived.frame) / (kAchivedFrame * 0.5f);
 			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(924, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(kConditionsPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 
 		y += 64;
 	}
+}
+
+void StageBase::DrawArrowLock(int x, int y, bool isBossStage, bool isClear) const
+{
+	if (!isBossStage || isClear) return;
+
+	DrawRotaGraph(x, y, 1.0, 0.0, m_arrowLock->GetHandle(), true);
 }
 
 void StageBase::DrawWall()
@@ -678,6 +807,7 @@ void StageBase::DrawImage()
 {
 
 	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+
 	switch (m_input.GetType())
 	{
 	case InputType::keybd:
@@ -689,7 +819,27 @@ void StageBase::DrawImage()
 		m_bt->DrawBottan(m_input.GetHardDataName("OK", InputType::pad), 1016, 600, 2.0);
 		break;
 	}
-	DrawStringToHandle(1064, 600, L"スタート", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
+
+	std::wstring str[] = { L"ス", L"タ", L"ー", L"ト" };
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int x = 1064;
+
+	for (int i = 0; i < 4; i++)
+	{
+		int add = sinf(m_waveAngle + kWaveInterval * i) * -10;
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int y = 600 + add;
+
+
+		DrawStringToHandle(x, y, str[i].c_str(), kWhiteColor, handle);
+		x += 24;
+	}
 }
 
 int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const

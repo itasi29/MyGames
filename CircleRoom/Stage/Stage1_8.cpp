@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "StageManager.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 
 #include "Player/Player.h"
@@ -33,7 +34,7 @@ namespace
 
 	// クリア時間
 	constexpr int kRightExsitTime = 10;
-	constexpr int kDownExsitTime = 15;
+	constexpr int kDownKilledNum = 4;
 
 	const std::string kRightStName = "Stage1-4";
 	const std::string kDownStName = "Stage1-7";
@@ -42,8 +43,11 @@ namespace
 Stage1_8::Stage1_8(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
-	m_stageName = "Stage1-8";
+	m_stageName = "StageBoss";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
+
+	// 1-8はボスのためBGMを変更する
+	m_playBgm = m_mgr.GetFile()->LoadSound(L"Bgm/boss.mp3");
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
@@ -108,7 +112,7 @@ void Stage1_8::ChangeStage(Input& input)
 void Stage1_8::CheckStageConditions()
 {
 	CheckConditionsTime(kRightStName, kRightExsitTime, L"右");
-	CheckConditionsKilled(kDownStName, kDownExsitTime, L"下");
+	CheckConditionsKilled(kDownStName, kDownKilledNum, L"下");
 }
 
 int Stage1_8::DrawStageConditions(int drawY)
@@ -126,7 +130,7 @@ int Stage1_8::DrawStageConditions(int drawY)
 	if (!m_isDownClear)
 	{
 		DrawArrowConditions(kDownStName, drawY, DX_PI);
-		DrawKilledConditions(drawY, fontHandle, kDownExsitTime);
+		DrawKilledConditions(drawY, fontHandle, kDownKilledNum);
 
 		drawY += 68;
 	}

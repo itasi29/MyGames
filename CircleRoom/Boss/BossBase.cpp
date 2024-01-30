@@ -3,11 +3,14 @@
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
+#include "FileSystem/FontSystem.h"
 
 #include "BossBase.h"
 
 namespace
 {
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+
 	// 壁からの法線ベクトル
 	const Vec2 kNorVecLeft = Vec2{ 1.0f,  0.0f };
 	const Vec2 kNorVecRight = Vec2{ -1.0f,  0.0f };
@@ -18,10 +21,11 @@ namespace
 	const Vec2 kShiftSide = Vec2{ 0.0f, 0.2f };
 	const Vec2 kShiftVert = Vec2{ 0.2f, 0.0f };
 
-	// HPバーの幅
-	constexpr int kHpBarWidth = 180;
-	// HPバーの高さ
-	constexpr int kHpBarHeight = 50;
+	// HPバーの描画位置
+	constexpr int kDrawHpBarX = 960;
+	constexpr int kDrawHpBarY = 288;
+	// HPバーの縦幅
+	constexpr int kHpBarHeight = 56;
 
 	// 背景HPバーの前後幅
 	constexpr int kBackHpBarWidth = 10;
@@ -61,6 +65,16 @@ namespace
 
 	// HitStopフレーム
 	constexpr int kHitStopFrame = 3;
+
+	/*死亡時の演出について*/
+	// 演出数
+	constexpr int kPerformaceNum = 6;
+	// 演出の間隔
+	constexpr int kPerformanceInterval = 45;
+	// 震わせるフレーム
+	constexpr int kShakeFrame = 30;
+	// エフェクトインターバル
+	constexpr int kPerEffInterval = 3;
 }
 
 BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
@@ -70,7 +84,8 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_isExsit(true),
 	m_hp(maxHp),
 	m_hitStopFrame(kHitStopFrame),
-	m_lineType(0)
+	m_lineType(0),
+	m_isEndPerformance(false)
 {
 	m_updateFunc = &BossBase::StartUpdate;
 	m_drawFunc = &BossBase::StartDraw;
@@ -78,6 +93,11 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_wallEffect = mgr->LoadGraphic(L"Enemy/wallEffect.png");
 	m_damageEffect = mgr->LoadGraphic(L"Enemy/damageEffect.png");
+	m_hpBar = mgr->LoadGraphic(L"UI/HpBar.png");
+	m_hpBarBack = mgr->LoadGraphic(L"UI/HpBarBack.png");
+	m_hpBarDown = mgr->LoadGraphic(L"UI/HpBarDown.png");
+	m_hpBarFrame = mgr->LoadGraphic(L"UI/HpBarFrame.png");
+	m_performance = mgr->LoadGraphic(L"Enemy/endPerformance.png");
 
 	m_createSe = mgr->LoadSound(L"Se/create.mp3");
 	m_damageSe = mgr->LoadSound(L"Se/bossDamage.mp3");
@@ -229,6 +249,89 @@ void BossBase::HitStop()
 	m_updateFunc = &BossBase::HitStopUpdate;
 }
 
+void BossBase::OnDeath()
+{
+	// 中心に向かうようにベクトルを調整
+	m_vec = Vec2{ m_size.w * 0.5f, m_size.h * 0.5f } - m_pos;
+	// ちょうど爆発(？)エフェクト終了時に中心辺りに来るように調整
+	m_vec = m_vec / (kPerformaceNum * kPerformanceInterval);
+
+	// それぞれの初期化
+	m_endPerformanceFrame = 0;
+	m_performanceNum = 0;
+	m_isShake = false;
+	m_isScatter = false;
+
+	m_updateFunc = &BossBase::DeathUpdate;
+	m_drawFunc = &BossBase::DeathDraw;
+}
+
+void BossBase::DeathUpdate()
+{
+	// TODO:とりあえず下ので実装してみる
+	// 死亡したら真ん中によって行く
+	// その途中で爆発エフェクトをおこす
+
+	// 一定時間(だいたい4～6？)たったら
+	// 本体を震わせ爆発させて
+	// 波紋を描画
+
+	// そのあとにフェードアウトしてリザルトへ
+
+	m_endPerformanceFrame++;
+	m_pos += m_vec;
+
+	for (auto& eff : m_performanceEff)
+	{
+		eff.frame++;
+		if (eff.frame > 9 * kPerEffInterval)
+		{
+			eff.isEnd = true;
+		}
+	}
+	m_performanceEff.remove_if(
+		[](const auto& eff)
+		{
+			return eff.isEnd;
+		}
+	);
+
+	// 爆発エフェクト
+	if (m_performanceNum < kPerformaceNum && m_endPerformanceFrame > kPerformanceInterval)
+	{
+		m_performanceNum++;
+		m_endPerformanceFrame = 0;
+		Vec2 pos = m_pos;
+		pos.x += (GetRand(30) - 15) * 10;
+		pos.y += (GetRand(30) - 15) * 10;
+		m_performanceEff.push_back({pos, 0, false});
+
+		// 最後の爆発エフェクト立った場合
+		if (m_performanceNum >= kPerformaceNum)
+		{
+			// 移動しないように
+			m_vec = {};
+			// 震わせる
+			m_isShake = true;
+		}
+		return;
+	}
+
+	// 震わせ中待機
+	if (m_isShake && m_endPerformanceFrame > kShakeFrame)
+	{
+		m_isScatter = true;
+		m_isShake = false;
+		m_endPerformanceFrame = 0;
+	}
+
+	// 少ししたら終了とする
+	if (m_isScatter && m_endPerformanceFrame > 30)
+	{
+		m_isEndPerformance = true;
+	}
+}
+
 void BossBase::HitStopUpdate()
 {
 	if (m_hitStopFrame > kHitStopFrame)
@@ -263,22 +366,66 @@ void BossBase::NormalDraw() const
 #endif
 }
 
+void BossBase::DeathDraw() const
+{
+	if (!m_isScatter)
+	{
+		int x = static_cast<int>(m_pos.x);
+		int y = static_cast<int>(m_pos.y);
+
+		if (m_isShake)
+		{
+			x += GetRand(30) - 15;
+			y += GetRand(30) - 15;
+		}
+
+		DrawRotaGraph(x, y, 1.0, m_angle,
+			m_charImg->GetHandle(), true);
+	}
+	else
+	{
+		int x = static_cast<int>(m_pos.x);
+		int y = static_cast<int>(m_pos.y);
+
+		// TODO:波紋っぽくするところから
+
+		DrawCircle(x, y, m_ripple3, 0x789461);
+		DrawCircle(x, y, m_ripple2, 0x50623a);
+		DrawCircle(x, y, m_ripple1, 0x294b29);
+	}
+
+	for (const auto& eff : m_performanceEff)
+	{
+		int srcX = 64 * (eff.frame / kPerEffInterval);
+		int srcY = 64 * 5;
+
+		DrawRectRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), srcX, srcY, 64, 64,
+			3.0, 0.0, m_performance->GetHandle(), true);
+	}
+}
+
 void BossBase::DrawHpBar() const
 {
-	Vec2 base = {m_size.w - kHpBarWidth * 1.5f, 160.0f};
+	// フレームよりバーの方が小さいため位置調整
+	int barX = kDrawHpBarX + 2;
+	int barY = kDrawHpBarY + 4;
 
-	// 背景
-	DrawBox(static_cast<int>(base.x - kBackHpBarWidth), static_cast<int>(base.y - kBackHpBarHeight),
-		static_cast<int>(base.x + kHpBarWidth + kBackHpBarWidth), static_cast<int>(base.y + kHpBarHeight + kBackHpBarHeight),
-		0xf0f0f0, true);
-
+	// 背景のHPバー
+	DrawGraph(barX, barY, m_hpBarBack->GetHandle(), true);
+	// 赤いHPバーの描画
+	DrawExtendGraph(barX, barY, 
+		barX + m_hpDownWidth, barY + kHpBarHeight, 
+		m_hpBarDown->GetHandle(), true);
 	// 通常のHPバー
-	DrawBox(static_cast<int>(base.x), static_cast<int>(base.y),
-		static_cast<int>(base.x + kHpBarWidth * (m_hp / static_cast<float>(m_maxHp))), static_cast<int>(base.y + kHpBarHeight),
-		0x08ff08, true);
+	DrawExtendGraph(barX, barY, 
+		barX + m_hpWidth, barY + kHpBarHeight,
+		m_hpBar->GetHandle(), true);
+	// フレームの描画
+	DrawGraph(kDrawHpBarX, kDrawHpBarY, m_hpBarFrame->GetHandle(), true);
 
-	DrawFormatString(static_cast<int>(base.x), static_cast<int>(base.y - 32),
-		0xffffff, L"%02d / %02d", m_hp, m_maxHp);
+	auto& font = GameManager::GetInstance().GetFont();
+	DrawFormatStringToHandle(kDrawHpBarX, kDrawHpBarY -48, kWhiteColor, font->GetHandle(32),
+		L"BOSS : %02d / %02d", m_hp, m_maxHp);
 }
 
 void BossBase::DrawHitWallEffect() const

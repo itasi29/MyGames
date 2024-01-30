@@ -17,8 +17,8 @@ public:
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
-	/// <param name="isMove">背景を動かすか true : 動かす, false : 動かさない</param>
-	void Init(bool isMove);
+	/// <param name="speed">速度(何も入れなければデフォルトスピードで動く)</param>
+	void Init(float speed = -1);
 
 private:
 	void NormarUpdate();
@@ -45,9 +45,10 @@ private:
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 
-	std::vector<std::shared_ptr<FileBase>> m_bg;
+	std::shared_ptr<FileBase> m_bg;
 
-	int m_scroll;
+	float m_scroll;
+	float m_scrollSpeed;
 	bool m_isMove;
 
 	bool m_isDraw;

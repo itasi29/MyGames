@@ -80,9 +80,9 @@ void SceneManager::Draw()
 	}
 }
 
-void SceneManager::ChangeScene(std::shared_ptr<Scene>nextScene, bool isMoveBg)
+void SceneManager::ChangeScene(std::shared_ptr<Scene>nextScene, float speed)
 {
-	m_bg->Init(isMoveBg);
+	m_bg->Init(speed);
 	if (m_scenes.empty()) {	// リストが空っぽだったら入れ替えるのではなく
 		m_scenes.push_back(nextScene);	// 末尾に追加する
 	}
@@ -91,9 +91,9 @@ void SceneManager::ChangeScene(std::shared_ptr<Scene>nextScene, bool isMoveBg)
 	}
 }
 
-void SceneManager::ChangeSceneWithClear(std::shared_ptr<Scene> nextScene, bool isMoveBg)
+void SceneManager::ChangeSceneWithClear(std::shared_ptr<Scene> nextScene, float speed)
 {
-	m_bg->Init(isMoveBg);
+	m_bg->Init(speed);
 	// 一度すべて消す
 	m_scenes.clear();
 	// シーンを追加

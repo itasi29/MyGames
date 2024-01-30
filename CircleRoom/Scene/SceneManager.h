@@ -34,14 +34,14 @@ public:
 	/// </summary>
 	/// <param name="nextScene">次のシーン</param>
 	/// <param name="isMoveBg">背景を動かすか</param>
-	void ChangeScene(std::shared_ptr<Scene> nextScene, bool isMoveBg = true);
+	void ChangeScene(std::shared_ptr<Scene> nextScene, float speed = -1);
 
 	/// <summary>
 	/// 現在あるすべてのシーンを削除しシーンを切り替える
 	/// </summary>
 	/// <param name="nextScene">次のシーン</param>
 	/// <param name="isMoveBg">背景を動かすか</param>
-	void ChangeSceneWithClear(std::shared_ptr<Scene> nextScene, bool isMoveBg = true);
+	void ChangeSceneWithClear(std::shared_ptr<Scene> nextScene, float speed = -1);
 
 	/// <summary>
 	/// 現在のシーンの上にシーンを乗っけます

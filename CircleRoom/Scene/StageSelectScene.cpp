@@ -60,9 +60,9 @@ namespace
 	// ステージ名簿
 	const std::string kStageStr[kLineNum][kRowNum] =
 	{
-		{"Stage1-5", "Stage1-8", "Stage1-7"},
+		{"Stage1-5", "StageBoss", "Stage1-7"},
 		{"Stage1-3", "Stage1-4", "Stage1-6"},
-		{"Stage1-2", "Stage1-1", "Stage1-9"}
+		{"Stage1-2", "Stage1-1", "Master"}
 	};
 }
 
@@ -154,11 +154,11 @@ void StageSelectScene::Update(Input& input)
 		{
 			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_7>(m_mgr, input));
 		}
-		if (stgName == "Stage1-8")
+		if (stgName == "StageBoss")
 		{
 			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_8>(m_mgr, input));
 		}
-		if (stgName == "Stage1-9")
+		if (stgName == "Master")
 		{
 			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
 		}

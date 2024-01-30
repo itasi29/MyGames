@@ -24,17 +24,16 @@ struct StageInfHeader
 
 namespace
 {
-	// ステージ間の移動にかかる時間
-	constexpr int kStageMoveFrame = 30;
-
 	// 移動スピード
 	constexpr float kSpeed = 100.0f;
 
+	// 書き換え認識距離
+	constexpr float kRecognitionDis = 1280.0f;
 	// ゆっくりになる距離
-	constexpr float kSlowDis = 1280.0f;
+	constexpr float kSlowDis = 640.0f;
 
 	// 下限速度
-	constexpr float kLimitSlowSpeed = 5.0f;
+	constexpr float kLimitSlowSpeed = 10.0f;
 
 	// ステージの縦横数
 	constexpr int kLine = 4;
@@ -47,9 +46,9 @@ namespace
 	// 名前の場所
 	const std::string kStName[kLine][kRow] =
 	{
-		{"Stage1-5", "Stage1-8", "Stage1-7"},
+		{"Stage1-5", "StageBoss", "Stage1-7"},
 		{"Stage1-3", "Stage1-4", "Stage1-6"},
-		{"Stage1-2", "Stage1-1", "Stage1-9"},
+		{"Stage1-2", "Stage1-1", "Master"},
 		{"none", "Tutorial", "none"}
 	};
 }
@@ -143,7 +142,7 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 
 	float dis = (m_targetPos - m_pos).Length();
 
-	if (!m_isMove || dis < kSlowDis)
+	if (!m_isMove || dis < kRecognitionDis)
 	{
 		// 描画用スクリーンに現在いるステージを描画
 		SetDrawScreen(m_drawScreen);

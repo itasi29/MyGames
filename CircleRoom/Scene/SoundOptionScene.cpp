@@ -29,6 +29,9 @@ namespace
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
 
+	// フレームの左余白
+	constexpr int kFrameMargin = 16;
+
 	constexpr int kAppeaInterval = 5;
 	constexpr int kMenuMargin = 120;
 
@@ -79,12 +82,12 @@ void SoundOptionScene::Update(Input& input)
 
 void SoundOptionScene::Draw()
 {	
-	int y = kMenuMargin + 38 + m_currentLineIndex * kMenuLineInterval;
+	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
 	// 選択している場所を描画
 	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
-	DrawBox(128, y,
-		kMenuMargin + 800, y + 40,
+	DrawBox(128 - kFrameMargin, y,
+		kMenuMargin + 800, y + 44,
 		kFrameColor, true);
 
 	// 選択中の場合は色を追加して点滅させる

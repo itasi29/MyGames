@@ -2,11 +2,19 @@
 #include <DxLib.h>
 #include <string>
 #include <memory>
+#include <list>
 #include "Vec2.h"
 #include "Utility/Collision.h"
 
 struct size;
 class FileBase;
+
+struct PerformanceEff
+{
+	Vec2 pos;
+	int frame = 0;
+	bool isEnd = false;
+};
 
 /// <summary>
 /// ボスの基底クラス
@@ -45,6 +53,13 @@ public:
 	/// <returns>true: 生きてる / false:死んでる</returns>
 	bool IsExsit() const { return m_isExsit; }
 
+
+	/// <summary>
+	/// 死亡演出が終了しているか
+	/// </summary>
+	/// <returns>true : 終了 / false : 演出中</returns>
+	bool IsEndPerformance() const { return m_isEndPerformance; }
+
 	/// <summary>
 	/// HPを1減らす
 	/// </summary>
@@ -72,6 +87,11 @@ protected:
 	void HitStop();
 
 
+	/// <summary>
+	/// 死亡時の処理
+	/// </summary>
+	void OnDeath();
+
 protected:
 	// メンバ関数ポインタ
 	using updateFunc_t = void(BossBase::*)();
@@ -79,10 +99,12 @@ protected:
 
 	virtual void StartUpdate() = 0;
 	virtual void NormalUpdate() = 0;
+	void DeathUpdate();
 	void HitStopUpdate();
 
 	virtual void StartDraw() const;
 	virtual void NormalDraw() const;
+	void DeathDraw() const;
 
 	/// <summary>
 	/// HPバーの描画
@@ -92,6 +114,9 @@ protected:
 	void DrawDamageEffect() const;
 
 protected:
+	// HPバーの幅
+	const int kHpBarWidth = 270;
+	// 角度
 	const double kRad = DX_PI / 180;
 
 	// ダメージを受けた際のフレーム
@@ -116,6 +141,11 @@ protected:
 	std::shared_ptr<FileBase> m_wallEffect;
 	// ダメージエフェクト
 	std::shared_ptr<FileBase> m_damageEffect;
+	// HPバー関連の画像
+	std::shared_ptr<FileBase> m_hpBar;
+	std::shared_ptr<FileBase> m_hpBarBack;
+	std::shared_ptr<FileBase> m_hpBarDown;
+	std::shared_ptr<FileBase> m_hpBarFrame;
 
 	// 生成時のSE
 	std::shared_ptr<FileBase> m_createSe;
@@ -130,6 +160,10 @@ protected:
 	const int m_maxHp;
 	// 体力
 	int m_hp;
+	// 通常のバーの幅
+	int m_hpWidth;
+	// 赤いバーの幅
+	int m_hpDownWidth;
 
 	// 中心座標
 	Vec2 m_pos;
@@ -165,5 +199,24 @@ protected:
 
 	// 壁エフェクト種類
 	int m_lineType;
+
+	// 死亡演出フラグ
+	bool m_isEndPerformance;
+	// 演出フレーム
+	int m_endPerformanceFrame;
+	// 演出回数
+	int m_performanceNum;
+	// 震わせフラグ
+	bool m_isShake;
+	// 霧散フラグ
+	bool m_isScatter;
+	// 爆発エフェクト画像
+	std::shared_ptr<FileBase> m_performance;
+	// エフェクト描画位置情報
+	std::list<PerformanceEff> m_performanceEff;
+	// 波紋の半径
+	int m_ripple1;
+	int m_ripple2;
+	int m_ripple3;
 };
 

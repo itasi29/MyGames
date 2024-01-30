@@ -14,6 +14,7 @@ public:
 	BossDamageObject(const Vec2& col);
 	~BossDamageObject();
 
+	void Update();
 	void Draw();
 
 	/// <summary>
@@ -38,5 +39,6 @@ private:
 	Collision m_col;
 
 	bool m_isUsed;
+	int m_flashFrame;
 };
 

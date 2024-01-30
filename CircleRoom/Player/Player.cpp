@@ -102,7 +102,7 @@ void Player::Init()
 	m_isDeathEffect = false;
 
 	// ˆÊ’u‚Ìİ’è
-	m_pos = Vec2{ m_size.w / 2.0f, m_size.h - m_fieldSize };
+	m_pos = Vec2{ m_size.w / 2.0f, m_size.h - m_fieldSize * 0.5f };
 
 	// •ûŒü‚Ìİ’è
 	m_front = Vec2::Up();

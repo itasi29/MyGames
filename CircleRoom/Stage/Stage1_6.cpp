@@ -39,7 +39,7 @@ namespace
 
 	const std::string kLeftStName = "Stage1-4";
 	const std::string kUpStName = "Stage1-7";
-	const std::string kDownStName = "Stage1-9";
+	const std::string kDownStName = "Master";
 }
 
 Stage1_6::Stage1_6(GameManager& mgr, Input& input) :
@@ -172,7 +172,7 @@ void Stage1_6::DrawKilledEnemyType() const
 	DrawKilledEnemy("Normal", 0, 0xfffae7);
 	DrawKilledEnemy("MoveWall", 36, 0xb6bbc4);
 	DrawKilledEnemy("Create", 72, 0xd9edbf);
-	DrawKilledEnemy("Child", 104, 0xffb996, 12);
+	DrawKilledEnemy("Child", 110, 0xffb996, 12);
 }
 
 void Stage1_6::CreateEnemy()
