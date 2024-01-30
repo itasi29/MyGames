@@ -118,7 +118,7 @@ private:
 	// “®‚©‚·Šî€‚ªX²‚©
 	bool m_isBaseX;
 	// sinf‚ğg‚¤‚æ‚¤
-	double m_angle;
+	float m_angle;
 
 	// ”wŒi—p
 	std::shared_ptr<BackgroundScene> m_bg;

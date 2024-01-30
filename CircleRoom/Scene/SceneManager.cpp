@@ -13,7 +13,7 @@ namespace
 	constexpr int kShakeSize = 10;
 
 	// ˆê“x‚Éi‚Ü‚¹‚é—Ê
-	constexpr double kRad = DX_PI / 30 * 0.5;
+	constexpr float kRad = DX_PI_F / 30 * 0.5;
 
 	// •E‚‚³‚Ì‘å‚«‚³
 	constexpr int kWidth = 200;
@@ -190,13 +190,13 @@ void SceneManager::MoveDraw() const
 	float rate = sinf(m_angle);
 	if (m_isBaseX)
 	{
-		x = m_vec.x * rate * kWidth;
-		y = m_vec.y * rate * kHeight;
+		x = static_cast<int>(m_vec.x * rate * kWidth);
+		y = static_cast<int>(m_vec.y * rate * kHeight);
 	}
 	else
 	{
-		y = m_vec.x * rate * kWidth;
-		x = m_vec.y * rate * kHeight;
+		y = static_cast<int>(m_vec.x * rate * kWidth);
+		x = static_cast<int>(m_vec.y * rate * kHeight);
 	}
 
 	DrawGraph(x, y, m_moveScreen, true);

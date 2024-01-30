@@ -85,9 +85,9 @@ namespace
 	constexpr int kAchivedFrame = 120;
 
 	// スタート文字のウェーブスピード
-	constexpr double kWaveSpeed = DX_PI / 180 * 5;
+	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
 	// ウェーブの間隔
-	constexpr double kWaveInterval = DX_PI / 15;
+	constexpr float kWaveInterval = DX_PI_F / 15.0f;
 
 }
 
@@ -100,7 +100,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_soundFrame(kSoundFade),
 	m_frame(0),
 	m_waitFrame(kWaitChangeFrame),
-	m_waveAngle(DX_PI),
+	m_waveAngle(DX_PI_F),
 	m_isUpdateTime(false),
 	m_isUpdateBestTime(false)
 {
@@ -819,7 +819,7 @@ void StageBase::DrawImage()
 
 	for (int i = 0; i < 4; i++)
 	{
-		int add = sinf(m_waveAngle + kWaveInterval * i) * -10;
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
 
 		if (add > 0)
 		{

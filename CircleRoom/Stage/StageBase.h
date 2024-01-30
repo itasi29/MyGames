@@ -326,7 +326,7 @@ protected:
 	int m_waitFrame;
 
 	// 文字ウェーブ用の角度
-	double m_waveAngle;
+	float m_waveAngle;
 
 	// ベストタイム点滅
 	bool m_isUpdateBestTime;

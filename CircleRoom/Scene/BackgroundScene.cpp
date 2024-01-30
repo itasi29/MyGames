@@ -8,7 +8,7 @@
 namespace
 {
 	// スクロールスピード
-	constexpr int kSpeed = 2.0f;
+	constexpr float kSpeed = 2.0f;
 
 	// 背景画像数
 	constexpr int kBgNum = 1;
