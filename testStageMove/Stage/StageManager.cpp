@@ -162,7 +162,7 @@ void StageManager::NormalUpdate()
 
 void StageManager::StageMoveUpdate()
 {
-	m_nextStage->Update();
+	//m_nextStage->Update();
 
 	// êŠ‚ÌXV
 	m_pos += m_vec;
@@ -197,7 +197,7 @@ void StageManager::StageMoveUpdate()
 void StageManager::DeathMoveUpdate()
 {
 	m_deathMoveFrame++;
-	m_deathMoveAngle += (DX_PI / 15) * 0.1;
+	m_deathMoveAngle += (DX_PI / 15) * 0.5;
 
 	//if (m_deathMoveFrame >= kDeathMoveFrame)
 	if (m_deathMoveAngle >= DX_PI)

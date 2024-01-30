@@ -11,6 +11,11 @@ Stage4::Stage4(StageManager& mgr) :
 
 void Stage4::Update()
 {
+	if (CheckHitKey(KEY_INPUT_M))
+	{
+		m_mgr.DeathMoveScreen({ 1, -1 });
+	}
+
 	if (CheckHitKey(KEY_INPUT_LEFT))
 	{
 	}

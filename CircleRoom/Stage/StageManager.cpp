@@ -104,7 +104,14 @@ void StageManager::InitPos()
 	if (IsClearStage("Tutorial"))
 	{
 		const auto& stageName = GameManager::GetInstance().GetNowStage();
-		m_pos = GetPos(stageName);
+		if (stageName == "")
+		{
+			m_pos = GetPos("Stage1-1");
+		}
+		else
+		{
+			m_pos = GetPos(stageName);
+		}
 	}
 	else
 	{
@@ -182,8 +189,8 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 	m_targetPos = pos;
 
 	// メンバ関数ポインタの更新
-	m_updateFunc = &StageManager::MoveUpdate;
-	m_drawFunc = &StageManager::MoveDraw;
+	m_updateFunc = &StageManager::StageMoveUpdate;
+	m_drawFunc = &StageManager::StageMoveDraw;
 
 	// 次のステージの保存
 	m_nextStage = nextStage;
@@ -547,7 +554,7 @@ void StageManager::NormalUpdate(Input& input)
 	m_stage->ChangeStage(input);
 }
 
-void StageManager::MoveUpdate(Input& input)
+void StageManager::StageMoveUpdate(Input& input)
 {
 	m_nextStage->Update(input);
 	m_nextStage->ChangeStage(input);
@@ -572,7 +579,7 @@ void StageManager::NormalDraw() const
 	m_stage->Draw();
 }
 
-void StageManager::MoveDraw() const
+void StageManager::StageMoveDraw() const
 {
 	// MEMO:画面上を動かすからマイナスにしておく
 	DrawGraph(static_cast <int>(-m_pos.x), static_cast <int>(-m_pos.y), m_screen, true);

@@ -11,6 +11,13 @@
 namespace
 {
 	constexpr int kShakeSize = 10;
+
+	// ˆê“x‚Éi‚Ü‚¹‚é—Ê
+	constexpr double kRad = DX_PI / 30 * 0.5;
+
+	// •E‚‚³‚Ì‘å‚«‚³
+	constexpr int kWidth = 200;
+	constexpr int kHeight = 100;
 }
 
 SceneManager::SceneManager(bool isDrawBg) :
@@ -19,6 +26,9 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_shakeSize(kShakeSize),
 	m_isDrawBg(isDrawBg)
 {
+	m_updateFunc = &SceneManager::NormalUpdate;
+	m_drawFunc = &SceneManager::NormalDraw;
+
 	const size size = Application::GetInstance().GetWindowSize();
 	m_shakeHandle = MakeScreen(size.w, size.h);
 }
@@ -38,46 +48,12 @@ void SceneManager::Init()
 
 void SceneManager::Update(Input& input)
 {
-	// ”wŒi‚ÌXV
-	m_bg->Update();
-
-	// ––”ö‚Ì‚ÝŽÀs
-	m_scenes.back()->Update(input);
-
-	if (m_isShake)
-	{
-		m_shakeFrame--;
-
-		if (m_shakeFrame < 0)
-		{
-			m_isShake = false;
-		}
-	}
+	(this->*m_updateFunc)(input);
 }
 
 void SceneManager::Draw()
 {
-	if (m_isShake)
-	{
-		SetDrawScreen(m_shakeHandle);
-		ClearDrawScreen();
-	}
-
-	m_bg->Draw();
-	// æ“ª‚©‚ç‡‚É•`‰æ(ÅŒã‚ÉÏ‚ñ‚¾‚à‚Ì‚ªÅŒã‚É•`‰æ‚³‚ê‚é)
-	for (auto& scene : m_scenes)
-	{
-		scene->Draw();
-	}
-
-	if (m_isShake)
-	{
-		SetDrawScreen(DX_SCREEN_BACK);
-
-		int x = GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5f);
-		int y = GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5f);
-		DrawGraph(x, y, m_shakeHandle, true);
-	}
+	(this->*m_drawFunc)();
 }
 
 void SceneManager::ChangeScene(std::shared_ptr<Scene>nextScene, float speed)
@@ -120,6 +96,13 @@ void SceneManager::ShakeScreen(int frame, int size = kShakeSize)
 	m_shakeFrame = frame;
 	m_shakeSize = size;
 	m_isShake = true;
+
+	m_updateFunc = &SceneManager::ShakeUpdate;
+	m_drawFunc = &SceneManager::ShakeDraw;
+}
+
+void SceneManager::MoveScreen(const Vec2& vec)
+{
 }
 
 std::shared_ptr<Scene> SceneManager::GetTopScene()
@@ -137,4 +120,84 @@ int SceneManager::GetScreenHandle() const
 	{
 		return DX_SCREEN_BACK;
 	}
+}
+
+void SceneManager::NormalUpdate(Input& input)
+{
+	// ”wŒi‚ÌXV
+	m_bg->Update();
+
+	// ––”ö‚Ì‚ÝŽÀs
+	m_scenes.back()->Update(input);
+}
+
+void SceneManager::ShakeUpdate(Input& input)
+{
+	NormalUpdate(input);
+
+	m_shakeFrame--;
+
+	if (m_shakeFrame < 0)
+	{
+		m_isShake = false;
+
+		m_updateFunc = &SceneManager::NormalUpdate;
+		m_drawFunc = &SceneManager::NormalDraw;
+	}
+}
+
+void SceneManager::MoveUpdate(Input& input)
+{
+	NormalUpdate(input);
+
+	m_angle += kRad;
+
+	if (m_angle >= DX_PI)
+	{
+		m_updateFunc = &SceneManager::NormalUpdate;
+		m_drawFunc = &SceneManager::NormalDraw;
+	}
+}
+
+void SceneManager::NormalDraw() const
+{
+	m_bg->Draw();
+	// æ“ª‚©‚ç‡‚É•`‰æ(ÅŒã‚ÉÏ‚ñ‚¾‚à‚Ì‚ªÅŒã‚É•`‰æ‚³‚ê‚é)
+	for (auto& scene : m_scenes)
+	{
+		scene->Draw();
+	}
+}
+
+void SceneManager::ShakeDraw() const
+{
+	SetDrawScreen(m_shakeHandle);
+	ClearDrawScreen();
+
+	NormalDraw();
+
+	SetDrawScreen(DX_SCREEN_BACK);
+
+	int x = GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5f);
+	int y = GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5f);
+	DrawGraph(x, y, m_shakeHandle, true);
+}
+
+void SceneManager::MoveDraw() const
+{
+	int x, y;
+
+	float rate = sinf(m_angle);
+	if (m_isBaseX)
+	{
+		x = m_vec.x * rate * kWidth;
+		y = m_vec.y * rate * kHeight;
+	}
+	else
+	{
+		y = m_vec.x * rate * kWidth;
+		x = m_vec.y * rate * kHeight;
+	}
+
+	DrawGraph(x, y, m_moveScreen, true);
 }
