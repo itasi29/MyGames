@@ -1,9 +1,12 @@
 #pragma once
+#include <list>
 #include <memory>
 #include "Scene.h"
 
 class FileBase;
 class SoundSystem;
+class EnemyBase;
+class BossBase;
 struct size;
 
 /// <summary>
@@ -46,6 +49,8 @@ private:
 	std::shared_ptr<FileBase> m_logo;
 	std::shared_ptr<FileBase> m_bg;
 	std::shared_ptr<FileBase> m_frame;
+
+	
 
 	// ‘S‘ÌƒtƒŒ[ƒ€
 	int m_fadeFrame;

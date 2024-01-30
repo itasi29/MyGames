@@ -12,6 +12,9 @@ namespace
 {
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
+	// タイトルでの動くスピード
+	constexpr float kTitleSpeed = 4.0f;
+
 	// 壁からの法線ベクトル
 	const Vec2 kNorVecLeft = Vec2{ 1.0f,  0.0f };
 	const Vec2 kNorVecRight = Vec2{ -1.0f,  0.0f };
@@ -111,6 +114,96 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 BossBase::~BossBase()
 {
 	DeleteGraph(m_rippleScreen);
+}
+
+void BossBase::TitleInit()
+{
+	// 出現場所の作成
+	int rand = GetRand(3);
+	// 上から
+	if (rand == 0)
+	{
+		m_pos = { GetRand(static_cast<int>(m_size.w - 1)), -m_radius };
+	}
+	// 下から
+	else if (rand == 1)
+	{
+		m_pos = { GetRand(static_cast<int>(m_size.w - 1)), m_radius };
+	}
+	// 左から
+	else if (rand == 2)
+	{
+		m_pos = { -m_radius, GetRand(static_cast<int>(m_size.h - 1)) };
+	}
+	// 右から
+	else
+	{
+		m_pos = { m_radius, GetRand(static_cast<int>(m_size.h - 1)) };
+	}
+
+	// ベクトルの作成
+	m_vec = Vec2{m_size.w * 0.5f, m_size.h * 0.5f} - m_pos;
+	// 速度の調整
+	m_vec = m_vec.GetNormalized() * kTitleSpeed;
+}
+
+void BossBase::TitleUpdate()
+{
+	m_pos += m_vec;
+	m_angle -= kRad;
+	
+	// 画面外判定
+	// FIXME:時間があれば関数化
+	// 左に動いているとき
+	if (m_vec.x < 0)
+	{
+		// 下に動いているとき
+		if (m_vec.y > 0)
+		{
+			if (m_pos.x + m_radius < 0 || m_pos.y - m_radius > m_size.h)
+			{
+				m_isExsit = false;
+				return;
+			}
+		}
+		// 上に動いているとき
+		else
+		{
+			if (m_pos.x + m_radius < 0 || m_pos.y + m_radius < 0)
+			{
+				m_isExsit = false;
+				return;
+			}
+		}
+	}
+	// 右に動いているとき
+	else
+	{
+		// 下に動いているとき
+		if (m_vec.y > 0)
+		{
+			if (m_pos.x - m_radius > 0 || m_pos.y - m_radius > m_size.h)
+			{
+				m_isExsit = false;
+				return;
+			}
+		}
+		// 上に動いているとき
+		else
+		{
+			if (m_pos.x - m_radius > 0 || m_pos.y + m_radius < 0)
+			{
+				m_isExsit = false;
+				return;
+			}
+		}
+	}
+}
+
+void BossBase::TitleDraw()
+{
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
+		m_charImg->GetHandle(), true);
 }
 
 void BossBase::Update()

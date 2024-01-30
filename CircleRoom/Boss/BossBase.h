@@ -25,6 +25,9 @@ public:
 	BossBase(const size& windowSize, float fieldSize, int maxHp);
 	virtual ~BossBase();
 
+	void TitleInit();
+	void TitleUpdate();
+	void TitleDraw();
 	virtual void Init(const Vec2& pos, bool isStart = false) = 0;
 	void Update();
 	void Draw() const;
