@@ -25,6 +25,8 @@ EnemyNormal::EnemyNormal(const size& windowSize, float fieldSize) :
 {
 	m_name = "Normal";
 	m_color = kColor;
+	m_radius = kRadius;
+	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Normal.png");

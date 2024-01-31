@@ -23,6 +23,7 @@ EnemyMoveWall::EnemyMoveWall(const size& windowSize, float fieldSize) :
 {
 	m_name = "MoveWall";
 	m_color = kColor;
+	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Wall.png");

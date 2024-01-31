@@ -132,6 +132,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_enemysImg["SplitTwoBound"] = file->LoadGraphic(L"Enemy/Split.png");
 	m_enemysImg["BossArmored"] = file->LoadGraphic(L"Enemy/BossArmored.png");
 	m_enemysImg["BossStrongArmored"] = file->LoadGraphic(L"Enemy/BossStrongArmored.png");
+	m_check = file->LoadGraphic(L"UI/check.png");
 
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
@@ -278,7 +279,7 @@ void StageBase::UpdatePlaying(Input& input)
 	{
 		m_boss->Update();
 		// ボスにダメージを与えたら時間を増やす
-		m_isUpdateTime = m_boss->OnAttack(playerIsDash, playerCol);
+		m_isUpdateTime = m_boss->OnAttack(playerIsDash, m_player->GetObjRect());
 
 		// ボスの死亡処理
 		if (!m_boss->IsExsit())
@@ -371,7 +372,7 @@ void StageBase::DrawSelect()
 	m_player->Draw();
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ステージ名の描画
-	DrawBox(0, 28, 256, 104, kFrameColor, true);
+	DrawBox(0, 28, 288, 104, kFrameColor, true);
 	DrawFormatStringToHandle(64, 32, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
@@ -403,23 +404,7 @@ void StageBase::DrawSelect()
 	}
 	DrawGraph(0, 0, m_strHandle, true);
 
-	// フレーム描画
-	DrawRotaGraph(m_size.w - 128, 128, 1.0, 0.0, m_bFrameImg->GetHandle(), true, true, true);
-	DrawBox(m_size.w - 128 - 155, 158, m_size.w, 224, kBackFrameColor, true);
-	// ベストタイムの描画
-	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
-	int minSec = (bestTime * 1000 / 60) % 1000;
-	int sec = (bestTime / 60) % 60;
-	int min = bestTime / 3600;
-	DrawStringToHandle(m_size.w - 256, 112, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
-	if (m_isUpdateBestTime && ((m_waitFrame / 30) % 2) == 1)
-	{
-		DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
-	}
-	else
-	{
-		DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
-	}
+	DrawBestTime();
 
 	// 矢印の描画
 	DrawArrow();
@@ -469,6 +454,7 @@ void StageBase::DrawPlaying()
 	}
 	DrawGraph(0, 0, m_strHandle, true);
 
+	DrawBestTime();
 }
 
 void StageBase::DrawBossDeath()
@@ -615,12 +601,12 @@ void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName
 
 void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius) const
 {
-	double extRate = kKillTypeDefExtRate;
+	double enemyExtRate = kKillTypeDefExtRate;
 	for (const auto& name : kSmallTypeName)
 	{
 		if (name == enemyName)
 		{
-			extRate = kKillTypeSmallExtRate;
+			enemyExtRate = kKillTypeSmallExtRate;
 			break;
 		}
 	}
@@ -628,7 +614,7 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned
 	{
 		if (name == enemyName)
 		{
-			extRate = kKillTypeLargeExtRate;
+			enemyExtRate = kKillTypeLargeExtRate;
 			break;
 		}
 	}
@@ -636,15 +622,16 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned
 	auto& file = m_enemysImg.at(enemyName);
 	if (m_mgr.GetStage()->IsKilledEnemy(enemyName))
 	{
-		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, extRate, 0.0, file->GetHandle(), true);
+		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, enemyExtRate, 0.0, file->GetHandle(), true);
+		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, 0.5, 0.0, m_check->GetHandle(), true);
 	}
 	else
 	{
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
-		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, extRate, 0.0, file->GetHandle(), true);
+		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, enemyExtRate, 0.0, file->GetHandle(), true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, false);
+//		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, false);
 	}
 }
 
@@ -753,6 +740,43 @@ void StageBase::DrawTime(int x, int y, int handle)
 	int sec = (m_frame / 60) % 60;
 	int min = m_frame / 3600;
 	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"%01d:%02d.%03d", min, sec, minSec);
+}
+
+void StageBase::DrawBestTime()
+{
+	// フレーム描画
+	DrawRotaGraph(m_size.w - 128, 128, 1.0, 0.0, m_bFrameImg->GetHandle(), true, true, true);
+	DrawBox(m_size.w - 128 - 155, 158, m_size.w, 224, kBackFrameColor, true);
+	// ベストタイムの描画
+	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
+	int minSec = (bestTime * 1000 / 60) % 1000;
+	int sec = (bestTime / 60) % 60;
+	int min = bestTime / 3600;
+	DrawStringToHandle(m_size.w - 256, 112, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
+	DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+
+	if (!m_isUpdateBestTime) return;
+
+
+	if (((m_waitFrame / 30) % 2) == 1)
+	{
+		DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+	}
+	
+	if (m_waitFrame > kAchivedFrame) return;
+
+	if (m_waitFrame > static_cast<int>(kAchivedFrame * 0.5f))
+	{
+		float rate = 1.0f - (m_waitFrame - (kAchivedFrame * 0.5f)) / (kAchivedFrame * 0.5f);
+		int alpha = static_cast<int>(255 * rate);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		DrawStringToHandle(m_size.w - 336, 256, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		return;
+	}
+
+	DrawStringToHandle(m_size.w - 336, 256, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 }
 
 void StageBase::DrawConditionsAchived(int y)

@@ -14,6 +14,8 @@ namespace
 
 	// タイトルでの動くスピード
 	constexpr float kTitleSpeed = 4.0f;
+	// タイトルでの大きさ
+	constexpr double kTitleSize = 2.0;
 
 	// 壁からの法線ベクトル
 	const Vec2 kNorVecLeft = Vec2{ 1.0f,  0.0f };
@@ -27,7 +29,8 @@ namespace
 
 	// HPバーの描画位置
 	constexpr int kDrawHpBarX = 960;
-	constexpr int kDrawHpBarY = 288;
+//	constexpr int kDrawHpBarY = 288;
+	constexpr int kDrawHpBarY = 512;
 	// HPバーの縦幅
 	constexpr int kHpBarHeight = 56;
 
@@ -82,6 +85,7 @@ namespace
 }
 
 BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
+	m_angle(0.0),
 	m_size(windowSize),
 	m_fieldSize(fieldSize),
 	m_maxHp(maxHp),
@@ -118,27 +122,30 @@ BossBase::~BossBase()
 
 void BossBase::TitleInit()
 {
+	m_radius *= kTitleSize;
 	// 出現場所の作成
 	int rand = GetRand(3);
+	int width = static_cast<int>(m_size.w - 1);
+	int height = static_cast<int>(m_size.h - 1);
 	// 上から
 	if (rand == 0)
 	{
-		m_pos = { GetRand(static_cast<int>(m_size.w - 1)), -m_radius };
+		m_pos = { static_cast<float>(GetRand(width)), -m_radius };
 	}
 	// 下から
 	else if (rand == 1)
 	{
-		m_pos = { GetRand(static_cast<int>(m_size.w - 1)), m_radius };
+		m_pos = { static_cast<float>(GetRand(width)), m_radius };
 	}
 	// 左から
 	else if (rand == 2)
 	{
-		m_pos = { -m_radius, GetRand(static_cast<int>(m_size.h - 1)) };
+		m_pos = { -m_radius, static_cast<float>(GetRand(height)) };
 	}
 	// 右から
 	else
 	{
-		m_pos = { m_radius, GetRand(static_cast<int>(m_size.h - 1)) };
+		m_pos = { m_radius, static_cast<float>(GetRand(height)) };
 	}
 
 	// ベクトルの作成
@@ -182,7 +189,7 @@ void BossBase::TitleUpdate()
 		// 下に動いているとき
 		if (m_vec.y > 0)
 		{
-			if (m_pos.x - m_radius > 0 || m_pos.y - m_radius > m_size.h)
+			if (m_pos.x - m_radius > m_size.w || m_pos.y - m_radius > m_size.h)
 			{
 				m_isExsit = false;
 				return;
@@ -191,7 +198,7 @@ void BossBase::TitleUpdate()
 		// 上に動いているとき
 		else
 		{
-			if (m_pos.x - m_radius > 0 || m_pos.y + m_radius < 0)
+			if (m_pos.x - m_radius > m_size.w || m_pos.y + m_radius < 0)
 			{
 				m_isExsit = false;
 				return;
@@ -202,7 +209,7 @@ void BossBase::TitleUpdate()
 
 void BossBase::TitleDraw()
 {
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 2.0, m_angle,
 		m_charImg->GetHandle(), true);
 }
 
@@ -219,7 +226,7 @@ void BossBase::Draw() const
 bool BossBase::OnAttack(bool isDash, const Collision& rect)
 {
 	if (isDash) return false;
-
+	
 	m_hp--;
 
 	// HPがゼロになったら死亡とする

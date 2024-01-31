@@ -48,6 +48,16 @@ namespace
 	constexpr int kSrcY = 8 * 64;
 }
 
+BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize) :
+	BossArmored(windowSize, fieldSize)
+{
+	m_name = "BossStrongArmored";
+	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/BossStrongArmored.png");
+}
+
 BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage) :
 	BossArmored(windowSize, fieldSize, stage)
 {

@@ -68,25 +68,27 @@ void EnemyBase::TitleInit()
 {
 	// 出現場所の作成
 	int rand = GetRand(3);
+	int width = static_cast<int>(m_size.w - 1);
+	int height = static_cast<int>(m_size.h - 1);
 	// 上から
 	if (rand == 0)
 	{
-		m_pos = { GetRand(static_cast<int>(m_size.w - 1)), -m_radius };
+		m_pos = { static_cast<float>(GetRand(width)), -m_radius };
 	}
 	// 下から
 	else if (rand == 1)
 	{
-		m_pos = { GetRand(static_cast<int>(m_size.w - 1)), m_radius };
+		m_pos = { static_cast<float>(GetRand(width)), m_radius };
 	}
 	// 左から
 	else if (rand == 2)
 	{
-		m_pos = { -m_radius, GetRand(static_cast<int>(m_size.h - 1)) };
+		m_pos = { -m_radius, static_cast<float>(GetRand(height)) };
 	}
 	// 右から
 	else
 	{
-		m_pos = { m_radius, GetRand(static_cast<int>(m_size.h - 1)) };
+		m_pos = { m_radius, static_cast<float>(GetRand(height)) };
 	}
 
 	// ベクトルの作成
@@ -130,7 +132,7 @@ void EnemyBase::TitleUpdate()
 		// 下に動いているとき
 		if (m_vec.y > 0)
 		{
-			if (m_pos.x - m_radius > 0 || m_pos.y - m_radius > m_size.h)
+			if (m_pos.x - m_radius > m_size.w || m_pos.y - m_radius > m_size.h)
 			{
 				m_isExsit = false;
 				return;
@@ -139,7 +141,7 @@ void EnemyBase::TitleUpdate()
 		// 上に動いているとき
 		else
 		{
-			if (m_pos.x - m_radius > 0 || m_pos.y + m_radius < 0)
+			if (m_pos.x - m_radius > m_size.w || m_pos.y + m_radius < 0)
 			{
 				m_isExsit = false;
 				return;

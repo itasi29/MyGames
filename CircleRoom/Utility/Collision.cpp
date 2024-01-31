@@ -31,7 +31,7 @@ bool Collision::IsCollsion(const Collision& target) const
 	// ’†S’n“¯Žm‚Ì’·‚³‚Ì2æ‚æ‚è’Z‚¯‚ê‚Î
 	// “–‚½‚Á‚Ä‚¢‚é‚±‚Æ‚É‚·‚é
 	float dis = (target.m_pos - m_pos).SqLength();
-	float sumRadius = (m_radius * m_radius + target.m_radius * target.m_radius);
+	float sumRadius = (target.m_radius + m_radius) * (m_radius + target.m_radius);
 
 	return (sumRadius > dis);
 }

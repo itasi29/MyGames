@@ -22,6 +22,8 @@ namespace
 
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	// 強調文字列の色
+	constexpr unsigned int kYellowColor = 0xffde00;
 
 	// 条件の描画基準位置
 	constexpr int kConditionsPosX = 20;
@@ -137,13 +139,13 @@ int Stage1_8::DrawStageConditions(int drawY)
 
 	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
 	{
-		DrawStringToHandle(kConditionsPosX, drawY + 14, L"clear", kWhiteColor, fontHandle);
+		DrawStringToHandle(kConditionsPosX, drawY + 14, L"クリア！", kYellowColor, fontHandle);
 
 		drawY += 70;
 	}
 	else
 	{
-		DrawStringToHandle(kConditionsPosX, drawY + 14, L"ボスを倒せ！", kWhiteColor, fontHandle);
+		DrawStringToHandle(kConditionsPosX, drawY + 14, L"ボスを倒せ！", kYellowColor, fontHandle);
 
 		drawY += 70;
 	}

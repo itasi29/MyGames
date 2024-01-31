@@ -9,6 +9,7 @@ class StageBase;
 class EnemyDivision : public EnemyBase
 {
 public:
+	EnemyDivision(const size& windowSize, float fieldSize);
 	EnemyDivision(const size& windowSize, float fieldSize, StageBase* stage);
 	virtual ~EnemyDivision();
 

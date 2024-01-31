@@ -244,6 +244,8 @@ private:
 	/// <param name="handle">フォントハンドル</param>
 	void DrawTime(int x, int y, int handle);
 
+	void DrawBestTime();
+
 	/// <summary>
 	/// 条件達成の描画
 	/// </summary>
@@ -282,6 +284,7 @@ protected:
 	std::shared_ptr<FileBase> m_arrowConditions;
 	std::shared_ptr<FileBase> m_startFrame;
 	std::unordered_map<std::string, std::shared_ptr<FileBase>> m_enemysImg;
+	std::shared_ptr<FileBase> m_check;
 
 	// 後ろのフレームを描画するよう
 	std::shared_ptr<FileBase> m_bFrameImg;

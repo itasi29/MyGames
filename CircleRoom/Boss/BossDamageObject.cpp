@@ -54,4 +54,8 @@ void BossDamageObject::Draw()
 	{
 		DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(kRadius), 0xff4500, false, 2);
 	}
+
+#ifdef _DEBUG
+	m_col.Draw(0x000000, false);
+#endif
 }

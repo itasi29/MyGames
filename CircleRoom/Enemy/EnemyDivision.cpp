@@ -32,6 +32,17 @@ namespace
 	constexpr int kRotationFrame = 40;
 }
 
+EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize) :
+	EnemyBase(windowSize, fieldSize)
+{
+	m_name = "Division";
+	m_color = kColor;
+	m_radius = kRadius;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Division.png");
+}
+
 EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase* stage) :
 	EnemyBase(windowSize, fieldSize),
 	m_stage(stage),
@@ -40,6 +51,7 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase*
 {
 	m_name = "Division";
 	m_color = kColor;
+	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Division.png");

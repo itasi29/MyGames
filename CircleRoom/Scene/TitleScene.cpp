@@ -12,15 +12,25 @@
 #include "FileSystem/FontSystem.h"
 #include "FileSystem/SoundSystem.h"
 #include "FileSystem/FileManager.h"
+#include "FileSystem/ImageFile.h"
 
 #include "GamePlayingScene.h"
 #include "OptionScene.h"
 
 #include "TitleScene.h"
 
-// お試し用
-#include "FileSystem/ImageFile.h"
-#include "OneShotScene.h"
+#include "Enemy/EnemyBase.h"
+#include "Enemy/EnemyMoveWall.h"
+#include "Enemy/EnemyNormal.h"
+#include "Enemy/EnemyLarge.h"
+#include "Enemy/EnemyDash.h"
+#include "Enemy/EnemyCreate.h"
+#include "Enemy/EnemyDivision.h"
+#include "Enemy/EnemyChild.h"
+#include "Enemy/EnemySplit.h"
+#include "Boss/BossBase.h"
+#include "Boss/BossArmored.h"
+#include "Boss/BossStrongArmored.h"
 
 namespace
 {
@@ -34,6 +44,11 @@ namespace
 	// 選択時文字列の色
 	constexpr unsigned int kYellowColor = 0xffde00;
 
+	// 基準生成タイミング
+	constexpr int kCreateEnemy = 60 * 2;
+	constexpr int kCreateBoss = 60 * 10;
+	// タイミングの振れ幅
+	constexpr int kCreateSwingWidth = static_cast<int>(60 * 1.5);
 
 	// メニューラインの数
 	constexpr int kMenuLineNum = 3;
@@ -77,6 +92,10 @@ namespace
 
 TitleScene::TitleScene(GameManager& mgr) :
 	Scene(mgr),
+	m_createEnemyFrame(0),
+	m_createBossFrame(0),
+	m_createEnemyTiming(0),
+	m_createBossTiming(0),
 	m_fadeFrame(kFadeFrame),
 	m_currentLinePos(0),
 	m_logoAngle(0),
@@ -106,11 +125,42 @@ void TitleScene::Update(Input& input)
 {
 	m_bgFrame--;
 	m_logoAngle += kLogoAngle;
+
+	for (const auto& enemy : m_enemy)
+	{
+		enemy->TitleUpdate();
+	}
+	m_enemy.remove_if(
+		[](const auto& enemy)
+		{
+			return !enemy->IsExsit();
+		}
+	);
+	for (const auto& boss : m_boss)
+	{
+		boss->TitleUpdate();
+	}
+	m_boss.remove_if(
+		[](const auto& boss)
+		{
+			return !boss->IsExsit();
+		}
+	);
+
 	(this->*m_updateFunc)(input);
 }
 
 void TitleScene::Draw()
 {
+	for (const auto& enemy : m_enemy)
+	{
+		enemy->TitleDraw();
+	}
+	for (const auto& boss : m_boss)
+	{
+		boss->TitleDraw();
+	}
+
 	(this->*m_drawFunc)();
 }
 
@@ -186,6 +236,9 @@ void TitleScene::NormalUpdate(Input& input)
 			return;
 		}
 	}
+
+	CreateEnemy();
+	CreateBoss();
 }
 
 void TitleScene::StartSelectUpdate(Input& input)
@@ -239,6 +292,9 @@ void TitleScene::StartSelectUpdate(Input& input)
 
 		return;
 	}
+
+	CreateEnemy();
+	CreateBoss();
 }
 
 void TitleScene::FadeOutUpdate(Input& input)
@@ -337,6 +393,97 @@ void TitleScene::StartSelectDraw()
 		DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kWhiteColor, fontHandle);
 
 		y += kMenuLineInterval;
+	}
+}
+
+void TitleScene::CreateEnemy()
+{
+	m_createEnemyFrame++;
+
+	if (m_createEnemyFrame > m_createEnemyTiming)
+	{
+		m_createEnemyFrame = 0;
+		// 生成タイミングの変更
+		m_createEnemyTiming = kCreateEnemy + GetRand(kCreateSwingWidth);
+
+		// 敵の数で乱数生成
+		// MEMO:出したい敵の数-1の値にする
+		int rand = GetRand(7);
+		// 生成したのを保存しておく用
+		std::shared_ptr<EnemyBase> enemy;
+
+		const auto& size = Application::GetInstance().GetWindowSize();
+
+		if (rand == 0)
+		{
+			enemy = std::make_shared<EnemyNormal>(size, 0.0f);
+		}
+		else if (rand == 1)
+		{
+			enemy = std::make_shared<EnemyLarge>(size, 0.0f);
+		}
+		else if (rand == 2)
+		{
+			enemy = std::make_shared<EnemyDash>(size, 0.0f);
+		}
+		else if (rand == 3)
+		{
+			enemy = std::make_shared<EnemyCreate>(size, 0.0f);
+		}
+		else if (rand == 4)
+		{
+			enemy = std::make_shared<EnemyDivision>(size, 0.0f);
+		}
+		else if (rand == 5)
+		{
+			enemy = std::make_shared<EnemyMoveWall>(size, 0.0f);
+		}
+		else if (rand == 6)
+		{
+			enemy = std::make_shared<EnemyChild>(size, 0.0f);
+		}
+		else
+		{
+			enemy = std::make_shared<EnemySplit>(size, 0.0f);
+		}
+
+		// タイトル用初期化処理を行う
+		enemy->TitleInit();
+		// 追加
+		m_enemy.push_back(enemy);
+	}
+}
+
+void TitleScene::CreateBoss()
+{
+	m_createBossFrame++;
+
+	if (m_createBossFrame > m_createBossTiming)
+	{
+		m_createBossFrame = 0;
+		// 生成タイミングの変更
+		m_createBossTiming = kCreateBoss + GetRand(kCreateSwingWidth);
+
+		// 通常のが出やすくなるように調整している
+		int rand = GetRand(3);
+		// 生成したのを保存しておく用
+		std::shared_ptr<BossBase> boss;
+
+		const auto& size = Application::GetInstance().GetWindowSize();
+
+		if (rand < 3)
+		{
+			boss = std::make_shared<BossArmored>(size, 0.0f);
+		}
+		else
+		{
+			boss = std::make_shared<BossStrongArmored>(size, 0.0f);
+		}
+
+		// タイトル用初期化処理を行う
+		boss->TitleInit();
+		// 追加
+		m_boss.push_back(boss);
 	}
 }
 

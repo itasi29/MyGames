@@ -23,6 +23,7 @@ EnemyLarge::EnemyLarge(const size& windowSize, float fieldSize) :
 {
 	m_name = "Large";
 	m_color = kColor;
+	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Large.png");

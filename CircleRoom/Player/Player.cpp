@@ -17,7 +17,9 @@ namespace
 	constexpr unsigned int kDeathColor = 0xD2001A;
 
 	// 当たり判定の半径の大きさ
-	constexpr float kColRadius = 10.0f;
+	constexpr float kColRadius = 6.0f;
+	// オブジェクトとの当たり判定半径
+	constexpr float kObjColRadius = 12.0f;
 
 	// プレイヤーの大きさ
 	constexpr float kSize = 24.0f;
@@ -112,6 +114,7 @@ void Player::Init()
 
 	// 当たり判定の更新
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
+	m_objCol.SetCenter(m_pos, kObjColRadius, m_front.x * kColShift, m_front.y * kColShift);
 }
 
 void Player::Update(Input& input, Ability ability)
@@ -183,6 +186,7 @@ void Player::Update(Input& input, Ability ability)
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
 #else
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
+	m_objCol.SetCenter(m_pos, kObjColRadius, m_front.x * kColShift, m_front.y * kColShift);
 #endif
 }
 
@@ -210,14 +214,10 @@ void Player::Draw()
 				rate = 1.0f - (m_logFrame + i + 1) / static_cast<double>(m_logFrame + kDashLogNum);
 				alpha = static_cast<int>(128 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-#ifdef false
-				DrawRotaGraph(static_cast<int>(m_posLog[i].x), static_cast<int>(m_posLog[i].y), 1.0, m_angleLog[i], m_charImg->GetHandle(), true);
-#else
 				DrawTriangle(static_cast<int>(m_dirLog[i].front.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].front.y + m_posLog[i].y),
 					static_cast<int>(m_dirLog[i].left.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].left.y + m_posLog[i].y),
 					static_cast<int>(m_dirLog[i].right.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].right.y + m_posLog[i].y),
 					kExsitColor, true);
-#endif
 			}
 		}
 
@@ -228,13 +228,6 @@ void Player::Draw()
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			kExsitColor, true);
-	}
-	else
-	{
-		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
-			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
-			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
-			kDeathColor, true);
 	}
 
 	// 死亡時のエフェクト
@@ -247,6 +240,15 @@ void Player::Draw()
 		int srcY = kDeathGraphSize * (index / kLine);
 
 		DrawRectGraph(x, y, srcX, srcY, kDeathGraphSize, kDeathGraphSize, m_bloodImg->GetHandle(), true);
+
+		int alpha = static_cast<int>(255 * (1.0f - (m_deathFrame / static_cast<float>(kDeathFrame))));
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
+			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
+			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
+			kDeathColor, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
 #ifdef _DEBUG
@@ -254,6 +256,7 @@ void Player::Draw()
 	if (!m_isDash)
 	{
 		m_col.Draw(0xff0000, false);
+		m_objCol.Draw(0x0000ff, false);
 	}
 #endif
 }

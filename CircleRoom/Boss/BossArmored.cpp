@@ -17,7 +17,7 @@ namespace
 {
 	// Å‘åHP
 #ifdef _DEBUG
-	constexpr int kMaxHp = 1;
+	constexpr int kMaxHp = 10;
 #else
 	constexpr int kMaxHp = 10;
 #endif
@@ -57,12 +57,24 @@ namespace
 	constexpr int kShakeSize = 20;
 }
 
+BossArmored::BossArmored(const size& windowSize, float fieldSize) :
+	BossBase(windowSize, fieldSize, kMaxHp)
+{
+	m_name = "BossArmored";
+	m_color = kColor;
+	m_radius = kRadius;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/BossArmored.png");
+}
+
 BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* stage) :
 	BossBase(windowSize, fieldSize, kMaxHp),
 	m_stage(stage)
 {
 	m_name = "BossArmored";
 	m_color = kColor;
+	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/BossArmored.png");

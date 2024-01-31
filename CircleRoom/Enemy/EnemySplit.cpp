@@ -20,6 +20,7 @@ EnemySplit::EnemySplit(const size& windowSize, float fieldSize) :
 {
 	m_name = "Split";
 	m_color = kColor;
+	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Split.png");

@@ -3,6 +3,7 @@
 class BossStrongArmored : public BossArmored
 {
 public:
+	BossStrongArmored(const size& windowSize, float fieldSize);
 	BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage);
 	~BossStrongArmored();
 

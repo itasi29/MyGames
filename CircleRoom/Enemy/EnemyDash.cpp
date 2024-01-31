@@ -47,6 +47,18 @@ namespace
 	constexpr int kDashSrcY = kDashGraphSize * 8;
 }
 
+EnemyDash::EnemyDash(const size& windowSize, float fieldSize) :
+	EnemyBase(windowSize, fieldSize),
+	m_player(nullptr)
+{
+	m_name = "Dash";
+	m_color = kColor;
+	m_radius = kRadius;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Dash.png");
+}
+
 EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Player>& player) :
 	EnemyBase(windowSize, fieldSize),
 	m_player(player),
@@ -58,6 +70,7 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 {
 	m_name = "Dash";
 	m_color = kColor;
+	m_radius = kRadius;
 	m_posLog.resize(kDashLogNum);
 
 	auto& mgr = GameManager::GetInstance().GetFile();

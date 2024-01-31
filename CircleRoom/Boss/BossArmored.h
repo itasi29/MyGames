@@ -12,6 +12,7 @@ class BossDamageObject;
 class BossArmored : public BossBase
 {
 public:
+	BossArmored(const size& windowSize, float fieldSize);
 	BossArmored(const size& windowSize, float fieldSize, StageBase* stage);
 	virtual ~BossArmored();
 

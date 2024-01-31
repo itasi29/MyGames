@@ -51,6 +51,11 @@ public:
 	/// </summary>
 	/// <returns>当たり判定の中心座標</returns>
 	Collision GetRect() const { return m_col; }
+	/// <summary>
+	/// オブジェクトの当たり判定を取得
+	/// </summary>
+	/// <returns>オブジェクト判定の中心座標</returns>
+	Collision GetObjRect() const { return m_objCol; }
 	bool IsDash() const { return m_isDash; }
 	/// <summary>
 	/// 生存しているか
@@ -114,6 +119,8 @@ private:
 
 	// 当たり判定
 	Collision m_col;
+	// ダメージオブジェクト当たり判定
+	Collision m_objCol;
 
 	// ダッシュログ
 	std::vector<Vec2> m_posLog;

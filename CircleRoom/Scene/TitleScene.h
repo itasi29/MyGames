@@ -32,6 +32,11 @@ private:
 	void NormalDraw();	// 非フェード描画
 	void StartSelectDraw();	// スタート選択状態描画
 
+	// 敵の生成関数
+	void CreateEnemy();
+	// ボスの生成関数
+	void CreateBoss();
+
 private:
 	/// <summary>
 	/// ロゴの描画
@@ -50,7 +55,16 @@ private:
 	std::shared_ptr<FileBase> m_bg;
 	std::shared_ptr<FileBase> m_frame;
 
-	
+	// タイトルで動く敵
+	std::list<std::shared_ptr<EnemyBase>> m_enemy;
+	std::list<std::shared_ptr<BossBase>> m_boss;
+
+	// タイトルで動く敵の生成フレーム
+	int m_createEnemyFrame;
+	int m_createBossFrame;
+	// 敵の生成タイミング
+	int m_createEnemyTiming;
+	int m_createBossTiming;
 
 	// 全体フレーム
 	int m_fadeFrame;

@@ -30,7 +30,18 @@ namespace
 	constexpr float kSwingHeight = 2.0f;
 
 	// ¶¬ŠÔŠu
-	constexpr int kCreateFrame = 15;
+	constexpr int kCreateFrame = 20;
+}
+
+EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize) :
+	EnemyBase(windowSize, fieldSize)
+{
+	m_name = "Create";
+	m_color = kColor;
+	m_radius = kRadius;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/Create.png");
 }
 
 EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -40,6 +51,7 @@ EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize, StageBase* sta
 {
 	m_name = "Create";
 	m_color = kColor;
+	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Create.png");

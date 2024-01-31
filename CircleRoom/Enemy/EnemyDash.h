@@ -11,6 +11,7 @@ class Player;
 class EnemyDash : public EnemyBase
 {
 public:
+	EnemyDash(const size& windowSize, float fieldSize);
 	EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Player>& player);
 	virtual ~EnemyDash();
 
@@ -33,7 +34,7 @@ private:
 	void DrawDashEff() const;
 
 private:
-	std::shared_ptr<Player>& m_player;
+	std::shared_ptr<Player> m_player;
 
 	// ƒ_ƒbƒVƒ…Se
 	std::shared_ptr<FileBase> m_dashSe;

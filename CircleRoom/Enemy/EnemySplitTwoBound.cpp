@@ -20,6 +20,7 @@ EnemySplitTwoBound::EnemySplitTwoBound(const size& windowSize, float fieldSize) 
 {
 	m_name = "SplitTwoBound";
 	m_color = kColor;
+	m_radius = kRadius;
 }
 
 EnemySplitTwoBound::~EnemySplitTwoBound()
