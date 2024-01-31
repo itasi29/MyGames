@@ -2,8 +2,10 @@
 #include <cmath>
 #include <memory>
 
+#include "Application.h"
 #include "Stage/StageBase.h"
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/SoundSystem.h"
@@ -30,6 +32,13 @@ namespace
 	constexpr int kDivisionWaitFrame = 60;
 	// 分裂前回転フレーム
 	constexpr int kRotationFrame = 40;
+
+	// 最後の円の線の大きさとスピード
+	// MEMO:線の大きさとスピードは同じほうが見栄えが良い
+	constexpr int kRipple = 6;
+	// 波紋の最大大きさ
+	// MEMO:予想だけどこれ以上いかないと思う値
+	constexpr int kMaxRippleSize = 1400;
 }
 
 EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize) :
@@ -46,8 +55,8 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize) :
 EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase* stage) :
 	EnemyBase(windowSize, fieldSize),
 	m_stage(stage),
-	m_isDivisionWait(false),
-	m_divisionWaitFrame(0)
+	m_divisionWaitFrame(0),
+	m_ripple(kRadius)
 {
 	m_name = "Division";
 	m_color = kColor;
@@ -55,10 +64,16 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase*
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Division.png");
+
+	m_dUpdateFunc = &EnemyDivision::UsuallyUpdate;
+	m_dDrawFunc = &EnemyDivision::UsuallyDraw;
+
+	m_rippleScreen = MakeScreen(m_size.w, m_size.h, true);
 }
 
 EnemyDivision::~EnemyDivision()
 {
+	DeleteGraph(m_rippleScreen);
 }
 
 void EnemyDivision::Init(const Vec2& pos, bool isStart)
@@ -125,38 +140,16 @@ void EnemyDivision::StartUpdate()
 
 void EnemyDivision::NormalUpdate()
 {
-	// 分裂待機状態なら以下の処理を
-	if (m_isDivisionWait)
-	{
-		m_divisionWaitFrame++;
-		if (m_divisionWaitFrame < kRotationFrame)
-		{
-			m_angle -= (kRad * 20);
-		}
+	(this->*m_dUpdateFunc)();
+}
 
-		// 待機時間を超えたら分裂する
-		if (m_divisionWaitFrame > kDivisionWaitFrame)
-		{
-			m_isExsit = false;
+void EnemyDivision::NormalDraw()
+{
+	(this->*m_dDrawFunc)();
+}
 
-			// ベクトルを保存する
-			Vec2 vec = { cosf(static_cast<float>(m_angle)), sinf(static_cast<float>(m_angle)) };
-			for (int i = 0; i < kDivisionNum; i++)
-			{
-				std::shared_ptr<EnemySplit> split;
-				split = std::make_shared<EnemySplit>(m_size, m_fieldSize);
-				split->Init(m_pos, vec);
-
-				m_stage->GenericEnemy(split);
-
-				// 回転させる
-				vec = vec.Right();
-			}
-		}
-
-		return;
-	}
-
+void EnemyDivision::UsuallyUpdate()
+{
 	m_pos += m_vec;
 	m_angle -= kRad;
 	Reflection();
@@ -168,6 +161,72 @@ void EnemyDivision::NormalUpdate()
 	// 一定時間超えたら分裂前状態に入る
 	if (m_frame > kDivisionFrame)
 	{
-		m_isDivisionWait = true;
+		m_dUpdateFunc = &EnemyDivision::DivisionUpdate;
 	}
+}
+
+void EnemyDivision::DivisionUpdate()
+{
+	m_divisionWaitFrame++;
+	if (m_divisionWaitFrame < kRotationFrame)
+	{
+		m_angle -= (kRad * 20);
+	}
+
+	// 待機時間を超えたら分裂する
+	if (m_divisionWaitFrame > kDivisionWaitFrame)
+	{
+		// ベクトルを保存する
+		Vec2 vec = { cosf(static_cast<float>(m_angle)), sinf(static_cast<float>(m_angle)) };
+		for (int i = 0; i < kDivisionNum; i++)
+		{
+			std::shared_ptr<EnemySplit> split;
+			split = std::make_shared<EnemySplit>(m_size, m_fieldSize);
+			split->Init(m_pos, vec);
+
+			m_stage->GenericEnemy(split);
+
+			// 回転させる
+			vec = vec.Right();
+		}
+
+		m_dUpdateFunc = &EnemyDivision::EndUpdate;
+		m_dDrawFunc = &EnemyDivision::EndDraw;
+	}
+}
+
+void EnemyDivision::EndUpdate()
+{
+	m_ripple += kRipple;
+
+	if (m_ripple > kMaxRippleSize)
+	{
+		m_isExsit = false;
+	}
+}
+
+void EnemyDivision::UsuallyDraw()
+{
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
+		m_charImg->GetHandle(), true);
+
+	DrawHitWallEffect();
+
+#ifdef _DEBUG
+	// 当たり判定の描画
+	m_col.Draw(0xff0000, false);
+#endif
+}
+
+void EnemyDivision::EndDraw()
+{
+	SetDrawScreen(m_rippleScreen);
+	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x000000, true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 64);
+	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_ripple, 0x0b60b0, false, kRipple);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	int handle = GameManager::GetInstance().GetScene()->GetScreenHandle();
+	SetDrawScreen(handle);
+	DrawGraph(0, 0, m_rippleScreen, true);
 }

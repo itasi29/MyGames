@@ -24,12 +24,29 @@ private:
 	void StartUpdate() override;
 	void NormalUpdate() override;
 
+	void NormalDraw() override;
+
+	void UsuallyUpdate();
+	void DivisionUpdate();
+	void EndUpdate();
+
+	void UsuallyDraw();
+	void EndDraw();
+
 private:
+	using UpdateFunc_t = void(EnemyDivision::*)();
+	using DrawFunc_t = void(EnemyDivision::*)();
+
+	UpdateFunc_t m_dUpdateFunc;
+	DrawFunc_t m_dDrawFunc;
+
 	StageBase* m_stage;
 
-	// 分裂待機前か
-	bool m_isDivisionWait;
 	// 分裂前待機フレーム
 	int m_divisionWaitFrame;
+
+	// 破門用
+	int m_ripple;
+	int m_rippleScreen;
 };
 
