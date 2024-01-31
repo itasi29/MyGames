@@ -82,6 +82,10 @@ namespace
 	constexpr int kShakeFrame = 30;
 	// エフェクトインターバル
 	constexpr int kPerEffInterval = 3;
+
+	// 最後の円の線の大きさとスピード
+	// MEMO:線の大きさとスピードは同じほうが見栄えが良い
+	constexpr int kRipple = 4;
 }
 
 BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
@@ -451,11 +455,10 @@ void BossBase::ShakeUpdate()
 void BossBase::LastUpdate()
 {
 	m_endPerformanceFrame++;
-	int kRippleSpeed = 14;
 
-	m_ripple1 += kRippleSpeed;
-	m_ripple2 += kRippleSpeed;
-	m_ripple3 += kRippleSpeed;
+	m_ripple1 += kRipple;
+	m_ripple2 += kRipple;
+	m_ripple3 += kRipple;
 
 	if (m_endPerformanceFrame > 30)
 	{
@@ -534,18 +537,18 @@ void BossBase::LastDraw() const
 {
 	int x = static_cast<int>(m_pos.x);
 	int y = static_cast<int>(m_pos.y);
-
-	// TODO:波紋っぽくするところから
-	int kLineThickness = 3;
+	
+	// FIXME:値いい感じに
 
 	SetDrawScreen(m_rippleScreen);
-	SetDrawBlendMode(DX_BLENDMODE_SUB, 128);
-	DrawBox(0, 0, m_size.w, m_size.h, 0x010101, true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x000000, true);
 
-	DrawCircle(x, y, m_ripple3, 0x789461, false, kLineThickness);
-	DrawCircle(x, y, m_ripple2, 0x50623a, false, kLineThickness);
-	DrawCircle(x, y, m_ripple1, 0x294b29, false, kLineThickness);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 96);
+	DrawCircle(x, y, m_ripple3, 0x789461, false, kRipple);
+	DrawCircle(x, y, m_ripple2, 0x50623a, false, kRipple);
+	DrawCircle(x, y, m_ripple1, 0x294b29, false, kRipple);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	int screenHandle = GameManager::GetInstance().GetScene()->GetScreenHandle();
 	SetDrawScreen(screenHandle);

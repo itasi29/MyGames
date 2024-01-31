@@ -96,7 +96,6 @@ void Application::Run()
             // 新しいゲームループを始めた時間を記憶
             m_time = GetNowHiPerformanceCount();
 
-            i++;
 
             ClearDrawScreen();
             input.Update(); // 入力を更新
@@ -104,6 +103,7 @@ void Application::Run()
             manager.GetScene()->Draw();
 
 #ifdef _DEBUG
+            i++;
             DrawFormatString(1200, 650, 0xffffff, L"%d", i);
 #endif
 

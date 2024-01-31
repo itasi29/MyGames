@@ -3,6 +3,7 @@
 #include "Application.h"
 
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/SoundSystem.h"
@@ -45,6 +46,13 @@ namespace
 	constexpr double kDashExtRate = 2.0;
 	// Y座標の切り抜き位置
 	constexpr int kDashSrcY = kDashGraphSize * 8;
+
+	// 最後の円の線の大きさとスピード
+	// MEMO:線の大きさとスピードは同じほうが見栄えが良い
+	constexpr int kRipple = 6;
+	// 波紋の最大大きさ
+	// MEMO:予想だけどこれ以上いかないと思う値
+	constexpr int kMaxRippleSize = 1400;
 }
 
 EnemyDash::EnemyDash(const size& windowSize, float fieldSize) :
@@ -66,22 +74,24 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 	m_isDash(false),
 	m_waitDashFrame(kWaitDashFrame),
 	m_startWaitDashFrame(kStartWaitDashFrame),
-	m_dashEffFrame(0)
+	m_dashEffRipper(kMaxRippleSize),
+	m_isDashEff(false)
 {
 	m_name = "Dash";
 	m_color = kColor;
 	m_radius = kRadius;
 	m_posLog.resize(kDashLogNum);
+	m_dashEffScreen = MakeScreen(m_size.w, m_size.h, true);
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Dash.png");
-	m_dashEff = mgr->LoadGraphic(L"Enemy/damageEffect.png");
 
 	m_dashSe = mgr->LoadSound(L"Se/enemyDash.mp3");
 }
 
 EnemyDash::~EnemyDash()
 {
+	DeleteGraph(m_dashEffScreen);
 }
 
 void EnemyDash::Init(const Vec2& pos, bool isStart)
@@ -148,8 +158,13 @@ void EnemyDash::NormalUpdate()
 {
 	Dash();
 	m_pos += m_vec;
-	m_angle -= kRad;
-	m_dashEffFrame--;
+
+	if (m_isDashEff)
+	{
+		m_dashEffRipper += kRipple;
+
+		m_isDashEff = (m_dashEffRipper < kMaxRippleSize);
+	}
 
 	// 反射したかつ、ダッシュ状態なら通常状態に戻す
 	if (Reflection() && m_isDash)
@@ -157,8 +172,9 @@ void EnemyDash::NormalUpdate()
 		// ダッシュ終了
 		m_isDash = false;
 
-		m_dashEffFrame = kDashEffFrame;
 		m_dashEffPos = m_pos;
+		m_dashEffRipper = kRipple;
+		m_isDashEff = true;
 
 		// ダッシュ状態から通常速度に戻る
 		m_vec = m_vec.GetNormalized() * kSpeed;
@@ -208,6 +224,8 @@ void EnemyDash::Dash()
 	// ダッシュ中ならログのみ更新
 	if (m_isDash)
 	{
+		m_angle -= kRad * 0.25;
+
 		for (int i = kDashLogNum - 1; i > 0; i--)
 		{
 			m_posLog[i] = m_posLog[i - 1];
@@ -216,6 +234,10 @@ void EnemyDash::Dash()
 		m_logFrame = 0;
 
 		return;
+	}
+	else
+	{
+		m_angle -= kRad;
 	}
 
 	// 待機時間待ち処理
@@ -262,14 +284,15 @@ void EnemyDash::Dash()
 
 void EnemyDash::DrawDashEff() const
 {
-	if (m_dashEffFrame > 0)
-	{
-		int x = static_cast<int>(m_dashEffPos.x - kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
-		int y = static_cast<int>(m_dashEffPos.y - kDashGraphSize * 0.5f - kDashGraphSize * kDashExtRate * 0.5f);
+	if (!m_isDashEff) return;
 
-		int index = (kDashEffFrame - m_dashEffFrame) / kDasshEffInterval;
-		int srcX = kDashGraphSize * (index % kDashRow);
-
-		DrawRectRotaGraph(x, y, srcX, kDashSrcY, kDashGraphSize, kDashGraphSize, kDashExtRate, 0.0, m_dashEff->GetHandle(), true);
-	}
+	SetDrawScreen(m_dashEffScreen);
+	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x000000, true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 64);
+	DrawCircle(static_cast<int>(m_dashEffPos.x), static_cast<int>(m_dashEffPos.y), m_dashEffRipper, 0x0b60b0, false, kRipple);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	int handle = GameManager::GetInstance().GetScene()->GetScreenHandle();
+	SetDrawScreen(handle);
+	DrawGraph(0, 0, m_dashEffScreen, true);
 }

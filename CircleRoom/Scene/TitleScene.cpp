@@ -152,6 +152,7 @@ void TitleScene::Update(Input& input)
 
 void TitleScene::Draw()
 {
+	SetDrawMode(DX_DRAWMODE_BILINEAR);
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->TitleDraw();
@@ -160,6 +161,7 @@ void TitleScene::Draw()
 	{
 		boss->TitleDraw();
 	}
+	SetDrawMode(DX_DRAWMODE_NEAREST);
 
 	(this->*m_drawFunc)();
 }

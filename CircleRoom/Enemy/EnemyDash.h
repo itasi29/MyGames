@@ -38,8 +38,6 @@ private:
 
 	// ダッシュSe
 	std::shared_ptr<FileBase> m_dashSe;
-	// ダッシュ状態で壁に当たった時のエフェクト
-	std::shared_ptr<FileBase> m_dashEff;
 
 	// 位置ログ
 	std::vector<Vec2> m_posLog;
@@ -54,7 +52,11 @@ private:
 
 	// ダッシュの位置
 	Vec2 m_dashEffPos;
-	// ダッシュエフェクトのフレーム
-	int m_dashEffFrame;
+	// ダッシュ時の波紋用
+	int m_dashEffRipper;
+	// 波紋描画中か
+	bool m_isDashEff;
+	// ダッシュ時の描画先
+	int m_dashEffScreen;
 };
 

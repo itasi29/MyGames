@@ -26,14 +26,12 @@ namespace
 	// プレイヤーのスピード
 	constexpr float kSpeed = 4.0f;
 	// プレイヤーの中心から判定をどのくらい動かすか
-#ifdef false
-	constexpr float kColShift = -kSize * 0.12f;
-#else
 	constexpr float kColShift = kSize * 0.32f;
-#endif
 
 	// 移動エフェクトフレーム
-	constexpr int kEffFrame = 10;
+	constexpr int kEffFrame = 20;
+	// エフェクト時のランダムサイズ
+	constexpr int kEffRandSize = static_cast<int>(kSize * 0.8f);
 
 	// ダッシュログ数
 	constexpr int kDashLogNum = 8;
@@ -200,12 +198,11 @@ void Player::Draw()
 		// 移動時のエフェクトを描画
 		for (const auto& eff : m_effs)
 		{
-			rate = 1.0f - (eff.frame / static_cast<float>(kEffFrame));
-			alpha = static_cast<int>(255 * rate);
+			rate = 1.0f - eff.frame / static_cast<double>(kEffFrame);
+			alpha = static_cast<int>(153 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), rate, eff.angle, m_charEffImg->GetHandle(), true);
+			DrawRotaGraph(eff.pos.x, eff.pos.y, 1.0, eff.angle, m_charEffImg->GetHandle(), true);
 		}
-
 		// ダッシュした時のログを描画
 		if (m_logFrame < kDashLogNum)
 		{
@@ -228,6 +225,11 @@ void Player::Draw()
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			kExsitColor, true);
+		// 現在のプレイヤーを描画
+		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
+			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
+			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
+			0x161a30, false, 2.0f);
 	}
 
 	// 死亡時のエフェクト
@@ -302,18 +304,17 @@ void Player::Move(Input& input)
 	{
 		m_front = m_vec;
 
-		float effX = -m_vec.x + (GetRand(10) * 0.1f - 0.5f);
-		float effY = -m_vec.y + (GetRand(10) * 0.1f - 0.5f);
-		m_effs.push_back({ {effX, effY}, m_pos });
+		float effX = -m_vec.x * 0.5f + (GetRand(30) * 0.1f - 1.5f);
+		float effY = -m_vec.y * 0.5f + (GetRand(30) * 0.1f - 1.5f);
 
-#ifdef false
-		m_angle = atan2(m_front.x, -m_front.y);
-#else
+		Vec2 pos = m_pos + m_pos.Right().GetNormalized() * (GetRand(kEffRandSize) - kEffRandSize * 0.5f);
+
+		m_effs.push_back({ {effX, effY}, pos });
+
 		m_front = m_vec;
 		m_dir.front = m_front * kSize;
 		m_dir.right = m_front.Right() * kSize * 0.5f;
 		m_dir.left = m_front.Left() * kSize * 0.5f;
-#endif
 	}
 
 	m_vec *= kSpeed;

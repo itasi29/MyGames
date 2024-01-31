@@ -361,6 +361,7 @@ void StageBase::DrawSelect()
 {
 	DrawWall();
 
+	SetDrawMode(DX_DRAWMODE_BILINEAR);
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Draw();
@@ -369,6 +370,7 @@ void StageBase::DrawSelect()
 	{
 		m_boss->Draw();
 	}
+	SetDrawMode(DX_DRAWMODE_NEAREST);
 	m_player->Draw();
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ステージ名の描画
@@ -420,6 +422,7 @@ void StageBase::DrawPlaying()
 {
 	DrawWall();
 
+	SetDrawMode(DX_DRAWMODE_BILINEAR);
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Draw();
@@ -428,6 +431,7 @@ void StageBase::DrawPlaying()
 	{
 		m_boss->Draw();
 	}
+	SetDrawMode(DX_DRAWMODE_NEAREST);
 	m_player->Draw();
 
 	int drawScreenHandle = m_mgr.GetScene()->GetScreenHandle();
@@ -462,7 +466,9 @@ void StageBase::DrawBossDeath()
 	DrawWall();
 
 //	m_player->Draw();
+	SetDrawMode(DX_DRAWMODE_BILINEAR);
 	m_boss->Draw();
+	SetDrawMode(DX_DRAWMODE_NEAREST);
 }
 
 void StageBase::CheckConditionsTime(const std::string& stageName, int exsitTime, const std::wstring& dir)
