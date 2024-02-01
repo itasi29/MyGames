@@ -57,6 +57,7 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 
 	auto& file = GameManager::GetInstance().GetFile();
 	m_wallEffect = file->LoadGraphic(L"Enemy/wallEffect.png");
+	m_shadow = file->LoadGraphic(L"Enemy/ShadowNormal.png");
 	m_createSe = file->LoadSound(L"Se/create.mp3");
 }
 
@@ -152,6 +153,11 @@ void EnemyBase::TitleUpdate()
 
 void EnemyBase::TitleDraw()
 {
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+
+	// –{‘Ì‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 }
@@ -313,15 +319,25 @@ void EnemyBase::ChangeNormalFunc()
 void EnemyBase::StartDraw()
 {
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
-	int alpha = static_cast<int>(255 * rate);
+	int alpha = static_cast<int>(96 * rate);
+	// –{‘Ì‚Ì•`‰æ
+	alpha = static_cast<int>(255 * rate);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void EnemyBase::NormalDraw()
 {
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+
+	// –{‘Ì‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 

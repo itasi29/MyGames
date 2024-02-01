@@ -24,6 +24,7 @@ EnemySplit::EnemySplit(const size& windowSize, float fieldSize) :
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Split.png");
+	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowSmall.png");
 }
 
 EnemySplit::~EnemySplit()

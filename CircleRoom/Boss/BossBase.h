@@ -152,6 +152,7 @@ protected:
 
 	// キャラ画像
 	std::shared_ptr<FileBase> m_charImg;
+	std::shared_ptr<FileBase> m_shadow;
 	// 壁エフェクト
 	std::shared_ptr<FileBase> m_wallEffect;
 	// ダメージエフェクト

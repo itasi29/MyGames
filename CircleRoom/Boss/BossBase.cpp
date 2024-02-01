@@ -107,6 +107,7 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_deathDrawFunc = &BossBase::ExplotionDraw;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
+	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowLarge.png");
 	m_wallEffect = mgr->LoadGraphic(L"Enemy/wallEffect.png");
 	m_damageEffect = mgr->LoadGraphic(L"Enemy/damageEffect.png");
 	m_hpBar = mgr->LoadGraphic(L"UI/HpBar.png");
@@ -472,13 +473,20 @@ void BossBase::StartDraw() const
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
 	int alpha = static_cast<int>(255 * rate);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, 0.0,
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void BossBase::NormalDraw() const
-{
+{// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 
@@ -517,6 +525,9 @@ void BossBase::ExplotionDraw() const
 		y += GetRand(30) - 15;
 	}
 
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle,
+		m_shadow->GetHandle(), true);
 	DrawRotaGraph(x, y, 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 }
@@ -529,6 +540,9 @@ void BossBase::ShakeDraw() const
 	x += GetRand(30) - 15;
 	y += GetRand(30) - 15;
 
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle,
+		m_shadow->GetHandle(), true);
 	DrawRotaGraph(x, y, 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 }

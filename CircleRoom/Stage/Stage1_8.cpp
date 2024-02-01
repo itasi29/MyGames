@@ -38,8 +38,8 @@ namespace
 	constexpr int kRightExsitTime = 10;
 	constexpr int kDownKilledNum = 4;
 
-	const std::string kRightStName = "Stage1-4";
-	const std::string kDownStName = "Stage1-7";
+	const std::string kRightStName = "Stage1-7";
+	const std::string kDownStName = "Stage1-4";
 }
 
 Stage1_8::Stage1_8(GameManager& mgr, Input& input) :

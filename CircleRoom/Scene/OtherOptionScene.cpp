@@ -57,7 +57,7 @@ namespace
 	};
 
 	const std::vector<std::wstring> kGameMenu = { L"タイトルへ",
-		L"フルスクリーン",
+		L"ウィンドウモード",
 		L"説明書類",
 		L"権利表記",
 		L"終了"

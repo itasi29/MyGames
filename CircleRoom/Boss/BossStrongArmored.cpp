@@ -120,6 +120,10 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 
 void BossStrongArmored::NormalDraw() const
 {
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 

@@ -64,6 +64,7 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase*
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Division.png");
+	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowDivision.png");
 
 	m_dUpdateFunc = &EnemyDivision::UsuallyUpdate;
 	m_dDrawFunc = &EnemyDivision::UsuallyDraw;
@@ -207,6 +208,10 @@ void EnemyDivision::EndUpdate()
 
 void EnemyDivision::UsuallyDraw()
 {
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 

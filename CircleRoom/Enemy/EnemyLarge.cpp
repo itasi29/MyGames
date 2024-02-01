@@ -27,6 +27,7 @@ EnemyLarge::EnemyLarge(const size& windowSize, float fieldSize) :
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Large.png");
+	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowLarge.png");
 }
 
 EnemyLarge::~EnemyLarge()
