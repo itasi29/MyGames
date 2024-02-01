@@ -8,10 +8,12 @@ using namespace std;
 
 namespace
 {
+    constexpr float kVersion = 1.1f;
+
     struct KeyConfHeader
     {
         char id[4] = "kyc"; // 最後に'\0'入ってるので4バイト
-        float version = 1.0f;
+        float version = kVersion;
         size_t dataCount = 0;
         // 空白の4バイト(パディング)
     };
@@ -315,6 +317,11 @@ void Input::Load(const std::wstring& path)
     // ヘッダの読み込み
     KeyConfHeader header;
     FileRead_read(&header, sizeof(header), handle);
+    if (header.version != kVersion)
+    {
+        FileRead_close(handle);
+        return;
+    }
 
     // データの読み込み
     for (int i = 0; i < header.dataCount; i++)

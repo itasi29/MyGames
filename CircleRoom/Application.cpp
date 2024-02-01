@@ -1,9 +1,11 @@
 #include <DxLib.h>
 #include <cassert>
+#include <memory>
 
 #include "Application.h"
-#include "Common/Input.h"
-#include "Common/GameManager.h"
+#include "Input.h"
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
 
 #include "Scene/SceneManager.h"
 #include "Scene/TitleScene.h"
@@ -72,21 +74,18 @@ bool Application::Init()
 
 void Application::Run()
 {
+    std::shared_ptr<FileManager> fileManager = std::make_shared<FileManager>();
     {
         GameManager& manager = GameManager::GetInstance();
+        manager.SetFileManager(fileManager);
         Input input;
-        
+
         manager.Init();
 
 #ifdef _DEBUG
         manager.GetScene()->ChangeScene(std::make_shared<DebugScene>(manager));
 #else
         manager.GetScene()->ChangeScene(std::make_shared<TitleScene>(manager, input));
-#endif
-
-#ifdef _DEBUG
-        // 現在フレームが動いているか確認するよう
-        int i = 0;
 #endif
 
         while (ProcessMessage() != -1)
@@ -100,10 +99,6 @@ void Application::Run()
             manager.GetScene()->Update(input);
             manager.GetScene()->Draw();
 
-#ifdef _DEBUG
-            i++;
-            DrawFormatString(1200, 650, 0xffffff, L"%d", i);
-#endif
 
             ScreenFlip();
 
@@ -116,8 +111,7 @@ void Application::Run()
             while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
         }
     }
-
-    Terminate();
+//    fileManager->End();
 }
 
 void Application::End()

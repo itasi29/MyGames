@@ -101,8 +101,15 @@ namespace
 	constexpr float kWaveInterval = DX_PI_F / 15.0f;
 
 	// ウェーブ文字列
-	int kWaveNum = 4;
-	const wchar_t* const kWave[] = { L"け", L"っ", L"て", L"い" };
+	int kSelectWaveNum = 4;
+	int kSelectWavePosX = 1064;
+	int kSelectWavePosY = 592;
+	const wchar_t* const kSelectWave[] = { L"け", L"っ", L"て", L"い" };
+
+	int kBackWaveNum = 3;
+	int kBackWavePosX = 1128;
+	int kBackWavePosY = 544;
+	const wchar_t* const kBackWave[] = { L"も", L"ど", L"る" };
 }
 
 TitleScene::TitleScene(GameManager& mgr, Input& input) :
@@ -391,7 +398,7 @@ void TitleScene::NormalDraw()
 		y += kMenuLineInterval;
 	}
 
-	DrawWave("OK", kWave, kWaveNum);
+	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
 void TitleScene::StartSelectDraw()
@@ -434,7 +441,9 @@ void TitleScene::StartSelectDraw()
 		y += kMenuLineInterval;
 	}
 
-	DrawWave("OK", kWave, kWaveNum);
+	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
+	m_isWaveDraw = true;
+	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 }
 
 void TitleScene::CreateEnemy()
@@ -535,28 +544,28 @@ void TitleScene::DrawLogo()
 	DrawRotaGraph(kLogoDrawX, y, 1.0, 0.0, m_logo->GetHandle(), true);
 }
 
-void TitleScene::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+void TitleScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
 	if (!m_isWaveDraw) return;
 	m_isWaveDraw = false;
 
-	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
 	switch (m_input.GetType())
 	{
 	case InputType::keybd:
-		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), x - 48, y, 2.0);
 		break;
 	default:
 		assert(false);
 	case InputType::pad:
-		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), x - 48, y, 2.0);
 		break;
 	}
 
 	int handle = m_mgr.GetFont()->GetHandle(32);
 
-	int x = 1064;
+	int strX = x;
 
 	for (int i = 0; i < num; i++)
 	{
@@ -567,11 +576,11 @@ void TitleScene::DrawWave(const char* const cmd, const wchar_t* const str[], int
 			add = 0;
 		}
 
-		int y = 600 + add;
+		int strY = y + add;
 
 
-		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
-		x += 24;
+		DrawStringToHandle(strX, strY, str[i], kWhiteColor, handle);
+		strX += 24;
 	}
 }
 

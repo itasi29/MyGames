@@ -10,6 +10,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		return -1;// このアプリは不正終了しました。
 	}
 	application.Run();
+	application.Terminate();
 
 	// このアプリは正常終了しました。
 	return 0;

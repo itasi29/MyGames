@@ -18,10 +18,6 @@ private:
 	Application(const Application& app) = delete;		// コピーコンストラクタの廃止
 	void operator =(const Application& app) = delete;	// 代入コンストラクタの廃止
 
-	/// <summary>
-	/// 後処理を行う
-	/// </summary>
-	void Terminate();
 public:
 	/// <summary>
 	/// Applicationのシングルトンインスタンスを返す
@@ -35,6 +31,10 @@ public:
 
 	bool Init();
 	void Run();
+	/// <summary>
+	/// 後処理を行う
+	/// </summary>
+	void Terminate();
 
 	/// <summary>
 	/// ゲームの終了

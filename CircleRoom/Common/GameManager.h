@@ -51,6 +51,8 @@ public:
 	/// <returns>ゲームマネージャークラスのインスタンス</returns>
 	static GameManager& GetInstance();
 
+	void SetFileManager(std::shared_ptr<FileManager>& file);
+
 	std::shared_ptr<FileManager>& GetFile();
 	std::shared_ptr<SceneManager>& GetScene();
 	std::shared_ptr<StageManager>& GetStage();

@@ -70,7 +70,14 @@ namespace
 
 	// ウェーブ文字列
 	int kSelectWaveNum = 4;
+	int kSelectWavePosX = 1064;
+	int kSelectWavePosY = 592;
 	const wchar_t* const kSelectWave[] = { L"け", L"っ", L"て", L"い" };
+
+	int kBackWaveNum = 3;
+	int kBackWavePosX = 1128;
+	int kBackWavePosY = 544;
+	const wchar_t* const kBackWave[] = { L"も", L"ど", L"る" };
 }
 
 OtherOptionScene::OtherOptionScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scn) :
@@ -226,7 +233,9 @@ void OtherOptionScene::NormalDraw()
 		y += kMenuLineInterval;
 	}
 
-	DrawWave("OK", kSelectWave, kSelectWaveNum);
+	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
+	m_isWaveDraw = true;
+	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
 void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int color)
@@ -243,28 +252,28 @@ void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int
 	}
 }
 
-void OtherOptionScene::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+void OtherOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
 	if (!m_isWaveDraw) return;
 	m_isWaveDraw = false;
 
-	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
 	switch (m_input.GetType())
 	{
 	case InputType::keybd:
-		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), x - 48, y, 2.0);
 		break;
 	default:
 		assert(false);
 	case InputType::pad:
-		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), x - 48, y, 2.0);
 		break;
 	}
 
 	int handle = m_mgr.GetFont()->GetHandle(32);
 
-	int x = 1064;
+	int strX = x;
 
 	for (int i = 0; i < num; i++)
 	{
@@ -275,10 +284,10 @@ void OtherOptionScene::DrawWave(const char* const cmd, const wchar_t* const str[
 			add = 0;
 		}
 
-		int y = 600 + add;
+		int strY = y + add;
 
 
-		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
-		x += 24;
+		DrawStringToHandle(strX, strY, str[i], kWhiteColor, handle);
+		strX += 24;
 	}
 }

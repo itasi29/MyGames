@@ -9,7 +9,6 @@
 #include "FileSystem/FontSystem.h"
 
 GameManager::GameManager() :
-	m_file(std::make_shared<FileManager>()),
 	m_scene(std::make_shared<SceneManager>()),
 	m_stage(std::make_shared<StageManager>(m_scene)),
 	m_sound(std::make_shared<SoundSystem>()),
@@ -23,7 +22,6 @@ GameManager::GameManager() :
 
 GameManager::~GameManager()
 {
-	m_file->End();
 	m_sound->End();
 
 	Save();
@@ -50,6 +48,17 @@ GameManager& GameManager::GetInstance()
 {
 	static GameManager instance;
 	return instance;
+}
+
+void GameManager::SetFileManager(std::shared_ptr<FileManager>& file)
+{
+	// Œ³‚©‚ç“ü‚Á‚Ä‚¢‚é‚Ì‚ÉÄ“x“ü‚ê‚ç‚ê‚½‚ç~‚ß‚é
+	if (m_file)
+	{
+		assert(false);
+	}
+
+	m_file = file;
 }
 
 std::shared_ptr<FileManager>& GameManager::GetFile()

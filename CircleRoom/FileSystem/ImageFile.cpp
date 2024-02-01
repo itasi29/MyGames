@@ -9,6 +9,7 @@ ImageFile::ImageFile(FileManager& manager) :
 
 ImageFile::~ImageFile()
 {
+	if (m_isEnd) return;
 	if (m_isEternal) return;
 
 	m_mgr.Delete(m_path);

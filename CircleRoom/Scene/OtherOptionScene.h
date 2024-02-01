@@ -30,7 +30,7 @@ private:
 	/// /// <param name="cmd">コマンド名</param>
 	/// <param name="str">ウェーブさせる文字列</param>
 	/// <param name="num">文字列数</param>
-	void DrawWave(const char* const cmd, const wchar_t* const str[], int num);
+	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num);
 
 private:
 	using UpdateFunc_t = void(OtherOptionScene::*)(Input&);

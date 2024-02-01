@@ -7,13 +7,18 @@
 
 FileManager::~FileManager()
 {
+    End();
 }
 
 void FileManager::End()
 {
+    std::wstring path;
+
     for (auto& file : m_fileTable)
     {
         file.second->Delete();
+        file.second->End();
+        path = file.first;
     }
 }
 
@@ -35,6 +40,7 @@ std::shared_ptr<FileBase> FileManager::LoadGraphic(const std::wstring& path, boo
         // コピーコンストラクトを使用
         return std::make_shared<ImageFile>(*imgFile);
     }
+
     std::wstring dPath = L"Data/Image/" + path;
     // もし、テーブルにロード済みパスがない場合には
     // こちらを通る
@@ -105,5 +111,6 @@ void FileManager::Delete(const std::wstring& path)
     {
         m_fileTable.erase(path);
         file->Delete();
+        file->End();
     }
 }
