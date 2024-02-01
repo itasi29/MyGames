@@ -3,6 +3,8 @@
 
 class FileBase;
 class SoundSystem;
+class BottansFile;
+class KeyFile;
 
 /// <summary>
 /// 音量調整シーン
@@ -11,7 +13,7 @@ class SoundOptionScene :
     public Scene
 {
 public:
-    SoundOptionScene(GameManager& mgr);
+    SoundOptionScene(GameManager& mgr, Input& input);
     ~SoundOptionScene();
 
     void Update(Input& input);
@@ -33,6 +35,14 @@ private:
 	/// <param name="rate">ボリューム割合</param>
 	void DrawGauge(int drawX, int drawY, float rate);
 
+	/// <summary>
+	/// 選択等の文字・画像描画
+	/// </summary>
+	/// /// <param name="cmd">コマンド名</param>
+	/// <param name="str">ウェーブさせる文字列</param>
+	/// <param name="num">文字列数</param>
+	void DrawWave(const char* const cmd, const wchar_t* const str[], int num);
+
 private:
 	updateFunc_t m_updateFunc;
 
@@ -48,6 +58,7 @@ private:
 	// 画像関係
 	std::shared_ptr<FileBase> m_frame;
 	std::shared_ptr<FileBase> m_addFrame;
+	std::shared_ptr<FileBase> m_startFrame;
 
 	// 音関係
 	std::shared_ptr<SoundSystem> m_soundSys;
@@ -55,5 +66,15 @@ private:
 	std::shared_ptr<FileBase> m_selectSe;
 	std::shared_ptr<FileBase> m_cursorUpSe;
 	std::shared_ptr<FileBase> m_cursorDownSe;
+
+	// 文字ウェーブ用の角度
+	float m_waveAngle;
+	// ウエーブのやつ描画するか
+	bool m_isWaveDraw;
+
+	std::shared_ptr<BottansFile> m_bt;
+	std::shared_ptr<KeyFile> m_key;
+
+	const Input& m_input;
 };
 

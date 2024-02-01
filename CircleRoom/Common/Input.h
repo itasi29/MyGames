@@ -11,7 +11,7 @@ enum class InputType
 	pad		// ƒpƒbƒh
 };
 
-using InputTable_t = std::unordered_map<std::string, std::map<InputType, int>>;
+using InputTable_t = std::unordered_map<std::string, std::map<InputType, std::vector<int>>>;
 
 class KeyConfigScene;
 class PadConfigScene;

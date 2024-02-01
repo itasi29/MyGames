@@ -44,7 +44,7 @@ private:
 	/// <summary>
 	/// ¶‰EˆÚ“®‚³‚¹‚é‰æ‘œ‚Ì•`‰æ
 	/// </summary>
-	void DrawImage(const size& size);
+	void DrawWave(const size& size);
 	/// <summary>
 	/// ˜gü‚Ì•`‰æ
 	/// </summary>

@@ -35,12 +35,15 @@ namespace
 
 StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	StageBase(mgr, input),
+	m_index(0),
 	m_explanation(kOperation),
 	m_createFrame(0)
 {
-	m_handle[kOperation] = m_mgr.GetFile()->LoadGraphic(L"UI/operationExplanation.png");
-	m_handle[kClear] = m_mgr.GetFile()->LoadGraphic(L"UI/clearExplanation.png");
-	m_handle[kClearAnother] = m_mgr.GetFile()->LoadGraphic(L"UI/clearExplanation.png");
+	m_handle[0] = m_mgr.GetFile()->LoadGraphic(L"UI/keybordExplanation.png");
+	m_handle[1] = m_mgr.GetFile()->LoadGraphic(L"UI/padExplanation.png");
+	m_handle[2] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation0.png");
+	m_handle[3] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation1.png");
+	m_handle[4] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation2.png");
 
 	m_stageName = "Tutorial";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
@@ -97,13 +100,21 @@ void StageTutorial::UpdateSelect(Input& input)
 	{
 		// 説明1つ目
 	case kOperation:
-		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_explanation]->GetHandle()));
-		m_explanation = kClear;
+		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
+		m_index++;
+		if (m_index >= 2)
+		{
+			m_explanation = kClear;
+		}
 		break;
 		// 説明2つ目
 	case kClear:
-		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_explanation]->GetHandle()));
-		m_explanation = kPlay;
+		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
+		m_index++;
+		if (m_index >= 5)
+		{
+			m_explanation = kPlay;
+		}
 		break;
 		// 実プレイ
 	case kPlay:
@@ -113,12 +124,6 @@ void StageTutorial::UpdateSelect(Input& input)
 			Init();
 		}
 		break;
-		// クリア後説明
-	case kClearAnother:
-		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_explanation]->GetHandle()));
-		m_explanation = kEnd;
-		break;
-		// 特になし
 	default:
 		assert(false);
 	case kEnd:

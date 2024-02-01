@@ -1,6 +1,7 @@
 #pragma once
 #ifdef _DEBUG
 
+// class GameManager;
 
 #include "Scene.h"
 class DebugScene : public Scene

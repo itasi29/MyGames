@@ -190,7 +190,7 @@ void OptionScene::NormalDraw()
 	DrawBox(kMenuMargin, kMenuMargin, size.w - kMenuMargin, size.h - kMenuMargin,
 		0xffffff, false);
 
-	DrawImage(size);
+	DrawWave(size);
 	if (m_isGame)
 	{
 		DrawFrame(static_cast<int>(kGameMenu.size()), kGameMargin, size);
@@ -203,7 +203,7 @@ void OptionScene::NormalDraw()
 	}
 }
 
-void OptionScene::DrawImage(const size& size)
+void OptionScene::DrawWave(const size& size)
 {
 	switch (m_type)
 	{
@@ -278,19 +278,19 @@ void OptionScene::ChangeScene(Input& input)
 
 		// ƒL[Ý’è
 	case kOperat:
-		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, m_optionScn));
+		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, input, m_optionScn));
 		break;
 
 		// ‰¹—ÊÝ’è
 	case kValume:
-		m_optionScn->ChangeScene(std::make_shared<SoundOptionScene>(m_mgr));
+		m_optionScn->ChangeScene(std::make_shared<SoundOptionScene>(m_mgr, input));
 		break;
 
 		// ‚»‚Ì‘¼Ý’è
 	default:
 		assert(false);
 	case kOther:
-		m_optionScn->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr));
+		m_optionScn->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr, input, m_optionScn));
 		break;
 	}
 }

@@ -7,6 +7,8 @@
 #include "FileSystem/SoundSystem.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
+#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 
 #include "SceneManager.h"
 #include "KeyConfigScene.h"
@@ -38,22 +40,38 @@ namespace
 		kPad,
 		kMax
 	};
+
+	// スタート文字のウェーブスピード
+	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
+	// ウェーブの間隔
+	constexpr float kWaveInterval = DX_PI_F / 15.0f;
+
+	// ウェーブ文字列
+	int kSelectWaveNum = 4;
+	const wchar_t* const kSelectWave[] = { L"け", L"っ", L"て", L"い" };
 }
 
-ConfigScene::ConfigScene(GameManager& mgr, std::shared_ptr<SceneManager> scene) :
+ConfigScene::ConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scene) :
 	Scene(mgr),
+	m_input(input),
 	m_optionScn(scene),
 	m_currentLineIndex(0),
-	m_fadeFrame(0)
+	m_fadeFrame(0),
+	m_waveAngle(DX_PI_F),
+	m_isWaveDraw(true)
 {
 	m_soundSys = mgr.GetSound();
 
 	auto& file = m_mgr.GetFile();
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
+	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+
+	m_bt = std::make_shared<BottansFile>(file);
+	m_key = std::make_shared<KeyFile>(file);
 }
 
 ConfigScene::~ConfigScene()
@@ -62,6 +80,9 @@ ConfigScene::~ConfigScene()
 
 void ConfigScene::Update(Input& input)
 {
+	m_isWaveDraw = true;
+	m_waveAngle -= kWaveSpeed;
+
 	if (input.IsTriggered("OK"))
 	{
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
@@ -113,6 +134,8 @@ void ConfigScene::Draw()
 	y += kMenuLineInterval;
 
 	DrawName(y, kPad, L"PAD設定");
+
+	DrawWave("OK", kSelectWave, kSelectWaveNum);
 }
 
 void ConfigScene::DrawName(int drawY, int index, std::wstring str)
@@ -131,5 +154,45 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 	else
 	{
 		DrawStringToHandle(132, drawY, str.c_str(), kWhiteColor, fontHandle);
+	}
+}
+
+void ConfigScene::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+{
+	if (!m_isWaveDraw) return;
+	m_isWaveDraw = false;
+
+	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		break;
+	}
+
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int x = 1064;
+
+	for (int i = 0; i < num; i++)
+	{
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int y = 600 + add;
+
+
+		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
+		x += 24;
 	}
 }

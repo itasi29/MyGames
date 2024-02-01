@@ -81,7 +81,7 @@ StageManager::~StageManager()
 void StageManager::Init()
 {
 	auto& mgr = GameManager::GetInstance().GetFile();
-	m_dashImg = mgr->LoadGraphic(L"UI/operationExplanation.png");
+	m_dashImg = mgr->LoadGraphic(L"UI/dashExplanation.png");
 
 	InitPos();
 }

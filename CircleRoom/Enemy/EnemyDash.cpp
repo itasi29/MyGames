@@ -288,7 +288,7 @@ void EnemyDash::DrawDashEff() const
 
 	SetDrawScreen(m_dashEffScreen);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
-	DrawBox(0, 0, m_size.w, m_size.h, 0x000000, true);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x5f6976, true);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 64);
 	DrawCircle(static_cast<int>(m_dashEffPos.x), static_cast<int>(m_dashEffPos.y), m_dashEffRipper, 0x0b60b0, false, kRipple);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

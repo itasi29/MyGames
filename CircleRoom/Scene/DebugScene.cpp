@@ -34,7 +34,7 @@ void DebugScene::Update(Input& input)
 		switch (m_line)
 		{
 		case 0:
-			m_mgr.GetScene()->ChangeScene(std::make_shared<TitleScene>(m_mgr), 1.0f);
+			m_mgr.GetScene()->ChangeScene(std::make_shared<TitleScene>(m_mgr, input), 1.0f);
 			break;
 
 		case 1:

@@ -13,7 +13,8 @@
 namespace
 {
 	// 色
-	constexpr unsigned int kExsitColor = 0xFFFAE7;
+	//constexpr unsigned int kExsitColor = 0xFFFAE7;
+	constexpr unsigned int kExsitColor = 0xF45050;
 	constexpr unsigned int kDeathColor = 0xD2001A;
 
 	// 当たり判定の半径の大きさ
@@ -201,7 +202,7 @@ void Player::Draw()
 			rate = 1.0f - eff.frame / static_cast<double>(kEffFrame);
 			alpha = static_cast<int>(153 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawRotaGraph(eff.pos.x, eff.pos.y, 1.0, eff.angle, m_charEffImg->GetHandle(), true);
+			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), 1.0, eff.angle, m_charEffImg->GetHandle(), true);
 		}
 		// ダッシュした時のログを描画
 		if (m_logFrame < kDashLogNum)
@@ -304,12 +305,7 @@ void Player::Move(Input& input)
 	{
 		m_front = m_vec;
 
-		float effX = -m_vec.x * 0.5f + (GetRand(30) * 0.1f - 1.5f);
-		float effY = -m_vec.y * 0.5f + (GetRand(30) * 0.1f - 1.5f);
-
-		Vec2 pos = m_pos + m_pos.Right().GetNormalized() * (GetRand(kEffRandSize) - kEffRandSize * 0.5f);
-
-		m_effs.push_back({ {effX, effY}, pos });
+		AddMoveEff();
 
 		m_front = m_vec;
 		m_dir.front = m_front * kSize;
@@ -358,6 +354,7 @@ void Player::Dash(Input& input)
 
 	// ダッシュさせる
 	m_vec = m_front * kDashSpeed;
+	AddMoveEff();
 
 	// ログフレームの更新
 	m_logFrame = 0;
@@ -402,4 +399,14 @@ void Player::InRange()
 	{
 		m_pos.y = centerY + m_fieldSize - m_front.y * kColShift - kColRadius;
 	}
+}
+
+void Player::AddMoveEff()
+{
+	float effX = -m_vec.x * 0.5f + (GetRand(30) * 0.1f - 1.5f);
+	float effY = -m_vec.y * 0.5f + (GetRand(30) * 0.1f - 1.5f);
+
+	Vec2 pos = m_pos + m_pos.Right().GetNormalized() * (GetRand(kEffRandSize) - kEffRandSize * 0.5f);
+
+	m_effs.push_back({ {effX, effY}, pos });
 }

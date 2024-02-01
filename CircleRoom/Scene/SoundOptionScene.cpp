@@ -7,6 +7,8 @@
 #include "FileSystem/SoundSystem.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 #include "Input.h"
 
 #include "OptionScene.h"
@@ -49,15 +51,27 @@ namespace
 		kSe,
 		kMax
 	};
+
+	// スタート文字のウェーブスピード
+	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
+	// ウェーブの間隔
+	constexpr float kWaveInterval = DX_PI_F / 15.0f;
+
+	// ウェーブ文字列
+	int kSelectWaveNum = 4;
+	const wchar_t* const kSelectWave[] = { L"け", L"っ", L"て", L"い" };
 }
 
-SoundOptionScene::SoundOptionScene(GameManager& mgr) :
+SoundOptionScene::SoundOptionScene(GameManager& mgr, Input& input) :
 	Scene(mgr),
+	m_input(input),
 	m_currentLineIndex(0),
 	m_isEdit(false),
 	m_fadeFrame(0),
 	m_repeatUpFrame(0),
-	m_repeatDownFrame(0)
+	m_repeatDownFrame(0),
+	m_waveAngle(DX_PI_F),
+	m_isWaveDraw(true)
 {
 	m_updateFunc = &SoundOptionScene::NormalUpdate;
 
@@ -65,10 +79,14 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr) :
 	auto& file = m_mgr.GetFile();
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
 	m_addFrame = file->LoadGraphic(L"UI/addFrame.png");
+	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+
+	m_bt = std::make_shared<BottansFile>(file);
+	m_key = std::make_shared<KeyFile>(file);
 }
 
 SoundOptionScene::~SoundOptionScene()
@@ -77,6 +95,8 @@ SoundOptionScene::~SoundOptionScene()
 
 void SoundOptionScene::Update(Input& input)
 {
+	m_isWaveDraw = true;
+	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
 }
 
@@ -98,8 +118,8 @@ void SoundOptionScene::Draw()
 		int add = static_cast<int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ADD, add);
 		DrawGraph(kMenuMargin + 800, y, m_addFrame->GetHandle(), true);
-		DrawBox(128, y,
-			kMenuMargin + 800, y + 40,
+		DrawBox(128 - kFrameMargin, y,
+			kMenuMargin + 800, y + 44,
 			kFrameColorDeff, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
@@ -117,6 +137,8 @@ void SoundOptionScene::Draw()
 	DrawName(y, kSe, L"SE");
 	DrawFormatStringToHandle(200, y, kWhiteColor, fontHandle, L"%3d％", static_cast<int>(rate * 100));
 	DrawGauge(500, y, rate);
+
+	DrawWave("OK", kSelectWave, kSelectWaveNum);
 }
 
 void SoundOptionScene::NormalUpdate(Input& input)
@@ -223,4 +245,44 @@ void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate)
 	
 	// ゲージ割合描画
 	DrawBox(drawX, drawY, drawX + static_cast<int>(kGaugeLength * rate), drawY + 32, 0xff9130, true);
+}
+
+void SoundOptionScene::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+{
+	if (!m_isWaveDraw) return;
+	m_isWaveDraw = false;
+
+	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		break;
+	}
+
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int x = 1064;
+
+	for (int i = 0; i < num; i++)
+	{
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int y = 600 + add;
+
+
+		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
+		x += 24;
+	}
 }

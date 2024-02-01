@@ -89,6 +89,12 @@ namespace
 	// ウェーブの間隔
 	constexpr float kWaveInterval = DX_PI_F / 15.0f;
 
+	// ウェーブ文字列
+	int kTitleWaveNum = 4;
+	const wchar_t* const kTitleWave[] = {L"ス", L"タ", L"ー", L"ト"};
+	int kDashWaveNum = 4;
+	const wchar_t* const kDashWave[] = {L"ダ", L"ッ", L"シ", L"ュ"};
+
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
@@ -101,6 +107,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_frame(0),
 	m_waitFrame(kWaitChangeFrame),
 	m_waveAngle(DX_PI_F),
+	m_isWaveDraw(true),
 	m_isUpdateTime(false),
 	m_isUpdateBestTime(false)
 {
@@ -148,6 +155,8 @@ StageBase::~StageBase()
 
 void StageBase::Update(Input& input)
 {
+	m_isWaveDraw = true;
+	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
 }
 
@@ -175,7 +184,6 @@ void StageBase::UpdateSelect(Input& input)
 
 	// 待機フレームの増加
 	m_waitFrame++;
-	m_waveAngle -= kWaveSpeed;
 
 	if (m_waitFrame < kWaitChangeFrame) return;
 
@@ -220,6 +228,7 @@ void StageBase::UpdateSelect(Input& input)
 		m_sound->Stop(m_selectBgm->GetHandle());
 		m_isUpdateBestTime = false;
 		m_soundFrame = 0;
+		m_waveAngle = 0;
 
 		// 各種初期化処理
 		Init();
@@ -412,7 +421,7 @@ void StageBase::DrawSelect()
 	DrawArrow();
 
 	// スタートの画像の描画
-	DrawImage();
+	DrawWave("OK", kTitleWave, kTitleWaveNum);
 
 	// 条件達成時のを描画
 	DrawConditionsAchived(y);
@@ -457,6 +466,11 @@ void StageBase::DrawPlaying()
 		DrawGraph(0, 268 + y, m_bFrameImg->GetHandle(), true);
 	}
 	DrawGraph(0, 0, m_strHandle, true);
+
+	if (m_mgr.GetStage()->GetAbility() == kDash)
+	{
+		DrawWave("dash", kDashWave, kDashWaveNum);
+	}
 
 	DrawBestTime();
 }
@@ -825,29 +839,30 @@ void StageBase::DrawWall()
 	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_field->GetHandle(), true);
 }
 
-void StageBase::DrawImage()
+void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
 {
+	if (!m_isWaveDraw) return;
+	m_isWaveDraw = false;
 
 	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
 
 	switch (m_input.GetType())
 	{
 	case InputType::keybd:
-		m_key->DrawKey(m_input.GetHardDataName("OK", InputType::keybd), 1016, 600, 2.0);
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
 		break;
 	default:
 		assert(false);
 	case InputType::pad:
-		m_bt->DrawBottan(m_input.GetHardDataName("OK", InputType::pad), 1016, 600, 2.0);
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
 		break;
 	}
 
-	std::wstring str[] = { L"ス", L"タ", L"ー", L"ト" };
 	int handle = m_mgr.GetFont()->GetHandle(32);
 
 	int x = 1064;
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < num; i++)
 	{
 		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
 
@@ -859,7 +874,7 @@ void StageBase::DrawImage()
 		int y = 600 + add;
 
 
-		DrawStringToHandle(x, y, str[i].c_str(), kWhiteColor, handle);
+		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
 		x += 24;
 	}
 }

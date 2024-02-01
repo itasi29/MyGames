@@ -1,8 +1,10 @@
 #include <DxLib.h>
+#include <cassert>
 #include "Application.h"
 #include "Common/Input.h"
 #include "GameManager.h"
 #include "FileSystem/KeyFile.h"
+#include "FileSystem/BottansFile.h"
 #include "FileSystem/FontSystem.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
@@ -38,6 +40,15 @@ namespace
 	constexpr int kMenuLineInterval = 48;
 
 	constexpr double kExtendRate = 1.5;
+
+	// スタート文字のウェーブスピード
+	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
+	// ウェーブの間隔
+	constexpr float kWaveInterval = DX_PI_F / 15.0f;
+
+	// ウェーブ文字列
+	int kSelectWaveNum = 4;
+	const wchar_t* const kSelectWave[] = { L"け", L"っ", L"て", L"い" };
 }
 
 KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scn) :
@@ -47,7 +58,9 @@ KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	m_currentLineIndex(0),
 	m_isEdit(false),
 	m_fadeFrame(0),
-	m_cancleFrame(0)
+	m_cancleFrame(0),
+	m_waveAngle(DX_PI_F),
+	m_isWaveDraw(true)
 {
 	m_commandTable = input.GetCommandTable();
 	m_updateFunc = &KeyConfigScene::EditEndUpdate;
@@ -104,9 +117,13 @@ KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	auto& file = m_mgr.GetFile();
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
 	m_addFrame = file->LoadGraphic(L"UI/addFrame.png");
+	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+
+	m_bt = std::make_shared<BottansFile>(file);
+	m_key = std::make_shared<KeyFile>(file);
 }
 
 KeyConfigScene::~KeyConfigScene()
@@ -124,6 +141,8 @@ KeyConfigScene::~KeyConfigScene()
 
 void KeyConfigScene::Update(Input & input)
 {
+	m_isWaveDraw = true;
+	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
 }
 
@@ -149,9 +168,13 @@ void KeyConfigScene::Draw()
 		SetDrawBlendMode(DX_BLENDMODE_ADD, add);
 		DrawGraph(kMenuMargin + 800, y, m_addFrame->GetHandle(), true);
 		DrawBox(128 - kFrameMargin, y,
-			kMenuMargin + 800, y + 40,
+			kMenuMargin + 800, y + 44,
 			kFrameColorDeff, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+	else
+	{
+		DrawWave("OK", kSelectWave, kSelectWaveNum);
 	}
 
 	DrawCommandList();
@@ -161,7 +184,7 @@ void KeyConfigScene::NormalUpdate(Input & input)
 {
 	if (input.IsTriggered("cancel"))
 	{
-		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, m_optionScn));
+		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, input, m_optionScn));
 	}
 
 	if (input.IsReleased("OK"))
@@ -232,17 +255,17 @@ void KeyConfigScene::EditUpdate(Input & input)
 			for (const auto& str : m_input.GetExclusiveCommandTable())
 			{
 				// コマンドと変更するKeyが同じなら変えずに処理終了
-				auto ret = input.m_commandTable[str][InputType::keybd];
+				auto ret = input.m_commandTable[str][InputType::keybd][0];
 				if (ret == i)
 				{
 					return;
 				}
 			}
 
-			cmd[InputType::keybd] = i;
+			cmd[InputType::keybd][0] = i;
 
 			// 本体の方も書き換え
-			m_input.m_commandTable[strItem][InputType::keybd] = i;
+			m_input.m_commandTable[strItem][InputType::keybd][0] = i;
 
 			m_updateFunc = &KeyConfigScene::EditEndUpdate;
 			m_isEdit = false;
@@ -290,7 +313,7 @@ void KeyConfigScene::DrawCommandList()
 			DrawFormatStringToHandle(kMenuMargin + 50, y, kWhiteColor, fontHandle, L"%s", cmdName.c_str());
 		}
 
-		m_keyImg->DrawKey(GetKeyName(cmd.at(InputType::keybd)), kMenuMargin + 50 + 376, y, kExtendRate);
+		m_keyImg->DrawKey(GetKeyName(cmd.at(InputType::keybd)[0]), kMenuMargin + 50 + 376, y, kExtendRate);
 
 		y += kMenuLineInterval;
 	}
@@ -304,6 +327,46 @@ void KeyConfigScene::CommitCurrenKeySetting()
 		m_input.m_commandTable[cmd.first] = cmd.second;
 	}
 	m_input.Save("Data/Bin/key.conf");
+}
+
+void KeyConfigScene::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+{
+	if (!m_isWaveDraw) return;
+	m_isWaveDraw = false;
+
+	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		break;
+	}
+
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int x = 1064;
+
+	for (int i = 0; i < num; i++)
+	{
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int y = 600 + add;
+
+
+		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
+		x += 24;
+	}
 }
 
 std::wstring KeyConfigScene::GetKeyName(int keycode)

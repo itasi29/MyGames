@@ -19,6 +19,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Input input;
 
 	int handle = MakeScreen(640, 480);
+	int enemy = LoadGraph("Normal.png");
 
 	int radius1 = 64;
 	int radius2 = 32;
@@ -34,7 +35,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		// 描画を行う前に画面をクリアする
 		ClearDrawScreen();
 
+		DrawBox(0, 0, 640, 480, 0x757679, true);
+
 		// ゲームの処理
+#if false
 		radius1 += kLineThickness;
 		radius2 += kLineThickness;
 		radius3 += kLineThickness;
@@ -58,6 +62,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		SetDrawScreen(DX_SCREEN_BACK);
 		DrawGraph(0, 0, handle, true);
+#else
+		input.Update();
+		player.Update(input);
+		DrawRotaGraph(320, 240, 1.0, 0.0, enemy, true);
+		player.Draw();
+#endif
 
 		// 画面が切り替わるのを待つ
 		ScreenFlip();
@@ -74,6 +84,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	}
 
 	DeleteGraph(handle);
+	DeleteGraph(enemy);
 
 	DxLib_End();				// ＤＸライブラリ使用の終了処理
 

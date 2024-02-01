@@ -83,6 +83,10 @@ private:
 	/// 場外判定処理
 	/// </summary>
 	void InRange();
+	/// <summary>
+	/// 移動エフェクトの追加
+	/// </summary>
+	void AddMoveEff();
 
 private:
 	std::shared_ptr<FileBase> m_bloodImg;

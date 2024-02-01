@@ -2,13 +2,15 @@
 #include <memory>
 
 class FileBase;
+class BottansFile;
+class KeyFile;
 class SoundSystem;
 
 #include "Scene.h"
 class ConfigScene : public Scene
 {
 public:
-	ConfigScene(GameManager& mgr, std::shared_ptr<SceneManager> scene);
+	ConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scene);
 	~ConfigScene();
 
 	void Update(Input& input);
@@ -16,6 +18,14 @@ public:
 
 private:
 	void DrawName(int drawY, int index, std::wstring str);
+
+	/// <summary>
+	/// 選択等の文字・画像描画
+	/// </summary>
+	/// /// <param name="cmd">コマンド名</param>
+	/// <param name="str">ウェーブさせる文字列</param>
+	/// <param name="num">文字列数</param>
+	void DrawWave(const char* const cmd, const wchar_t* const str[], int num);
 
 private:
 	// OptionSceneが持っているScene
@@ -28,9 +38,20 @@ private:
 	std::shared_ptr<FileBase> m_frame;
 	// 音関係
 	std::shared_ptr<SoundSystem> m_soundSys;
+	std::shared_ptr<FileBase> m_startFrame;
 	// 選択時Se
 	std::shared_ptr<FileBase> m_selectSe;
 	std::shared_ptr<FileBase> m_cursorUpSe;
 	std::shared_ptr<FileBase> m_cursorDownSe;
+
+	// 文字ウェーブ用の角度
+	float m_waveAngle;
+	// ウエーブのやつ描画するか
+	bool m_isWaveDraw;
+
+	std::shared_ptr<BottansFile> m_bt;
+	std::shared_ptr<KeyFile> m_key;
+
+	const Input& m_input;
 };
 

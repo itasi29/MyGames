@@ -67,7 +67,7 @@ void OneShotScene::AppearUpdate(Input& input)
 
 void OneShotScene::NormalUpdate(Input& input)
 {
-	if (input.IsTriggered("OK"))
+	if (input.IsAnyTriggerd())
 	{
 		m_updateFunc = &OneShotScene::DisAppearUpdate;
 		m_drawFunc = &OneShotScene::MoveDraw;

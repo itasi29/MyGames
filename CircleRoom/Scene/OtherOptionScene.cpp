@@ -12,8 +12,11 @@
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/SoundSystem.h"
+#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 
 #include "TitleScene.h"
+#include "ExplanationScene.h"
 #include "OneShotScene.h"
 
 #include "OtherOptionScene.h"
@@ -41,38 +44,56 @@ namespace
 
 	constexpr int kAppeaInterval = 5;
 	constexpr int kMenuMargin = 120;
-
-	constexpr int kMenuLineInterval = 128;
+	// 文字間の幅
+	constexpr int kMenuLineInterval = 96;
 
 	enum
 	{
 		kTitle,
 		kWindowsMode,
+		kExplanation,
 		kRightsNotation,
 		kEnd
 	};
 
 	const std::vector<std::wstring> kGameMenu = { L"タイトルへ",
 		L"フルスクリーン",
+		L"説明書類",
 		L"権利表記",
 		L"終了"
 	};
 
+	// スタート文字のウェーブスピード
+	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
+	// ウェーブの間隔
+	constexpr float kWaveInterval = DX_PI_F / 15.0f;
+
+	// ウェーブ文字列
+	int kSelectWaveNum = 4;
+	const wchar_t* const kSelectWave[] = { L"け", L"っ", L"て", L"い" };
 }
 
-OtherOptionScene::OtherOptionScene(GameManager& mgr) :
+OtherOptionScene::OtherOptionScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scn) :
 	Scene(mgr),
+	m_input(input),
+	m_optionScn(scn),
 	m_currentLineIndex(0),
-	m_fadeFrame(0)
+	m_fadeFrame(0),
+	m_waveAngle(DX_PI_F),
+	m_isWaveDraw(true)
 {
 	// FIXME:仮画像
 
 	auto& file = m_mgr.GetFile();
 	m_rightNotationImg = file->LoadGraphic(L"UI/16-9.png");
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
+	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+
+	m_bt = std::make_shared<BottansFile>(file);
+	m_key = std::make_shared<KeyFile>(file);
 
 	m_updateFunc = &OtherOptionScene::NormalUpdate;
 	m_drawFunc = &OtherOptionScene::NormalDraw;
@@ -84,6 +105,8 @@ OtherOptionScene::~OtherOptionScene()
 
 void OtherOptionScene::Update(Input& input)
 {
+	m_isWaveDraw = true;
+	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
 }
 
@@ -100,7 +123,7 @@ void OtherOptionScene::FadeUpdate(Input& input)
 
 	if (m_fadeFrame > kFadeFrame)
 	{
-		m_mgr.GetScene()->ChangeSceneWithClear(std::make_shared<TitleScene>(m_mgr), 1.0f);
+		m_mgr.GetScene()->ChangeSceneWithClear(std::make_shared<TitleScene>(m_mgr, input), 1.0f);
 		return;
 	}
 }
@@ -136,6 +159,10 @@ void OtherOptionScene::NormalUpdate(Input& input)
 
 		case kWindowsMode:
 			Application::GetInstance().ChangeWindows();
+			break;
+
+		case kExplanation:
+			m_optionScn->ChangeScene(std::make_shared<ExplanationScene>(m_mgr, input, m_optionScn));
 			break;
 
 		case kRightsNotation:
@@ -198,6 +225,8 @@ void OtherOptionScene::NormalDraw()
 
 		y += kMenuLineInterval;
 	}
+
+	DrawWave("OK", kSelectWave, kSelectWaveNum);
 }
 
 void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int color)
@@ -211,5 +240,45 @@ void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int
 	else
 	{
 		DrawStringToHandle(500, y, L"フルスクリーン", color, handle);
+	}
+}
+
+void OtherOptionScene::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+{
+	if (!m_isWaveDraw) return;
+	m_isWaveDraw = false;
+
+	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		break;
+	}
+
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int x = 1064;
+
+	for (int i = 0; i < num; i++)
+	{
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int y = 600 + add;
+
+
+		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
+		x += 24;
 	}
 }

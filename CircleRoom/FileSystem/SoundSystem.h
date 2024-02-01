@@ -18,7 +18,8 @@ public:
 	/// </summary>
 	/// <param name="soundHnadle">BGMハンドル</param>
 	/// <param name="isLoop">ループするか(デフォでtrue)</param>
-	void PlayBgm(int soundHnadle, bool isLoop = true);
+	/// /// <param name="isSoundPosSave">再生場所の保存後の再生か</param>
+	void PlayBgm(int soundHnadle, bool isLoop = true, bool isSoundPosSave = false);
 
 	/// <summary>
 	/// Fade設定ありBGM
@@ -38,7 +39,8 @@ public:
 	/// 音声の停止
 	/// </summary>
 	/// /// <param name="soundHandle">ハンドル</param>
-	void Stop(int soundHandle = -1);
+	/// /// <param name="isSoundPosSave">再生場所の保存を行うか</param>
+	void Stop(int soundHandle = -1, bool isSoundPosSave = false);
 
 	/// <summary>
 	/// BGMのボリュームを変更する
@@ -83,5 +85,8 @@ private:
 	int m_nowPlayBgm;
 	// 最後に鳴らしたSE
 	int m_soundHandle;
+
+	// 
+	LONGLONG m_soundSavePos;
 };
 

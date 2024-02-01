@@ -12,7 +12,8 @@ SoundSystem::SoundSystem() :
 	m_bgmVolume(kMaxVolume),
 	m_seVolume(kMaxVolume),
 	m_nowPlayBgm(-1),
-	m_soundHandle(-1)
+	m_soundHandle(-1),
+	m_soundSavePos(0)
 {
 }
 
@@ -32,7 +33,7 @@ void SoundSystem::End()
 	GameManager::GetInstance().UpdateVolume({ m_bgmVolume, m_seVolume });
 }
 
-void SoundSystem::PlayBgm(int soundHandle, bool isLoop)
+void SoundSystem::PlayBgm(int soundHandle, bool isLoop, bool isSoundPosSave)
 {
 #ifdef _DEBUG
 	auto result = CheckSoundMem(soundHandle);
@@ -48,8 +49,15 @@ void SoundSystem::PlayBgm(int soundHandle, bool isLoop)
 	// 音量の変更
 	ChangeNextPlayVolumeSoundMem(m_bgmVolume, soundHandle);
 
-	// ループがONの場合はBGMが終了次第先頭に戻る
-	PlaySoundMem(soundHandle, DX_PLAYTYPE_BACK, isLoop);
+	if (isSoundPosSave)
+	{
+		SetSoundCurrentTime(m_soundSavePos, soundHandle);
+		PlaySoundMem(soundHandle, DX_PLAYTYPE_BACK, isLoop);
+	}
+	else
+	{
+		PlaySoundMem(soundHandle, DX_PLAYTYPE_BACK, isLoop);
+	}
 
 	m_nowPlayBgm = soundHandle;
 }
@@ -85,7 +93,7 @@ void SoundSystem::PlaySe(int seHandle)
 	m_soundHandle = seHandle;
 }
 
-void SoundSystem::Stop(int soundHandle)
+void SoundSystem::Stop(int soundHandle, bool isSoundPosSave)
 {
 	if (soundHandle < 0)
 	{
@@ -93,6 +101,12 @@ void SoundSystem::Stop(int soundHandle)
 	}
 
 	StopSoundMem(soundHandle);
+
+	// 音声再生場所の保存
+	if (isSoundPosSave)
+	{
+		m_soundSavePos = GetSoundCurrentPosition(soundHandle);
+	}
 }
 
 void SoundSystem::ChangeBgmVol(int val)

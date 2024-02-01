@@ -9,7 +9,6 @@ enum Explanation
 	kOperation,	// 操作説明
 	kClear,		// クリア方法
 	kPlay,		// 実プレイ
-	kClearAnother,	// クリア後説明(ステージ移動とチュートリアル終了)
 	kEnd,		// 説明終了
 };
 
@@ -40,7 +39,8 @@ private:
 private:
 	UpdateFunc_t m_updateFunc;
 
-	std::array<std::shared_ptr<FileBase>, kEnd> m_handle;
+	int  m_index;
+	std::array<std::shared_ptr<FileBase>, 5> m_handle;
 
 	Explanation m_explanation;
 	int m_createFrame;

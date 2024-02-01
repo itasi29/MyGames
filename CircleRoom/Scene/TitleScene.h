@@ -7,6 +7,8 @@ class FileBase;
 class SoundSystem;
 class EnemyBase;
 class BossBase;
+class BottansFile;
+class KeyFile;
 struct size;
 
 /// <summary>
@@ -15,7 +17,7 @@ struct size;
 class TitleScene : public Scene
 {
 public:
-	TitleScene(GameManager& mgr);
+	TitleScene(GameManager& mgr, Input& input);
 	~TitleScene();
 	virtual void Update(Input& input);
 	virtual void Draw();
@@ -37,11 +39,23 @@ private:
 	// ボスの生成関数
 	void CreateBoss();
 
-private:
 	/// <summary>
 	/// ロゴの描画
 	/// </summary>
 	void DrawLogo();
+
+	/// <summary>
+	/// 選択等の文字・画像描画
+	/// </summary>
+	/// /// <param name="cmd">コマンド名</param>
+	/// <param name="str">ウェーブさせる文字列</param>
+	/// <param name="num">文字列数</param>
+	void DrawWave(const char* const cmd, const wchar_t* const str[], int num);
+
+	/// <summary>
+	/// デモムービーの再生処理
+	/// </summary>
+	void PlayDemoMove(Input& input);
 
 private:
 	// 更新メンバ関数ポインタ
@@ -54,6 +68,7 @@ private:
 	std::shared_ptr<FileBase> m_logo;
 	std::shared_ptr<FileBase> m_bg;
 	std::shared_ptr<FileBase> m_frame;
+	std::shared_ptr<FileBase> m_startFrame;
 
 	// タイトルで動く敵
 	std::list<std::shared_ptr<EnemyBase>> m_enemy;
@@ -65,6 +80,9 @@ private:
 	// 敵の生成タイミング
 	int m_createEnemyTiming;
 	int m_createBossTiming;
+
+	// 動画再生フレーム
+	int m_playDemoMoveFrame;
 
 	// 全体フレーム
 	int m_fadeFrame;
@@ -85,5 +103,15 @@ private:
 	std::shared_ptr<FileBase> m_selectSe;
 	std::shared_ptr<FileBase> m_cursorUpSe;
 	std::shared_ptr<FileBase> m_cursorDownSe;
+
+	// 文字ウェーブ用の角度
+	float m_waveAngle;
+	// ウエーブのやつ描画するか
+	bool m_isWaveDraw;
+
+	std::shared_ptr<BottansFile> m_bt;
+	std::shared_ptr<KeyFile> m_key;
+
+	const Input& m_input;
 };
 

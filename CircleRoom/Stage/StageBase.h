@@ -263,9 +263,12 @@ private:
 	void DrawWall();
 
 	/// <summary>
-	/// 選択等の画像の描画
+	/// 選択等の文字・画像描画
 	/// </summary>
-	void DrawImage();
+	/// /// <param name="cmd">コマンド名</param>
+	/// <param name="str">ウェーブさせる文字列</param>
+	/// <param name="num">文字列数</param>
+	void DrawWave(const char* const cmd, const wchar_t* const str[], int num);
 
 	int GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const;
 
@@ -330,9 +333,12 @@ protected:
 
 	// 文字ウェーブ用の角度
 	float m_waveAngle;
+	// ウエーブのやつ描画するか
+	bool m_isWaveDraw;
 
 	// ベストタイム点滅
 	bool m_isUpdateBestTime;
+
 
 	// 
 	std::shared_ptr<BottansFile> m_bt;

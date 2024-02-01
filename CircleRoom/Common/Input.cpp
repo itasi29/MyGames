@@ -35,34 +35,32 @@ Input::Input() :
 {
     // メニュー関連
     // 見せるもの
-    m_commandTable["OK"] = { {InputType::keybd, KEY_INPUT_RETURN} ,
-                             {InputType::pad,   PAD_INPUT_A} };    
-    m_commandTable["cancel"] = { {InputType::keybd, KEY_INPUT_ESCAPE} ,
-                             {InputType::pad,   PAD_INPUT_B} };     // 
-    m_commandTable["pause"] = { {InputType::keybd,  KEY_INPUT_P},
-                                {InputType::pad,    PAD_INPUT_R} }; // スタートボタン
-    m_commandTable["keyconf"] = { {InputType::keybd,  KEY_INPUT_K},
-                                {InputType::pad,    PAD_INPUT_L} }; // キーコンフィグ
+    m_commandTable["OK"] = { {InputType::keybd, { KEY_INPUT_X } } ,
+                             {InputType::pad,   { PAD_INPUT_A } } };
+    m_commandTable["cancel"] = { {InputType::keybd, { KEY_INPUT_C } } ,
+                             {InputType::pad,   { PAD_INPUT_B } } };     // 
+    m_commandTable["pause"] = { {InputType::keybd,  { KEY_INPUT_ESCAPE } },
+                                {InputType::pad,    { PAD_INPUT_R } } }; // スタートボタン
     // 見せないもの
-    m_commandTable["optionLeft"] = { {InputType::keybd, KEY_INPUT_Q},
-                                     {InputType::pad,   PAD_INPUT_5} };
-    m_commandTable["optionRight"] = { {InputType::keybd, KEY_INPUT_E},
-                                     {InputType::pad,   PAD_INPUT_6} };
+    m_commandTable["optionLeft"] = { {InputType::keybd, { KEY_INPUT_Q } },
+                                     {InputType::pad,   { PAD_INPUT_5 } } };
+    m_commandTable["optionRight"] = { {InputType::keybd, { KEY_INPUT_E } },
+                                     {InputType::pad,   { PAD_INPUT_6 } } };
 
     // ゲーム中関連
     // 見せるもの
-    m_commandTable["dash"] = { {InputType::keybd,  KEY_INPUT_SPACE},
-                                {InputType::pad,    PAD_INPUT_A} }; // キーコンフィグ
+    m_commandTable["dash"] = { {InputType::keybd,  { KEY_INPUT_SPACE } },
+                                {InputType::pad,    { PAD_INPUT_A } } }; // キーコンフィグ
 
     // 見せないもの
-    m_commandTable["up"] = { {InputType::keybd,  KEY_INPUT_UP},
-                             {InputType::pad,    PAD_INPUT_UP} };
-    m_commandTable["down"] = { {InputType::keybd,  KEY_INPUT_DOWN},
-                             {InputType::pad,    PAD_INPUT_DOWN} };
-    m_commandTable["left"] = { {InputType::keybd,  KEY_INPUT_LEFT},
-                             {InputType::pad,    PAD_INPUT_LEFT} };
-    m_commandTable["right"] = { {InputType::keybd,  KEY_INPUT_RIGHT},
-                             {InputType::pad,    PAD_INPUT_RIGHT} };
+    m_commandTable["up"] = { {InputType::keybd,  { KEY_INPUT_UP, KEY_INPUT_W } },
+                             {InputType::pad,    { PAD_INPUT_UP } } };
+    m_commandTable["down"] = { {InputType::keybd,  { KEY_INPUT_DOWN , KEY_INPUT_S }},
+                             {InputType::pad,    { PAD_INPUT_DOWN } } };
+    m_commandTable["left"] = { {InputType::keybd,  { KEY_INPUT_LEFT , KEY_INPUT_A }},
+                             {InputType::pad,    { PAD_INPUT_LEFT  } } };
+    m_commandTable["right"] = { {InputType::keybd,  { KEY_INPUT_RIGHT , KEY_INPUT_D }},
+                             {InputType::pad,    { PAD_INPUT_RIGHT } } };
 
     m_exclusiveKeyConfigCommands = {"optionLeft", "optionRight", "up", "down", "left", "right"};
 
@@ -153,21 +151,29 @@ void Input::Update()
             // キーボードのチェック
             if (hardIO.first == InputType::keybd)
             {
-                if (keystate[hardIO.second])
+                for (const auto& code : hardIO.second)
                 {
-                    input = true;
-                    m_lastType = hardIO.first;
-                    break;
+                    if (keystate[code])
+                    {
+                        input = true;
+                        m_lastType = hardIO.first;
+                        break;
+                    }
                 }
+                if (input) break;
             }
             else if (hardIO.first == InputType::pad)
             {
-                if (padstate & hardIO.second)
+                for (const auto& code : hardIO.second)
                 {
-                    input = true;
-                    m_lastType = hardIO.first;
-                    break;
+                    if (padstate & code)
+                    {
+                        input = true;
+                        m_lastType = hardIO.first;
+                        break;
+                    }
                 }
+                if (input) break;
             }
         }
     }
@@ -255,7 +261,7 @@ bool Input::IsReepat(const char* command, int& frame, int frameInterval) const
 
 std::wstring Input::GetHardDataName(const std::string cmd, InputType type) const
 {
-    return m_corrTable.at(type).at(m_commandTable.at(cmd).at(type));
+    return  m_corrTable.at(type).at(m_commandTable.at(cmd).at(type)[0]);
 }
 
 void Input::Save(const std::string& path)
@@ -281,10 +287,17 @@ void Input::Save(const std::string& path)
         for (const auto& input : InputData)
         {
             const auto& type = input.first; // キーボードかパッドか
-            const auto& state = input.second;   // 実際の入力ID
-
             fwrite(&type, sizeof(type), 1, fp);
-            fwrite(&state, sizeof(state), 1, fp);
+
+            // サイズの読み込み
+            uint8_t size = static_cast<uint8_t>(input.second.size());
+            fwrite(&size, sizeof(size), 1, fp);
+
+            for (const auto& state : input.second)
+            {
+                // 実際の入力ID
+                fwrite(&state, sizeof(state), 1, fp);
+            }
         }
     }
 
@@ -319,10 +332,20 @@ void Input::Load(const std::wstring& path)
         for (int j = 0; j < inputTypeSize; j++) // 取得した種別数だけループする
         {
             InputType type;
-            int state;
+            uint8_t size;
+            std::vector<int> state;
 
             FileRead_read(&type, sizeof(type), handle); // 種別を読みこむ
-            FileRead_read(&state, sizeof(state), handle);   // 実際の入力ステート情報を読み込む
+
+            // サイズ読み込み
+            FileRead_read(&size, sizeof(size), handle);
+            state.resize(size);
+
+            for (int i = 0; i < size; i++)
+            {
+                // 実際の入力ステート情報を読み込む
+                FileRead_read(&state[i], sizeof(state[i]), handle);
+            }
 
             command[type] = state;  // コマンドに反映させる
         }

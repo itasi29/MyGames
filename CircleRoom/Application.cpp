@@ -8,8 +8,6 @@
 #include "Scene/SceneManager.h"
 #include "Scene/TitleScene.h"
 
-#include "Scene/TitleScene.h"
-
 #ifdef _DEBUG
 #include "Scene/DebugScene.h"
 #endif
@@ -76,13 +74,14 @@ void Application::Run()
 {
     {
         GameManager& manager = GameManager::GetInstance();
+        Input input;
         
         manager.Init();
 
 #ifdef _DEBUG
         manager.GetScene()->ChangeScene(std::make_shared<DebugScene>(manager));
 #else
-        manager.GetScene()->ChangeScene(std::make_shared<TitleScene>(manager));
+        manager.GetScene()->ChangeScene(std::make_shared<TitleScene>(manager, input));
 #endif
 
 #ifdef _DEBUG
@@ -90,7 +89,6 @@ void Application::Run()
         int i = 0;
 #endif
 
-        Input input;
         while (ProcessMessage() != -1)
         {
             // 新しいゲームループを始めた時間を記憶

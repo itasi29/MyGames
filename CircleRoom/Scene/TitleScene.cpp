@@ -13,6 +13,8 @@
 #include "FileSystem/SoundSystem.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
+#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 
 #include "GamePlayingScene.h"
 #include "OptionScene.h"
@@ -40,7 +42,8 @@ namespace
 	// フレームの色
 	constexpr unsigned int kFrameColor = 0xd2001a;
 	// 通常文字列の色
-	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	//constexpr unsigned int kWhiteColor = 0xf0ece5;
+	constexpr unsigned int kWhiteColor = 0x161A30;
 	// 選択時文字列の色
 	constexpr unsigned int kYellowColor = 0xffde00;
 
@@ -49,6 +52,9 @@ namespace
 	constexpr int kCreateBoss = 60 * 10;
 	// タイミングの振れ幅
 	constexpr int kCreateSwingWidth = static_cast<int>(60 * 1.5);
+
+	// 動画再生までの待機フレーム
+	constexpr int kPlayDemoMoveFrame = 60 * 15;
 
 	// メニューラインの数
 	constexpr int kMenuLineNum = 3;
@@ -88,18 +94,31 @@ namespace
 		L"続きから",
 		L"初めから"
 	};
+
+	// スタート文字のウェーブスピード
+	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
+	// ウェーブの間隔
+	constexpr float kWaveInterval = DX_PI_F / 15.0f;
+
+	// ウェーブ文字列
+	int kWaveNum = 4;
+	const wchar_t* const kWave[] = { L"け", L"っ", L"て", L"い" };
 }
 
-TitleScene::TitleScene(GameManager& mgr) :
+TitleScene::TitleScene(GameManager& mgr, Input& input) :
 	Scene(mgr),
+	m_input(input),
 	m_createEnemyFrame(0),
 	m_createBossFrame(0),
 	m_createEnemyTiming(0),
 	m_createBossTiming(0),
+	m_playDemoMoveFrame(0),
 	m_fadeFrame(kFadeFrame),
 	m_currentLinePos(0),
 	m_logoAngle(0),
-	m_bgFrame(0)
+	m_bgFrame(0),
+	m_waveAngle(DX_PI_F),
+	m_isWaveDraw(false)
 {
 	m_updateFunc = &TitleScene::FadeInUpdate;
 	m_drawFunc = &TitleScene::FadeDraw;
@@ -108,12 +127,16 @@ TitleScene::TitleScene(GameManager& mgr) :
 	m_logo = file->LoadGraphic(L"logo.png");
 	m_bg = file->LoadGraphic(L"BG/bg.png");
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
+	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 
 	m_soundSys = mgr.GetSound();
 	m_bgm = file->LoadSound(L"Bgm/title.mp3");
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+
+	m_bt = std::make_shared<BottansFile>(file);
+	m_key = std::make_shared<KeyFile>(file);
 }
 
 TitleScene::~TitleScene()
@@ -146,6 +169,9 @@ void TitleScene::Update(Input& input)
 			return !boss->IsExsit();
 		}
 	);
+
+	m_isWaveDraw = true;
+	m_waveAngle -= kWaveSpeed;
 
 	(this->*m_updateFunc)(input);
 }
@@ -199,8 +225,15 @@ void TitleScene::NormalUpdate(Input& input)
 		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
 
+	if (input.IsTriggered("pause"))
+	{
+		m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input, false));
+		return;
+	}
+
 	if (input.IsTriggered("OK"))
 	{
+		m_playDemoMoveFrame = 0;
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 		// 0番目のときはスタート処理
 		if (m_currentLinePos == 0)
@@ -241,6 +274,7 @@ void TitleScene::NormalUpdate(Input& input)
 
 	CreateEnemy();
 	CreateBoss();
+	PlayDemoMove(input);
 }
 
 void TitleScene::StartSelectUpdate(Input& input)
@@ -297,6 +331,7 @@ void TitleScene::StartSelectUpdate(Input& input)
 
 	CreateEnemy();
 	CreateBoss();
+	PlayDemoMove(input);
 }
 
 void TitleScene::FadeOutUpdate(Input& input)
@@ -355,6 +390,8 @@ void TitleScene::NormalDraw()
 
 		y += kMenuLineInterval;
 	}
+
+	DrawWave("OK", kWave, kWaveNum);
 }
 
 void TitleScene::StartSelectDraw()
@@ -396,6 +433,8 @@ void TitleScene::StartSelectDraw()
 
 		y += kMenuLineInterval;
 	}
+
+	DrawWave("OK", kWave, kWaveNum);
 }
 
 void TitleScene::CreateEnemy()
@@ -494,4 +533,73 @@ void TitleScene::DrawLogo()
 	int y = kLogoDrawY + static_cast<int>(kLogoShitY * sinf(m_logoAngle));
 
 	DrawRotaGraph(kLogoDrawX, y, 1.0, 0.0, m_logo->GetHandle(), true);
+}
+
+void TitleScene::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+{
+	if (!m_isWaveDraw) return;
+	m_isWaveDraw = false;
+
+	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		break;
+	}
+
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int x = 1064;
+
+	for (int i = 0; i < num; i++)
+	{
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int y = 600 + add;
+
+
+		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
+		x += 24;
+	}
+}
+
+void TitleScene::PlayDemoMove(Input& input)
+{
+	// 何かしらのボタン・キーが押されたらデモムービーまでの時間を初期化
+	if (input.IsAnyTriggerd())
+	{
+		m_playDemoMoveFrame = 0;
+		return;
+	}
+
+	m_playDemoMoveFrame++;
+	if (m_playDemoMoveFrame > kPlayDemoMoveFrame)
+	{
+		m_soundSys->Stop(m_bgm->GetHandle(), true);
+		// ここに入ったらボタンが何かしら押されるまでデモムービーを繰り返す
+		while (true)
+		{
+			PlayMovie(L"test.mp4", 1, DX_MOVIEPLAYTYPE_BCANCEL);
+			input.Update();
+			if (input.IsAnyTriggerd())
+			{
+				m_soundSys->PlayBgm(m_bgm->GetHandle(), false, true);
+				break;
+			}
+		}
+
+		m_playDemoMoveFrame = 0;
+	}
 }
