@@ -17,9 +17,9 @@ namespace
 {
 	// 最大HP
 #ifdef _DEBUG
-	constexpr int kMaxHp = 2;
+	constexpr int kMaxHp = 40;
 #else
-	constexpr int kMaxHp = 10;
+	constexpr int kMaxHp = 40;
 #endif
 
 	// FIXME:確かDxLibでπが定義されてたはずだけど忘れたから自分で定義しておく
@@ -137,7 +137,7 @@ void BossArmored::Init(const Vec2& pos, bool isStart)
 	m_conversionVec = m_vec * kSpeed;
 
 	m_objects.clear();
-	m_objects.push_back(std::make_shared<BossDamageObject>(m_pos));
+	m_objects.push_back(std::make_shared<BossDamageObject>(m_pos, this));
 }
 
 bool BossArmored::OnAttack(bool isDash, const Collision& col)
@@ -146,39 +146,55 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 	if (isDash) return false;
 	bool isHit = false;
 
+	int objAdd = 0;
+
 	for (const auto& obj : m_objects)
 	{
+		if (obj->IsPickUp())
+		{
+#if false
+			if (obj->IsEnd())
+			{
+				auto& sound = GameManager::GetInstance().GetSound();
+				sound->PlaySe(m_damageSe->GetHandle());
+
+				m_onDamagetFrame = kOnDamageFrame;
+				m_drawOnDamagetX = static_cast<int>(m_pos.x);
+				m_drawOnDamagetY = static_cast<int>(m_pos.y);
+
+				m_radian = 0;
+
+				isHit = true;
+
+				m_hp--;
+				m_hpWidth = static_cast<int>(kHpBarWidth * (m_hp / static_cast<float>(m_maxHp)));
+
+				// HPがゼロになったら死亡とする
+				if (m_hp <= 0)
+				{
+					// バーの描画問題でHPを0にしておく
+					m_hp = 0;
+					m_isExsit = false;
+					OnDeath();
+
+					return isHit;
+				}
+
+				GameManager& mgr = GameManager::GetInstance();
+				mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
+				HitStop();
+
+			}
+#endif
+			continue;
+		}
+
 		if (col.IsCollsion(obj->GetRect()))
 		{
-			auto& sound = GameManager::GetInstance().GetSound();
-			sound->PlaySe(m_damageSe->GetHandle());
+			obj->OnUse();
 
-			m_onDamagetFrame = kOnDamageFrame;
-			m_drawOnDamagetX = static_cast<int>(m_pos.x);
-			m_drawOnDamagetY = static_cast<int>(m_pos.y);
+			objAdd++;
 
-			m_radian = 0;
-
-			m_hp--;
-			m_hpWidth = static_cast<int>(kHpBarWidth * (m_hp / static_cast<float>(m_maxHp)));
-
-			obj->Used();
-
-			isHit = true;
-
-			// HPがゼロになったら死亡とする
-			if (m_hp <= 0)
-			{
-				// バーの描画問題でHPを0にしておく
-				m_hp = 0;
-				m_isExsit = false;
-				OnDeath();
-
-				return isHit;
-			}
-			GameManager& mgr = GameManager::GetInstance();
-			mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
-			HitStop();
 			break;
 		}
 	}
@@ -187,16 +203,48 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 	m_objects.remove_if(
 		[](const auto& obj)
 		{
-			return obj->IsUsed();
+			return obj->IsEnd();
 		});
 
-	while (1)
+	for (int i = 0; i < objAdd; i++)
 	{
-		// ダメージオブジェクトの量が規定値以上であれば終了
-		if (m_objects.size() >= kDamageObjectNum) return isHit;
-
-		m_objects.push_back(std::make_shared<BossDamageObject>(m_size, m_fieldSize));
+		m_objects.push_back(std::make_shared<BossDamageObject>(m_size, m_fieldSize, this));
 	}
+
+	return isHit;
+}
+
+void BossArmored::OnDamage()
+{
+	auto& sound = GameManager::GetInstance().GetSound();
+	sound->PlaySe(m_damageSe->GetHandle());
+
+	m_stage->UpTime();
+
+	m_onDamagetFrame = kOnDamageFrame;
+	m_drawOnDamagetX = static_cast<int>(m_pos.x);
+	m_drawOnDamagetY = static_cast<int>(m_pos.y);
+
+	m_radian = 0;
+
+	m_hp--;
+	m_hpWidth = static_cast<int>(kHpBarWidth * (m_hp / static_cast<float>(m_maxHp)));
+
+	// HPがゼロになったら死亡とする
+	if (m_hp <= 0)
+	{
+		// バーの描画問題でHPを0にしておく
+		m_hp = 0;
+		m_isExsit = false;
+		OnDeath();
+
+		return;
+	}
+
+	GameManager& mgr = GameManager::GetInstance();
+	mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
+	//HitStop();
+	return;
 }
 
 void BossArmored::StartUpdate()

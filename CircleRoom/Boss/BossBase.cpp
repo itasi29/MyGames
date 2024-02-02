@@ -72,7 +72,7 @@ namespace
 	constexpr int kWallEffectSlide = 32;
 
 	// HitStopフレーム
-	constexpr int kHitStopFrame = 3;
+	constexpr int kHitStopFrame = 1;
 
 	/*死亡時の演出について*/
 	// 演出数

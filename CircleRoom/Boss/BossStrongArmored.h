@@ -8,6 +8,7 @@ public:
 	~BossStrongArmored();
 
 	bool OnAttack(bool isDash, const Collision& col) override;
+	void OnDamage() override;
 
 private:
 	void NormalDraw() const override;

@@ -30,6 +30,8 @@ public:
 	/// <returns>true: ダメージを与えた / false:ダメージを与えていない</returns>
 	virtual bool OnAttack(bool isDash, const Collision& col) override;
 
+	virtual void OnDamage() override;
+
 protected:
 	// 更新関数
 	void StartUpdate() override;

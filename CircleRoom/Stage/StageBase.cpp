@@ -290,7 +290,11 @@ void StageBase::UpdatePlaying(Input& input)
 	{
 		m_boss->Update();
 		// ボスにダメージを与えたら時間を増やす
+#if false
 		m_isUpdateTime = m_boss->OnAttack(playerIsDash, m_player->GetObjRect());
+#else
+		m_boss->OnAttack(playerIsDash, m_player->GetObjRect());
+#endif
 
 		// ボスの死亡処理
 		if (!m_boss->IsExsit())

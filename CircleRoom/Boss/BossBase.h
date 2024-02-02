@@ -68,6 +68,8 @@ public:
 	/// </summary>
 	virtual bool OnAttack(bool isDash, const Collision& rect);
 
+	virtual void OnDamage() = 0;
+
 protected:
 	/// <summary>
 	/// •Ç‚É“–‚½‚Á‚½‚ç”½ŽË‚³‚¹‚é

@@ -64,6 +64,11 @@ public:
 	/// <returns>ステージ名</returns>
 	std::string GetStageName() const { return m_stageName; }
 
+	/// <summary>
+	/// 特定条件でのタイムの上昇
+	/// </summary>
+	virtual void UpTime() {}
+
 protected:
 	using UpdateFunc_t = void (StageBase::*)(Input&);
 	using DrawFunc_t = void (StageBase::*)();

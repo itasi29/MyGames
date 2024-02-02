@@ -15,7 +15,7 @@
 
 namespace
 {
-	constexpr float kVersion = 1.1f;
+	constexpr float kVersion = 1.2f;
 
 	// ファイル用
 	struct StageInfHeader

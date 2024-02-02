@@ -8,7 +8,7 @@ using namespace std;
 
 namespace
 {
-    constexpr float kVersion = 1.1f;
+    constexpr float kVersion = 1.2f;
 
     struct KeyConfHeader
     {

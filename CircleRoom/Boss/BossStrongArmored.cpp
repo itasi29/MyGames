@@ -78,26 +78,41 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 	if (isDash) return false;
 	bool isHit = false;
 
+	int objAdd = 0;
+
 	for (const auto& obj : m_objects)
 	{
+		if (obj->IsPickUp())
+		{
+#if false
+			if (obj->IsEnd())
+			{
+				auto& sound = GameManager::GetInstance().GetSound();
+				sound->PlaySe(m_damageSe->GetHandle());
+
+				m_onDamagetFrame = kOnDamageFrame;
+				m_drawOnDamagetX = static_cast<int>(m_pos.x);
+				m_drawOnDamagetY = static_cast<int>(m_pos.y);
+
+				m_radian = 0;
+
+				GameManager& mgr = GameManager::GetInstance();
+				mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
+				HitStop();
+
+				isHit = true;
+			}
+#endif
+			continue;
+		}
+
 		if (col.IsCollsion(obj->GetRect()))
 		{
-			auto& sound = GameManager::GetInstance().GetSound();
-			sound->PlaySe(m_damageSe->GetHandle());
+			
+			objAdd++;
 
-			m_onDamagetFrame = kOnDamageFrame;
-			m_drawOnDamagetX = static_cast<int>(m_pos.x);
-			m_drawOnDamagetY = static_cast<int>(m_pos.y);
+			obj->OnUse();
 
-			m_radian = 0;
-
-			obj->Used();
-
-			isHit = true;
-
-			GameManager& mgr = GameManager::GetInstance();
-			mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
-			HitStop();
 			break;
 		}
 	}
@@ -106,16 +121,35 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 	m_objects.remove_if(
 		[](const auto& obj)
 		{
-			return obj->IsUsed();
+			return obj->IsEnd();
 		});
 
-	while (1)
+	for (int i = 0; i < objAdd; i++)
 	{
-		// ダメージオブジェクトの量が規定値以上であれば終了
-		if (m_objects.size() >= kDamageObjectNum) return isHit;
-
-		m_objects.push_back(std::make_shared<BossDamageObject>(m_size, m_fieldSize));
+		m_objects.push_back(std::make_shared<BossDamageObject>(m_size, m_fieldSize, this));
 	}
+
+	return isHit;
+}
+
+void BossStrongArmored::OnDamage()
+{
+	auto& sound = GameManager::GetInstance().GetSound();
+	sound->PlaySe(m_damageSe->GetHandle());
+
+	m_stage->UpTime();
+
+	m_onDamagetFrame = kOnDamageFrame;
+	m_drawOnDamagetX = static_cast<int>(m_pos.x);
+	m_drawOnDamagetY = static_cast<int>(m_pos.y);
+
+	m_radian = 0;
+
+	GameManager& mgr = GameManager::GetInstance();
+	mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
+//	HitStop();
+
+	return;
 }
 
 void BossStrongArmored::NormalDraw() const

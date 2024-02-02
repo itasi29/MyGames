@@ -10,6 +10,7 @@ public:
 	void Init() override;
 	void StartCheck() override;
 	void ChangeStage(Input& input) override;
+	void UpTime() override;
 
 private:
 	void CheckStageConditions() override;

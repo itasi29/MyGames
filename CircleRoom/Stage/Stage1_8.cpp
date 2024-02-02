@@ -121,6 +121,11 @@ void Stage1_8::ChangeStage(Input& input)
 	}
 }
 
+void Stage1_8::UpTime()
+{
+	m_frame += 15;
+}
+
 void Stage1_8::CheckStageConditions()
 {
 	CheckConditionsTime(kRightStName, kRightExsitTime, L"‰E");
@@ -192,10 +197,4 @@ void Stage1_8::CreateStrongBoss()
 
 void Stage1_8::UpdateTime()
 {
-	if (m_isUpdateTime)
-	{
-		// ˆê•b’Ç‰Á
-		m_frame += 60;
-		m_isUpdateTime = false;
-	}
 }
