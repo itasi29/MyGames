@@ -1,5 +1,5 @@
 #include <DxLib.h>
-#include <string>
+#include <sstream>
 
 #include "StringUtility.h"
 #include "Vec2.h"
@@ -38,17 +38,14 @@ namespace
 
 	// ステージ枠の大きさ
 	constexpr int kStageSize = 64;
-	// ステージ枠とフレームの差
-	// MEMO:後で画像に変更するためおそらく消す
-	constexpr int kStageFrameSize = 14;
 	// フレームの太さ
 	constexpr int kStageFrameThickness = 4;
 	// ステージ間の空白
 	constexpr int kStageMargine = 128;
 
 	// スタート位置
-	constexpr int kStartX = 400;
-	constexpr int kStartY = 216;
+	constexpr int kStartX = 512;
+	constexpr int kStartY = 256;
 
 	// 情報文字列描画位置
 	constexpr int kDrawStringX = 200;
@@ -79,6 +76,21 @@ StageSelectScene::StageSelectScene(GameManager& mgr) :
 	m_frame = file->LoadGraphic(L"UI/selectFrame.png");
 	m_nowPos = file->LoadGraphic(L"UI/nowPos.png");
 	m_lock = file->LoadGraphic(L"UI/lock.png");
+
+	for (int x = 0; x < kRowNum; x++)
+	{
+		for (int y = 0; y < kLineNum; y++)
+		{
+			auto& name = kStageStr[y][x];
+			std::wostringstream oss1;
+			oss1 << L"UI/" << name.c_str() << L".png";
+			m_stage[name][0] = file->LoadGraphic(oss1.str());
+
+			std::wostringstream oss2;
+			oss2 << L"UI/n" << name.c_str() << L".png";
+			m_stage[name][1] = file->LoadGraphic(oss2.str());
+		}
+	}
 
 	m_selectSe = file->LoadSound(L"Se/select.mp3");
 }
@@ -176,6 +188,7 @@ void StageSelectScene::Draw()
 
 		for (int y = 0; y < kLineNum; y++)
 		{
+			int drawY = static_cast<int>(kStartY + kStageMargine * y);
 			// 現在選択しているステージ
 			const std::string& stageName = kStageStr[y][x];
 			// フレームの描画
@@ -185,7 +198,7 @@ void StageSelectScene::Draw()
 				float rate = fabsf(static_cast<float>(frame)) / 40.0f;
 				int alpha = static_cast<int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-				DrawGraph(drawX - kStageFrameSize, kStartY + kStageMargine * y - kStageFrameSize, m_frame->GetHandle(), true);
+				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_frame->GetHandle(), true);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 
@@ -196,30 +209,25 @@ void StageSelectScene::Draw()
 			// ステージの描画が無しの場合は以下のは描画しない
 			if (kStageStr[y][x] == "None") continue;
 
-			int drawY = static_cast<int>(kStartY + kStageMargine * y);
 
-			if ((stageName) == m_mgr.GetStage()->GetStageName())
-			{
-				DrawRotaGraph(static_cast<int>(drawX + kStageSize * 0.5f), static_cast<int>(drawY + kStageSize * 0.5f),
-					1.0, 0.0, m_nowPos->GetHandle(), true);
-
-			}
 
 			// ステージの描画
-			// MEMO:アンチエイリアス付きにすると線の太さを指定可能
 			if (m_mgr.GetStage()->IsClearStage(stageName))
 			{
-				DrawBoxAA(static_cast<float>(drawX), static_cast<float>(drawY),
-					static_cast<float>(drawX + kStageSize), static_cast<float>(drawY + kStageSize),
-					0xffffff, false, kStageFrameThickness);
+				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_stage[stageName][0]->GetHandle(), true);
 			}
 			else
 			{
-				DrawBoxAA(static_cast<float>(drawX), static_cast<float>(drawY),
-					static_cast<float>(drawX + kStageSize), static_cast<float>(drawY + kStageSize),
-					0xff0000, false, kStageFrameThickness);
-
+				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_stage[stageName][1]->GetHandle(), true);
 				DrawGraph(drawX + 16, drawY + 12, m_lock->GetHandle(), true);
+			}
+
+			// 現在いるステージの描画
+			if ((stageName) == m_mgr.GetStage()->GetStageName())
+			{
+				DrawRotaGraph(static_cast<int>(drawX), static_cast<int>(drawY),
+					1.0, 0.0, m_nowPos->GetHandle(), true);
+
 			}
 		}
 	}

@@ -175,9 +175,13 @@ void StageTutorial::UpdatePlaying(Input& input)
 
 		// フレームの初期化
 		m_waitFrame = 0;
+		m_waveAngle = 0.0;
 
 		// ベストタイムの更新
-		m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame);
+		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
+		{
+			m_isUpdateBestTime = true;
+		}
 
 		// クリアしているかの確認
 		CheckStageConditions();

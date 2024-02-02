@@ -307,7 +307,7 @@ protected:
 	float m_fieldSize;
 
 	// ステージ変更可能までの待機時間
-	const int kWaitChangeFrame = 10;
+	const int kWaitChangeFrame = 30;
 	const Vec2 m_centerPos;
 
 	// ステージ名

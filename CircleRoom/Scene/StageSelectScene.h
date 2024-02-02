@@ -1,5 +1,8 @@
 #pragma once
 #include <vector>
+#include <string>
+#include <array>
+#include <unordered_map>
 #include "Scene.h"
 
 class FileBase;
@@ -32,6 +35,7 @@ private:
 	std::shared_ptr<FileBase> m_frame;
 	std::shared_ptr<FileBase> m_nowPos;
 	std::shared_ptr<FileBase> m_lock;
+	std::unordered_map<std::string, std::array<std::shared_ptr<FileBase>, 2>> m_stage;
 	// ‰¹ŠÖŒW
 	std::shared_ptr<SoundSystem> m_soundSys;
 	// ‘I‘ðŽžSe
