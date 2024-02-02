@@ -49,6 +49,8 @@ namespace
 
 	// 条件の描画基準位置
 	constexpr int kConditionsPosX = 20;
+	// 条件達成時の文字列描画位置
+	constexpr int kConditionsStrPosX = 12;
 
 	// 殺された種類の基準描画位置
 	constexpr int kKillTypePosX = 156;
@@ -348,6 +350,8 @@ void StageBase::UpdatePlaying(Input& input)
 
 void StageBase::UpdateBossDeath(Input& input)
 {
+	m_sound->PlayFadeBgm(m_playBgm->GetHandle(), 0.6f);
+
 	if (m_soundFrame > kSoundFade)
 	{
 		m_sound->PlayBgm(m_playBgm->GetHandle());
@@ -790,35 +794,41 @@ void StageBase::DrawBestTime()
 		float rate = 1.0f - (m_waitFrame - (kAchivedFrame * 0.5f)) / (kAchivedFrame * 0.5f);
 		int alpha = static_cast<int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		DrawBox(m_size.w - 344, 248, m_size.w, 312, kBackFrameColor, true);
 		DrawStringToHandle(m_size.w - 336, 256, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		return;
 	}
 
+	DrawBox(m_size.w - 344, 248, m_size.w, 312, kBackFrameColor, true);
 	DrawStringToHandle(m_size.w - 336, 256, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 }
 
 void StageBase::DrawConditionsAchived(int y)
 {
 	y += 244 + 100;
+	int backFrameY = y - 4;
 
 	for (const auto& achived : m_achived)
 	{
 		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
 		{
-			DrawStringToHandle(kConditionsPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
+			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
 		}
 		else
 		{
 			float rate = (kAchivedFrame - achived.frame) / (kAchivedFrame * 0.5f);
 			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(kConditionsPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
+			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 
 		y += 64;
+		backFrameY += 68;
 	}
 }
 

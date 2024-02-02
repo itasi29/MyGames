@@ -167,6 +167,9 @@ protected:
 	std::shared_ptr<FileBase> m_createSe;
 	// ダメージを受けた時のSE
 	std::shared_ptr<FileBase> m_damageSe;
+	// 爆発時のSE
+	std::shared_ptr<FileBase> m_explosionSe;
+	std::shared_ptr<FileBase> m_explosionLastSe;
 
 	// 敵の名前
 	std::string m_name;

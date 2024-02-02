@@ -50,6 +50,7 @@ Stage1_8::Stage1_8(GameManager& mgr, Input& input) :
 
 	// 1-8はボスのためBGMを変更する
 	m_playBgm = m_mgr.GetFile()->LoadSound(L"Bgm/boss.mp3");
+	m_explanation = m_mgr.GetFile()->LoadGraphic(L"UI/bossExplanation.png");
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
@@ -74,6 +75,13 @@ void Stage1_8::Init()
 
 	m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
 	m_boss->Init(m_centerPos);
+
+	// ボスステージに入ったことがなければ説明
+	if (m_mgr.GetStage()->IsBossIn())
+	{
+
+		m_mgr.GetStage()->BossStageIn();
+	}
 }
 
 void Stage1_8::StartCheck()

@@ -3,6 +3,7 @@
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
 #include "FileSystem/FileManager.h"
+#include "FileSystem/SoundSystem.h"
 #include "FileSystem/ImageFile.h"
 #include "FileSystem/FontSystem.h"
 
@@ -118,6 +119,8 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 
 	m_createSe = mgr->LoadSound(L"Se/create.mp3");
 	m_damageSe = mgr->LoadSound(L"Se/bossDamage.mp3");
+	m_explosionSe = mgr->LoadSound(L"Se/bossExplosion.mp3");
+	m_explosionLastSe = mgr->LoadSound(L"Se/bossExplosionLast.mp3");
 }
 
 BossBase::~BossBase()
@@ -214,6 +217,10 @@ void BossBase::TitleUpdate()
 
 void BossBase::TitleDraw()
 {
+	// ‰e‚Ì•`‰æ
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+		m_shadow->GetHandle(), true);
+
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 2.0, m_angle,
 		m_charImg->GetHandle(), true);
 }
@@ -430,6 +437,9 @@ void BossBase::ExplotionUpdate()
 		m_performanceEff.push_back({ pos, 0, false });
 		// k‚í‚¹‚é
 		m_isShake = true;
+		// ”š”­‰¹‚È‚ç‚·
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_explosionSe->GetHandle());
 
 		// ÅŒã‚Ì”š”­ƒGƒtƒFƒNƒg—§‚Á‚½ê‡
 		if (m_performanceNum >= kPerformaceNum)
@@ -447,6 +457,9 @@ void BossBase::ShakeUpdate()
 	if (m_endPerformanceFrame > kShakeFrame)
 	{
 		m_endPerformanceFrame = 0;
+		// ÅŒã‚Ì”š”­‰¹–Â‚ç‚·
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_explosionLastSe->GetHandle());
 
 		m_deathUpdateFunc = &BossBase::LastUpdate;
 		m_deathDrawFunc = &BossBase::LastDraw;
@@ -461,7 +474,7 @@ void BossBase::LastUpdate()
 	m_ripple2 += kRipple;
 	m_ripple3 += kRipple;
 
-	if (m_endPerformanceFrame > 30)
+	if (m_endPerformanceFrame > 60)
 	{
 		m_isEndPerformance = true;
 	}

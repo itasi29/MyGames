@@ -98,6 +98,7 @@ OtherOptionScene::OtherOptionScene(GameManager& mgr, Input& input, std::shared_p
 
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
@@ -154,6 +155,8 @@ void OtherOptionScene::NormalUpdate(Input& input)
 
 	if (input.IsTriggered("OK"))
 	{
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_selectSe->GetHandle());
 		switch (m_currentLineIndex)
 		{
 		default:

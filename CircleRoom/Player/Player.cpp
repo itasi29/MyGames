@@ -17,6 +17,9 @@ namespace
 	constexpr unsigned int kExsitColor = 0xF45050;
 	constexpr unsigned int kDeathColor = 0xD2001A;
 
+	// ‰e‚Ì‚¸‚ê‹ï‡
+	constexpr int kShadowShift = 5;
+
 	// “–‚½‚è”»’è‚Ì”¼Œa‚Ì‘å‚«‚³
 	constexpr float kColRadius = 6.0f;
 	// ƒIƒuƒWƒFƒNƒg‚Æ‚Ì“–‚½‚è”»’è”¼Œa
@@ -181,12 +184,8 @@ void Player::Update(Input& input, Ability ability)
 	InRange();
 
 	// “–‚½‚è”»’è‚ÌXV
-#ifdef false
-	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
-#else
 	m_col.SetCenter(m_pos, kColRadius, m_front.x * kColShift, m_front.y * kColShift);
 	m_objCol.SetCenter(m_pos, kObjColRadius, m_front.x * kColShift, m_front.y * kColShift);
-#endif
 }
 
 void Player::Draw()
@@ -221,12 +220,19 @@ void Player::Draw()
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+		// ‰e‚Ì•`‰æ
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+		DrawTriangleAA(m_dir.front.x + m_pos.x + kShadowShift, m_dir.front.y + m_pos.y + kShadowShift,
+			m_dir.left.x + m_pos.x + kShadowShift, m_dir.left.y + m_pos.y + kShadowShift,
+			m_dir.right.x + m_pos.x + kShadowShift, m_dir.right.y + m_pos.y + kShadowShift,
+			0x000000, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		// Œ»Ý‚ÌƒvƒŒƒCƒ„[‚ð•`‰æ
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			kExsitColor, true);
-		// Œ»Ý‚ÌƒvƒŒƒCƒ„[‚ð•`‰æ
+		// ˜gü‚Ì•`‰æ
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
@@ -244,8 +250,18 @@ void Player::Draw()
 
 		DrawRectGraph(x, y, srcX, srcY, kDeathGraphSize, kDeathGraphSize, m_bloodImg->GetHandle(), true);
 
-		int alpha = static_cast<int>(255 * (1.0f - (m_deathFrame / static_cast<float>(kDeathFrame))));
+		float rate = (1.0f - (m_deathFrame / static_cast<float>(kDeathFrame)));
+		int alpha = static_cast<int>(128 * rate);
 
+		// ‰e‚Ì•`‰æ
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		DrawTriangleAA(m_dir.front.x + m_pos.x + kShadowShift, m_dir.front.y + m_pos.y + kShadowShift,
+			m_dir.left.x + m_pos.x + kShadowShift, m_dir.left.y + m_pos.y + kShadowShift,
+			m_dir.right.x + m_pos.x + kShadowShift, m_dir.right.y + m_pos.y + kShadowShift,
+			0x000000, true);
+
+		alpha = static_cast<int>(255 * rate);
+		// –{‘Ì‚Ì•`‰æ
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,

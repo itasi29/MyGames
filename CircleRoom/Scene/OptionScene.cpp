@@ -76,6 +76,7 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_key = std::make_shared<KeyFile>(m_mgr.GetFile());
 
 	auto& file = m_mgr.GetFile();
+	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
@@ -135,6 +136,7 @@ void OptionScene::NormalUpdate(Input& input)
 
 	if (input.IsTriggered("cancel"))
 	{
+		m_sound->PlaySe(m_cancelSe->GetHandle());
 		m_updateFunc = &OptionScene::DisappearUpdate;
 		m_isFadeOut = true;
 

@@ -127,6 +127,12 @@ public:
 	Ability GetAbility() const;
 
 	/// <summary>
+	/// ボスステージに入ったことがあるか
+	/// </summary>
+	/// <returns>true: ある / false: ない</returns>
+	bool IsBossIn() const { return m_isBossIn; }
+
+	/// <summary>
 	/// クリア情報の保存
 	/// クリア済みとする
 	/// </summary>
@@ -158,6 +164,11 @@ public:
 	/// </summary>
 	/// <param name="ability">アビリティ番号</param>
 	void ChangeAbility(Ability ability);
+
+	/// <summary>
+	/// ボスステージに入ったことがあるとする
+	/// </summary>
+	void BossStageIn() { m_isBossIn = true; }
 
 private:
 
@@ -202,6 +213,8 @@ private:
 	Ability m_ability;
 	// アビリティの有効無効
 	std::unordered_map<Ability, bool> m_abilityActive;
+	// ボスステージに入ったことがあるか
+	bool m_isBossIn;
 
 	// ステージクリア
 	bool m_isClear;

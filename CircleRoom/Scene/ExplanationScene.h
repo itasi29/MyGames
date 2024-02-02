@@ -43,6 +43,8 @@ private:
 	std::array<std::shared_ptr<FileBase>, 3> m_proceed;
 	std::shared_ptr<FileBase> m_dash;
 	std::shared_ptr<FileBase> m_boss;
+	// SE
+	std::shared_ptr<FileBase> m_selectSe;
 
 	// option‚ÌƒV[ƒ“
 	std::shared_ptr<SceneManager> m_optionScn;

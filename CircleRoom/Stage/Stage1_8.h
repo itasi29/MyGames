@@ -1,5 +1,6 @@
 #pragma once
 #include "StageBase.h"
+
 class Stage1_8 : public StageBase
 {
 public:
@@ -21,6 +22,8 @@ private:
 	void UpdateTime() override;
 
 private:
+	std::shared_ptr<FileBase> m_explanation;
+
 	// ステージに入った時点でのクリア情報を保持
 	bool m_isDownClear;
 	bool m_isRightClear;

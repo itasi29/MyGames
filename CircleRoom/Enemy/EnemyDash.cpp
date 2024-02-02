@@ -53,11 +53,19 @@ namespace
 	// 波紋の最大大きさ
 	// MEMO:予想だけどこれ以上いかないと思う値
 	constexpr int kMaxRippleSize = 1400;
+
+	// 縮ませる最小大きさ
+	constexpr double kShrinkSize = 0.5;
+	// 縮ませるフレーム
+	constexpr int kShrinkFrame = static_cast<int>(kStartWaitDashFrame * 0.2f);
+	// 縮ませる大きさ
+	constexpr double kShirnkSub = (1.0 - kShrinkSize) / (kStartWaitDashFrame - kShrinkFrame);
 }
 
 EnemyDash::EnemyDash(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize),
-	m_player(nullptr)
+	m_player(nullptr),
+	m_circleSize(1.0)
 {
 	m_name = "Dash";
 	m_color = kColor;
@@ -75,7 +83,9 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 	m_waitDashFrame(kWaitDashFrame),
 	m_startWaitDashFrame(kStartWaitDashFrame),
 	m_dashEffRipper(kMaxRippleSize),
-	m_isDashEff(false)
+	m_isDashEff(false),
+	m_isShrink(false),
+	m_circleSize(1.0)
 {
 	m_name = "Dash";
 	m_color = kColor;
@@ -105,6 +115,8 @@ void EnemyDash::Init(const Vec2& pos, bool isStart)
 
 	// フレームの初期化
 	m_frame = 0;
+	m_isDash = false;
+	m_isShrink = false;
 
 	// 撃つ方向をランダムで決める
 	do
@@ -185,7 +197,7 @@ void EnemyDash::NormalUpdate()
 		m_startWaitDashFrame = kStartWaitDashFrame;
 	}
 
-	m_col.SetCenter(m_pos, m_radius);
+	m_col.SetCenter(m_pos, m_radius * static_cast<float>(m_circleSize));
 }
 
 void EnemyDash::NormalDraw()
@@ -204,11 +216,11 @@ void EnemyDash::NormalDraw()
 	}
 
 	// 影の描画
-	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+	DrawRotaGraph(static_cast<int>(m_pos.x) + 10, static_cast<int>(m_pos.y) + 10, m_circleSize, m_angle,
 		m_shadow->GetHandle(), true);
 
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
-		m_charImg->GetHandle(), true);
+	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_circleSize, m_angle, m_charImg->GetHandle(), true);
+	
 
 	DrawDashEff();
 
@@ -225,7 +237,7 @@ void EnemyDash::NormalDraw()
 void EnemyDash::Dash()
 {
 	m_logFrame++;
-	// ダッシュ中ならログのみ更新
+	// ダッシュ中
 	if (m_isDash)
 	{
 		m_angle -= kRad * 0.25;
@@ -248,10 +260,12 @@ void EnemyDash::Dash()
 	if (m_waitDashFrame > 0)
 	{
 		m_waitDashFrame--;
+		
 
 		// 待機時間が終わったら
 		if (m_waitDashFrame <= 0)
 		{
+			m_isShrink = true;
 			// 正規化
 			m_vec.Normalize();
 			// 速度の変更
@@ -262,6 +276,19 @@ void EnemyDash::Dash()
 	
 	// スタートまでのフレームを減らす
 	m_startWaitDashFrame--;
+	// スタート前揺らし
+	if (m_isShrink)
+	{
+		if (m_startWaitDashFrame < kShrinkFrame)
+		{
+			m_isShrink = false;
+			m_vec *= 0.1f;
+		}
+		else
+		{
+			m_circleSize -= kShirnkSub;
+		}
+	}
 
 	// スタート待機が終わったら
 	if (m_startWaitDashFrame <= 0)
@@ -269,6 +296,7 @@ void EnemyDash::Dash()
 		auto& sound = GameManager::GetInstance().GetSound();
 		sound->PlaySe(m_dashSe->GetHandle());
 		m_isDash = true;
+		m_circleSize = 1.0;
 
 		// 現在の位置からプレイヤーまでのベクトルの生成
 		m_vec = m_player->GetPos() - m_pos;

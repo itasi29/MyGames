@@ -10,15 +10,17 @@
 #include "FileSystem/SoundSystem.h"
 #include "GameClearScene.h"
 #include "TitleScene.h"
+#include "Application.h"
 
 #ifdef _DEBUG
-#include "Application.h"
 #endif
 
 namespace
 {
 	// 文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	constexpr unsigned int kYellowColor = 0xffde00;
+	constexpr unsigned int kRedColor = 0xd2001a;
 
 	// フェード時間
 	constexpr int kFadeFrame = 60;
@@ -51,7 +53,7 @@ GameClearScene::GameClearScene(GameManager& mgr) :
 	m_drawFunc = &GameClearScene::FadeDraw;
 
 	auto& file = mgr.GetFile();
-	m_bg = file->LoadGraphic(L"BG/bg.png");
+	m_result = file->LoadGraphic(L"UI/result.png");
 	m_bgm = file->LoadSound(L"Bgm/end.mp3");
 }
 
@@ -61,7 +63,6 @@ GameClearScene::~GameClearScene()
 
 void GameClearScene::Update(Input& input)
 {
-	m_bgFrame--;
 	(this->*m_updateFunc)(input);
 }
 
@@ -131,10 +132,12 @@ void GameClearScene::FadeDraw()
 
 void GameClearScene::NormalDraw()
 {
-	DrawStringToHandle(550, 50, L"リザルト", kWhiteColor, m_mgr.GetFont()->GetHandle(48));
+//	DrawStringToHandle(550, 50, L"リザルト", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+	const auto& size = Application::GetInstance().GetWindowSize();
+	DrawRotaGraph(static_cast<int>(size.w * 0.5f), static_cast<int>(size.h * 0.5f), 1.0, 0.0, m_result->GetHandle(), true);
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
-	int drawY = 150;
+	int drawY = 256;
 	for (int i = 0; i < m_index + 1; i++)
 	{
 		if (!(i < kResultNum))
@@ -143,7 +146,7 @@ void GameClearScene::NormalDraw()
 			float rate = (fabs(static_cast<float>(val)) / kTextInterval);
 			int alpha = static_cast <int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawStringToHandle(500, drawY, L"～　PressAnyKey　～", kWhiteColor, fontHandle);
+			DrawStringToHandle(500, drawY - 16, L"～　PressAnyKey　～", kYellowColor, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			break;
 		}
@@ -155,13 +158,13 @@ void GameClearScene::NormalDraw()
 			int y = drawY - static_cast<int>(100 * (1 - rate));
 
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawFormatStringToHandle(kDrawResultX, y, kWhiteColor, fontHandle, L"%s", kResultStr[i].c_str());
+			DrawFormatStringToHandle(kDrawResultX, y, kYellowColor, fontHandle, L"%s", kResultStr[i].c_str());
 			DrawInf(i, y, fontHandle);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawFormatStringToHandle(kDrawResultX, drawY, kWhiteColor, fontHandle, L"%s", kResultStr[i].c_str());
+			DrawFormatStringToHandle(kDrawResultX, drawY, kYellowColor, fontHandle, L"%s", kResultStr[i].c_str());
 			DrawInf(i, drawY, fontHandle);
 		}
 
@@ -178,14 +181,14 @@ void GameClearScene::DrawInf(int index, int drawY, int handle)
 		int sec = (data.playTime / 60) % 60;
 		int min = (data.playTime / 3600) % 60;
 		int hour = (data.playTime / 21600);
-		DrawFormatStringToHandle(kDrawResultDataX, drawY, kWhiteColor, handle, L"%02d時間%02d分%02d秒", hour, min, sec);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kRedColor, handle, L"%02d時間%02d分%02d秒", hour, min, sec);
 	}
 	else if (index == 1)
 	{
-		DrawFormatStringToHandle(kDrawResultDataX, drawY, kWhiteColor, handle, L"%-3d回", data.deathCount);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kRedColor, handle, L"%-3d回", data.deathCount);
 	}
 	else
 	{
-		DrawFormatStringToHandle(kDrawResultDataX, drawY, kWhiteColor, handle, L"%-3d回", data.dashCount);
+		DrawFormatStringToHandle(kDrawResultDataX, drawY, kRedColor, handle, L"%-3d回", data.dashCount);
 	}
 }

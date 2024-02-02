@@ -69,6 +69,7 @@ private:
 	std::shared_ptr<FileBase> m_bg;
 	std::shared_ptr<FileBase> m_frame;
 	std::shared_ptr<FileBase> m_startFrame;
+	std::shared_ptr<FileBase> m_backFrame;
 
 	// タイトルで動く敵
 	std::list<std::shared_ptr<EnemyBase>> m_enemy;
@@ -101,6 +102,7 @@ private:
 	std::shared_ptr<FileBase> m_bgm;
 	// 選択時Se
 	std::shared_ptr<FileBase> m_selectSe;
+	std::shared_ptr<FileBase> m_cancelSe;
 	std::shared_ptr<FileBase> m_cursorUpSe;
 	std::shared_ptr<FileBase> m_cursorDownSe;
 

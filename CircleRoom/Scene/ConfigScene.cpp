@@ -143,6 +143,7 @@ void ConfigScene::Draw()
 	DrawName(y, kPad, L"PADê›íË");
 
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
+	m_isWaveDraw = true;
 	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 }
 

@@ -58,5 +58,10 @@ private:
 	bool m_isDashEff;
 	// ƒ_ƒbƒVƒ…‚Ì•`‰ææ
 	int m_dashEffScreen;
+
+	// k‚Ü‚¹‚é‚©
+	bool m_isShrink;
+	// k‚Ü‚¹‚é
+	double m_circleSize;
 };
 

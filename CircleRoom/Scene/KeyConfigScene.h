@@ -76,6 +76,8 @@ private:
 	std::shared_ptr<FileBase> m_addFrame;
 	std::shared_ptr<FileBase> m_startFrame;
 	// Se
+	std::shared_ptr<FileBase> m_selectSe;
+	std::shared_ptr<FileBase> m_cancelSe;
 	std::shared_ptr<FileBase> m_cursorUpSe;
 	std::shared_ptr<FileBase> m_cursorDownSe;
 

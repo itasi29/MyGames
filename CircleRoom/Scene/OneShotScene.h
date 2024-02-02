@@ -1,5 +1,8 @@
 #pragma once
+#include <memory>
 #include "Scene.h"
+
+class FileBase;
 
 /// <summary>
 /// à–¾“™‚Ìˆê‰æ–Ê‚ğÊ‚·—p‚ÌƒNƒ‰ƒX
@@ -31,6 +34,8 @@ private:
 	using DrawFunc_t = void(OneShotScene::*)();
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
+
+	std::shared_ptr<FileBase> m_selectSe;
 
 	int m_handle;
 	int m_frame;

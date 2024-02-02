@@ -98,6 +98,8 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	m_addFrame = file->LoadGraphic(L"UI/addFrame.png");
 	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 
+	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
@@ -165,11 +167,13 @@ void PadConfigScene::NormalUpdate(Input& input)
 {
 	if (input.IsTriggered("cancel"))
 	{
+		m_sound->PlaySe(m_cancelSe->GetHandle());
 		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, input, m_optionScn));
 	}
 
 	if (input.IsReleased("OK"))
 	{
+		m_sound->PlaySe(m_selectSe->GetHandle());
 		m_isEdit = true;
 		m_updateFunc = &PadConfigScene::EditUpdate;
 		m_fadeFrame = kFlashInterval;
@@ -205,6 +209,7 @@ void PadConfigScene::EditUpdate(Input& input)
 		m_cancleFrame++;
 		if (m_cancleFrame > 10)
 		{
+			m_sound->PlaySe(m_cancelSe->GetHandle());
 			m_updateFunc = &PadConfigScene::NormalUpdate;
 			m_isEdit = false;
 			m_fadeFrame = 0;

@@ -41,9 +41,12 @@ namespace
 
 	// フレームの色
 	constexpr unsigned int kFrameColor = 0xd2001a;
+	// バックフレームの色
+	constexpr unsigned int kBackFrameColor = 0x161a30;
+
 	// 通常文字列の色
-	//constexpr unsigned int kWhiteColor = 0xf0ece5;
-	constexpr unsigned int kWhiteColor = 0x161A30;
+	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	//constexpr unsigned int kWhiteColor = 0x161A30;
 	// 選択時文字列の色
 	constexpr unsigned int kYellowColor = 0xffde00;
 
@@ -54,12 +57,12 @@ namespace
 	constexpr int kCreateSwingWidth = static_cast<int>(60 * 1.5);
 
 	// 動画再生までの待機フレーム
-	constexpr int kPlayDemoMoveFrame = 60 * 15;
+	constexpr int kPlayDemoMoveFrame = 60 * 8;
 
 	// メニューラインの数
 	constexpr int kMenuLineNum = 3;
 	// ライン間隔
-	constexpr int kMenuLineInterval = 128;
+	constexpr int kMenuLineInterval = 160;
 	// ラインの長さ
 	constexpr int kMenuLength = 256;
 
@@ -135,10 +138,12 @@ TitleScene::TitleScene(GameManager& mgr, Input& input) :
 	m_bg = file->LoadGraphic(L"BG/bg.png");
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
 	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
+	m_backFrame = file->LoadGraphic(L"UI/unselectedFrame.png");
 
 	m_soundSys = mgr.GetSound();
 	m_bgm = file->LoadSound(L"Bgm/title.mp3");
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
@@ -290,10 +295,13 @@ void TitleScene::StartSelectUpdate(Input& input)
 
 	if (input.IsTriggered("cancel"))
 	{
+		m_soundSys->PlaySe(m_cancelSe->GetHandle());
+
 		m_updateFunc = &TitleScene::NormalUpdate;
 		m_drawFunc = &TitleScene::NormalDraw;
 
 		m_fadeFrame = 0;
+		m_currentLinePos = 0;
 	}
 
 	if (input.IsTriggered("up"))
@@ -312,6 +320,8 @@ void TitleScene::StartSelectUpdate(Input& input)
 
 	if (input.IsTriggered("OK"))
 	{
+		m_soundSys->PlaySe(m_selectSe->GetHandle());
+
 		// 続きから
 		if (m_currentLinePos == 0)
 		{
@@ -369,20 +379,19 @@ void TitleScene::NormalDraw()
 {
 	DrawLogo();
 	
-	int y = static_cast<int>(178 + m_currentLinePos * kMenuLineInterval);
-
-	// フレームの描画
-	DrawGraph(kStrDrawX + kMenuLength, y, m_frame->GetHandle(), true);
-	DrawBox(kStrDrawX - kFrameMargin, y, kStrDrawX + kMenuLength, y + 44, kFrameColor, true);
-
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
-	y = 200 - 16;
+	int y = 184;
+	int frameY = 178;
 
 	for (int i = 0; i < kMenuLineNum; i++)
 	{
 		if (m_currentLinePos == i)
 		{
+			// 選択フレーム描画
+			DrawGraph(kStrDrawX + kMenuLength, frameY, m_frame->GetHandle(), true);
+			DrawBox(kStrDrawX - kFrameMargin, frameY, kStrDrawX + kMenuLength, frameY + 44, kFrameColor, true);
+
 			int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
@@ -392,10 +401,15 @@ void TitleScene::NormalDraw()
 		}
 		else
 		{
+			// 選択フレーム描画
+			DrawGraph(kStrDrawX + kMenuLength, frameY, m_backFrame->GetHandle(), true);
+			DrawBox(kStrDrawX - kFrameMargin, frameY, kStrDrawX + kMenuLength, frameY + 44, kBackFrameColor, true);
+
 			DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kWhiteColor, fontHandle);
 		}
 
 		y += kMenuLineInterval;
+		frameY += kMenuLineInterval;
 	}
 
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
@@ -405,19 +419,20 @@ void TitleScene::StartSelectDraw()
 {
 	DrawLogo();
 
-	int y = static_cast<int>(214 + m_currentLinePos * 40);
-
-	// フレームの描画
-	DrawGraph(kStrDrawX + 64 + kMenuLength, y, m_frame->GetHandle(), true);
-	DrawBox(kStrDrawX + 64 - kFrameMargin, y, kStrDrawX + 64 + kMenuLength, y + 44, kFrameColor, true);
-
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
-	y = 220;
+	int add = 8;
+
+	int y = 228 + add;
+	int frameY = 222 + add;
 	for (int i = 0; i < kStartSelectNum; i++)
 	{
 		if (m_currentLinePos == i)
 		{
+			// 選択フレーム描画
+			DrawGraph(kStrDrawX + 64 + kMenuLength, frameY, m_frame->GetHandle(), true);
+			DrawBox(kStrDrawX + 64 - kFrameMargin, frameY, kStrDrawX + 64 + kMenuLength, frameY + 44, kFrameColor, true);
+
 			int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);
 			int alpha = static_cast <int>(255 * rate);
@@ -427,18 +442,29 @@ void TitleScene::StartSelectDraw()
 		}
 		else
 		{
+			// 選択フレーム描画
+			DrawGraph(kStrDrawX + 64 + kMenuLength, frameY, m_backFrame->GetHandle(), true);
+			DrawBox(kStrDrawX + 64 - kFrameMargin, frameY, kStrDrawX + 64 + kMenuLength, frameY + 44, kBackFrameColor, true);
+
 			DrawStringToHandle(kStrDrawX + 64, y, kStartSelect[i].c_str(), kWhiteColor, fontHandle);
 		}
 
-		y += 40;
+		y += 56;
+		frameY += 56;
 	}
 
 	y = 184;
+	frameY = 178;
 	for (int i = 0; i < kMenuLineNum; i++)
 	{
+		// 選択フレーム描画
+		DrawGraph(kStrDrawX + kMenuLength, frameY, m_backFrame->GetHandle(), true);
+		DrawBox(kStrDrawX - kFrameMargin, frameY, kStrDrawX + kMenuLength, frameY + 44, kBackFrameColor, true);
+
 		DrawStringToHandle(kStrDrawX, y, kMenuStr[i].c_str(), kWhiteColor, fontHandle);
 
 		y += kMenuLineInterval;
+		frameY += kMenuLineInterval;
 	}
 
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);

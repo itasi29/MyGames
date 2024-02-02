@@ -13,17 +13,19 @@
 #include "StageManager.h"
 #include "StageBase.h"
 
-// ファイル用
-struct StageInfHeader
-{
-	char id[4] = "sti"; // 最後に'\0'入ってるので4バイト
-	float version = 1.0f;
-	size_t dataCount = 0;
-	// 空白の4バイト(パディング)
-};
-
 namespace
 {
+	constexpr float kVersion = 1.1f;
+
+	// ファイル用
+	struct StageInfHeader
+	{
+		char id[4] = "sti"; // 最後に'\0'入ってるので4バイト
+		float version = kVersion;
+		size_t dataCount = 0;
+		// 空白の4バイト(パディング)
+	};
+
 	// 移動スピード
 	constexpr float kSpeed = 100.0f;
 
@@ -94,6 +96,7 @@ void StageManager::InitData()
 	m_clearBossTable.clear();
 	m_ability = kNone;
 	m_abilityActive.clear();
+	m_isBossIn = false;
 }
 
 void StageManager::InitPos()
@@ -286,6 +289,9 @@ void StageManager::Save(const std::string& path)
 		fwrite(&active.second, sizeof(active.second), 1, fp);
 	}
 
+	// ボスステージに入ったことがるかの情報
+	fwrite(&m_isBossIn, sizeof(m_isBossIn), 1, fp);
+
 	fclose(fp);
 }
 
@@ -300,6 +306,12 @@ void StageManager::Load(const std::wstring& path)
 	// ヘッダ情報の読み込み
 	StageInfHeader header;
 	FileRead_read(&header, sizeof(header), handle);
+
+	if (header.version != kVersion)
+	{
+		FileRead_close(handle);
+		return;
+	}
 
 	// データの読み込み
 	for (int i = 0; i < header.dataCount; i++)
@@ -367,6 +379,9 @@ void StageManager::Load(const std::wstring& path)
 
 		m_abilityActive[ability] = active;
 	}
+
+	// ボスステージに入ったことがるかの情報
+	FileRead_read(&m_isBossIn, sizeof(m_isBossIn), handle);
 
 	// ファイルは閉じる
 	FileRead_close(handle);

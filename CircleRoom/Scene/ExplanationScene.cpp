@@ -9,6 +9,7 @@
 #include "Scene/OneShotScene.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/SoundSystem.h"
 #include "FileSystem/BottansFile.h"
 #include "FileSystem/KeyFile.h"
 #include "FileSystem/FileBase.h"
@@ -96,6 +97,8 @@ ExplanationScene::ExplanationScene(GameManager& mgr, Input& input, std::shared_p
 	m_dash = file->LoadGraphic(L"UI/dashExplanation.png");
 	m_boss = file->LoadGraphic(L"UI/bossExplanation.png");
 
+	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
 
@@ -110,8 +113,6 @@ ExplanationScene::~ExplanationScene()
 
 void ExplanationScene::Update(Input& input)
 {
-	m_isWaveDraw = true;
-	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
 }
 
@@ -156,6 +157,8 @@ void ExplanationScene::Draw()
 
 void ExplanationScene::SelectUpdate(Input& input)
 {
+	m_isWaveDraw = true;
+	m_waveAngle -= kWaveSpeed;
 	m_fadeFrame++;
 
 	if (input.IsTriggered("cancel"))
@@ -176,6 +179,8 @@ void ExplanationScene::SelectUpdate(Input& input)
 
 	if (input.IsTriggered("OK"))
 	{
+		auto& sound = GameManager::GetInstance().GetSound();
+		sound->PlaySe(m_selectSe->GetHandle());
 		m_index = 0;
 		switch (m_currentLineIndex)
 		{

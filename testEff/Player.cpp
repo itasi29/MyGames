@@ -6,8 +6,10 @@
 namespace
 {
 	// 色
-	constexpr unsigned int kExsitColor = 0xFFFAE7;
+	constexpr unsigned int kExsitColor = 0xF45050;
 	constexpr unsigned int kDeathColor = 0xD2001A;
+
+	constexpr int kShadowShift = 5;
 
 	// 当たり判定の半径の大きさ
 	constexpr float kColRadius = 6.0f;
@@ -133,14 +135,14 @@ void Player::Draw()
 	double rate;
 	int alpha;
 
+	// 移動時のエフェクトを描画
 	for (const auto& eff : m_effs)
 	{
 		rate = 1.0f - eff.frame / static_cast<double>(kEffFrame);
 		alpha = static_cast<int>(153 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-		DrawRotaGraph(eff.pos.x, eff.pos.y, 1.0, eff.angle, handle, true);
+		DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), 1.0, eff.angle, handle, true);
 	}
-
 	// ダッシュした時のログを描画
 	if (m_logFrame < kDashLogNum)
 	{
@@ -158,11 +160,23 @@ void Player::Draw()
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+	// 影の描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+	DrawTriangleAA(m_dir.front.x + m_pos.x + kShadowShift, m_dir.front.y + m_pos.y + kShadowShift,
+		m_dir.left.x + m_pos.x + kShadowShift, m_dir.left.y + m_pos.y + kShadowShift,
+		m_dir.right.x + m_pos.x + kShadowShift, m_dir.right.y + m_pos.y + kShadowShift,
+		0x000000, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	// 現在のプレイヤーを描画
 	DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 		m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 		m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 		kExsitColor, true);
+	// 枠線の描画
+	DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
+		m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
+		m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
+		0x161a30, false, 2.0f);
 }
 
 void Player::Move(Input& input)

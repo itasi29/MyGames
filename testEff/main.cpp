@@ -20,6 +20,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	int handle = MakeScreen(640, 480);
 	int enemy = LoadGraph("Normal.png");
+	int shadow = LoadGraph("ShadowNormal.png");
 
 	int radius1 = 64;
 	int radius2 = 32;
@@ -65,6 +66,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #else
 		input.Update();
 		player.Update(input);
+		DrawRotaGraph(320 + 10, 240 + 10, 1.0, 0.0, shadow, true);
 		DrawRotaGraph(320, 240, 1.0, 0.0, enemy, true);
 		player.Draw();
 #endif

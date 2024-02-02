@@ -186,6 +186,7 @@ void SoundOptionScene::EditUpdate(Input& input)
 {
 	if (input.IsTriggered("OK"))
 	{
+		m_soundSys->PlaySe(m_selectSe->GetHandle());
 		m_isEdit = false;
 		std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 		optionScene->InverseIsEdit();

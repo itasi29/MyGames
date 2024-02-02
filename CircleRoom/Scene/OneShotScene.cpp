@@ -4,6 +4,9 @@
 
 #include "GameManager.h"
 #include "SceneManager.h"
+#include "FileSystem/FileManager.h"
+#include "FileSystem/SoundSystem.h"
+#include "FileSystem/FileBase.h"
 
 #include "OneShotScene.h"
 
@@ -39,6 +42,9 @@ OneShotScene::OneShotScene(GameManager& mgr, int handle) :
 	m_sizeW = static_cast<double>(screenSize.w * kSize / graphSizeW);
 	m_sizeH = static_cast<double>(screenSize.h * kSize / graphSizeH);
 
+	auto& file = mgr.GetFile();
+	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+
 }
 
 OneShotScene::~OneShotScene()
@@ -69,6 +75,9 @@ void OneShotScene::NormalUpdate(Input& input)
 {
 	if (input.IsAnyTriggerd())
 	{
+		auto& sound = m_mgr.GetSound();
+		sound->PlaySe(m_selectSe->GetHandle());
+
 		m_updateFunc = &OneShotScene::DisAppearUpdate;
 		m_drawFunc = &OneShotScene::MoveDraw;
 
