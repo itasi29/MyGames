@@ -139,7 +139,7 @@ void BossDamageObject::AimDraw()
 {
 	for (const auto& missile : m_missiles)
 	{
-		DrawCircle(missile.pos.x, missile.pos.y, kMissileRadius, 0x00ff00, true);
+		DrawCircle(static_cast<int>(missile.pos.x), static_cast<int>(missile.pos.y), kMissileRadius, 0x00ff00, true);
 	}
 }
 

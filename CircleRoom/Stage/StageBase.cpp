@@ -329,6 +329,8 @@ void StageBase::UpdatePlaying(Input& input)
 
 	if (!m_player->IsExsit())
 	{
+		UniqueEndProcessing();
+
 		// メンバ関数ポインタを選択の方に戻す
 		m_updateFunc = &StageBase::UpdateSelect;
 		m_drawFunc = &StageBase::DrawSelect;

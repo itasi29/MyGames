@@ -32,6 +32,11 @@ public:
 
 	virtual void OnDamage() override;
 
+	/// <summary>
+	/// ダメージオブジェクトの消去
+	/// </summary>
+	void DeleteDamageObjects();
+
 protected:
 	// 更新関数
 	void StartUpdate() override;

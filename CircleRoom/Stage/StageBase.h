@@ -133,6 +133,11 @@ protected:
 	virtual void CreateStrongBoss() {}
 
 	/// <summary>
+	/// “ÁêI—¹ˆ—
+	/// </summary>
+	virtual void UniqueEndProcessing() {}
+
+	/// <summary>
 	/// ŠÔ‚ÌXVˆ—
 	/// </summary>
 	virtual void UpdateTime() {}

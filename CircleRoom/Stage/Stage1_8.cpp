@@ -126,6 +126,13 @@ void Stage1_8::UpTime()
 	m_frame += 15;
 }
 
+void Stage1_8::UniqueEndProcessing()
+{
+	const auto& armored = std::dynamic_pointer_cast<BossArmored>(m_boss);
+
+	armored->DeleteDamageObjects();
+}
+
 void Stage1_8::CheckStageConditions()
 {
 	CheckConditionsTime(kRightStName, kRightExsitTime, L"‰E");

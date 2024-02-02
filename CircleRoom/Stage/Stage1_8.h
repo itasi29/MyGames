@@ -13,6 +13,8 @@ public:
 	void UpTime() override;
 
 private:
+	void UniqueEndProcessing() override;
+
 	void CheckStageConditions() override;
 	int DrawStageConditions(int drawY) override;
 	void DrawArrow() const override;

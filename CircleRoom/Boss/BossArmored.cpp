@@ -104,6 +104,8 @@ void BossArmored::Init(const Vec2& pos, bool isStart)
 
 	// フレームの初期化
 	m_frame = 0;
+	m_createFrame = kCreateFrame;
+	m_waitCreateFrame = kWaitCreateFrame;
 
 	// 撃つ方向をランダムで決める
 	do
@@ -245,6 +247,12 @@ void BossArmored::OnDamage()
 	mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
 	//HitStop();
 	return;
+}
+
+void BossArmored::DeleteDamageObjects()
+{
+	// ダメージオブジェクトの削除
+	m_objects.clear();
 }
 
 void BossArmored::StartUpdate()
