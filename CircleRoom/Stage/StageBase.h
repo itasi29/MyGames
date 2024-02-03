@@ -138,6 +138,11 @@ protected:
 	virtual void UniqueEndProcessing() {}
 
 	/// <summary>
+	/// 特殊描画
+	/// </summary>
+	virtual void UniqueDraw() {}
+
+	/// <summary>
 	/// 時間の更新処理
 	/// </summary>
 	virtual void UpdateTime() {}
@@ -348,7 +353,6 @@ protected:
 
 	// ベストタイム点滅
 	bool m_isUpdateBestTime;
-
 
 	// 
 	std::shared_ptr<BottansFile> m_bt;

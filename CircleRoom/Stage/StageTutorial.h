@@ -27,6 +27,7 @@ private:
 	void UpdateSelect(Input& input);
 	void UpdatePlaying(Input& input);
 
+	void UniqueDraw() override;
 
 	void CheckStageConditions() override;
 	int DrawStageConditions(int drawY) override;
@@ -41,8 +42,11 @@ private:
 
 	int  m_index;
 	std::array<std::shared_ptr<FileBase>, 5> m_handle;
+	std::array<std::shared_ptr<FileBase>, 2> m_arrow;
 
 	Explanation m_explanation;
 	int m_createFrame;
+	bool m_isStart;
+	int m_emphasisFrame;
 };
 

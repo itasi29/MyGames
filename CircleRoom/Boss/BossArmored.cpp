@@ -17,7 +17,7 @@ namespace
 {
 	// ç≈ëÂHP
 #ifdef _DEBUG
-	constexpr int kMaxHp = 40;
+	constexpr int kMaxHp = 4;
 #else
 	constexpr int kMaxHp = 40;
 #endif

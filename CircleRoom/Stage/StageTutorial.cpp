@@ -28,22 +28,40 @@ namespace
 	// 生成時間
 	constexpr int kCreateFrame = 300;
 
+	// 条件達成時の描画時間("○の条件達成の文字")
+	constexpr int kAchivedFrame = 120;
+
 
 	// プレイヤー死亡時の画面の揺れフレーム
 	constexpr int kShakeFrameDeath = 10;
+
+	// プレイヤー強調描画フレーム
+	constexpr int kEmphasisFrame = 60 * 5;
+	// 透明開始フレーム
+	constexpr int kAlphaEmphasisFrame = 60 * 4;
+	// 色変更間隔
+	constexpr int kEmlhasisInterval = 20;
+
+	// 揺れ角度
+	float kShakeAngle = DX_PI_F / 180 * 8;
 }
 
 StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	StageBase(mgr, input),
 	m_index(0),
 	m_explanation(kOperation),
-	m_createFrame(0)
+	m_createFrame(0),
+	m_isStart(true),
+	m_emphasisFrame(0)
 {
 	m_handle[0] = m_mgr.GetFile()->LoadGraphic(L"UI/keybordExplanation.png");
 	m_handle[1] = m_mgr.GetFile()->LoadGraphic(L"UI/padExplanation.png");
 	m_handle[2] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation0.png");
 	m_handle[3] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation1.png");
 	m_handle[4] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation2.png");
+
+	m_arrow[0] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis0.png");
+	m_arrow[1] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis1.png");
 
 	m_stageName = "Tutorial";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
@@ -75,6 +93,10 @@ void StageTutorial::ChangeStage(Input& input)
 {
 	if (m_player->IsExsit()) return;
 
+	// 死亡直後は変わらないようにする
+	if (m_waitFrame < kWaitChangeFrame) return;
+
+
 	if (m_mgr.GetStage()->IsClearStage(kStageName) && input.IsTriggered("up"))
 	{
 		std::shared_ptr<Stage1_1> nextStage = std::make_shared<Stage1_1>(m_mgr, input);
@@ -88,6 +110,17 @@ void StageTutorial::ChangeStage(Input& input)
 void StageTutorial::UpdateSelect(Input& input)
 {
 	m_waitFrame++;
+
+	for (auto& achived : m_achived)
+	{
+		achived.frame++;
+	}
+	m_achived.remove_if(
+		[](const auto& achived)
+		{
+			return achived.frame > kAchivedFrame;
+		}
+	);
 
 	m_player->Update(input, kNone);
 
@@ -106,6 +139,7 @@ void StageTutorial::UpdateSelect(Input& input)
 		{
 			m_explanation = kClear;
 		}
+		m_isWaveDraw = false;
 		break;
 		// 説明2つ目
 	case kClear:
@@ -115,6 +149,7 @@ void StageTutorial::UpdateSelect(Input& input)
 		{
 			m_explanation = kPlay;
 		}
+		m_isWaveDraw = false;
 		break;
 		// 実プレイ
 	case kPlay:
@@ -177,6 +212,8 @@ void StageTutorial::UpdatePlaying(Input& input)
 		m_waitFrame = 0;
 		m_waveAngle = 0.0;
 
+		
+
 		// ベストタイムの更新
 		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
 		{
@@ -186,6 +223,38 @@ void StageTutorial::UpdatePlaying(Input& input)
 		// クリアしているかの確認
 		CheckStageConditions();
 	}
+
+	if (m_isStart)
+	{
+		m_emphasisFrame++;
+
+		if (m_emphasisFrame > kEmphasisFrame)
+		{
+			m_isStart = false;
+		}
+	}
+}
+
+void StageTutorial::UniqueDraw()
+{
+	if (!m_isStart) return;
+
+	if (m_emphasisFrame > kAlphaEmphasisFrame)
+	{
+		int alpha = static_cast<int>(255 * (1.0f - (m_emphasisFrame - kAlphaEmphasisFrame) / static_cast<float>(kEmphasisFrame - kAlphaEmphasisFrame)));
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	}
+
+	float addX = sinf(m_emphasisFrame * kShakeAngle) * 5;
+
+	int x = static_cast<int>(m_player->GetPos().x + 64 + addX);
+	int y = static_cast<int>(m_player->GetPos().y);
+
+	int index = (m_emphasisFrame / kEmlhasisInterval) % 2;
+
+	DrawRotaGraph(x, y, 1.0, 0.0, m_arrow[index]->GetHandle(), true);
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void StageTutorial::CheckStageConditions()

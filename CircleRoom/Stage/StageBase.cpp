@@ -189,7 +189,6 @@ void StageBase::UpdateSelect(Input& input)
 
 	if (m_waitFrame < kWaitChangeFrame) return;
 
-
 	m_player->Update(input, kNone);
 
 	for (const auto& enemy : m_enemy)
@@ -483,6 +482,8 @@ void StageBase::DrawPlaying()
 	}
 
 	DrawBestTime();
+
+	UniqueDraw();
 }
 
 void StageBase::DrawBossDeath()

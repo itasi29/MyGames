@@ -40,6 +40,21 @@ namespace
 	// 背景HPバーの前後高さ
 	constexpr int kBackHpBarHeight = 10;
 
+	// 画像サイズ
+	constexpr int kGraphSize = 162;
+	// 横のカット数
+	constexpr int kRectRow = 4;
+	// 縦のカット数
+	constexpr int kRectLine = 4;
+	// カット幅
+	constexpr int kRectWidth = kGraphSize / kRectRow;
+	constexpr int kRectHeight = kGraphSize / kRectLine;
+	// カット時のスピード集
+	constexpr float kRectSpeed[kRectRow] = { -1.0f, -0.5f, 0.5f, 1.0f };
+	// 何かいい感じに速度調整するよう
+	constexpr float kRectAngle = DX_PI_F / 180 * 4;
+
+
 	// 1エフェクト何フレームか
 	constexpr int kWallEffectInterval = 3;
 	// 壁に当たったエフェクトをするフレーム
@@ -83,6 +98,8 @@ namespace
 	constexpr int kShakeFrame = 30;
 	// エフェクトインターバル
 	constexpr int kPerEffInterval = 3;
+	// エフェクト終了フレーム
+	constexpr int kEndPerformanceFrame = 60;
 
 	// 最後の円の線の大きさとスピード
 	// MEMO:線の大きさとスピードは同じほうが見栄えが良い
@@ -476,7 +493,7 @@ void BossBase::LastUpdate()
 	m_ripple2 += kRipple;
 	m_ripple3 += kRipple;
 
-	if (m_endPerformanceFrame > 60)
+	if (m_endPerformanceFrame > kEndPerformanceFrame)
 	{
 		m_isEndPerformance = true;
 	}
@@ -564,10 +581,36 @@ void BossBase::ShakeDraw() const
 
 void BossBase::LastDraw() const
 {
-	int x = static_cast<int>(m_pos.x);
-	int y = static_cast<int>(m_pos.y);
-	
-	// FIXME:値いい感じに
+	int x = static_cast<int>(m_pos.x - kGraphSize * 0.5f);
+	int y;
+
+	float angle = m_endPerformanceFrame * kRectAngle;
+
+	int alpha = static_cast<int>(255 * (1.0f - m_endPerformanceFrame / static_cast<float>(kEndPerformanceFrame)));
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	for (int rectX = 0; rectX < kRectRow; rectX++)
+	{
+		y = static_cast<int>(m_pos.y - kGraphSize * 0.5f);
+
+		for (int rectY = 0; rectY < kRectLine; rectY++)
+		{
+			int drawX = x + kRectSpeed[rectX] * (m_endPerformanceFrame + abs(sinf(angle)));
+			int drawY = y + kRectSpeed[rectY] * (m_endPerformanceFrame + abs(sinf(angle)));
+
+			DrawRectRotaGraph(drawX, drawY, rectX * kRectWidth, rectY * kRectHeight, kRectWidth, kRectHeight,
+				1.0, angle * (rectX * kRectRow + rectY), m_charImg->GetHandle(), true);
+
+			y += kRectHeight;
+		}
+		
+		x += kRectWidth;
+	}
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	// 波紋の描画
+	x = static_cast<int>(m_pos.x);
+	y = static_cast<int>(m_pos.y);
 
 	SetDrawScreen(m_rippleScreen);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
