@@ -110,7 +110,9 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowLarge.png");
 	m_wallEffect = mgr->LoadGraphic(L"Enemy/wallEffect.png");
+#if false
 	m_damageEffect = mgr->LoadGraphic(L"Enemy/damageEffect.png");
+#endif
 	m_hpBar = mgr->LoadGraphic(L"UI/HpBar.png");
 	m_hpBarBack = mgr->LoadGraphic(L"UI/HpBarBack.png");
 	m_hpBarDown = mgr->LoadGraphic(L"UI/HpBarDown.png");
@@ -625,6 +627,7 @@ void BossBase::DrawHitWallEffect() const
 
 void BossBase::DrawDamageEffect() const
 {
+#if false
 	if (m_onDamagetFrame > 0)
 	{
 		int x = m_drawOnDamagetX - static_cast<int>(kDamageGraphSize * 0.5f - kDamageGraphSize * kDamageSize * 0.5f);
@@ -636,5 +639,6 @@ void BossBase::DrawDamageEffect() const
 		DrawRectRotaGraph(x, y, srcX, kSrcY, kDamageGraphSize, kDamageGraphSize,
 			kDamageSize, 0.0, m_damageEffect->GetHandle(), true);
 	}
+#endif
 }
 

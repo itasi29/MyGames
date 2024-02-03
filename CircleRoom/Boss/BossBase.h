@@ -157,8 +157,10 @@ protected:
 	std::shared_ptr<FileBase> m_shadow;
 	// 壁エフェクト
 	std::shared_ptr<FileBase> m_wallEffect;
+#if false
 	// ダメージエフェクト
 	std::shared_ptr<FileBase> m_damageEffect;
+#endif
 	// HPバー関連の画像
 	std::shared_ptr<FileBase> m_hpBar;
 	std::shared_ptr<FileBase> m_hpBarBack;

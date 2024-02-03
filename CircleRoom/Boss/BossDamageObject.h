@@ -6,6 +6,7 @@
 
 struct size;
 class BossBase;
+class FileBase;
 
 // 使用後のボスに飛んでいくやつ
 struct Missile
@@ -18,6 +19,22 @@ struct Missile
 	Vec2 vec;
 	// ボスに当たったか
 	bool isHit = false;
+};
+
+struct MissileEff
+{
+	Vec2 pos;
+	Vec2 vec;
+
+	double size;
+};
+
+struct MissileEffMass
+{
+	std::vector<MissileEff> effs;
+	bool isUse = false;
+	bool isEnd = false;
+	int frame = 0;
 };
 
 /// <summary>
@@ -70,6 +87,8 @@ private:
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 
+	std::shared_ptr<FileBase> m_missileEff;
+
 	// ボスのポインタ
 	BossBase* m_boss;
 
@@ -81,5 +100,6 @@ private:
 	int m_flashFrame;
 
 	std::vector<Missile> m_missiles;
+	std::vector<MissileEffMass> m_missileEffs;
 };
 
