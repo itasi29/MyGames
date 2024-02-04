@@ -42,6 +42,8 @@ BossDamageObject::BossDamageObject(const size& windowSize, float fieldSize, Boss
 
 	auto& file = GameManager::GetInstance().GetFile();
 	m_missileEff = file->LoadGraphic(L"Enemy/missileEff.png");
+	m_objShadow = file->LoadGraphic(L"Enemy/ObjShadow.png");
+	m_missileShadow = file->LoadGraphic(L"Enemy/MissileShadow.png");
 
 	m_updateFunc = &BossDamageObject::FlashUpdate;
 	m_drawFunc = &BossDamageObject::FlashDraw;
@@ -60,7 +62,8 @@ BossDamageObject::BossDamageObject(const Vec2& col, BossBase* boss) :
 
 	auto& file = GameManager::GetInstance().GetFile();
 	m_missileEff = file->LoadGraphic(L"Enemy/missileEff.png");
-
+	m_objShadow = file->LoadGraphic(L"Enemy/ObjShadow.png");
+	m_missileShadow = file->LoadGraphic(L"Enemy/MissileShadow.png");
 
 	m_col.SetCenter(m_pos, kRadius);
 	m_updateFunc = &BossDamageObject::FlashUpdate;
@@ -192,6 +195,7 @@ void BossDamageObject::AimUpdae()
 
 void BossDamageObject::FlashDraw()
 {
+	DrawRotaGraph(static_cast<int>(m_pos.x + 5), static_cast<int>(m_pos.y + 5), 1.0, 0.0, m_objShadow->GetHandle(), true);
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(kRadius), 0xd2001a, true);
 
 	if ((m_flashFrame / kFlashInterval) % 2 == 0)
@@ -209,7 +213,10 @@ void BossDamageObject::AimDraw()
 {
 	for (const auto& missile : m_missiles)
 	{
-		DrawCircle(static_cast<int>(missile.pos.x), static_cast<int>(missile.pos.y), kMissileRadius, 0xff4500, true);
+		int x = static_cast<int>(missile.pos.x);
+		int y = static_cast<int>(missile.pos.y);
+		DrawRotaGraph(x + 5, y + 5, 1.0, 0.0, m_missileShadow->GetHandle(), true);
+		DrawCircle(x, y, kMissileRadius, 0xff4500, true);
 	}
 
 	for (const auto& effs : m_missileEffs)

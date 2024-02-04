@@ -88,6 +88,8 @@ private:
 	DrawFunc_t m_drawFunc;
 
 	std::shared_ptr<FileBase> m_missileEff;
+	std::shared_ptr<FileBase> m_objShadow;
+	std::shared_ptr<FileBase> m_missileShadow;
 
 	// ボスのポインタ
 	BossBase* m_boss;
