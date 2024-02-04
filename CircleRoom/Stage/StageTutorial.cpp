@@ -7,6 +7,7 @@
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/SoundSystem.h"
 #include "StageManager.h"
 #include "Scene/SceneManager.h"
 #include "Scene/OneShotScene.h"
@@ -31,6 +32,8 @@ namespace
 	// 条件達成時の描画時間("○の条件達成の文字")
 	constexpr int kAchivedFrame = 120;
 
+	// サウンドのフェードフレーム
+	constexpr int kSoundFade = 30;
 
 	// プレイヤー死亡時の画面の揺れフレーム
 	constexpr int kShakeFrameDeath = 10;
@@ -80,6 +83,7 @@ void StageTutorial::Init()
 {
 	m_frame = 0;
 	m_createFrame = 0;
+	m_extRateFrame = 0;
 	m_isUpdateTime = true;
 
 	m_player->Init();
@@ -109,6 +113,16 @@ void StageTutorial::ChangeStage(Input& input)
 
 void StageTutorial::UpdateSelect(Input& input)
 {
+	if (m_soundFrame > kSoundFade)
+	{
+		m_sound->PlayBgm(m_selectBgm->GetHandle());
+	}
+	else
+	{
+		m_soundFrame++;
+		m_sound->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+	}
+
 	m_waitFrame++;
 
 	for (auto& achived : m_achived)
@@ -157,6 +171,8 @@ void StageTutorial::UpdateSelect(Input& input)
 		{
 			ChangePlayingFunc();
 			Init();
+			m_soundFrame = 0;
+			m_sound->Stop();
 		}
 		break;
 	default:
@@ -211,8 +227,9 @@ void StageTutorial::UpdatePlaying(Input& input)
 		// フレームの初期化
 		m_waitFrame = 0;
 		m_waveAngle = 0.0;
+		m_soundFrame = 0;
 
-		
+		m_sound->Stop();
 
 		// ベストタイムの更新
 		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
@@ -233,10 +250,22 @@ void StageTutorial::UpdatePlaying(Input& input)
 			m_isStart = false;
 		}
 	}
+
+	m_extRateFrame++;
 }
 
 void StageTutorial::UniqueDraw()
 {
+	if (m_soundFrame > kSoundFade)
+	{
+		m_sound->PlayBgm(m_playBgm->GetHandle());
+	}
+	else
+	{
+		m_soundFrame++;
+		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+	}
+
 	if (!m_isStart) return;
 
 	if (m_emphasisFrame > kAlphaEmphasisFrame)
