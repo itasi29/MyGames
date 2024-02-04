@@ -52,7 +52,7 @@ Stage1_9::Stage1_9(GameManager& mgr, Input& input) :
 	m_mgr.GetStage()->CreateData(m_stageName);
 	// 1-1Ç…ä÷ÇµÇƒÇÕèâÇﬂÇ©ÇÁÉNÉäÉAÇµÇƒÇ¢ÇÈÇ±Ç∆Ç∆Ç∑ÇÈ
 	//m_mgr.GetStage()->SaveClear(m_stageName);
-	CheckStageConditions();
+	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
 
 	StartCheck();
 }
@@ -110,9 +110,9 @@ void Stage1_9::ChangeStage(Input& input)
 	}
 }
 
-void Stage1_9::CheckStageConditions()
+void Stage1_9::CheckStageConditions(int timeFrame)
 {
-	CheckConditionsTime(kUpStName, kUpExistTime, L"è„");
+	CheckConditionsTime(kUpStName, timeFrame, kUpExistTime, L"è„");
 }
 
 int Stage1_9::DrawStageConditions(int drawY)

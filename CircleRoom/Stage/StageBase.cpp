@@ -349,8 +349,22 @@ void StageBase::UpdatePlaying(Input& input)
 		}
 
 		// クリアしているかの確認
-		CheckStageConditions();
 	}
+	CheckStageConditions(m_frame);
+
+	// MEMO:途中で消したい場合はこれをオンに
+#if false
+	for (auto& achived : m_achived)
+	{
+		achived.frame++;
+	}
+	m_achived.remove_if(
+		[](const auto& achived)
+		{
+			return achived.frame > kAchivedFrame;
+		}
+	);
+#endif
 }
 
 void StageBase::UpdateBossDeath(Input& input)
@@ -484,6 +498,9 @@ void StageBase::DrawPlaying()
 	DrawBestTime();
 
 	UniqueDraw();
+
+	// 条件達成時のを描画
+	DrawConditionsAchived(y + 24);
 }
 
 void StageBase::DrawBossDeath()
@@ -496,7 +513,7 @@ void StageBase::DrawBossDeath()
 	SetDrawMode(DX_DRAWMODE_NEAREST);
 }
 
-void StageBase::CheckConditionsTime(const std::string& stageName, int exsitTime, const std::wstring& dir)
+void StageBase::CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir)
 {
 	auto& stage = m_mgr.GetStage();
 
@@ -504,7 +521,11 @@ void StageBase::CheckConditionsTime(const std::string& stageName, int exsitTime,
 	if (stage->IsClearStage(stageName)) return;
 
 	// ベストタイムが条件時間を超えているか
+#if false
 	if (stage->GetBestTime(m_stageName) > exsitTime * 60)
+#else
+	if (timeFrame > exsitTime * 60)
+#endif
 	{
 		stage->SaveClear(stageName);
 		AddAchivedStr(dir);
@@ -525,7 +546,7 @@ void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNu
 	}
 }
 
-void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int exsitTime, const std::wstring& dir)
+void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int timeFrame, int exsitTime, const std::wstring& dir)
 {
 	auto& stage = m_mgr.GetStage();
 	int sumTime = 0;
@@ -536,7 +557,18 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 	// 確認するステージのすべてのタイムを加算する
 	for (const auto& name : names)
 	{
+#if false
 		sumTime += stage->GetBestTime(name);
+#else
+		if (name == m_stageName)
+		{
+			sumTime += timeFrame;
+		}
+		else
+		{
+			sumTime += stage->GetBestTime(name);
+		}
+#endif
 	}
 
 	// 加算した時間が超えているか
@@ -751,7 +783,7 @@ void StageBase::BossDeath()
 	}
 
 	// クリアしているかの確認
-	CheckStageConditions();
+	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
 
 	// 倒した情報の追加
 	m_mgr.GetStage()->UpdateClearBoss(m_boss->GetName());
@@ -822,7 +854,7 @@ void StageBase::DrawConditionsAchived(int y)
 		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
 		{
 			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
-			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
 		}
 		else
 		{
@@ -830,7 +862,7 @@ void StageBase::DrawConditionsAchived(int y)
 			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
-			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kYellowColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 

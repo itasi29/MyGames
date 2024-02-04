@@ -15,7 +15,7 @@ public:
 private:
 	void UniqueEndProcessing() override;
 
-	void CheckStageConditions() override;
+	void CheckStageConditions(int timeFrame) override;
 	int DrawStageConditions(int drawY) override;
 	void DrawArrow() const override;
 	void DrawKilledEnemyType() const override;

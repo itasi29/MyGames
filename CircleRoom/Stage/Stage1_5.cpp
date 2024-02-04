@@ -89,9 +89,9 @@ void Stage1_5::ChangeStage(Input& input)
 	}
 }
 
-void Stage1_5::CheckStageConditions()
+void Stage1_5::CheckStageConditions(int timeFrame)
 {
-	CheckConditionsTime(kDownStName, kDownExsitTime, L"‰º");
+	CheckConditionsTime(kDownStName, timeFrame, kDownExsitTime, L"‰º");
 }
 
 int Stage1_5::DrawStageConditions(int drawY)

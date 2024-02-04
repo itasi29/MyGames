@@ -54,7 +54,7 @@ Stage1_2::Stage1_2(GameManager& mgr, Input& input) :
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
-	CheckStageConditions();
+	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
 
 	StartCheck();
 }
@@ -129,10 +129,10 @@ void Stage1_2::ChangeStage(Input& input)
 	}
 }
 
-void Stage1_2::CheckStageConditions()
+void Stage1_2::CheckStageConditions(int timeFrame)
 {
-	CheckConditionsTime(kRightStName, kRightExsitTime, L"右");
-	CheckConditionsTime(kUpStName, kUpExsitTime, L"上");
+	CheckConditionsTime(kRightStName, timeFrame, kRightExsitTime, L"右");
+	CheckConditionsTime(kUpStName, timeFrame, kUpExsitTime, L"上");
 }
 
 int Stage1_2::DrawStageConditions(int drawY)

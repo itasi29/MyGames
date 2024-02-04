@@ -109,7 +109,7 @@ protected:
 	/// <summary>
 	/// ステージのクリア確認
 	/// </summary>
-	virtual void CheckStageConditions() = 0;
+	virtual void CheckStageConditions(int timeFrame) = 0;
 	/// <summary>
 	/// ステージ条件の描画
 	/// </summary>
@@ -153,7 +153,7 @@ protected:
 	/// <param name="stageName">確認するステージの名前</param>
 	/// <param name="exsitTime">クリア時間(秒)</param>
 	/// <param name="dir">方向名</param>
-	void CheckConditionsTime(const std::string& stageName, int exsitTime, const std::wstring& dir);
+	void CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
 	/// <summary>
 	/// 殺された数が超えているかの確認
 	/// </summary>
@@ -168,7 +168,7 @@ protected:
 	/// <param name="names">確認するステージ群情報</param>
 	/// <param name="exsitTime">クリア時間(秒)</param>
 	/// <param name="dir">方向名</param>
-	void CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int exsitTime, const std::wstring& dir);
+	void CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int timeFrame, int exsitTime, const std::wstring& dir);
 
 	/// <summary>
 	/// クリア条件にある矢印の描画

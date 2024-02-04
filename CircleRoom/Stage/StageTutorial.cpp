@@ -221,8 +221,8 @@ void StageTutorial::UpdatePlaying(Input& input)
 		}
 
 		// クリアしているかの確認
-		CheckStageConditions();
 	}
+	CheckStageConditions(m_frame);
 
 	if (m_isStart)
 	{
@@ -257,9 +257,9 @@ void StageTutorial::UniqueDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void StageTutorial::CheckStageConditions()
+void StageTutorial::CheckStageConditions(int timeFrame)
 {
-	CheckConditionsTime(kStageName, kExsitTime, L"上");
+	CheckConditionsTime(kStageName, timeFrame, kExsitTime, L"上");
 }
 
 int StageTutorial::DrawStageConditions(int drawY)
