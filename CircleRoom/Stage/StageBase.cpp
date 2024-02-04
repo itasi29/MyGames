@@ -97,6 +97,18 @@ namespace
 	int kDashWaveNum = 4;
 	const wchar_t* const kDashWave[] = {L"ƒ_", L"ƒb", L"ƒV", L"ƒ…"};
 
+	// Šg‘åƒtƒŒ[ƒ€
+	constexpr int kExtRateFrame = 45;
+	// Šg‘å‚µ‚½‚Ü‚Ü‚ÌƒtƒŒ[ƒ€
+	constexpr int kWaitExtRateFrame = 30;
+	// Šg‘åƒTƒCƒY
+	constexpr float kExtRateSize = 2.0f;
+	// ‰E‚É‚¸‚ç‚·—Ê
+	constexpr int kShiftRight = 320;
+	// ã‚É‚¸‚ç‚·—Ê
+	constexpr int kShiftUp = 360;
+	// ‚Í‚¶‚ß‚Ìƒ¿’l
+	constexpr int kExtRateAlpha = 224;
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
@@ -118,6 +130,8 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 
 	// ‘æŽOˆø”‚ðtrue‚É‚µ‚Ä‚¨‚©‚È‚¢‚Æì‚Á‚½‰æ–Ê‚ª“§‰ß‚µ‚È‚¢
 	m_strHandle = MakeScreen(m_size.w, m_size.h, true);
+	m_extScreen = MakeScreen(m_size.w, m_size.h, true);
+
 
 	m_sound = m_mgr.GetSound();
 
@@ -153,6 +167,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 StageBase::~StageBase()
 {
 	DeleteGraph(m_strHandle);
+	DeleteGraph(m_extScreen);
 }
 
 void StageBase::Update(Input& input)
@@ -230,6 +245,7 @@ void StageBase::UpdateSelect(Input& input)
 		m_isUpdateBestTime = false;
 		m_soundFrame = 0;
 		m_waveAngle = 0;
+		m_extRateFrame = 0;
 
 		// ŠeŽí‰Šú‰»ˆ—
 		Init();
@@ -351,6 +367,8 @@ void StageBase::UpdatePlaying(Input& input)
 		// ƒNƒŠƒA‚µ‚Ä‚¢‚é‚©‚ÌŠm”F
 	}
 	CheckStageConditions(m_frame);
+
+	m_extRateFrame++;
 
 	// MEMO:“r’†‚ÅÁ‚µ‚½‚¢ê‡‚Í‚±‚ê‚ðƒIƒ“‚É
 #if false
@@ -480,8 +498,9 @@ void StageBase::DrawPlaying()
 	// ðŒ‚Ì•`‰æ
 	SetDrawScreen(m_strHandle);
 	ClearDrawScreen();
-	auto y = DrawStageConditions(244+16+20);
-	SetDrawScreen(drawScreenHandle);
+	auto y = DrawStageConditions(244 + 16 + 20);
+	SetDrawScreen(m_extScreen);
+	ClearDrawScreen();
 	// MEMO:ðŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ð•`‰æ‚·‚é
 	if (y >= 0)
 	{
@@ -489,6 +508,18 @@ void StageBase::DrawPlaying()
 		DrawGraph(0, 268 + y, m_bFrameImg->GetHandle(), true);
 	}
 	DrawGraph(0, 0, m_strHandle, true);
+
+	SetDrawScreen(drawScreenHandle);
+	// Šg‘å•`‰æ
+	if (m_extRateFrame < kExtRateFrame)
+	{
+		DrawExpansion();
+	}
+	// ‚»‚Ì‚Ü‚Ü•`‰æ
+	else
+	{
+		DrawGraph(0, 0, m_extScreen, true);
+	}
 
 	if (m_mgr.GetStage()->GetAbility() == kDash)
 	{
@@ -696,6 +727,38 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned
 
 //		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, false);
 	}
+}
+
+void StageBase::DrawExpansion()
+{
+	int width = m_size.w;
+	int height = m_size.h;
+
+	//int left = -kShiftRight * kExtRateSize;
+	int left = 0;
+	int right = width + (width - kShiftRight) * kExtRateSize;
+	int top = -kShiftUp * kExtRateSize;
+	int bottom = height + (height - kShiftUp) * kExtRateSize;
+
+	if (m_extRateFrame > kWaitExtRateFrame)
+	{
+		float rate = 1.0f - ((m_extRateFrame - kWaitExtRateFrame) / static_cast<float>(kExtRateFrame - kWaitExtRateFrame));
+
+		//left = -kShiftRight * kExtRateSize * rate;
+		right = width + (width - kShiftRight) * kExtRateSize * rate;
+		top = -kShiftUp * kExtRateSize * rate;
+		bottom = height + (height - kShiftUp) * kExtRateSize * rate;
+
+		int alpha = kExtRateAlpha + (255 - kExtRateAlpha) * (1.0f - rate);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	}
+	else
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kExtRateAlpha);
+	}
+
+	DrawExtendGraph(left, top, right, bottom, m_extScreen, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void StageBase::AddAchivedStr(const std::wstring& dir)

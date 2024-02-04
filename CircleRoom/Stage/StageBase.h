@@ -228,6 +228,8 @@ protected:
 	/// <param name="radius">半径 : def = 16</param>
 	void DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius = 16) const;
 
+	void DrawExpansion();
+
 	/// <summary>
 	/// クリアした文字の描画群に追加
 	/// </summary>
@@ -353,6 +355,11 @@ protected:
 
 	// ベストタイム点滅
 	bool m_isUpdateBestTime;
+
+	// ステージ開始時の条件拡大フレーム
+	int m_extRateFrame;
+	// それを書く用のスクリーン
+	int m_extScreen;
 
 	// 
 	std::shared_ptr<BottansFile> m_bt;
