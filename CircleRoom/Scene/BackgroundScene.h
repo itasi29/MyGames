@@ -45,7 +45,7 @@ private:
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 
-	std::shared_ptr<FileBase> m_bg;
+	std::vector<std::shared_ptr<FileBase>> m_bg;
 
 	float m_scroll;
 	float m_scrollSpeed;

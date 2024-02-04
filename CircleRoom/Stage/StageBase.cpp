@@ -202,8 +202,6 @@ void StageBase::UpdateSelect(Input& input)
 	// 待機フレームの増加
 	m_waitFrame++;
 
-	if (m_waitFrame < kWaitChangeFrame) return;
-
 	m_player->Update(input, kNone);
 
 	for (const auto& enemy : m_enemy)
@@ -284,8 +282,12 @@ void StageBase::UpdatePlaying(Input& input)
 		{
 			// プレイヤーの死亡処理
 			m_player->Death();
-			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
 			m_mgr.UpdateDeathCcount();
+#if false
+			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+#else
+			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
+#endif
 
 			// 殺したことがある敵情報の更新
 			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
@@ -322,8 +324,12 @@ void StageBase::UpdatePlaying(Input& input)
 		{
 			// プレイヤーの死亡処理
 			m_player->Death();
-			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
 			m_mgr.UpdateDeathCcount();
+#if false
+			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+#else
+			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
+#endif
 
 			// 殺したことがある敵情報の更新
 			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());
@@ -736,20 +742,20 @@ void StageBase::DrawExpansion()
 
 	//int left = -kShiftRight * kExtRateSize;
 	int left = 0;
-	int right = width + (width - kShiftRight) * kExtRateSize;
-	int top = -kShiftUp * kExtRateSize;
-	int bottom = height + (height - kShiftUp) * kExtRateSize;
+	int right = width + static_cast<int>((width - kShiftRight) * kExtRateSize);
+	int top = static_cast<int>(-kShiftUp * kExtRateSize);
+	int bottom = height + static_cast<int>((height - kShiftUp) * kExtRateSize);
 
 	if (m_extRateFrame > kWaitExtRateFrame)
 	{
 		float rate = 1.0f - ((m_extRateFrame - kWaitExtRateFrame) / static_cast<float>(kExtRateFrame - kWaitExtRateFrame));
 
 		//left = -kShiftRight * kExtRateSize * rate;
-		right = width + (width - kShiftRight) * kExtRateSize * rate;
-		top = -kShiftUp * kExtRateSize * rate;
-		bottom = height + (height - kShiftUp) * kExtRateSize * rate;
+		right = width + static_cast<int>((width - kShiftRight) * kExtRateSize * rate);
+		top = static_cast<int>(-kShiftUp * kExtRateSize * rate);
+		bottom = height + static_cast<int>((height - kShiftUp) * kExtRateSize * rate);
 
-		int alpha = kExtRateAlpha + (255 - kExtRateAlpha) * (1.0f - rate);
+		int alpha = kExtRateAlpha + static_cast<int>((255 - kExtRateAlpha) * (1.0f - rate));
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	}
 	else

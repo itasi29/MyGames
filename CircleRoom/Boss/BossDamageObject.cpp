@@ -143,7 +143,7 @@ void BossDamageObject::AimUpdae()
 					eff.vec = { x, y };
 					eff.vec.Normalize();
 
-					eff.vec = eff.vec * eff.size * kMissileEffSpeed;
+					eff.vec = eff.vec * static_cast<float>(eff.size) * kMissileEffSpeed;
 				}
 
 				effs.effs = missileEff;
@@ -193,10 +193,10 @@ void BossDamageObject::AimUpdae()
 void BossDamageObject::FlashDraw()
 {
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(kRadius), 0xd2001a, true);
-	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(kRadius * 0.5), 0xff4500, true);
 
 	if ((m_flashFrame / kFlashInterval) % 2 == 0)
 	{
+		DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(kRadius * 0.5), 0xff4500, true);
 		DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), static_cast<int>(kRadius), 0xff4500, false, 2);
 	}
 
@@ -209,19 +209,19 @@ void BossDamageObject::AimDraw()
 {
 	for (const auto& missile : m_missiles)
 	{
-		DrawCircle(static_cast<int>(missile.pos.x), static_cast<int>(missile.pos.y), kMissileRadius, 0x00ff00, true);
+		DrawCircle(static_cast<int>(missile.pos.x), static_cast<int>(missile.pos.y), kMissileRadius, 0xff4500, true);
 	}
 
 	for (const auto& effs : m_missileEffs)
 	{
 		if (!effs.isUse) return;
 
-		int alpha = 255 * (1.0f - (effs.frame / static_cast<float>(kMissileEffFrame)));
+		int alpha = static_cast<int>(255 * (1.0f - (effs.frame / static_cast<float>(kMissileEffFrame))));
 
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		for (const auto& eff : effs.effs)
 		{
-			DrawRotaGraph(eff.pos.x, eff.pos.y, eff.size, 0.0, m_missileEff->GetHandle(), true);
+			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), eff.size, 0.0, m_missileEff->GetHandle(), true);
 		}
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}

@@ -41,6 +41,12 @@ public:
 	void Draw();
 
 	/// <summary>
+	/// 正面ベクトルを取得
+	/// </summary>
+	/// <returns>正面ベクトル</returns>
+	Vec2 GetFront() const { return m_front; }
+
+	/// <summary>
 	/// 中心座標を取得
 	/// </summary>
 	/// <returns>中心座標</returns>

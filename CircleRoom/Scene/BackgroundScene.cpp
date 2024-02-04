@@ -11,7 +11,7 @@ namespace
 	constexpr float kSpeed = 2.0f;
 
 	// îwåiâÊëúêî
-	constexpr int kBgNum = 1;
+	constexpr int kBgNum = 4;
 }
 
 BackgroundScene::BackgroundScene(std::shared_ptr<FileManager> mgr,  bool isMove, bool isDraw) :
@@ -22,7 +22,17 @@ BackgroundScene::BackgroundScene(std::shared_ptr<FileManager> mgr,  bool isMove,
 {
 	ChangeFunc();
 
+#if false
 	m_bg = mgr->LoadGraphic(L"Bg/bg.png");
+#else
+	m_bg.resize(kBgNum);
+	for (int i = 0; i < kBgNum; i++)
+	{
+		std::wostringstream woss;
+		woss << L"Bg/bg" << i << L".png";
+		m_bg[i] = mgr->LoadGraphic(woss.str());
+	}
+#endif
 }
 
 BackgroundScene::~BackgroundScene()
@@ -69,15 +79,19 @@ void BackgroundScene::MoveUpdate()
 
 void BackgroundScene::NormalDraw() const
 {
+#if false
 	DrawGraph(0, 0, m_bg->GetHandle(), true);
-	//for (const auto& bg : m_bg)
-	//{
-	//	DrawGraph(0, 0, bg->GetHandle(), true);
-	//}
+#else
+	for (const auto& bg : m_bg)
+	{
+		DrawGraph(0, 0, bg->GetHandle(), true);
+	}
+#endif
 }
 
 void BackgroundScene::MoveDraw() const
 {
+#if false
 	size size;
 	GetGraphSize(m_bg->GetHandle(), &size.w, &size.h);
 
@@ -85,20 +99,22 @@ void BackgroundScene::MoveDraw() const
 	DrawGraph(posX, 0, m_bg->GetHandle(), false);
 	posX += size.w;
 	DrawGraph(posX, 0, m_bg->GetHandle(), false);
+#else
+	const auto& size = Application::GetInstance().GetWindowSize();
 
-	//for (int i = 0; i < kBgNum; i++)
-	//{
-	//	int posX = static_cast<int>(m_scroll * ((i + 1) / static_cast<float>(kBgNum))) % size.w;
-	//	DrawGraph(posX, 0, m_bg[i]->GetHandle(), true);
-	//	posX += size.w;
-	//	DrawGraph(posX, 0, m_bg[i]->GetHandle(), true);
-	//}
+	for (int i = 0; i < kBgNum; i++)
+	{
+		int posX = static_cast<int>(m_scroll * ((i + 1) / static_cast<float>(kBgNum))) % size.w;
+		DrawGraph(posX, 0, m_bg[i]->GetHandle(), true);
+		posX += size.w;
+		DrawGraph(posX, 0, m_bg[i]->GetHandle(), true);
+	}
+#endif
 }
 
 void BackgroundScene::ChangeFunc()
 {
-	//if (m_isMove)
-	if (true)
+	if (m_isMove)
 	{
 		m_updateFunc = &BackgroundScene::MoveUpdate;
 		m_drawFunc = &BackgroundScene::MoveDraw;

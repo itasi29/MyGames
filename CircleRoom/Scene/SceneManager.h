@@ -113,6 +113,8 @@ private:
 
 	int m_moveScreen;
 
+
+	bool m_isMove;
 	// ‰æ–Ê‚ğ“®‚©‚·ƒxƒNƒgƒ‹
 	Vec2 m_vec;
 	// “®‚©‚·Šî€‚ªX²‚©

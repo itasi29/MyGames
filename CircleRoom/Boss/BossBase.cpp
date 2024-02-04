@@ -595,8 +595,8 @@ void BossBase::LastDraw() const
 
 		for (int rectY = 0; rectY < kRectLine; rectY++)
 		{
-			int drawX = x + kRectSpeed[rectX] * (m_endPerformanceFrame + abs(sinf(angle)));
-			int drawY = y + kRectSpeed[rectY] * (m_endPerformanceFrame + abs(sinf(angle)));
+			int drawX = x + static_cast<int>(kRectSpeed[rectX] * (m_endPerformanceFrame + abs(sinf(angle))));
+			int drawY = y + static_cast<int>(kRectSpeed[rectY] * (m_endPerformanceFrame + abs(sinf(angle))));
 
 			DrawRectRotaGraph(drawX, drawY, rectX * kRectWidth, rectY * kRectHeight, kRectWidth, kRectHeight,
 				1.0, angle * (rectX * kRectRow + rectY), m_charImg->GetHandle(), true);

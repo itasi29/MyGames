@@ -13,11 +13,11 @@ namespace
 	constexpr int kShakeSize = 10;
 
 	// 一度に進ませる量
-	constexpr float kRad = DX_PI_F / 30 * 0.5;
+	constexpr float kRad = DX_PI_F / 180 * 4;
 
 	// 幅・高さの大きさ
-	constexpr int kWidth = 200;
-	constexpr int kHeight = 100;
+	constexpr int kWidth = 64;
+	constexpr int kHeight = 320;
 }
 
 SceneManager::SceneManager(bool isDrawBg) :
@@ -25,6 +25,7 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_shakeFrame(0),
 	m_shakeSize(kShakeSize),
 	m_isDrawBg(isDrawBg),
+	m_isMove(false),
 	m_isBaseX(true),
 	m_angle(0.0)
 {
@@ -33,11 +34,13 @@ SceneManager::SceneManager(bool isDrawBg) :
 
 	const size size = Application::GetInstance().GetWindowSize();
 	m_shakeHandle = MakeScreen(size.w, size.h);
+	m_moveScreen = MakeScreen(size.w, size.h, true);
 }
 
 SceneManager::~SceneManager()
 {
 	DeleteGraph(m_shakeHandle);
+	DeleteGraph(m_moveScreen);
 }
 
 void SceneManager::Init()
@@ -105,6 +108,20 @@ void SceneManager::ShakeScreen(int frame, int size = kShakeSize)
 
 void SceneManager::MoveScreen(const Vec2& vec)
 {
+	m_isMove = true;
+
+	m_vec = vec;
+	// 正規化
+	m_vec.Normalize();
+
+	// どちらが大きいか
+	m_isBaseX = (abs(m_vec.x) > abs(m_vec.y));
+
+	m_angle = 0.0;
+
+	// メンバ関数ポインタの更新
+	m_updateFunc = &SceneManager::MoveUpdate;
+	m_drawFunc = &SceneManager::MoveDraw;
 }
 
 std::shared_ptr<Scene> SceneManager::GetTopScene()
@@ -117,6 +134,10 @@ int SceneManager::GetScreenHandle() const
 	if (m_isShake)
 	{
 		return m_shakeHandle;
+	}
+	else if (m_isMove)
+	{ 
+		return m_moveScreen;
 	}
 	else
 	{
@@ -156,6 +177,8 @@ void SceneManager::MoveUpdate(Input& input)
 
 	if (m_angle >= DX_PI)
 	{
+		m_isMove = false;
+
 		m_updateFunc = &SceneManager::NormalUpdate;
 		m_drawFunc = &SceneManager::NormalDraw;
 	}
@@ -187,18 +210,28 @@ void SceneManager::ShakeDraw() const
 
 void SceneManager::MoveDraw() const
 {
+	m_bg->Draw();
+	SetDrawScreen(m_moveScreen);
+	ClearDrawScreen();
+	for (auto& scene : m_scenes)
+	{
+		scene->Draw();
+	}
+	SetDrawScreen(DX_SCREEN_BACK);
+
 	int x, y;
 
-	float rate = sinf(m_angle);
+	float rate = -sinf(m_angle);
+	float dRate = sinf(m_angle * 2) * 0.5f;
 	if (m_isBaseX)
 	{
-		x = static_cast<int>(m_vec.x * rate * kWidth);
-		y = static_cast<int>(m_vec.y * rate * kHeight);
+		x = static_cast<int>(m_vec.x * rate * kHeight + m_vec.y * dRate * kWidth);
+		y = static_cast<int>(m_vec.x * dRate * kWidth + m_vec.y * rate * kHeight);
 	}
 	else
 	{
-		y = static_cast<int>(m_vec.x * rate * kWidth);
-		x = static_cast<int>(m_vec.y * rate * kHeight);
+		x = static_cast<int>(m_vec.y * dRate * kWidth + m_vec.x * rate * kHeight);
+		y = static_cast<int>(m_vec.y * rate * kHeight + m_vec.x * dRate * kWidth);
 	}
 
 	DrawGraph(x, y, m_moveScreen, true);
