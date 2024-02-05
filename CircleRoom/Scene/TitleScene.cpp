@@ -626,7 +626,7 @@ void TitleScene::PlayDemoMove(Input& input)
 		// ここに入ったらボタンが何かしら押されるまでデモムービーを繰り返す
 		while (true)
 		{
-			PlayMovie(L"test.mp4", 1, DX_MOVIEPLAYTYPE_BCANCEL);
+			PlayMovie(L"Data/demoMove.mp4", 1, DX_MOVIEPLAYTYPE_BCANCEL);
 			input.Update();
 			if (input.IsAnyTriggerd())
 			{

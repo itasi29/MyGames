@@ -120,7 +120,6 @@ void Input::Update()
 {
     m_lastInputDate = m_inputDate;  // 直前入力をコピーしておく
     m_isLastAnyPush = m_isAnyPush;
-    m_isAnyPush = false;
 
     /* ハードウェア入力チェック */
     // キーボード用
@@ -137,6 +136,10 @@ void Input::Update()
     if (padstate || CheckHitKeyAll())
     {
         m_isAnyPush = true;
+    }
+    else
+    {
+        m_isAnyPush = false;
     }
 
     /*情報更新*/
