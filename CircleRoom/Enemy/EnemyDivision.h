@@ -24,18 +24,18 @@ private:
 	void StartUpdate() override;
 	void NormalUpdate() override;
 
-	void NormalDraw() override;
+	void NormalDraw() const override;
 
 	void UsuallyUpdate();
 	void DivisionUpdate();
 	void EndUpdate();
 
-	void UsuallyDraw();
-	void EndDraw();
+	void UsuallyDraw() const;
+	void EndDraw() const;
 
 private:
 	using UpdateFunc_t = void(EnemyDivision::*)();
-	using DrawFunc_t = void(EnemyDivision::*)();
+	using DrawFunc_t = void(EnemyDivision::*)() const;
 
 	UpdateFunc_t m_dUpdateFunc;
 	DrawFunc_t m_dDrawFunc;

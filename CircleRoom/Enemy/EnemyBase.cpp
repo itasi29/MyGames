@@ -142,7 +142,7 @@ void EnemyBase::TitleUpdate()
 	}
 }
 
-void EnemyBase::TitleDraw()
+void EnemyBase::TitleDraw() const
 {
 	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
@@ -179,7 +179,7 @@ void EnemyBase::Update()
 	(this->*m_updateFunc)();
 }
 
-void EnemyBase::Draw()
+void EnemyBase::Draw() const
 {
 	(this->*m_drawFunc)();
 }
@@ -306,7 +306,7 @@ void EnemyBase::ChangeNormalFunc()
 	m_drawFunc = &EnemyBase::NormalDraw;
 }
 
-void EnemyBase::StartDraw()
+void EnemyBase::StartDraw() const
 {
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
 	int alpha = static_cast<int>(96 * rate);
@@ -321,7 +321,7 @@ void EnemyBase::StartDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void EnemyBase::NormalDraw()
+void EnemyBase::NormalDraw() const
 {
 	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
@@ -339,7 +339,7 @@ void EnemyBase::NormalDraw()
 #endif
 }
 
-void EnemyBase::DrawHitWallEffect()
+void EnemyBase::DrawHitWallEffect() const
 {
 	// •Ç‚É“–‚½‚Á‚½ƒGƒtƒFƒNƒg‚Ì•`‰æ
 	for (const auto& walls : m_wallEff)

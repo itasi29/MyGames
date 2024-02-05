@@ -188,7 +188,7 @@ void Player::Update(Input& input, Ability ability)
 	m_objCol.SetCenter(m_pos, kObjColRadius, m_front.x * kColShift, m_front.y * kColShift);
 }
 
-void Player::Draw()
+void Player::Draw() const
 {
 	if (m_isExsit)
 	{

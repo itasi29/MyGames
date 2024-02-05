@@ -200,7 +200,7 @@ void EnemyDash::NormalUpdate()
 	m_col.SetCenter(m_pos, m_radius * static_cast<float>(m_circleSize));
 }
 
-void EnemyDash::NormalDraw()
+void EnemyDash::NormalDraw() const
 {
 	if (m_logFrame < kDashLogNum)
 	{

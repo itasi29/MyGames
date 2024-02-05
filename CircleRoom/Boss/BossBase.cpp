@@ -215,7 +215,7 @@ void BossBase::TitleUpdate()
 	}
 }
 
-void BossBase::TitleDraw()
+void BossBase::TitleDraw() const
 {
 	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],

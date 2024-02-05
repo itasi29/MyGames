@@ -38,7 +38,7 @@ public:
 	/// </summary>
 	void Init();
 	void Update(Input& input, Ability ability);
-	void Draw();
+	void Draw() const;
 
 	/// <summary>
 	/// ³–ÊƒxƒNƒgƒ‹‚ğæ“¾

@@ -26,7 +26,7 @@ private:
 	void StartUpdate() override;
 	void NormalUpdate() override;
 
-	void NormalDraw() override;
+	void NormalDraw() const override;
 
 	// ƒ_ƒbƒVƒ…‚ÉŠÖ‚·‚éˆ—
 	void Dash();

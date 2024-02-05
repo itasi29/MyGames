@@ -145,7 +145,7 @@ void EnemyDivision::NormalUpdate()
 	(this->*m_dUpdateFunc)();
 }
 
-void EnemyDivision::NormalDraw()
+void EnemyDivision::NormalDraw() const
 {
 	(this->*m_dDrawFunc)();
 }
@@ -207,7 +207,7 @@ void EnemyDivision::EndUpdate()
 	}
 }
 
-void EnemyDivision::UsuallyDraw()
+void EnemyDivision::UsuallyDraw() const
 {
 	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
@@ -224,7 +224,7 @@ void EnemyDivision::UsuallyDraw()
 #endif
 }
 
-void EnemyDivision::EndDraw()
+void EnemyDivision::EndDraw() const
 {
 	SetDrawScreen(m_rippleScreen);
 	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);

@@ -36,10 +36,10 @@ public:
 
 	void TitleInit();
 	void TitleUpdate();
-	void TitleDraw();
+	void TitleDraw() const;
 	virtual void Init(const Vec2&, bool isStart = false) {}
 	void Update();
-	void Draw();
+	void Draw() const;
 
 	/// <summary>
 	/// 当たり判定の中心座標を取得
@@ -83,10 +83,10 @@ protected:
 	virtual void NormalUpdate() = 0;
 
 	// 描画関数
-	virtual void StartDraw(); 
-	virtual void NormalDraw();
+	virtual void StartDraw() const;
+	virtual void NormalDraw() const;
 
-	void DrawHitWallEffect();
+	void DrawHitWallEffect() const;
 
 private:
 	void AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, float shiftY);
@@ -97,7 +97,7 @@ protected:
 
 	// メンバ関数ポインタ
 	using updateFunc_t = void(EnemyBase::*)();
-	using drawFunc_t = void(EnemyBase::*)();
+	using drawFunc_t = void(EnemyBase::*)() const;
 
 	updateFunc_t m_updateFunc;
 	drawFunc_t m_drawFunc;

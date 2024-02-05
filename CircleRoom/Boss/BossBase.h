@@ -40,7 +40,7 @@ public:
 
 	void TitleInit();
 	void TitleUpdate();
-	void TitleDraw();
+	void TitleDraw() const;
 	virtual void Init(const Vec2& pos, bool isStart = false) = 0;
 	void Update();
 	void Draw() const;
@@ -239,7 +239,7 @@ protected:
 	int m_ripple1;
 	int m_ripple2;
 	int m_ripple3;
-	// 半径の色を残す用
+	// 波紋の色を残す用
 	int m_rippleScreen;
 
 	int m_shakeSize;
