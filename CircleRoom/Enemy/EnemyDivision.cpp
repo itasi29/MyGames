@@ -50,6 +50,7 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize) :
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_charImg = mgr->LoadGraphic(L"Enemy/Division.png");
+	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowDivision.png");
 }
 
 EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase* stage) :
