@@ -284,6 +284,12 @@ void Player::Death()
 {
 	auto& sound = GameManager::GetInstance().GetSound();
 	sound->PlaySe(m_deathSe->GetHandle());
+
+	// ‹­‚³ 0~1000
+	// ŽžŠÔ ƒ~ƒŠ•b
+	// ˆÊ’u
+	StartJoypadVibration(DX_INPUT_PAD1, 1000, 200, 1);
+
 	m_isExsit = false;
 
 	m_deathFrame = 0;
