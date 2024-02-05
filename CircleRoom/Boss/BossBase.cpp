@@ -221,7 +221,7 @@ void BossBase::TitleDraw()
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	for (int i = kGraphNum - 1; i >= 0; i--)
+	for (int i = 0; i < kGraphNum; i++)
 	{
 		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
 			m_char[i]->GetHandle(), true);
@@ -412,6 +412,10 @@ void BossBase::DeathUpdate()
 {
 	(this->*m_deathUpdateFunc)();
 
+	m_angle[0] += -kRad * 0.5;
+	m_angle[1] += kRad * 0.25;
+	m_angle[2] += -kRad * 0.25;
+
 	for (auto& eff : m_particles)
 	{
 		eff.frame++;
@@ -504,7 +508,7 @@ void BossBase::StartDraw() const
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	for (int i = kGraphNum - 1; i >= 0; i--)
+	for (int i = 0; i < kGraphNum; i++)
 	{
 		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
 			m_char[i]->GetHandle(), true);
@@ -518,7 +522,7 @@ void BossBase::NormalDraw() const
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	for (int i = kGraphNum - 1; i >= 0; i--)
+	for (int i = 0; i < kGraphNum; i++)
 	{
 		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
 			m_char[i]->GetHandle(), true);
@@ -557,9 +561,9 @@ void BossBase::ExplotionDraw() const
 	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
-	for (int i = kGraphNum - 1; i >= 0; i--)
+	for (int i = 0; i < kGraphNum; i++)
 	{
-		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+		DrawRotaGraph(x, y, 1.0, m_angle[i],
 			m_char[i]->GetHandle(), true);
 	}
 }
@@ -575,9 +579,9 @@ void BossBase::ShakeDraw() const
 	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
-	for (int i = kGraphNum - 1; i >= 0; i--)
+	for (int i = 0; i < kGraphNum; i++)
 	{
-		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+		DrawRotaGraph(x, y, 1.0, m_angle[i],
 			m_char[i]->GetHandle(), true);
 	}
 }
@@ -601,11 +605,12 @@ void BossBase::LastDraw() const
 			int drawX = x + static_cast<int>(kRectSpeed[rectX] * (m_endPerformanceFrame + abs(sinf(angle))));
 			int drawY = y + static_cast<int>(kRectSpeed[rectY] * (m_endPerformanceFrame + abs(sinf(angle))));
 
-			for (int i = kGraphNum - 1; i >= 0; i--)
-			{
-				DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
-					m_char[i]->GetHandle(), true);
-			}
+			DrawRectRotaGraph(drawX, drawY, rectX * kRectWidth, rectY * kRectHeight, kRectWidth, kRectHeight,
+				1.0, angle * (rectX * kRectRow + rectY), m_charAll->GetHandle(), true);
+#if false
+			DrawRotaGraph(drawX, drawY, 1.0, 0.0,
+				m_charAll->GetHandle(), true);
+#endif
 
 			y += kRectHeight;
 		}

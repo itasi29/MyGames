@@ -79,6 +79,7 @@ BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* sta
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charAll = mgr->LoadGraphic(L"Enemy/BossArmored.png");
 	m_char[0] = mgr->LoadGraphic(L"Enemy/BossArmoredOutside.png");
 	m_char[1] = mgr->LoadGraphic(L"Enemy/BossArmoredMiddle.png");
 	m_char[2] = mgr->LoadGraphic(L"Enemy/BossArmoredCenter.png");

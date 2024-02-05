@@ -171,6 +171,7 @@ protected:
 	const float m_fieldSize;
 
 	// キャラ画像
+	std::shared_ptr<FileBase> m_charAll;
 	std::array<std::shared_ptr<FileBase>, kGraphNum> m_char;
 	std::shared_ptr<FileBase> m_shadow;
 	// HPバー関連の画像
