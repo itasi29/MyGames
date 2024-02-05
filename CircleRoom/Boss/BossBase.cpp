@@ -458,6 +458,8 @@ void BossBase::ExplotionUpdate()
 		auto& sound = GameManager::GetInstance().GetSound();
 		sound->PlaySe(m_explosionSe->GetHandle());
 
+		StartJoypadVibration(DX_INPUT_PAD1, 200 * m_performanceNum, 200, 1);
+
 		// 最後の爆発エフェクト立った場合
 		if (m_performanceNum >= kPerformaceNum)
 		{
@@ -478,6 +480,9 @@ void BossBase::ShakeUpdate()
 		// 最後の爆発音鳴らす
 		auto& sound = GameManager::GetInstance().GetSound();
 		sound->PlaySe(m_explosionLastSe->GetHandle());
+
+		StartJoypadVibration(DX_INPUT_PAD1, 1000, 1000, 1);
+
 
 		m_deathUpdateFunc = &BossBase::LastUpdate;
 		m_deathDrawFunc = &BossBase::LastDraw;

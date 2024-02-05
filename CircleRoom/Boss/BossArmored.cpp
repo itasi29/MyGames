@@ -189,6 +189,8 @@ void BossArmored::OnDamage()
 	auto& sound = GameManager::GetInstance().GetSound();
 	sound->PlaySe(m_damageSe->GetHandle());
 
+	StartJoypadVibration(DX_INPUT_PAD1, 400, 200, 1);
+
 	m_stage->UpTime();
 
 	m_radian = 0;
