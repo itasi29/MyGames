@@ -55,7 +55,9 @@ BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize) :
 	m_color = kColor;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
-	m_charImg = mgr->LoadGraphic(L"Enemy/BossStrongArmored.png");
+	m_char[0] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredOutside.png");
+	m_char[1] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredMiddle.png");
+	m_char[2] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredCenter.png");
 }
 
 BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -65,7 +67,9 @@ BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, St
 	m_color = kColor;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
-	m_charImg = mgr->LoadGraphic(L"Enemy/BossStrongArmored.png");
+	m_char[0] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredOutside.png");
+	m_char[1] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredMiddle.png");
+	m_char[2] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredCenter.png");
 }
 
 BossStrongArmored::~BossStrongArmored()
@@ -82,29 +86,7 @@ bool BossStrongArmored::OnAttack(bool isDash, const Collision& col)
 
 	for (const auto& obj : m_objects)
 	{
-		if (obj->IsPickUp())
-		{
-#if false
-			if (obj->IsEnd())
-			{
-				auto& sound = GameManager::GetInstance().GetSound();
-				sound->PlaySe(m_damageSe->GetHandle());
-
-				m_onDamagetFrame = kOnDamageFrame;
-				m_drawOnDamagetX = static_cast<int>(m_pos.x);
-				m_drawOnDamagetY = static_cast<int>(m_pos.y);
-
-				m_radian = 0;
-
-				GameManager& mgr = GameManager::GetInstance();
-				mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
-				HitStop();
-
-				isHit = true;
-			}
-#endif
-			continue;
-		}
+		if (obj->IsPickUp())	continue;
 
 		if (col.IsCollsion(obj->GetRect()))
 		{
@@ -139,10 +121,6 @@ void BossStrongArmored::OnDamage()
 
 	m_stage->UpTime();
 
-	m_onDamagetFrame = kOnDamageFrame;
-	m_drawOnDamagetX = static_cast<int>(m_pos.x);
-	m_drawOnDamagetY = static_cast<int>(m_pos.y);
-
 	m_radian = 0;
 
 	GameManager& mgr = GameManager::GetInstance();
@@ -155,13 +133,14 @@ void BossStrongArmored::OnDamage()
 void BossStrongArmored::NormalDraw() const
 {
 	// ‰e‚Ì•`‰æ
-	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
-		m_charImg->GetHandle(), true);
-
-	DrawDamageEffect();
+	for (int i = 0; i < kGraphNum; i++)
+	{
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+			m_char[i]->GetHandle(), true);
+	}
 
 	DrawHitWallEffect();
 

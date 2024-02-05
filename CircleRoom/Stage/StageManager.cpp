@@ -15,7 +15,7 @@
 
 namespace
 {
-	constexpr float kVersion = 1.2f;
+	constexpr float kVersion = 1.3f;
 
 	// ファイル用
 	struct StageInfHeader
@@ -62,7 +62,7 @@ StageManager::StageManager(std::shared_ptr<SceneManager>& mgr) :
 {
 	// 初期化(読み込みに失敗した場合は初プレイと同じとする)
 	InitData();
-	Load(L"Data/Bin/stg.inf");
+	Load(L"Data/stg.inf");
 
 	m_drawScreen = MakeScreen(m_size.w, m_size.h, true);
 	m_screen = MakeScreen(m_size.w * kRow + kStageMarginX * kRow, m_size.h * kLine + kStageMarginY * kLine, true);
@@ -77,7 +77,7 @@ StageManager::~StageManager()
 	DeleteGraph(m_drawScreen);
 	DeleteGraph(m_screen);
 	DeleteGraph(m_keepScreen);
-	Save("Data/Bin/stg.inf");
+	Save("Data/stg.inf");
 }
 
 void StageManager::Init()

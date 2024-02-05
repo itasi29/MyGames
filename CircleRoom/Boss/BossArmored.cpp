@@ -65,7 +65,9 @@ BossArmored::BossArmored(const size& windowSize, float fieldSize) :
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
-	m_charImg = mgr->LoadGraphic(L"Enemy/BossArmored.png");
+	m_char[0] = mgr->LoadGraphic(L"Enemy/BossArmoredOutside.png");
+	m_char[1] = mgr->LoadGraphic(L"Enemy/BossArmoredMiddle.png");
+	m_char[2] = mgr->LoadGraphic(L"Enemy/BossArmoredCenter.png");
 }
 
 BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* stage) :
@@ -77,7 +79,9 @@ BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* sta
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
-	m_charImg = mgr->LoadGraphic(L"Enemy/BossArmored.png");
+	m_char[0] = mgr->LoadGraphic(L"Enemy/BossArmoredOutside.png");
+	m_char[1] = mgr->LoadGraphic(L"Enemy/BossArmoredMiddle.png");
+	m_char[2] = mgr->LoadGraphic(L"Enemy/BossArmoredCenter.png");
 }
 
 BossArmored::~BossArmored()
@@ -100,7 +104,7 @@ void BossArmored::Init(const Vec2& pos, bool isStart)
 	m_radian = 0;
 
 	// 回転初期化
-	m_angle = 0.0;
+	m_angle = {};
 
 	// フレームの初期化
 	m_frame = 0;
@@ -152,44 +156,7 @@ bool BossArmored::OnAttack(bool isDash, const Collision& col)
 
 	for (const auto& obj : m_objects)
 	{
-		if (obj->IsPickUp())
-		{
-#if false
-			if (obj->IsEnd())
-			{
-				auto& sound = GameManager::GetInstance().GetSound();
-				sound->PlaySe(m_damageSe->GetHandle());
-
-				m_onDamagetFrame = kOnDamageFrame;
-				m_drawOnDamagetX = static_cast<int>(m_pos.x);
-				m_drawOnDamagetY = static_cast<int>(m_pos.y);
-
-				m_radian = 0;
-
-				isHit = true;
-
-				m_hp--;
-				m_hpWidth = static_cast<int>(kHpBarWidth * (m_hp / static_cast<float>(m_maxHp)));
-
-				// HPがゼロになったら死亡とする
-				if (m_hp <= 0)
-				{
-					// バーの描画問題でHPを0にしておく
-					m_hp = 0;
-					m_isExsit = false;
-					OnDeath();
-
-					return isHit;
-				}
-
-				GameManager& mgr = GameManager::GetInstance();
-				mgr.GetScene()->ShakeScreen(kShakeFrame, kShakeSize);
-				HitStop();
-
-			}
-#endif
-			continue;
-		}
+		if (obj->IsPickUp())	continue;
 
 		if (col.IsCollsion(obj->GetRect()))
 		{
@@ -222,10 +189,6 @@ void BossArmored::OnDamage()
 	sound->PlaySe(m_damageSe->GetHandle());
 
 	m_stage->UpTime();
-
-	m_onDamagetFrame = kOnDamageFrame;
-	m_drawOnDamagetX = static_cast<int>(m_pos.x);
-	m_drawOnDamagetY = static_cast<int>(m_pos.y);
 
 	m_radian = 0;
 
@@ -277,15 +240,15 @@ void BossArmored::StartUpdate()
 
 void BossArmored::NormalUpdate()
 {
-	m_onDamagetFrame--;
-
 	m_radian += kRadian;
 
 	if (m_radian > 2 * kPai)
 	{
 		m_radian = 0;
 	}
-	m_angle -= kRad;
+	m_angle[0] += -kRad * 2;
+	m_angle[1] += kRad;
+	m_angle[2] += -kRad;
 
 	m_conversionVec.x = m_vec.x * cosf(m_radian);
 	m_conversionVec.y = m_vec.y * sinf(m_radian);
@@ -313,19 +276,20 @@ void BossArmored::NormalUpdate()
 void BossArmored::NormalDraw() const
 {
 	// 影の描画
-	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
-		m_charImg->GetHandle(), true);
+	for (int i = 0; i < kGraphNum; i++)
+	{
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+			m_char[i]->GetHandle(), true);
+	}
 
 	// ダメージオブジェクトの描画
 	for (const auto& obj : m_objects)
 	{
 		obj->Draw();
 	}
-
-	DrawDamageEffect();
 
 	DrawHitWallEffect();
 

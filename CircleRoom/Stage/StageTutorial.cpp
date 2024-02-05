@@ -62,6 +62,7 @@ StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	m_handle[2] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation0.png");
 	m_handle[3] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation1.png");
 	m_handle[4] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation2.png");
+	m_handle[5] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation3.png");
 
 	m_arrow[0] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis0.png");
 	m_arrow[1] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis1.png");
@@ -81,6 +82,8 @@ StageTutorial::~StageTutorial()
 
 void StageTutorial::Init()
 {
+	m_achived.clear();
+
 	m_frame = 0;
 	m_createFrame = 0;
 	m_extRateFrame = 0;
@@ -159,7 +162,7 @@ void StageTutorial::UpdateSelect(Input& input)
 	case kClear:
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
 		m_index++;
-		if (m_index >= 5)
+		if (m_index >= 6)
 		{
 			m_explanation = kPlay;
 		}
@@ -202,7 +205,7 @@ void StageTutorial::UpdatePlaying(Input& input)
 		{
 			// ƒvƒŒƒCƒ„[‚ÌŽ€–Sˆ—
 			m_player->Death();
-#if false
+#if true
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
 #else
 			m_mgr.GetScene()->MoveScreen(m_player->GetFront());

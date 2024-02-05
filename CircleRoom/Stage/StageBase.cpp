@@ -103,6 +103,8 @@ namespace
 	constexpr int kWaitExtRateFrame = 30;
 	// 拡大サイズ
 	constexpr float kExtRateSize = 2.0f;
+	// 
+	constexpr int kShiftWidth = 256;
 	// 右にずらす量
 	constexpr int kShiftRight = 320;
 	// 上にずらす量
@@ -123,7 +125,8 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_waveAngle(DX_PI_F),
 	m_isWaveDraw(true),
 	m_isUpdateTime(false),
-	m_isUpdateBestTime(false)
+	m_isUpdateBestTime(false),
+	m_isExtRate(true)
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
@@ -159,6 +162,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
+	m_clearSe = file->LoadSound(L"Se/clear.mp3");
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
@@ -245,6 +249,9 @@ void StageBase::UpdateSelect(Input& input)
 		m_waveAngle = 0;
 		m_extRateFrame = 0;
 
+		// 条件達成文字の消去
+		m_achived.clear();
+
 		// 各種初期化処理
 		Init();
 	}
@@ -283,7 +290,7 @@ void StageBase::UpdatePlaying(Input& input)
 			// プレイヤーの死亡処理
 			m_player->Death();
 			m_mgr.UpdateDeathCcount();
-#if false
+#if true
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
 #else
 			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
@@ -325,7 +332,7 @@ void StageBase::UpdatePlaying(Input& input)
 			// プレイヤーの死亡処理
 			m_player->Death();
 			m_mgr.UpdateDeathCcount();
-#if false
+#if true
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
 #else
 			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
@@ -351,6 +358,8 @@ void StageBase::UpdatePlaying(Input& input)
 	if (!m_player->IsExsit())
 	{
 		UniqueEndProcessing();
+
+		m_isExtRate = false;
 
 		// メンバ関数ポインタを選択の方に戻す
 		m_updateFunc = &StageBase::UpdateSelect;
@@ -517,7 +526,7 @@ void StageBase::DrawPlaying()
 
 	SetDrawScreen(drawScreenHandle);
 	// 拡大描画
-	if (m_extRateFrame < kExtRateFrame)
+	if (m_isExtRate && m_extRateFrame < kExtRateFrame)
 	{
 		DrawExpansion();
 	}
@@ -558,12 +567,9 @@ void StageBase::CheckConditionsTime(const std::string& stageName, int timeFrame,
 	if (stage->IsClearStage(stageName)) return;
 
 	// ベストタイムが条件時間を超えているか
-#if false
-	if (stage->GetBestTime(m_stageName) > exsitTime * 60)
-#else
 	if (timeFrame > exsitTime * 60)
-#endif
 	{
+		m_sound->PlaySe(m_clearSe->GetHandle());
 		stage->SaveClear(stageName);
 		AddAchivedStr(dir);
 	}
@@ -578,6 +584,7 @@ void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNu
 
 	if (stage->GetEnemyTypeCount() >= killedNum)
 	{
+		m_sound->PlaySe(m_clearSe->GetHandle());
 		stage->SaveClear(stageName);
 		AddAchivedStr(dir);
 	}
@@ -594,9 +601,6 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 	// 確認するステージのすべてのタイムを加算する
 	for (const auto& name : names)
 	{
-#if false
-		sumTime += stage->GetBestTime(name);
-#else
 		if (name == m_stageName)
 		{
 			sumTime += timeFrame;
@@ -605,12 +609,12 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 		{
 			sumTime += stage->GetBestTime(name);
 		}
-#endif
 	}
 
 	// 加算した時間が超えているか
 	if (sumTime >= exsitTime * 60)
 	{
+		m_sound->PlaySe(m_clearSe->GetHandle());
 		stage->SaveClear(stageName);
 		AddAchivedStr(dir);
 	}
@@ -740,6 +744,8 @@ void StageBase::DrawExpansion()
 	int width = m_size.w;
 	int height = m_size.h;
 
+	int posX = 0;
+
 	//int left = -kShiftRight * kExtRateSize;
 	int left = 0;
 	int right = width + static_cast<int>((width - kShiftRight) * kExtRateSize);
@@ -749,6 +755,8 @@ void StageBase::DrawExpansion()
 	if (m_extRateFrame > kWaitExtRateFrame)
 	{
 		float rate = 1.0f - ((m_extRateFrame - kWaitExtRateFrame) / static_cast<float>(kExtRateFrame - kWaitExtRateFrame));
+
+		posX = static_cast<int>(kShiftWidth * rate);
 
 		//left = -kShiftRight * kExtRateSize * rate;
 		right = width + static_cast<int>((width - kShiftRight) * kExtRateSize * rate);
@@ -760,10 +768,11 @@ void StageBase::DrawExpansion()
 	}
 	else
 	{
+		posX = kShiftWidth;
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kExtRateAlpha);
 	}
 
-	DrawExtendGraph(left, top, right, bottom, m_extScreen, true);
+	DrawExtendGraph(posX + left, top, posX + right, bottom, m_extScreen, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 

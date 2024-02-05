@@ -46,7 +46,7 @@ namespace
 	// 事前に読み込んでおくデータのpath
 	const std::vector<PathData> kPath =
 	{
-		{L"Enemy/wallEffect.png", kGraph},
+		//{L"Enemy/wallEffect.png", kGraph},
 		{L"Player/blood.png", kGraph},
 		{L"UI/backFrame.png", kGraph},
 		{L"Bgm/provisionalBgm.mp3", kSound},

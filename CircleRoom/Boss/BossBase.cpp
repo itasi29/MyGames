@@ -7,6 +7,7 @@
 #include "FileSystem/ImageFile.h"
 #include "FileSystem/FontSystem.h"
 
+#include "Enemy/EnemyBase.h"
 #include "BossBase.h"
 
 namespace
@@ -30,7 +31,6 @@ namespace
 
 	// HPバーの描画位置
 	constexpr int kDrawHpBarX = 960;
-//	constexpr int kDrawHpBarY = 288;
 	constexpr int kDrawHpBarY = 512;
 	// HPバーの縦幅
 	constexpr int kHpBarHeight = 56;
@@ -55,51 +55,34 @@ namespace
 	constexpr float kRectAngle = DX_PI_F / 180 * 4;
 
 
-	// 1エフェクト何フレームか
-	constexpr int kWallEffectInterval = 3;
+
+	// エフェクトのスピード
+	constexpr float kWallEffSpeed = 4.0f;
+	// エフェクト数
+	constexpr int kWallEffNum = 5;
 	// 壁に当たったエフェクトをするフレーム
-	constexpr int kWallHitFrame = 19 * kWallEffectInterval;
-	// 画像サイズ
-	constexpr int kWallEffectGraphSize = 64;
-	// 拡大率
-	constexpr double kExtRate = 0.75;
-	// 行数
-	constexpr int kRow = 8;
-	// 列数の種類数
-	constexpr int kEffectTypeNum = 4;
-	// 出すエフェクトの列の場所
-	constexpr int kLine[kEffectTypeNum] = {
-		0, 4, 7, 8
-	};
-
-	// ダメージエフェクトの画像サイズ
-	constexpr int kDamageGraphSize = 64;
-	// ダメージエフェクトサイズ
-	constexpr double kDamageSize = 3.0;
-	// ダメージエフェクトの画像の縦切り取り位置
-	constexpr int kSrcY = 8 * kDamageGraphSize;
-	// 横の数
-	constexpr int kDamageRow = 11;
-	// 1エフェクト何フレーム
-	constexpr int kDamageEffInterval = 3;
-
-	// ずらす量
-	constexpr int kWallEffectSlide = 32;
+	constexpr int kWallEffFrame = 30;
 
 	// HitStopフレーム
 	constexpr int kHitStopFrame = 1;
 
 	/*死亡時の演出について*/
 	// 演出数
-	constexpr int kPerformaceNum = 6;
+	constexpr int kPerformaceNum = 4;
 	// 演出の間隔
-	constexpr int kPerformanceInterval = 45;
+	constexpr int kPerformanceInterval = 68;
 	// 震わせるフレーム
-	constexpr int kShakeFrame = 30;
+	constexpr int kShakeFrame = 60;
 	// エフェクトインターバル
 	constexpr int kPerEffInterval = 3;
 	// エフェクト終了フレーム
 	constexpr int kEndPerformanceFrame = 60;
+	// 震わせる最初の大きさ
+	constexpr int kShakeStartSize = 2;
+	// 震わせる最大大きさ
+	constexpr int kShakeMaxSize = 50;
+	// 増やしていく大きさ
+	constexpr int kShakeAdd = static_cast<int>((kShakeMaxSize - kShakeStartSize) / kPerformaceNum);
 
 	// 最後の円の線の大きさとスピード
 	// MEMO:線の大きさとスピードは同じほうが見栄えが良い
@@ -107,14 +90,13 @@ namespace
 }
 
 BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
-	m_angle(0.0),
+	m_angle({}),
 	m_size(windowSize),
 	m_fieldSize(fieldSize),
 	m_maxHp(maxHp),
 	m_isExsit(true),
 	m_hp(maxHp),
 	m_hitStopFrame(kHitStopFrame),
-	m_lineType(0),
 	m_isEndPerformance(false)
 {
 	m_rippleScreen = MakeScreen(m_size.w, m_size.h, true);
@@ -125,16 +107,13 @@ BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
 	m_deathDrawFunc = &BossBase::ExplotionDraw;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
-	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowLarge.png");
-	m_wallEffect = mgr->LoadGraphic(L"Enemy/wallEffect.png");
-#if false
-	m_damageEffect = mgr->LoadGraphic(L"Enemy/damageEffect.png");
-#endif
+	m_shadow = mgr->LoadGraphic(L"Enemy/ShadowBoss.png");
+	m_wallEffect = mgr->LoadGraphic(L"Enemy/wallEff.png");
 	m_hpBar = mgr->LoadGraphic(L"UI/HpBar.png");
 	m_hpBarBack = mgr->LoadGraphic(L"UI/HpBarBack.png");
 	m_hpBarDown = mgr->LoadGraphic(L"UI/HpBarDown.png");
 	m_hpBarFrame = mgr->LoadGraphic(L"UI/HpBarFrame.png");
-	m_performance = mgr->LoadGraphic(L"Enemy/endPerformance.png");
+	m_particle = mgr->LoadGraphic(L"Enemy/missileEff.png");
 
 	m_createSe = mgr->LoadSound(L"Se/create.mp3");
 	m_damageSe = mgr->LoadSound(L"Se/bossDamage.mp3");
@@ -184,7 +163,9 @@ void BossBase::TitleInit()
 void BossBase::TitleUpdate()
 {
 	m_pos += m_vec;
-	m_angle -= kRad;
+	m_angle[0] += -kRad * 2;
+	m_angle[1] += kRad;
+	m_angle[2] += -kRad;
 	
 	// 画面外判定
 	// FIXME:時間があれば関数化
@@ -237,15 +218,39 @@ void BossBase::TitleUpdate()
 void BossBase::TitleDraw()
 {
 	// 影の描画
-	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 2.0, m_angle,
-		m_charImg->GetHandle(), true);
+	for (int i = kGraphNum - 1; i >= 0; i--)
+	{
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+			m_char[i]->GetHandle(), true);
+	}
 }
 
 void BossBase::Update()
 {
+	for (auto& walls : m_wallEff)
+	{
+		for (auto& eff : walls.effs)
+		{
+			eff.pos += eff.vec;
+		}
+		walls.frame++;
+
+		if (walls.frame > kWallEffFrame)
+		{
+			walls.isUse = false;
+		}
+	}
+	m_wallEff.remove_if(
+		[](const auto& walls)
+		{
+			return !walls.isUse;
+		}
+
+	);
+
 	(this->*m_updateFunc)();
 }
 
@@ -273,8 +278,6 @@ bool BossBase::OnAttack(bool isDash, const Collision& rect)
 
 bool BossBase::Reflection()
 {
-	m_wallHitFrame--;
-
 	float centerX = m_size.w * 0.5f;
 	float centerY = m_size.h * 0.5f;
 
@@ -282,13 +285,10 @@ bool BossBase::Reflection()
 	if (m_pos.x - m_radius < centerX - m_fieldSize)
 	{
 		m_pos.x = centerX - m_fieldSize + m_radius;
+
+		AddWallEff({ centerX - m_fieldSize, m_pos.y }, 4, 6, 16, 8);
 		ReflectionCal(kNorVecLeft);
 		ShiftReflection(kShiftSide);
-
-		m_wallHitFrame = kWallHitFrame;
-
-		m_drawWallHitX = static_cast<int>(m_pos.x - kWallEffectSlide - m_radius);
-		m_drawWallHitY = static_cast<int>(m_pos.y);
 
 		return true;
 	}
@@ -296,13 +296,10 @@ bool BossBase::Reflection()
 	if (m_pos.x + m_radius > centerX + m_fieldSize)
 	{
 		m_pos.x = centerX + m_fieldSize - m_radius;
+
+		AddWallEff({ centerX + m_fieldSize, m_pos.y }, 4, -2, 16, 8);
 		ReflectionCal(kNorVecRight);
 		ShiftReflection(kShiftSide);
-
-		m_wallHitFrame = kWallHitFrame;
-
-		m_drawWallHitX = static_cast<int>(m_pos.x + kWallEffectSlide + m_radius);
-		m_drawWallHitY = static_cast<int>(m_pos.y);
 
 		return true;
 	}
@@ -310,13 +307,10 @@ bool BossBase::Reflection()
 	if (m_pos.y - m_radius < centerY - m_fieldSize)
 	{
 		m_pos.y = centerY - m_fieldSize + m_radius;
+
+		AddWallEff({ m_pos.x, centerY - m_fieldSize }, 16, 8, 4, 6);
 		ReflectionCal(kNorVecUp);
 		ShiftReflection(kShiftVert);
-
-		m_wallHitFrame = kWallHitFrame;
-
-		m_drawWallHitX = static_cast<int>(m_pos.x);
-		m_drawWallHitY = static_cast<int>(m_pos.y - kWallEffectSlide - m_radius);
 
 		return true;
 	}
@@ -324,13 +318,10 @@ bool BossBase::Reflection()
 	if (m_pos.y + m_radius > centerY + m_fieldSize)
 	{
 		m_pos.y = centerY + m_fieldSize - m_radius;
+
+		AddWallEff({ m_pos.x, centerY + m_fieldSize }, 16, 8, 4, -2);
 		ReflectionCal(kNorVecDown);
 		ShiftReflection(kShiftVert);
-
-		m_wallHitFrame = kWallHitFrame;
-
-		m_drawWallHitX = static_cast<int>(m_pos.x);
-		m_drawWallHitY = static_cast<int>(m_pos.y + kWallEffectSlide + m_radius);
 
 		return true;
 	}
@@ -340,8 +331,6 @@ bool BossBase::Reflection()
 
 void BossBase::ReflectionCal(const Vec2& norVec)
 {
-	m_lineType = GetRand(kEffectTypeNum);
-
 	// 法線ベクトルの2倍から現在のベクトルを引く
 	m_vec = m_vec + norVec * norVec.Dot(-m_vec) * 2.0f;
 }
@@ -405,6 +394,9 @@ void BossBase::OnDeath()
 
 	m_updateFunc = &BossBase::DeathUpdate;
 	m_drawFunc = &BossBase::DeathDraw;
+
+	m_particles.clear();
+	m_shakeSize = kShakeStartSize;
 }
 
 void BossBase::HitStopUpdate()
@@ -420,15 +412,17 @@ void BossBase::DeathUpdate()
 {
 	(this->*m_deathUpdateFunc)();
 
-	for (auto& eff : m_performanceEff)
+	for (auto& eff : m_particles)
 	{
 		eff.frame++;
-		if (eff.frame > 9 * kPerEffInterval)
+		eff.pos += eff.vec;
+
+		if (eff.frame > 30)
 		{
 			eff.isEnd = true;
 		}
 	}
-	m_performanceEff.remove_if(
+	m_particles.remove_if(
 		[](const auto& eff)
 		{
 			return eff.isEnd;
@@ -441,21 +435,21 @@ void BossBase::ExplotionUpdate()
 	m_pos += m_vec;
 	m_endPerformanceFrame++;
 
+	AddParticleEff();
+
 	if (m_endPerformanceFrame > 10)
 	{
 		m_isShake = false;
 	}
+	m_isShake = true;
 
 	if (m_endPerformanceFrame > kPerformanceInterval)
 	{
 		m_performanceNum++;
 		m_endPerformanceFrame = 0;
-		Vec2 pos = m_pos;
-		pos.x += (GetRand(30) - 15) * 10;
-		pos.y += (GetRand(30) - 15) * 10;
-		m_performanceEff.push_back({ pos, 0, false });
-		// 震わせる
+		// 震わせる大きさ増加
 		m_isShake = true;
+		m_shakeSize += kShakeAdd;
 		// 爆発音ならす
 		auto& sound = GameManager::GetInstance().GetSound();
 		sound->PlaySe(m_explosionSe->GetHandle());
@@ -472,6 +466,7 @@ void BossBase::ExplotionUpdate()
 void BossBase::ShakeUpdate()
 {
 	m_endPerformanceFrame++;
+	AddParticleEff();
 
 	if (m_endPerformanceFrame > kShakeFrame)
 	{
@@ -506,25 +501,30 @@ void BossBase::StartDraw() const
 	int alpha = static_cast<int>(255 * rate);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	// 影の描画
-	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
-		m_charImg->GetHandle(), true);
+	for (int i = kGraphNum - 1; i >= 0; i--)
+	{
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+			m_char[i]->GetHandle(), true);
+	}
+
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void BossBase::NormalDraw() const
 {// 影の描画
-	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
+	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
-	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
-		m_charImg->GetHandle(), true);
+	for (int i = kGraphNum - 1; i >= 0; i--)
+	{
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+			m_char[i]->GetHandle(), true);
+	}
 
 	DrawHitWallEffect();
-
-	DrawDamageEffect();
 
 #ifdef _DEBUG
 	// 当たり判定の描画
@@ -536,14 +536,14 @@ void BossBase::DeathDraw() const
 {
 	(this->*m_deathDrawFunc)();
 
-	for (const auto& eff : m_performanceEff)
+	for (const auto& eff : m_particles)
 	{
-		int srcX = 64 * (eff.frame / kPerEffInterval);
-		int srcY = 64 * 5;
+		int alpha = static_cast<int>(255 * (1.0f - eff.frame / 30.0f));
 
-		DrawRectRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), srcX, srcY, 64, 64,
-			3.0, 0.0, m_performance->GetHandle(), true);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), eff.size, 0.0, m_particle->GetHandle(), true);
 	}
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void BossBase::ExplotionDraw() const
@@ -551,17 +551,17 @@ void BossBase::ExplotionDraw() const
 	int x = static_cast<int>(m_pos.x);
 	int y = static_cast<int>(m_pos.y);
 
-	if (m_isShake)
-	{
-		x += GetRand(30) - 15;
-		y += GetRand(30) - 15;
-	}
+	x += GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5);
+	y += GetRand(m_shakeSize) - static_cast<int>(m_shakeSize * 0.5);
 
 	// 影の描画
-	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle,
+	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
-	DrawRotaGraph(x, y, 1.0, m_angle,
-		m_charImg->GetHandle(), true);
+	for (int i = kGraphNum - 1; i >= 0; i--)
+	{
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+			m_char[i]->GetHandle(), true);
+	}
 }
 
 void BossBase::ShakeDraw() const
@@ -569,14 +569,17 @@ void BossBase::ShakeDraw() const
 	int x = static_cast<int>(m_pos.x);
 	int y = static_cast<int>(m_pos.y);
 
-	x += GetRand(30) - 15;
-	y += GetRand(30) - 15;
+	x += GetRand(kShakeMaxSize) - static_cast<int>(kShakeMaxSize * 0.5);
+	y += GetRand(kShakeMaxSize) - static_cast<int>(kShakeMaxSize * 0.5);
 
 	// 影の描画
-	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle,
+	DrawRotaGraph(x + 10, y + 10, 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
-	DrawRotaGraph(x, y, 1.0, m_angle,
-		m_charImg->GetHandle(), true);
+	for (int i = kGraphNum - 1; i >= 0; i--)
+	{
+		DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+			m_char[i]->GetHandle(), true);
+	}
 }
 
 void BossBase::LastDraw() const
@@ -598,8 +601,11 @@ void BossBase::LastDraw() const
 			int drawX = x + static_cast<int>(kRectSpeed[rectX] * (m_endPerformanceFrame + abs(sinf(angle))));
 			int drawY = y + static_cast<int>(kRectSpeed[rectY] * (m_endPerformanceFrame + abs(sinf(angle))));
 
-			DrawRectRotaGraph(drawX, drawY, rectX * kRectWidth, rectY * kRectHeight, kRectWidth, kRectHeight,
-				1.0, angle * (rectX * kRectRow + rectY), m_charImg->GetHandle(), true);
+			for (int i = kGraphNum - 1; i >= 0; i--)
+			{
+				DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle[i],
+					m_char[i]->GetHandle(), true);
+			}
 
 			y += kRectHeight;
 		}
@@ -655,33 +661,73 @@ void BossBase::DrawHpBar() const
 void BossBase::DrawHitWallEffect() const
 {
 	// 壁に当たったエフェクトの描画
-	if (m_wallHitFrame > 0)
+	for (const auto& walls : m_wallEff)
 	{
-		int x = m_drawWallHitX - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
-		int y = m_drawWallHitY - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
+		int alpha = static_cast<int>(255 * (1.0f - walls.frame / static_cast<float>(kWallEffFrame)));
 
-		int index = (kWallHitFrame - m_wallHitFrame) / kWallEffectInterval;
-		int srcX = kWallEffectGraphSize * (index % kRow);
-		int srcY = kWallEffectGraphSize * kLine[m_lineType];
-
-		DrawRectRotaGraph(x, y, srcX, srcY, kWallEffectGraphSize, kWallEffectGraphSize, kExtRate, 0.0, m_wallEffect->GetHandle(), true);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		for (const auto& eff : walls.effs)
+		{
+			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), eff.size, 0.0, m_wallEffect->GetHandle(), true);
+		}
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 }
 
-void BossBase::DrawDamageEffect() const
+
+void BossBase::AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, float shiftY)
 {
-#if false
-	if (m_onDamagetFrame > 0)
+	std::vector<WallEff> effs;
+	effs.resize(kWallEffNum);
+
+	float x, y;
+
+	shiftX *= 0.125f;
+	shiftY *= 0.125f;
+
+	for (auto& eff : effs)
 	{
-		int x = m_drawOnDamagetX - static_cast<int>(kDamageGraphSize * 0.5f - kDamageGraphSize * kDamageSize * 0.5f);
-		int y = m_drawOnDamagetY - static_cast<int>(kDamageGraphSize * 0.5f - kDamageGraphSize * kDamageSize * 0.5f);
+		eff.size = 0.6 + GetRand(10) * 0.1 - 0.5;
 
-		int index = (kOnDamageFrame - m_onDamagetFrame) / kDamageEffInterval;
-		int srcX = kDamageGraphSize * (index % kDamageRow);
+		eff.pos = pos;
 
-		DrawRectRotaGraph(x, y, srcX, kSrcY, kDamageGraphSize, kDamageGraphSize,
-			kDamageSize, 0.0, m_damageEffect->GetHandle(), true);
+		x = GetRand(sizeX) * 0.125f - shiftX;
+		y = GetRand(sizeY) * 0.125f - shiftY;
+
+		eff.vec = { x, y };
+		eff.vec.Normalize();
+
+		eff.vec = eff.vec * static_cast<float>(eff.size) * kWallEffSpeed;
 	}
-#endif
+
+	m_wallEff.push_back({ effs, true, 0 });
+}
+
+void BossBase::AddParticleEff()
+{
+	ParticleEff eff;
+
+	// MEMO:初回と二回目が０スタートだと変わらないため
+	int num = -1;
+
+	do
+	{
+		eff.size = GetRand(10) * 0.1 + 0.2;
+
+		float x = GetRand(16) * 0.125f - 1.0f;
+		float y = GetRand(16) * 0.125f - 1.0f;
+
+		eff.vec = { x, y };
+
+		eff.vec.Normalize();
+
+		eff.pos = m_pos + eff.vec * m_radius;
+
+		eff.vec = eff.vec * static_cast<float>(eff.size) * 8.0f;
+
+		m_particles.push_back(eff);
+
+		num++;
+	} while (num < m_performanceNum);
 }
 

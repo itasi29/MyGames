@@ -3,15 +3,28 @@
 #include <string>
 #include <memory>
 #include <list>
+#include <array>
 #include "Vec2.h"
 #include "Utility/Collision.h"
 
 struct size;
 class FileBase;
+struct WallEffMass;
 
 struct PerformanceEff
 {
 	Vec2 pos;
+	int frame = 0;
+	bool isEnd = false;
+};
+
+struct ParticleEff
+{
+	Vec2 pos;
+	Vec2 vec;
+
+	double size;
+
 	int frame = 0;
 	bool isEnd = false;
 };
@@ -126,9 +139,14 @@ protected:
 	/// </summary>
 	void DrawHpBar() const;
 	void DrawHitWallEffect() const;
-	void DrawDamageEffect() const;
+
+private:
+	void AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, float shiftY);
+	void AddParticleEff();
 
 protected:
+	// 画像数
+	static const int kGraphNum = 3;
 	// HPバーの幅
 	const int kHpBarWidth = 270;
 	// 角度
@@ -145,7 +163,7 @@ protected:
 	// 実体化するまでの時間
 	static const int kApeearFrame = 30;
 
-	double m_angle;
+	std::array<double, kGraphNum> m_angle;
 
 	// スクリーンサイズ
 	const size& m_size;
@@ -153,19 +171,16 @@ protected:
 	const float m_fieldSize;
 
 	// キャラ画像
-	std::shared_ptr<FileBase> m_charImg;
+	std::array<std::shared_ptr<FileBase>, kGraphNum> m_char;
 	std::shared_ptr<FileBase> m_shadow;
-	// 壁エフェクト
-	std::shared_ptr<FileBase> m_wallEffect;
-#if false
-	// ダメージエフェクト
-	std::shared_ptr<FileBase> m_damageEffect;
-#endif
 	// HPバー関連の画像
 	std::shared_ptr<FileBase> m_hpBar;
 	std::shared_ptr<FileBase> m_hpBarBack;
 	std::shared_ptr<FileBase> m_hpBarDown;
 	std::shared_ptr<FileBase> m_hpBarFrame;
+	// その他画像
+	std::shared_ptr<FileBase> m_wallEffect;
+	std::shared_ptr<FileBase> m_particle;
 
 	// 生成時のSE
 	std::shared_ptr<FileBase> m_createSe;
@@ -206,22 +221,8 @@ protected:
 	// HitStopフレーム
 	int m_hitStopFrame;
 
-	// 壁に当たったフレーム
-	int m_wallHitFrame;
-
-	// 壁に当たった際の場所
-	int m_drawWallHitX;
-	int m_drawWallHitY;
-
-	// ダメージを受けたフレーム
-	int m_onDamagetFrame;
-
-	// ダメージを受けた際の場所
-	int m_drawOnDamagetX;
-	int m_drawOnDamagetY;
-
-	// 壁エフェクト種類
-	int m_lineType;
+	// 壁エフェクト
+	std::list<WallEffMass> m_wallEff;
 
 	// 死亡演出フラグ
 	bool m_isEndPerformance;
@@ -233,15 +234,14 @@ protected:
 	bool m_isShake;
 	// 霧散フラグ
 	bool m_isScatter;
-	// 爆発エフェクト画像
-	std::shared_ptr<FileBase> m_performance;
-	// エフェクト描画位置情報
-	std::list<PerformanceEff> m_performanceEff;
 	// 波紋の半径
 	int m_ripple1;
 	int m_ripple2;
 	int m_ripple3;
 	// 半径の色を残す用
 	int m_rippleScreen;
+
+	int m_shakeSize;
+	std::list<ParticleEff> m_particles;
 };
 

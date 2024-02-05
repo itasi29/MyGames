@@ -2,12 +2,28 @@
 #include <DxLib.h>
 #include <string>
 #include <memory>
+#include <vector>
 #include <list>
 #include "Vec2.h"
 #include "Collision.h"
 
 struct size;
 class FileBase;
+
+struct WallEff
+{
+	Vec2 pos;
+	Vec2 vec;
+
+	double size;
+};
+
+struct WallEffMass
+{
+	std::vector<WallEff> effs;
+	bool isUse = true;
+	int frame = 0;
+};
 
 /// <summary>
 /// Enemyクラスの基底
@@ -72,6 +88,8 @@ protected:
 
 	void DrawHitWallEffect();
 
+private:
+	void AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, float shiftY);
 
 protected:
 	// 1度を弧度法に
@@ -125,14 +143,6 @@ protected:
 	// フレーム
 	int m_frame;
 
-	// 壁エフェクトの種類
-	int m_lineType;
-
-	// 壁に当たったフレーム
-	int m_wallHitFrame;
-
-	// 壁に当たった際の場所
-	int m_drawWallHitX;
-	int m_drawWallHitY;
+	std::list<WallEffMass> m_wallEff;
 };
 

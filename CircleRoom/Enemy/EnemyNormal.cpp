@@ -47,7 +47,6 @@ void EnemyNormal::Init(const Vec2& pos, bool isStart)
 
 	// ƒtƒŒ[ƒ€‚Ì‰Šú‰»
 	m_frame = 0;
-	m_wallHitFrame = 0;
 
 	// Œ‚‚Â•ûŒü‚ğƒ‰ƒ“ƒ_ƒ€‚ÅŒˆ‚ß‚é
 	do

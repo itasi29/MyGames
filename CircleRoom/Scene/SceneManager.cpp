@@ -10,7 +10,7 @@
 
 namespace
 {
-	constexpr int kShakeSize = 10;
+	constexpr int kShakeSize = 40;
 
 	// ˆê“x‚Éi‚Ü‚¹‚é—Ê
 	constexpr float kRad = DX_PI_F / 180 * 4;

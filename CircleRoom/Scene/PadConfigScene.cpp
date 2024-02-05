@@ -114,7 +114,7 @@ PadConfigScene::~PadConfigScene()
 	{
 		m_input.m_commandTable[cmd.first] = cmd.second;
 	}
-	m_input.Save("Data/Bin/key.cnf");
+	m_input.Save("Data/key.cnf");
 
 	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 	optionScene->InverseIsEdit();

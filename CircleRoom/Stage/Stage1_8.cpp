@@ -146,7 +146,7 @@ int Stage1_8::DrawStageConditions(int drawY)
 
 	if (!m_isRightClear)
 	{
-		DrawArrowConditions(kRightStName, drawY, -kRad90);
+		DrawArrowConditions(kRightStName, drawY, kRad90);
 		DrawTimeConditions(drawY, fontHandle, kRightExsitTime);
 
 		drawY += 68;
@@ -159,13 +159,7 @@ int Stage1_8::DrawStageConditions(int drawY)
 		drawY += 68;
 	}
 
-	if (m_mgr.GetStage()->IsClearBoss("BossArmored"))
-	{
-		DrawStringToHandle(kConditionsPosX, drawY + 14, L"クリア！", kYellowColor, fontHandle);
-
-		drawY += 70;
-	}
-	else
+	if (!m_mgr.GetStage()->IsClearBoss("BossArmored"))
 	{
 		DrawStringToHandle(kConditionsPosX, drawY + 14, L"ボスを倒せ！", kYellowColor, fontHandle);
 

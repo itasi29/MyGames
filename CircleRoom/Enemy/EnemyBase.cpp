@@ -21,25 +21,13 @@ namespace
 	const Vec2 kShiftSide = Vec2{ 0.0f, 0.2f };
 	const Vec2 kShiftVert = Vec2{ 0.2f, 0.0f };
 
-	// 1エフェクト何フレームか
-	constexpr int kWallEffectInterval = 3;
-	// 壁に当たったエフェクトをするフレーム
-	constexpr int kWallHitFrame = 8 * kWallEffectInterval;
-	// 画像サイズ
-	constexpr int kWallEffectGraphSize = 64;
-	// 拡大率
-	constexpr double kExtRate = 0.75;
-	// 行数
-	constexpr int kRow = 8;
-	// 列数の種類数
-	constexpr int kEffectTypeNum = 4;
-	// 出すエフェクトの列の場所
-	constexpr int kLine[kEffectTypeNum] = {
-		0, 4, 7, 8
-	};
+	// エフェクトのスピード
+	constexpr float kWallEffSpeed = 4.0f;
+	// エフェクト数
+	constexpr int kWallEffNum = 5;
 
-	// ずらす量
-	constexpr int kWallEffectSlide = 32;
+	// 壁に当たったエフェクトをするフレーム
+	constexpr int kWallEffFrame = 30;
 }
 
 EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
@@ -49,14 +37,17 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_radius(0),
 	m_isExsit(true),
 	m_frame(0),
-	m_lineType(0),
 	m_angle(0)
 {
 	m_updateFunc = &EnemyBase::StartUpdate;
 	m_drawFunc = &EnemyBase::StartDraw;
 
 	auto& file = GameManager::GetInstance().GetFile();
+#if false
 	m_wallEffect = file->LoadGraphic(L"Enemy/wallEffect.png");
+#else
+	m_wallEffect = file->LoadGraphic(L"Enemy/wallEff.png");
+#endif
 	m_shadow = file->LoadGraphic(L"Enemy/ShadowNormal.png");
 	m_createSe = file->LoadSound(L"Se/create.mp3");
 }
@@ -164,6 +155,27 @@ void EnemyBase::TitleDraw()
 
 void EnemyBase::Update()
 {
+	for (auto& walls : m_wallEff)
+	{
+		for (auto& eff : walls.effs)
+		{
+			eff.pos += eff.vec;
+		}
+		walls.frame++;
+
+		if (walls.frame > kWallEffFrame)
+		{
+			walls.isUse = false;
+		}
+	}
+	m_wallEff.remove_if(
+		[](const auto& walls)
+		{
+			return !walls.isUse;
+		}
+	
+	);
+
 	(this->*m_updateFunc)();
 }
 
@@ -174,8 +186,6 @@ void EnemyBase::Draw()
 
 bool EnemyBase::Reflection(float scale, bool isShift)
 {
-	m_wallHitFrame--;
-
 	float centerX = m_size.w * 0.5f;
 	float centerY = m_size.h * 0.5f;
 
@@ -187,13 +197,7 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 
 		if (isShift)
 		{
-			// エフェクトフレーム初期化
-			m_wallHitFrame = kWallHitFrame;
-
-			// エフェクト描画位置
-			m_drawWallHitX = static_cast<int>(m_pos.x - kWallEffectSlide - m_radius * scale);
-			m_drawWallHitY = static_cast<int>(m_pos.y);
-
+			AddWallEff({ centerX - m_fieldSize, m_pos.y }, 4, 6, 16, 8);
 			ReflectionCal(kNorVecLeft);
 			ShiftReflection(kShiftSide);
 		}
@@ -211,11 +215,7 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 
 		if (isShift)
 		{
-			m_wallHitFrame = kWallHitFrame;
-
-			m_drawWallHitX = static_cast<int>(m_pos.x + kWallEffectSlide + m_radius * scale);
-			m_drawWallHitY = static_cast<int>(m_pos.y);
-
+			AddWallEff( { centerX + m_fieldSize, m_pos.y }, 4, -2, 16, 8);
 			ReflectionCal(kNorVecRight);
 			ShiftReflection(kShiftSide);
 		}
@@ -233,11 +233,7 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 
 		if (isShift)
 		{
-			m_wallHitFrame = kWallHitFrame;
-
-			m_drawWallHitX = static_cast<int>(m_pos.x);
-			m_drawWallHitY = static_cast<int>(m_pos.y - kWallEffectSlide - m_radius * scale);
-
+			AddWallEff( { m_pos.x, centerY - m_fieldSize } , 16, 8, 4, 6);
 			ReflectionCal(kNorVecUp);
 			ShiftReflection(kShiftVert);
 		}
@@ -255,11 +251,7 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 
 		if (isShift)
 		{
-			m_wallHitFrame = kWallHitFrame;
-
-			m_drawWallHitX = static_cast<int>(m_pos.x);
-			m_drawWallHitY = static_cast<int>(m_pos.y + kWallEffectSlide + m_radius * scale);
-
+			AddWallEff( { m_pos.x, centerY + m_fieldSize }, 16, 8, 4, -2);
 			ReflectionCal(kNorVecDown);
 			ShiftReflection(kShiftVert);
 		}
@@ -276,8 +268,6 @@ bool EnemyBase::Reflection(float scale, bool isShift)
 
 void EnemyBase::ReflectionCal(const Vec2& norVec)
 {
-	m_lineType = GetRand(kEffectTypeNum);
-
 	// 法線ベクトルの2倍から現在のベクトルを引く
 	m_vec = m_vec + norVec * norVec.Dot(-m_vec) * 2.0f;
 }
@@ -352,15 +342,43 @@ void EnemyBase::NormalDraw()
 void EnemyBase::DrawHitWallEffect()
 {
 	// 壁に当たったエフェクトの描画
-	if (m_wallHitFrame > 0)
+	for (const auto& walls : m_wallEff)
 	{
-		int x = m_drawWallHitX - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
-		int y = m_drawWallHitY - static_cast<int>(kWallEffectGraphSize * 0.5f - kWallEffectGraphSize * kExtRate * 0.5f);
+		int alpha = static_cast<int>(255 * (1.0f - walls.frame / static_cast<float>(kWallEffFrame)));
 
-		int index = (kWallHitFrame - m_wallHitFrame) / kWallEffectInterval;
-		int srcX = kWallEffectGraphSize * (index % kRow);
-		int srcY = kWallEffectGraphSize * kLine[m_lineType];
-
-		DrawRectRotaGraph(x, y, srcX, srcY, kWallEffectGraphSize, kWallEffectGraphSize, kExtRate, 0.0, m_wallEffect->GetHandle(), true);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		for (const auto& eff : walls.effs)
+		{
+			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), eff.size, 0.0, m_wallEffect->GetHandle(), true);
+		}
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
+}
+
+void EnemyBase::AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, float shiftY)
+{
+	std::vector<WallEff> effs;
+	effs.resize(kWallEffNum);
+
+	float x, y;
+
+	shiftX *= 0.125f;
+	shiftY *= 0.125f;
+
+	for (auto& eff : effs)
+	{
+		eff.size = 0.6 + GetRand(10) * 0.1 - 0.5;
+
+		eff.pos = pos;
+
+		x = GetRand(sizeX) * 0.125f - shiftX;
+		y = GetRand(sizeY) * 0.125f - shiftY;
+
+		eff.vec = { x, y };
+		eff.vec.Normalize();
+
+		eff.vec = eff.vec * static_cast<float>(eff.size) * kWallEffSpeed;
+	}
+
+	m_wallEff.push_back({ effs, true, 0 });
 }

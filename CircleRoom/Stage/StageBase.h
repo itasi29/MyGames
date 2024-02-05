@@ -303,17 +303,18 @@ protected:
 	std::shared_ptr<FileBase> m_arrowLock;
 	std::shared_ptr<FileBase> m_arrowConditions;
 	std::shared_ptr<FileBase> m_startFrame;
+	std::shared_ptr<FileBase> m_bFrameImg;
 	std::unordered_map<std::string, std::shared_ptr<FileBase>> m_enemysImg;
 	std::shared_ptr<FileBase> m_check;
 
-	// 後ろのフレームを描画するよう
-	std::shared_ptr<FileBase> m_bFrameImg;
 	// サウンド
 	std::shared_ptr<SoundSystem> m_sound;
 	int m_soundFrame;
 	// BGM
 	std::shared_ptr<FileBase> m_selectBgm;
 	std::shared_ptr<FileBase> m_playBgm;
+	// SE
+	std::shared_ptr<FileBase> m_clearSe;
 
 	// 文字列を描画する用の画面ハンドル
 	int m_strHandle;
@@ -360,6 +361,8 @@ protected:
 	int m_extRateFrame;
 	// それを書く用のスクリーン
 	int m_extScreen;
+
+	bool m_isExtRate;
 
 	// 
 	std::shared_ptr<BottansFile> m_bt;
