@@ -246,6 +246,15 @@ void KeyConfigScene::EditUpdate(Input & input)
 	}
 	if (m_cancleFrame > 0)
 	{
+		if (m_input.GetType() == InputType::pad)
+		{
+			m_sound->PlaySe(m_cancelSe->GetHandle());
+			m_updateFunc = &KeyConfigScene::NormalUpdate;
+			m_isEdit = false;
+			m_fadeFrame = 0;
+			return;
+		}
+
 		auto state = m_commandTable["cancel"][InputType::keybd];
 
 		cmd[InputType::keybd] = state;
