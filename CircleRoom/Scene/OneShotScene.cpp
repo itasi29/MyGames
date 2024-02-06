@@ -21,6 +21,9 @@ namespace
 	// ï`âÊà íu
 	constexpr int kDrawX = 128;
 	constexpr int kDrawY = 72;
+
+	// ògïù
+	constexpr int kFrameSize = 2;
 }
 
 OneShotScene::OneShotScene(GameManager& mgr, int handle) :
