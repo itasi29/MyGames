@@ -86,18 +86,26 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 	m_stgData.resize(size);
 	for (int i = 0; i < size; i++)
 	{
+#if true
+		if (kPath[i].type == kGraph)
+		{
+			m_stgData[i] = m_mgr.GetFile()->LoadGraphic(kPath[i].path);
+		}
+		else if (kPath[i].type == kSound)
+		{
+			m_stgData[i] = m_mgr.GetFile()->LoadSound(kPath[i].path);
+		}
+#else
 		switch (kPath[i].type)
 		{
 		default:
 			assert(false);
 		case kGraph:
-			m_stgData[i] = m_mgr.GetFile()->LoadGraphic(kPath[i].path);
 			break;
 		case kSound:
-			m_stgData[i] = m_mgr.GetFile()->LoadSound(kPath[i].path);
-			break;
 			break;
 		}
+#endif
 	}
 }
 
@@ -141,7 +149,7 @@ void GamePlayingScene::UpdateFadeOut(Input& input)
 void GamePlayingScene::UpdateNormal(Input& input)
 {
 	// pauseボタンが押されたらポーズ画面を開く
-	if (input.IsPress("pause"))
+	if (input.IsTriggered("pause"))
 	{
 		m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input));
 	}
@@ -150,7 +158,7 @@ void GamePlayingScene::UpdateNormal(Input& input)
 	// プレイ時間のアップデート
 	m_mgr.UpdatePlaytime();
 
-	// 簡易実装
+	// クリアしたら
 	if (m_mgr.GetStage()->IsClear())
 	{
 		m_updateFunc = &GamePlayingScene::UpdateFadeOut;
@@ -158,6 +166,7 @@ void GamePlayingScene::UpdateNormal(Input& input)
 		m_frame = 0;
 	}
 #if _DEBUG
+	// 速攻終了（クリア画面への移行）
 	if (CheckHitKey(KEY_INPUT_RSHIFT))
 	{
 		m_updateFunc = &GamePlayingScene::UpdateFadeOut;

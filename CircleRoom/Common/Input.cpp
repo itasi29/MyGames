@@ -214,6 +214,11 @@ bool Input::IsPress(const char* command) const
     return m_inputDate.at(command);
 }
 
+bool Input::IsAnyPress() const
+{
+    return m_isAnyPush;
+}
+
 bool Input::IsNotPress(const char* command) const
 {
     auto it = m_inputDate.find(command);

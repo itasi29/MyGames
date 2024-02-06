@@ -291,6 +291,7 @@ void TitleScene::NormalUpdate(Input& input)
 
 void TitleScene::StartSelectUpdate(Input& input)
 {
+	m_sound->PlayBgm(m_bgm->GetHandle());
 	m_fadeFrame++;
 
 	if (input.IsTriggered("cancel"))
@@ -613,7 +614,7 @@ void TitleScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* co
 void TitleScene::PlayDemoMove(Input& input)
 {
 	// 何かしらのボタン・キーが押されたらデモムービーまでの時間を初期化
-	if (input.IsAnyTriggerd())
+	if (input.IsAnyPress())
 	{
 		m_playDemoMoveFrame = 0;
 		return;
@@ -628,7 +629,7 @@ void TitleScene::PlayDemoMove(Input& input)
 		{
 			PlayMovie(L"Data/demoMove.mp4", 1, DX_MOVIEPLAYTYPE_BCANCEL);
 			input.Update();
-			if (input.IsAnyTriggerd())
+			if (input.IsAnyPress())
 			{
 				m_soundSys->PlayBgm(m_bgm->GetHandle(), false, true);
 				break;

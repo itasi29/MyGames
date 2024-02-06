@@ -278,6 +278,14 @@ void StageBase::UpdatePlaying(Input& input)
 	bool playerIsExsit = m_player->IsExsit();
 	const Collision& playerCol = m_player->GetRect();
 
+#ifdef _DEBUG
+	// デバッグ用無敵モード
+	if (CheckHitKey(KEY_INPUT_M))
+	{
+		playerIsDash = true;
+	}
+#endif
+
 	CreateEnemy();
 	for (const auto& enemy : m_enemy)
 	{

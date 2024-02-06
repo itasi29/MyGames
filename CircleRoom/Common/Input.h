@@ -71,6 +71,11 @@ public:
 	/// <returns>true:押されている / false:押されていない</returns>
 	bool IsPress(const char* command) const;
 	/// <summary>
+	/// 何かしらのボタンが押されているか
+	/// </summary>
+	/// <returns>true:押されている / false:押されていない</returns>
+	bool IsAnyPress() const;
+	/// <summary>
 	/// 指定のコマンドが押されていないか
 	/// </summary>
 	/// <param name="command">コマンド文字列</param>
