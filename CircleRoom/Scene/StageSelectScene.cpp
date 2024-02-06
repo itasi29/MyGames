@@ -63,13 +63,24 @@ namespace
 	};
 }
 
-StageSelectScene::StageSelectScene(GameManager& mgr) :
+StageSelectScene::StageSelectScene(GameManager& mgr, Input& input) :
 	Scene(mgr),
 	m_indexRow(0),
 	m_indexLine(0),
 	m_fadeFrame(0)
 {
 	CurrosrPos();
+
+	m_stageData["Stage1-1"] = std::make_shared<Stage1_1>(mgr, input);
+	m_stageData["Stage1-2"] = std::make_shared<Stage1_2>(mgr, input);
+	m_stageData["Stage1-3"] = std::make_shared<Stage1_3>(mgr, input);
+	m_stageData["Stage1-4"] = std::make_shared<Stage1_4>(mgr, input);
+	m_stageData["Stage1-5"] = std::make_shared<Stage1_5>(mgr, input);
+	m_stageData["Stage1-6"] = std::make_shared<Stage1_6>(mgr, input);
+	m_stageData["Stage1-7"] = std::make_shared<Stage1_7>(mgr, input);
+	m_stageData["StageBoss"] = std::make_shared<Stage1_8>(mgr, input);
+	m_stageData["Master"] = std::make_shared<Stage1_9>(mgr, input);
+
 	m_soundSys = mgr.GetSound();
 
 	auto& file = mgr.GetFile();
@@ -138,6 +149,7 @@ void StageSelectScene::Update(Input& input)
 
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 
+#if false
 		if (stgName == "Stage1-1")
 		{
 			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
@@ -174,6 +186,9 @@ void StageSelectScene::Update(Input& input)
 		{
 			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
 		}
+#else
+		m_mgr.GetStage()->ChangeStage(m_stageData[stgName]);
+#endif
 
 		m_mgr.GetScene()->PopScene();
 	}
@@ -253,6 +268,11 @@ void StageSelectScene::DrawInf(const std::string& str)
 	int sec = (bestTime / 60) % 60;
 	int min = bestTime / 3600;
 	DrawFormatStringToHandle(kDrawStringX, y, kYellowColor, font, L"%02d:%02d.%03d", min, sec, minSec);
+
+	y += 48;
+
+	// E‚³‚ê‚½í—Ş‚Ì•`‰æ
+	m_stageData[str]->DrawKilledEnemyType(kDrawStringX, y);
 
 }
 

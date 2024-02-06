@@ -169,10 +169,10 @@ void Stage1_3::DrawArrow() const
 	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
-void Stage1_3::DrawKilledEnemyType() const
+void Stage1_3::DrawKilledEnemyType(int x, int y) const
 {
-	DrawKilledEnemy("Dash", 0, 0x0b60b0);
-	DrawKilledEnemy("MoveWall", 36, 0xb6bbc4);
+	DrawKilledEnemy("Dash", x, y, 0, 0x0b60b0);
+	DrawKilledEnemy("MoveWall", x, y, 36, 0xb6bbc4);
 }
 
 void Stage1_3::CreateEnemy()

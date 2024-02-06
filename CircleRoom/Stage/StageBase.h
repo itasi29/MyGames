@@ -58,6 +58,8 @@ public:
 	/// </summary>
 	void GenericEnemy(const std::shared_ptr<EnemyBase>& enemy);
 
+	virtual void DrawKilledEnemyType(int x, int y) const = 0;
+
 	/// <summary>
 	/// ステージ名を取得する
 	/// </summary>
@@ -120,7 +122,6 @@ protected:
 	/// ステージの矢印描画
 	/// </summary>
 	virtual void DrawArrow() const = 0;
-	virtual void DrawKilledEnemyType() const = 0;
 
 	/// <summary>
 	/// 敵の生成
@@ -226,7 +227,7 @@ protected:
 	/// <param name="addX">X座標の追加値</param>
 	/// <param name="color">色</param>
 	/// <param name="radius">半径 : def = 16</param>
-	void DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius = 16) const;
+	void DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, unsigned int color, int radius = 16) const;
 
 	void DrawExpansion();
 

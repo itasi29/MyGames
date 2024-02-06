@@ -6,6 +6,7 @@
 #include "Scene.h"
 
 class FileBase;
+class StageBase;
 class SoundSystem;
 
 /// <summary>
@@ -14,7 +15,7 @@ class SoundSystem;
 class StageSelectScene : public Scene
 {
 public:
-	StageSelectScene(GameManager& mgr);
+	StageSelectScene(GameManager& mgr, Input& input);
 	~StageSelectScene();
 
 	void Update(Input& input);
@@ -30,6 +31,8 @@ private:
 	int m_indexLine;
 
 	int m_fadeFrame;
+
+	std::unordered_map<std::string, std::shared_ptr<StageBase>> m_stageData;
 
 	// ‰æ‘œŠÖŒW
 	std::shared_ptr<FileBase> m_frame;

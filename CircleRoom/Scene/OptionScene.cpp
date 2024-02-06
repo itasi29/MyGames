@@ -275,7 +275,7 @@ void OptionScene::ChangeScene(Input& input)
 	{
 		// ステージ選択
 	case kStageSelect:
-		m_optionScn->ChangeScene(std::make_shared<StageSelectScene>(m_mgr));
+		m_optionScn->ChangeScene(std::make_shared<StageSelectScene>(m_mgr, input));
 		break;
 
 		// キー設定

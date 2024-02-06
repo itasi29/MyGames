@@ -28,11 +28,14 @@ PsOutput main(PsInput psInput)
 	PsOutput psOutput;
 
 	// Œ»İ‚ÌêŠ‚©‚ç’†S‚Ü‚Å‚Ì‹——£
-	float len = length(abs(psInput.uv - 0.5));
+	float len = length(psInput.uv - 0.5);
 
-	float h;
+	float h = 0.0;
 
-	h = cos(abs(len) - angle);
+	if (abs(len) < 0.3)
+	{
+		h = abs(cos(len - angle) + 1) / 2.0;
+	}
 
 	// F‚Í0x000000 = •, 0xffffff = ”’@‚Æ“¯‚¶
 

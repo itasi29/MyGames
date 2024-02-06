@@ -175,12 +175,12 @@ void Stage1_8::DrawArrow() const
 	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
-void Stage1_8::DrawKilledEnemyType() const
+void Stage1_8::DrawKilledEnemyType(int x, int y) const
 {
-	DrawKilledEnemy("MoveWall", 0, 0xb6bbc4);
-	DrawKilledEnemy("BossArmored", 40, 0x294b29, 20);
-	DrawKilledEnemy("BossStrongArmored", 84, 0xdbe7c9, 20);
-	DrawKilledEnemy("SplitTwoBound", 118, 0xd5f0c1, 12);
+	DrawKilledEnemy("MoveWall", x, y, 0, 0xb6bbc4);
+	DrawKilledEnemy("BossArmored", x, y, 40, 0x294b29, 20);
+	DrawKilledEnemy("BossStrongArmored", x, y, 88, 0xdbe7c9, 20);
+	DrawKilledEnemy("SplitTwoBound", x, y, 132, 0xd5f0c1, 12);
 }
 
 void Stage1_8::CreateEnemy()

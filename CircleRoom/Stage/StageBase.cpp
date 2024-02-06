@@ -459,7 +459,7 @@ void StageBase::DrawSelect()
 	DrawTime(20, 160, fontHandle);
 	// ŽE‚³‚ê‚½‚±‚Æ‚ª‚ ‚é“G‚Ì•`‰æ
 	DrawStringToHandle(136, 160, L"> Circle", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
-	DrawKilledEnemyType();
+	DrawKilledEnemyType(kKillTypePosX, kKillTypePosY);
 	SetDrawScreen(drawScreenHandle);
 	// ã‰º”½“]‚µ‚Ä•`‰æƒtƒŒ[ƒ€
 	DrawRotaGraph(155, 168, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
@@ -711,7 +711,7 @@ void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName
 	DrawArrowLock(x, y, isBossStage, isClear);
 }
 
-void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned int color, int radius) const
+void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, unsigned int color, int radius) const
 {
 	double enemyExtRate = kKillTypeDefExtRate;
 	for (const auto& name : kSmallTypeName)
@@ -734,13 +734,13 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int addX, unsigned
 	auto& file = m_enemysImg.at(enemyName);
 	if (m_mgr.GetStage()->IsKilledEnemy(enemyName))
 	{
-		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, enemyExtRate, 0.0, file->GetHandle(), true);
-		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, 0.5, 0.0, m_check->GetHandle(), true);
+		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
+		DrawRotaGraph(x + addX, y, 0.5, 0.0, m_check->GetHandle(), true);
 	}
 	else
 	{
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
-		DrawRotaGraph(kKillTypePosX + addX, kKillTypePosY, enemyExtRate, 0.0, file->GetHandle(), true);
+		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 //		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, false);

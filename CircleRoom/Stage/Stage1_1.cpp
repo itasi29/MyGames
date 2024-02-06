@@ -153,10 +153,10 @@ void Stage1_1::DrawArrow() const
 	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
-void Stage1_1::DrawKilledEnemyType() const
+void Stage1_1::DrawKilledEnemyType(int x, int y) const
 {
-	DrawKilledEnemy("Normal", 0, 0xfffae7);
-	DrawKilledEnemy("MoveWall", 36, 0xb6bbc4);
+	DrawKilledEnemy("Normal", x, y, 0, 0xfffae7);
+	DrawKilledEnemy("MoveWall", x, y, 36, 0xb6bbc4);
 }
 
 void Stage1_1::CreateEnemy()

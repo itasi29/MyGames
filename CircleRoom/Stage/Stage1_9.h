@@ -16,7 +16,7 @@ private:
 
 	int DrawStageConditions(int drawY) override;
 	void DrawArrow() const override;
-	void DrawKilledEnemyType() const override;
+	void DrawKilledEnemyType(int x, int y) const override;
 
 	void CreateEnemy() override;
 	void UpdateTime() override;

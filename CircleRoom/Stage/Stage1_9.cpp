@@ -135,7 +135,7 @@ void Stage1_9::DrawArrow() const
 	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
-void Stage1_9::DrawKilledEnemyType() const
+void Stage1_9::DrawKilledEnemyType(int x, int y) const
 {
 }
 
