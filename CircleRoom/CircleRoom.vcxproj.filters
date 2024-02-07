@@ -405,4 +405,13 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="wavePs.hlsl" />
+    <FxCompile Include="ps.hlsl" />
+  </ItemGroup>
 </Project>

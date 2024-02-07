@@ -477,12 +477,17 @@ void BossBase::ShakeUpdate()
 	if (m_endPerformanceFrame > kShakeFrame)
 	{
 		m_endPerformanceFrame = 0;
+
+		auto& mgr = GameManager::GetInstance();
+
 		// 最後の爆発音鳴らす
-		auto& sound = GameManager::GetInstance().GetSound();
+		auto& sound = mgr.GetSound();
 		sound->PlaySe(m_explosionLastSe->GetHandle());
 
 		StartJoypadVibration(DX_INPUT_PAD1, 1000, 1000, 1);
 
+		// シェーダーの開始
+		mgr.GetScene()->OnShader();
 
 		m_deathUpdateFunc = &BossBase::LastUpdate;
 		m_deathDrawFunc = &BossBase::LastDraw;

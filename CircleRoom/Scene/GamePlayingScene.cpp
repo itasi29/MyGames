@@ -142,6 +142,8 @@ void GamePlayingScene::UpdateFadeOut(Input& input)
 	if (m_frame > kFadeFrame)
 	{
 		m_sound->Stop();
+		m_mgr.GetScene()->EndShader();
+
 		m_mgr.GetScene()->ChangeScene(std::make_shared<GameClearScene>(m_mgr));
 	}
 }

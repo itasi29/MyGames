@@ -9,8 +9,11 @@ struct PsInput
 // 出力
 struct PsOutput
 {
-	float4 output	: SV_TARGET0;
+	float4 color	: SV_TARGET0;
 };
+
+SamplerState sam;
+Texture2D tex : register(t0);
 
 // おそらくmain.cppの方で
 // float* gAngle = GetShader...
@@ -27,22 +30,40 @@ PsOutput main(PsInput psInput)
 {
 	PsOutput psOutput;
 
-	// 現在の場所から中心までの距離
-	float len = length(psInput.uv - 0.5);
+	const int kPosX = 640;
+	const int kPosY = 360;
 
-	float h = 0.0;
+	// 揺らぎ計算
+	float dist = sqrt(pow(psInput.pos.x - kPosX, 2) + pow(psInput.pos.y - kPosY, 2));
+	float sinTheta = (psInput.pos.y - kPosY) / dist;
+	float cosTheta = (psInput.pos.x - kPosX) / dist;
 
-	if (abs(len) < 0.3)
+	// ゆがみ作成用
+	float angle2 = psInput.pos.y - kPosY + psInput.pos.y - kPosX + angle;
+	angle2 = radians(angle2);
+
+	// ゆがみ半径計算
+	float waveRadius = 256 + 256 / 16 * (-1 + sin(angle2));
+
+	// 中心から離れるほど影響ダウン
+	float powerRatio = (waveRadius - dist) / waveRadius;
+	if (powerRatio < 0)
 	{
-		h = abs(cos(len - angle) + 1) / 2.0;
+		powerRatio = 0;
 	}
 
-	// 色は0x000000 = 黒, 0xffffff = 白　と同じ
+	// 色情報を取得する位置
+	float biasRadius = waveRadius * powerRatio;
+	float biasX = biasRadius * cosTheta;
+	float biasY = biasRadius * sinTheta;
 
-	// 色の計算
-	psOutput.output.rgb = h;
-	// α値は1のままで
-	psOutput.output.a = 1;
+	float2 texUV;
+	texUV.x = -biasX / 1280 + psInput.uv.x;
+	texUV.y = -biasY / 720 + psInput.uv.y;
+
+	float4 color = tex.Sample(tex, texUV) * psInput.dif;
+
+	psOutput.color = color;
 
 	return psOutput;
 }

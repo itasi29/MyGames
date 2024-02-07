@@ -73,6 +73,15 @@ public:
 	void MoveScreen(const Vec2& vec);
 
 	/// <summary>
+	/// シェーダー開始
+	/// </summary>
+	void OnShader();
+	/// <summary>
+	/// シェーダー終了
+	/// </summary>
+	void EndShader();
+
+	/// <summary>
 	/// 末尾のSceneを取得
 	/// </summary>
 	std::shared_ptr<Scene> GetTopScene();
@@ -87,10 +96,21 @@ private:
 	void NormalUpdate(Input& input);
 	void ShakeUpdate(Input& input);
 	void MoveUpdate(Input& input);
+	void ShaderUpdate(Input& input);
 
 	void NormalDraw() const;
 	void ShakeDraw() const;
 	void MoveDraw() const;
+	void ShaderDraw() const;
+
+	/// <summary>
+	/// シェーダー描くよう
+	/// </summary>
+	/// <param name="x">X座標</param>
+	/// <param name="y">Y座標</param>
+	/// <param name="width">幅</param>
+	/// <param name="height">高さ</param>
+	void MyDraw(int x, int y, int width, int height) const;
 
 private:
 	using UpdateFunc_t = void(SceneManager::*)(Input&);
@@ -126,5 +146,13 @@ private:
 	std::shared_ptr<BackgroundScene> m_bg;
 
 	bool m_isDrawBg;
+
+	// シェーダーに使う用
+	int m_cbuffer;
+	float* m_gAngle;
+	int m_wavePs;
+	int m_ps;
+	int m_shaderScreen;
+	int m_drawScreen;
 };
 

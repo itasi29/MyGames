@@ -58,6 +58,8 @@ bool Application::Init()
     // ウィンドウモードを変更したときに画像が消去されないようにする
     SetChangeScreenModeGraphicsSystemResetFlag(false);
 
+    SetWindowIconID(111);
+
     // 背景色の指定 5f6976
     SetBackgroundColor(0x5f, 0x69, 0x76);
 

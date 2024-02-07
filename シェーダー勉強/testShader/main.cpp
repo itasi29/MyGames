@@ -28,7 +28,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	// おそらく上記のもののアドレスを取得
 	float* gAngle = static_cast<float*>(GetBufferShaderConstantBuffer(cbuffer));
 	// おそらく画面をゆがませるときの値変更用変数
-	float angle = 0.0f;
+	float angle = 3.14f;
 	// ？：シェーダー用定数バッファハンドルの定数バッファを指定のシェーダーの指定のスロットにセットする
 	SetShaderConstantBuffer(cbuffer, DX_SHADERTYPE_PIXEL, 0);
 
@@ -58,7 +58,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// 本画面に描画させる
 		SetDrawScreen(DX_SCREEN_BACK);
 		ClearDrawScreen();
-#if false
+#if true
 		SetUsePixelShader(ps);
 		SetUseTextureToShader(0, graphHandle);
 		SetUseTextureToShader(1, waveScreen);

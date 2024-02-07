@@ -3,7 +3,10 @@
 
 namespace
 {
-	constexpr float kRad = DX_PI_F / 180;
+	constexpr int kWidth = 720;
+	constexpr int kHeight = 720;
+
+	constexpr float kRad = DX_PI_F / 180 * 0.1;
 }
 
 void MyGraph(int x, int y, int width, int height);
@@ -24,7 +27,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetDrawScreen(DX_SCREEN_BACK);
 	
 	// シェーダー画面
-	auto psScreen = MakeScreen(64, 64, true);
+	auto psScreen = MakeScreen(kWidth, kHeight, true);
 
 	float angle = 0.0f;
 
@@ -33,10 +36,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SetShaderConstantBuffer(cbuffer, DX_SHADERTYPE_PIXEL, 0);
 
 	auto ps = LoadPixelShader("ps.pso");
+	auto psTexture = LoadPixelShader("waveTexture.pso");
 
 
-
-
+	auto handle = LoadGraph("test.png");
 
 	bool isClick = false;
 	int x = 640;
@@ -54,24 +57,31 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		ClearDrawScreen();
 
 		// ゲームの処理
-		angle += 0.05;
-		*gData = angle;
-
+		angle -= kRad;
+		gData[0] = angle;
 
 		// おそらくシェーダー情報の変更の適用
 		UpdateShaderConstantBuffer(cbuffer);
 		// ？：指定のスロットにセットするのは変わらないと思うけどなんでスロット数が違うのかは不明
 		SetShaderConstantBuffer(cbuffer, DX_SHADERTYPE_PIXEL, 3);
 
-
 		// 一度画面に全部書き上げる
 		SetDrawScreen(psScreen);
 		ClearDrawScreen();
 		SetUsePixelShader(ps);
-		MyGraph(0, 0, 1280, 720);
+		SetUseTextureToShader(0, handle);
+		MyGraph(0, 0, kWidth, kHeight);
 
 		SetDrawScreen(DX_SCREEN_BACK);
-		DrawRotaGraph(x, y, 1.0, 0.0, psScreen, true);
+#if false
+		SetUsePixelShader(psTexture);
+		SetUseTextureToShader(0, handle);
+		SetUseTextureToShader(1, psScreen);
+		MyGraph(0, 0, 1280, 720);
+#else
+		DrawRotaGraph(x, y, 1.0, 0., psScreen, true);
+#endif
+		
 
 
 		clsDx();
@@ -93,7 +103,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	}
 
 	DeleteGraph(psScreen);
+	DeleteGraph(handle);
 	DeleteShader(ps);
+	DeleteShader(psTexture);
 
 	DxLib_End();				// ＤＸライブラリ使用の終了処理
 

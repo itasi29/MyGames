@@ -31,14 +31,36 @@ PsOutput main(PsInput psInput)
 {
 	PsOutput psOutput;
 	
+#if false
+	float2 xy = psInput.uv - 0.5;
+	float posAngle = atan2(xy.y, xy.x);
+
 	// 現在の場所から中心までの距離
-	float len = length(abs(psInput.uv - 0.5));
+	float len = clamp(length(xy), 0.0, 0.5);
 
-	float h;
+	// 内側にある小さな円の部分
+	float smallCircle = pow(2 * (0.5 - len) * (0.75 + sin(posAngle + 1.57)), 3.0f);
 
-	h = sin(abs(len) - angle);
 
-	// 色は0x000000 = 黒, 0xffffff = 白　と同じ
+
+	float h = smallCircle * (cos(abs(len - angle)) / 2.0);
+
+	h = clamp(h + 0.5, 0.0, 0.5);
+#else
+	float2 xy = psInput.uv - 0.5;
+	float posAngle = atan2(xy.y, xy.x);
+
+	float len = length(xy);
+
+	float h = 0.5 + (clamp(sin(len - angle), 0.0, 0.5) * cos((posAngle + 3.14 * 1.1))) * abs(sin(angle / 5.0));
+
+#endif
+
+
+	// 0.5が真ん中
+	// 0に近づくほど右下に
+	// 1に近づくほど左上に
+	// ズレる
 
 	// 色の計算
 	psOutput.output.rgb = h;

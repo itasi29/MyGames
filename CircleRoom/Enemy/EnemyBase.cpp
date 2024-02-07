@@ -310,12 +310,12 @@ void EnemyBase::StartDraw() const
 {
 	float rate = static_cast<float>(m_frame) / static_cast<float>(kApeearFrame);
 	int alpha = static_cast<int>(96 * rate);
-	// –{‘Ì‚Ì•`‰æ
 	alpha = static_cast<int>(255 * rate);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle,
 		m_shadow->GetHandle(), true);
+	// –{‘Ì‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), 1.0, m_angle,
 		m_charImg->GetHandle(), true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
