@@ -58,22 +58,13 @@ Stage1_3::~Stage1_3()
 
 void Stage1_3::Init()
 {
-	// 経過時間の初期化
-	m_frame = 0;
-	// 経過を行うかを初期化
-	m_isUpdateTime = true;
+	StageBase::Init();
 
 	// 生成フレームの初期化
 	m_createFrame = 0;
 
 	// 生成数初期化
 	m_createNum = 0;
-
-	// プレイヤーの初期化
-	m_player->Init();
-
-	// 敵の配列を初期化
-	m_enemy.clear();
 
 	// 壁動く敵の作成
 	CreateMoveWall();

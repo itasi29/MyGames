@@ -61,17 +61,13 @@ Stage1_6::~Stage1_6()
 
 void Stage1_6::Init()
 {
-	m_frame = 0;
-	m_isUpdateTime = true;
+	StageBase::Init();
 
 	m_createNormalFrame1 = 0;
 	m_createNormalFrame2 = 0;
 	m_createEneCreateFrame = 0;
 
 	m_createNum = 0;
-
-	m_player->Init();
-	m_enemy.clear();
 
 	CreateMoveWall();
 

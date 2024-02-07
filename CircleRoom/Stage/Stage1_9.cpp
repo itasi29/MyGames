@@ -63,22 +63,13 @@ Stage1_9::~Stage1_9()
 
 void Stage1_9::Init()
 {
-	// 経過時間の初期化
-	m_frame = 0;
-	// 経過を行うかを初期化
-	m_isUpdateTime = true;
+	StageBase::Init();
 
 	// 生成関係の初期化
 	m_createDashNum = 0;
 	m_createEneCreateNum = 0;
 	m_createLargeNum = 0;
 	m_createDivisionFrame = kDeleyFrame;
-
-	// プレイヤーの初期化
-	m_player->Init();
-
-	// 敵の配列を初期化
-	m_enemy.clear();
 
 	// 壁動く敵の作成
 	CreateMoveWall();

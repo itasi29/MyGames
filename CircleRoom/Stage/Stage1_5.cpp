@@ -46,21 +46,12 @@ Stage1_5::~Stage1_5()
 
 void Stage1_5::Init()
 {
-	// 経過時間の初期化
-	m_frame = 0;
-	// 経過を行うかを初期化
-	m_isUpdateTime = false;
+	StageBase::Init();
 
 	// 生成フレームの初期化
 	m_createFrame = 0;
 
 	m_createNum = 0;
-
-	// プレイヤーの初期化
-	m_player->Init();
-
-	// 敵の配列を初期化
-	m_enemy.clear();
 
 	CreateMoveWall();
 }

@@ -10,6 +10,7 @@ class GameManager;
 class FileBase;
 class SoundSystem;
 class Player;
+class Collision;
 class EnemyBase;
 class BossBase;
 class Input;
@@ -39,7 +40,7 @@ public:
 	/// <summary>
 	/// 各ステージの初期化処理
 	/// </summary>
-	virtual void Init() = 0;
+	virtual void Init();
 
 	/// <summary>
 	/// 最初にステージのクリア条件を確認する
@@ -249,6 +250,8 @@ protected:
 	void ChangePlayingFunc();
 
 private:
+	void UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col);
+
 	/// <summary>
 	/// ボスの死亡処理
 	/// </summary>
@@ -339,6 +342,8 @@ protected:
 	std::shared_ptr<Player> m_player;
 	// 敵
 	std::list<std::shared_ptr<EnemyBase>> m_enemy;
+	std::list<std::shared_ptr<EnemyBase>> m_frontEnemy;
+	std::list<std::shared_ptr<EnemyBase>> m_backEnemy;
 	// ボス
 	std::shared_ptr<BossBase> m_boss;
 

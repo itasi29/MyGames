@@ -67,11 +67,8 @@ Stage1_8::~Stage1_8()
 
 void Stage1_8::Init()
 {
-	m_frame = 0;
-	m_isUpdateTime = false;
-
-	m_player->Init();
-	m_enemy.clear();
+	StageBase::Init();
+	m_isUpdateBestTime = false;
 
 	CreateMoveWall();
 

@@ -186,9 +186,27 @@ void StageBase::Draw()
 	(this->*m_drawFunc)();
 }
 
+void StageBase::Init()
+{
+	// 経過時間初期化
+	m_frame = 0;
+	// 時間更新有効化
+	m_isUpdateBestTime = true;
+	// プレイヤー初期化
+	m_player->Init();
+	// 敵の配列初期化
+	m_enemy.clear();
+	m_backEnemy.clear();
+	m_frontEnemy.clear();
+}
+
 void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 {
+#if false
 	m_enemy.push_back(enemy);
+#else
+	m_backEnemy.push_back(enemy);
+#endif
 }
 
 void StageBase::UpdateSelect(Input& input)
@@ -208,16 +226,37 @@ void StageBase::UpdateSelect(Input& input)
 
 	m_player->Update(input, kNone);
 
+	// 敵の更新
+	for (const auto& enemy : m_backEnemy)
+	{
+		enemy->Update();
+
+	}
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Update();
 	}
-
+	for (const auto& enemy : m_frontEnemy)
+	{
+		enemy->Update();
+	}
+	// 死亡した敵の処理
+	m_backEnemy.remove_if(
+		[](const auto& enemy)
+		{
+			return !enemy->IsExsit();
+		});
 	m_enemy.remove_if(
 		[](const auto& enemy)
 		{
 			return !enemy->IsExsit();
 		});
+	m_frontEnemy.remove_if(
+		[](const auto& enemy)
+		{
+			return !enemy->IsExsit();
+		});
+	// ボスの更新
 	if (m_boss)
 	{
 		m_boss->Update();
@@ -287,46 +326,16 @@ void StageBase::UpdatePlaying(Input& input)
 #endif
 
 	CreateEnemy();
-	for (const auto& enemy : m_enemy)
-	{
-		enemy->Update();
-
-		// プレイヤーとの当たり判定処理
-		// ダッシュしていたら処理はしない
-		if (!playerIsDash && playerCol.IsCollsion(enemy->GetRect()))
-		{
-			// プレイヤーの死亡処理
-			m_player->Death();
-			m_mgr.UpdateDeathCcount();
-#if true
-			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
-#else
-			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
-#endif
-
-			// 殺したことがある敵情報の更新
-			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
-
-			break;
-		}
-	}
-
-	// 死亡した敵は消す
-	m_enemy.remove_if(
-		[](const auto& enemy)
-		{
-			return !enemy->IsExsit();
-		});
+	// 敵の更新
+	UpdateEnemy(m_frontEnemy, playerIsDash, playerCol);
+	UpdateEnemy(m_enemy, playerIsDash, playerCol);
+	UpdateEnemy(m_backEnemy, playerIsDash, playerCol);
 
 	if (m_boss)
 	{
 		m_boss->Update();
 		// ボスにダメージを与えたら時間を増やす
-#if false
-		m_isUpdateTime = m_boss->OnAttack(playerIsDash, m_player->GetObjRect());
-#else
 		m_boss->OnAttack(playerIsDash, m_player->GetObjRect());
-#endif
 
 		// ボスの死亡処理
 		if (!m_boss->IsExsit())
@@ -340,11 +349,7 @@ void StageBase::UpdatePlaying(Input& input)
 			// プレイヤーの死亡処理
 			m_player->Death();
 			m_mgr.UpdateDeathCcount();
-#if true
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
-#else
-			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
-#endif
 
 			// 殺したことがある敵情報の更新
 			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());
@@ -435,10 +440,18 @@ void StageBase::DrawSelect()
 	DrawWall();
 
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
+	for (const auto& enemy : m_backEnemy)
+	{
+		enemy->Draw();
+	}
 	for (const auto& enemy : m_enemy)
 	{
 		enemy->Draw();
 	}
+	for (const auto& enemy : m_frontEnemy)
+	{
+		enemy->Draw();
+	}	
 	if (m_boss)
 	{
 		m_boss->Draw();
@@ -496,7 +509,15 @@ void StageBase::DrawPlaying()
 	DrawWall();
 
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
+	for (const auto& enemy : m_backEnemy)
+	{
+		enemy->Draw();
+	}
 	for (const auto& enemy : m_enemy)
+	{
+		enemy->Draw();
+	}
+	for (const auto& enemy : m_frontEnemy)
 	{
 		enemy->Draw();
 	}
@@ -561,7 +582,6 @@ void StageBase::DrawBossDeath()
 {
 	DrawWall();
 
-//	m_player->Draw();
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
 	m_boss->Draw();
 	SetDrawMode(DX_DRAWMODE_NEAREST);
@@ -821,7 +841,7 @@ void StageBase::CreateDash(int& frame, bool isStart)
 	frame = 0;
 	auto enemy = std::make_shared<EnemyDash>(m_size, m_fieldSize, m_player);
 	enemy->Init(m_centerPos, isStart);
-	m_enemy.push_back(enemy);
+	m_frontEnemy.push_back(enemy);
 }
 
 void StageBase::CreateEneCreate(int& frame, bool isStart)
@@ -837,7 +857,7 @@ void StageBase::CreateDivision(int& frame, bool isStart)
 	frame = 0;
 	auto enemy = std::make_shared<EnemyDivision>(m_size, m_fieldSize, this);
 	enemy->Init(m_centerPos, isStart);
-	m_enemy.push_back(enemy);
+	m_frontEnemy.push_back(enemy);
 }
 
 void StageBase::ChangeSelectFunc()
@@ -850,6 +870,40 @@ void StageBase::ChangePlayingFunc()
 {
 	m_updateFunc = &StageBase::UpdatePlaying;
 	m_drawFunc = &StageBase::DrawPlaying;
+}
+
+void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col)
+{
+	for (const auto& enemy : enemys)
+	{
+		enemy->Update();
+
+		// プレイヤーとの当たり判定処理
+		// ダッシュしていたら処理はしない
+		if (!isDash && col.IsCollsion(enemy->GetRect()))
+		{
+			// プレイヤーの死亡処理
+			m_player->Death();
+			m_mgr.UpdateDeathCcount();
+#if true
+			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+#else
+			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
+#endif
+
+			// 殺したことがある敵情報の更新
+			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
+
+			break;
+		}
+	}
+
+	enemys.remove_if(
+		[](const auto& enemy)
+		{
+			return !enemy->IsExsit();
+		}
+	);
 }
 
 void StageBase::BossDeath()
@@ -876,6 +930,8 @@ void StageBase::BossDeath()
 
 	// 敵全て消す
 	m_enemy.clear();
+	m_frontEnemy.clear();
+	m_backEnemy.clear();
 
 	m_updateFunc = &StageBase::UpdateBossDeath;
 	m_drawFunc = &StageBase::DrawBossDeath;

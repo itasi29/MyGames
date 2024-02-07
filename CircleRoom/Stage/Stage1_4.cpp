@@ -75,21 +75,12 @@ Stage1_4::~Stage1_4()
 
 void Stage1_4::Init()
 {
-	// 経過時間の初期化
-	m_frame = 0;
-	// 経過を行うかを初期化
-	m_isUpdateTime = true;
+	StageBase::Init();
 
 	// 生成フレームの初期化
 	m_createNormalFrame = 0;
 	m_createDashFrame = 0;
 	m_createLargeFrame = 0;
-
-	// プレイヤーの初期化
-	m_player->Init();
-
-	// 敵の配列を初期化
-	m_enemy.clear();
 
 	// 壁動く敵の作成
 	CreateMoveWall();
