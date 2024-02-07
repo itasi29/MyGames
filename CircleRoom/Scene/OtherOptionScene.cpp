@@ -47,19 +47,20 @@ namespace
 	// 文字間の幅
 	constexpr int kMenuLineInterval = 96;
 
+	// MEMO:権利表記を作らなかったので未表示に
 	enum
 	{
 		kTitle,
 		kWindowsMode,
 		kExplanation,
-		kRightsNotation,
+//		kRightsNotation,
 		kEnd
 	};
 
 	const std::vector<std::wstring> kGameMenu = { L"タイトルへ",
 		L"ウィンドウモード",
 		L"説明書類",
-		L"権利表記",
+//		L"権利表記",
 		L"終了"
 	};
 
@@ -175,9 +176,9 @@ void OtherOptionScene::NormalUpdate(Input& input)
 			m_optionScn->ChangeScene(std::make_shared<ExplanationScene>(m_mgr, input, m_optionScn));
 			break;
 
-		case kRightsNotation:
-			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_rightNotationImg->GetHandle()));
-			break;
+		//case kRightsNotation:
+		//	m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_rightNotationImg->GetHandle()));
+		//	break;
 
 		case kEnd:
 			Application& app = Application::GetInstance();

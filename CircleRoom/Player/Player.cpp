@@ -81,8 +81,6 @@ Player::Player(const size& windowSize, float fieldSize) :
 
 	auto& mgr = GameManager::GetInstance().GetFile();
 	m_bloodImg = mgr->LoadGraphic(L"Player/blood.png");
-	m_charImg = mgr->LoadGraphic(L"Player/Player.png");
-	m_charDeathImg = mgr->LoadGraphic(L"Player/PlayerDeath.png");
 	m_charEffImg = mgr->LoadGraphic(L"Player/PlayerEff.png");
 
 	m_deathSe = mgr->LoadSound(L"Se/playerDeath.mp3");
