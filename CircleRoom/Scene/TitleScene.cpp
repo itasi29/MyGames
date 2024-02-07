@@ -141,7 +141,7 @@ TitleScene::TitleScene(GameManager& mgr, Input& input) :
 	m_backFrame = file->LoadGraphic(L"UI/unselectedFrame.png");
 
 	m_soundSys = mgr.GetSound();
-	m_bgm = file->LoadSound(L"Bgm/title.mp3");
+	m_bgm = file->LoadSound(L"Bgm/title.mp4");
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);

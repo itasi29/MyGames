@@ -160,8 +160,8 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_enemysImg["BossStrongArmored"] = file->LoadGraphic(L"Enemy/BossStrongArmored.png");
 	m_check = file->LoadGraphic(L"UI/check.png");
 
-	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
-	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
+	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp4");
+	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp4");
 	m_clearSe = file->LoadSound(L"Se/clear.mp3");
 
 	m_bt = std::make_shared<BottansFile>(file);

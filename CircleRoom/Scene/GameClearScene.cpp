@@ -54,7 +54,7 @@ GameClearScene::GameClearScene(GameManager& mgr) :
 
 	auto& file = mgr.GetFile();
 	m_result = file->LoadGraphic(L"UI/result.png");
-	m_bgm = file->LoadSound(L"Bgm/end.mp3");
+	m_bgm = file->LoadSound(L"Bgm/end.mp4");
 }
 
 GameClearScene::~GameClearScene()
