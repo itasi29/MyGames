@@ -81,6 +81,9 @@ public:
 	/// </summary>
 	void EndShader();
 
+	void OnBgMove();
+	void OnBgGaussianBlur();
+
 	/// <summary>
 	/// 末尾のSceneを取得
 	/// </summary>
@@ -97,11 +100,13 @@ private:
 	void ShakeUpdate(Input& input);
 	void MoveUpdate(Input& input);
 	void ShaderUpdate(Input& input);
+	void GaussianBlurUpdate(Input& input);
 
 	void NormalDraw() const;
 	void ShakeDraw() const;
 	void MoveDraw() const;
 	void ShaderDraw() const;
+	void GaussianBlurDraw() const;
 
 	/// <summary>
 	/// シェーダー描くよう
@@ -154,5 +159,8 @@ private:
 	int m_ps;
 	int m_shaderScreen;
 	int m_drawScreen;
+
+	// ガウスぼかしに使うよう
+	int m_gaussianBlurScreen;
 };
 

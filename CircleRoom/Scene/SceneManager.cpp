@@ -38,6 +38,7 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_drawScreen = MakeScreen(size.w, size.h);
 	m_shaderScreen = MakeScreen(size.w, size.h);
 	m_moveScreen = MakeScreen(size.w, size.h, true);
+	m_gaussianBlurScreen = MakeScreen(size.w, size.h, true);
 
 	m_wavePs = LoadPixelShader(L"Data/Shader/wavePs.pso");
 	m_ps = LoadPixelShader(L"Data/Shader/ps.pso");
@@ -52,6 +53,7 @@ SceneManager::~SceneManager()
 	DeleteGraph(m_drawScreen);
 	DeleteGraph(m_shaderScreen);
 	DeleteGraph(m_moveScreen);
+	DeleteGraph(m_gaussianBlurScreen);
 
 	DeleteShader(m_wavePs);
 	DeleteShader(m_ps);
@@ -154,6 +156,18 @@ void SceneManager::EndShader()
 	m_drawFunc = &SceneManager::NormalDraw;
 }
 
+void SceneManager::OnBgMove()
+{
+	m_updateFunc = &SceneManager::NormalUpdate;
+	m_drawFunc = &SceneManager::NormalDraw;
+}
+
+void SceneManager::OnBgGaussianBlur()
+{
+	m_updateFunc = &SceneManager::GaussianBlurUpdate;
+	m_drawFunc = &SceneManager::GaussianBlurDraw;
+}
+
 std::shared_ptr<Scene> SceneManager::GetTopScene()
 {
 	return m_scenes.back();
@@ -224,6 +238,11 @@ void SceneManager::ShaderUpdate(Input& input)
 
 	UpdateShaderConstantBuffer(m_cbuffer);
 	SetShaderConstantBuffer(m_cbuffer, DX_SHADERTYPE_PIXEL, 3);
+}
+
+void SceneManager::GaussianBlurUpdate(Input& input)
+{
+	NormalUpdate(input);
 }
 
 void SceneManager::NormalDraw() const
@@ -298,6 +317,31 @@ void SceneManager::ShaderDraw() const
 	SetUseTextureToShader(0, m_drawScreen);
 	SetUseTextureToShader(1, m_shaderScreen);
 	MyDraw(0, 0, size.w, size.h);
+
+}
+
+void SceneManager::GaussianBlurDraw() const
+{
+	SetDrawScreen(m_gaussianBlurScreen);
+	ClearDrawScreen();
+
+	m_bg->Draw();
+
+	auto itr = m_scenes.begin();
+	// 最後のシーン以外を描画させたいからサイズ-1
+	int index = m_scenes.size() - 1;
+	for (int i = 0; i < index; i++)
+	{
+		itr->get()->Draw();
+		itr++;
+	}
+
+	// ぼかす
+	GraphFilter(m_gaussianBlurScreen, DX_GRAPH_FILTER_GAUSS, 32, 1400);
+
+	SetDrawScreen(DX_SCREEN_BACK);
+	DrawGraph(0, 0, m_gaussianBlurScreen, false);
+	itr->get()->Draw();
 
 }
 

@@ -79,7 +79,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		SetUseTextureToShader(1, psScreen);
 		MyGraph(0, 0, 1280, 720);
 #else
-		DrawRotaGraph(x, y, 1.0, 0., psScreen, true);
+		DrawRotaGraph(x, y, 1.0, 0.0, psScreen, true);
 #endif
 		
 

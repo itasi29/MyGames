@@ -149,46 +149,7 @@ void StageSelectScene::Update(Input& input)
 
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 
-#if false
-		if (stgName == "Stage1-1")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
-		}
-		if (stgName == "Stage1-2")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr, input));
-		}
-		if (stgName == "Stage1-3")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_3>(m_mgr, input));
-		}
-		if (stgName == "Stage1-4")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_4>(m_mgr, input));
-		}
-		if (stgName == "Stage1-5")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr, input));
-		}
-		if (stgName == "Stage1-6")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_6>(m_mgr, input));
-		}
-		if (stgName == "Stage1-7")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_7>(m_mgr, input));
-		}
-		if (stgName == "StageBoss")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_8>(m_mgr, input));
-		}
-		if (stgName == "Master")
-		{
-			m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
-		}
-#else
 		m_mgr.GetStage()->ChangeStage(m_stageData[stgName]);
-#endif
 
 		m_mgr.GetScene()->PopScene();
 	}

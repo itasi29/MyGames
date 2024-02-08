@@ -149,10 +149,14 @@ TitleScene::TitleScene(GameManager& mgr, Input& input) :
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
+
+	const auto& size = Application::GetInstance().GetWindowSize();
+	m_frameScreen = MakeScreen(size.w, size.h, true);
 }
 
 TitleScene::~TitleScene()
 {
+	DeleteGraph(m_frameScreen);
 	OutputDebugString(L"タイトルシーンがdeleteされました\n");
 }
 
@@ -385,13 +389,22 @@ void TitleScene::NormalDraw()
 	int y = 184;
 	int frameY = 178;
 
+	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
+
 	for (int i = 0; i < kMenuLineNum; i++)
 	{
 		if (m_currentLinePos == i)
 		{
+			SetDrawScreen(m_frameScreen);
+			ClearDrawScreen();
 			// 選択フレーム描画
 			DrawGraph(kStrDrawX + kMenuLength, frameY, m_frame->GetHandle(), true);
 			DrawBox(kStrDrawX - kFrameMargin, frameY, kStrDrawX + kMenuLength, frameY + 44, kFrameColor, true);
+
+			GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * i, 0, 0);
+			SetDrawScreen(nowScreen);
+			DrawGraph(0, 0, m_frameScreen, true);
+
 
 			int frame = (m_fadeFrame % (kFlashInterval * 2)) - kFlashInterval;
 			float rate = fabsf(static_cast<float>(frame)) / static_cast<float>(kFlashInterval);

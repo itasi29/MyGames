@@ -35,7 +35,10 @@ namespace
 	// —]”’
 	constexpr int kMenuMargin = 50;
 	// ‘I‘ğ˜g‚Ìc•
-	constexpr int kMenuMarginHeight = 32;
+	constexpr int kMenuMarginHeight = 48;
+	// •¶šYÀ•W
+	constexpr int kStrPosY = 58;
+
 
 	// ƒQ[ƒ€’†‘I‘ğ•
 	constexpr int kGameMargin = 270;
@@ -80,10 +83,21 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
+	m_brightScreen = MakeScreen(1280, 720, true);
+
 	m_optionScn = std::make_shared<SceneManager>(false);
 	m_optionScn->Init();
 
+	m_mgr.GetScene()->OnBgGaussianBlur();
+
 	ChangeScene(input);
+}
+
+OptionScene::~OptionScene()
+{
+	DeleteGraph(m_brightScreen);
+
+	m_mgr.GetScene()->OnBgMove();
 }
 
 void OptionScene::Update(Input& input)
@@ -207,20 +221,36 @@ void OptionScene::NormalDraw()
 
 void OptionScene::DrawWave(const size& size)
 {
-	switch (m_type)
+#if false
+	SetDrawScreen(m_brightScreen);
+	if (m_type == InputType::keybd)
 	{
-	case InputType::keybd:
+		m_key->DrawKey(L"‚pƒL[", kMenuMargin + 7, kMenuMargin, 2.8);
+		m_key->DrawKey(L"‚dƒL[", size.w - kMenuMargin - 43, kMenuMargin, 2.8);
+	}
+	else
+	{
+		m_bt->DrawBottan(L"‚kBottan", kMenuMargin + 7, kMenuMargin, 2.8);
+		m_bt->DrawBottan(L"‚qBottan", size.w - kMenuMargin - 48, kMenuMargin, 2.8);
+	}
+
+	int nowScreen = GameManager::GetInstance().GetScene()->GetScreenHandle();
+	SetDrawScreen(nowScreen);
+	GraphFilter(m_brightScreen, DX_GRAPH_FILTER_HSB, 0, 0, 0, 128);
+	DrawGraph(0, 0, m_brightScreen, true);
+#endif
+
+	if (m_type == InputType::keybd)
+	{
 		m_key->DrawKey(L"‚pƒL[", kMenuMargin + 7, kMenuMargin, 2.5);
 		m_key->DrawKey(L"‚dƒL[", size.w - kMenuMargin - 43, kMenuMargin, 2.5);
-		break;
-	default:
-		assert(false);
-	case InputType::pad:
-		// LARƒ{ƒ^ƒ“‚Ì•`‰æ
+	}
+	else
+	{
 		m_bt->DrawBottan(L"‚kBottan", kMenuMargin + 7, kMenuMargin, 2.5);
 		m_bt->DrawBottan(L"‚qBottan", size.w - kMenuMargin - 48, kMenuMargin, 2.5);
-		break;
 	}
+
 }
 
 void OptionScene::DrawFrame(int divisionNum, int width, const size& size)
@@ -249,6 +279,9 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 	unsigned int color;
+
+	int centerX = static_cast<int>(width / 2.0f);
+
 	// ƒƒjƒ…[‚Ì•¶š—ñŒQ
 	for (int i = 0; i < strs.size(); i++)
 	{
@@ -257,7 +290,12 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 		{
 			color = kYellowColor;
 		}
-		DrawStringToHandle(x + width * i, kMenuMargin, strs[i].c_str(), color, fontHandle);
+
+		auto& str = strs[i];
+		
+		// •¶š‚ğ’†S•Ó‚è‚É•`‰æ‚·‚é‚æ‚¤‚É”¼•ª‚ÌˆÊ’u‚ÉˆÚ“®
+		int subX = str.size() / 2 * 32;
+		DrawStringToHandle(x + width * i + centerX - subX, kStrPosY, str.c_str(), color, fontHandle);
 	}
 }
 

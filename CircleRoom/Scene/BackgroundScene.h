@@ -21,30 +21,6 @@ public:
 	void Init(float speed = -1);
 
 private:
-	void NormarUpdate();
-	void MoveUpdate();
-
-	/// <summary>
-	/// 動かさずに描画
-	/// </summary>
-	void NormalDraw() const;
-	/// <summary>
-	/// 動かして描画
-	/// </summary>
-	void MoveDraw() const;
-
-	/// <summary>
-	/// 関数ポインタ先の変更
-	/// </summary>
-	void ChangeFunc();
-
-private:
-	using UpdateFunc_t = void(BackgroundScene::*)();
-	using DrawFunc_t = void(BackgroundScene::*)() const;
-
-	UpdateFunc_t m_updateFunc;
-	DrawFunc_t m_drawFunc;
-
 	std::vector<std::shared_ptr<FileBase>> m_bg;
 
 	float m_scroll;
