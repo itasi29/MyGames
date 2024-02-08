@@ -1,9 +1,8 @@
 #include <DxLib.h>
 #include <array>
 #include "Application.h"
-
-#include "SceneManager.h"
 #include "GameManager.h"
+#include "SceneManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "Scene.h"
@@ -14,7 +13,7 @@ namespace
 	constexpr int kShakeSize = 40;
 
 	// 一度に進ませる量
-	constexpr float kRad = DX_PI_F / 180 * 2.5;
+	constexpr float kRad = DX_PI_F / 180 * 2.5f;
 
 	// 幅・高さの大きさ
 	constexpr int kWidth = 64;
@@ -26,8 +25,6 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_shakeFrame(0),
 	m_shakeSize(kShakeSize),
 	m_isDrawBg(isDrawBg),
-	m_isMove(false),
-	m_isBaseX(true),
 	m_angle(0.0)
 {
 	m_updateFunc = &SceneManager::NormalUpdate;
@@ -37,7 +34,6 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_shakeHandle = MakeScreen(size.w, size.h);
 	m_drawScreen = MakeScreen(size.w, size.h);
 	m_shaderScreen = MakeScreen(size.w, size.h);
-	m_moveScreen = MakeScreen(size.w, size.h, true);
 	m_gaussianBlurScreen = MakeScreen(size.w, size.h, true);
 
 	m_wavePs = LoadPixelShader(L"Data/Shader/wavePs.pso");
@@ -52,7 +48,6 @@ SceneManager::~SceneManager()
 	DeleteGraph(m_shakeHandle);
 	DeleteGraph(m_drawScreen);
 	DeleteGraph(m_shaderScreen);
-	DeleteGraph(m_moveScreen);
 	DeleteGraph(m_gaussianBlurScreen);
 
 	DeleteShader(m_wavePs);
@@ -124,24 +119,6 @@ void SceneManager::ShakeScreen(int frame, int size = kShakeSize)
 	m_drawFunc = &SceneManager::ShakeDraw;
 }
 
-void SceneManager::MoveScreen(const Vec2& vec)
-{
-	m_isMove = true;
-
-	m_vec = vec;
-	// 正規化
-	m_vec.Normalize();
-
-	// どちらが大きいか
-	m_isBaseX = (abs(m_vec.x) > abs(m_vec.y));
-
-	m_angle = 0.0;
-
-	// メンバ関数ポインタの更新
-	m_updateFunc = &SceneManager::MoveUpdate;
-	m_drawFunc = &SceneManager::MoveDraw;
-}
-
 void SceneManager::OnShader()
 {
 	m_angle = 3.14f;
@@ -150,22 +127,18 @@ void SceneManager::OnShader()
 	m_drawFunc = &SceneManager::ShaderDraw;
 }
 
-void SceneManager::EndShader()
+void SceneManager::OnGaussianBlur(bool isAll)
 {
-	m_updateFunc = &SceneManager::NormalUpdate;
-	m_drawFunc = &SceneManager::NormalDraw;
-}
+	m_isAllGaussianBlur = isAll;
 
-void SceneManager::OnBgMove()
-{
-	m_updateFunc = &SceneManager::NormalUpdate;
-	m_drawFunc = &SceneManager::NormalDraw;
-}
-
-void SceneManager::OnBgGaussianBlur()
-{
 	m_updateFunc = &SceneManager::GaussianBlurUpdate;
 	m_drawFunc = &SceneManager::GaussianBlurDraw;
+}
+
+void SceneManager::OnNormal()
+{
+	m_updateFunc = &SceneManager::NormalUpdate;
+	m_drawFunc = &SceneManager::NormalDraw;
 }
 
 std::shared_ptr<Scene> SceneManager::GetTopScene()
@@ -178,10 +151,6 @@ int SceneManager::GetScreenHandle() const
 	if (m_isShake)
 	{
 		return m_shakeHandle;
-	}
-	else if (m_isMove)
-	{ 
-		return m_moveScreen;
 	}
 	else
 	{
@@ -207,21 +176,6 @@ void SceneManager::ShakeUpdate(Input& input)
 	if (m_shakeFrame < 0)
 	{
 		m_isShake = false;
-
-		m_updateFunc = &SceneManager::NormalUpdate;
-		m_drawFunc = &SceneManager::NormalDraw;
-	}
-}
-
-void SceneManager::MoveUpdate(Input& input)
-{
-	NormalUpdate(input);
-
-	m_angle += kRad;
-
-	if (m_angle >= DX_PI)
-	{
-		m_isMove = false;
 
 		m_updateFunc = &SceneManager::NormalUpdate;
 		m_drawFunc = &SceneManager::NormalDraw;
@@ -269,34 +223,6 @@ void SceneManager::ShakeDraw() const
 	DrawGraph(x, y, m_shakeHandle, true);
 }
 
-void SceneManager::MoveDraw() const
-{
-	m_bg->Draw();
-	SetDrawScreen(m_moveScreen);
-	ClearDrawScreen();
-	for (auto& scene : m_scenes)
-	{
-		scene->Draw();
-	}
-	SetDrawScreen(DX_SCREEN_BACK);
-
-	int x, y;
-
-	float rate = -sinf(m_angle);
-	float dRate = sinf(m_angle * 2) * 0.5f;
-	if (m_isBaseX)
-	{
-		x = static_cast<int>(m_vec.x * rate * kHeight + m_vec.y * dRate * kWidth);
-		y = static_cast<int>(m_vec.x * dRate * kWidth + m_vec.y * rate * kHeight);
-	}
-	else
-	{
-		x = static_cast<int>(m_vec.y * dRate * kWidth + m_vec.x * rate * kHeight);
-		y = static_cast<int>(m_vec.y * rate * kHeight + m_vec.x * dRate * kWidth);
-	}
-
-	DrawGraph(x, y, m_moveScreen, true);
-}
 
 void SceneManager::ShaderDraw() const
 {
@@ -327,13 +253,23 @@ void SceneManager::GaussianBlurDraw() const
 
 	m_bg->Draw();
 
-	auto itr = m_scenes.begin();
-	// 最後のシーン以外を描画させたいからサイズ-1
-	int index = m_scenes.size() - 1;
-	for (int i = 0; i < index; i++)
+	if (m_isAllGaussianBlur)
 	{
-		itr->get()->Draw();
-		itr++;
+		for (const auto& scene : m_scenes)
+		{
+			scene->Draw();
+		}
+	}
+	else
+	{
+		auto itr = m_scenes.begin();
+		// 最後のシーン以外を描画させたいからサイズ-1
+		int index = static_cast<int>(m_scenes.size()) - 1;
+		for (int i = 0; i < index; i++)
+		{
+			itr->get()->Draw();
+			itr++;
+		}
 	}
 
 	// ぼかす
@@ -341,7 +277,11 @@ void SceneManager::GaussianBlurDraw() const
 
 	SetDrawScreen(DX_SCREEN_BACK);
 	DrawGraph(0, 0, m_gaussianBlurScreen, false);
-	itr->get()->Draw();
+	// 全体ぼかす場合は既に書いている
+	if (!m_isAllGaussianBlur)
+	{
+		m_scenes.back()->Draw();
+	}
 
 }
 
@@ -364,21 +304,21 @@ void SceneManager::MyDraw(int x, int y, int width, int height) const
 		v.spc = GetColorU8(0, 0, 0, 0);
 	}
 	// 左上
-	verts[0].pos.x = x;
-	verts[0].pos.y = y;
+	verts[0].pos.x = static_cast<float>(x);
+	verts[0].pos.y = static_cast<float>(y);
 	// 右上
-	verts[1].pos.x = x + width;
-	verts[1].pos.y = y;
+	verts[1].pos.x = static_cast<float>(x + width);
+	verts[1].pos.y = static_cast<float>(y);
 	verts[1].u = 1.0f;
 	// 左下
-	verts[2].pos.x = x;
-	verts[2].pos.y = y + height;
+	verts[2].pos.x = static_cast<float>(x);
+	verts[2].pos.y = static_cast<float>(y + height);
 	verts[2].v = 1.0f;
 	// 右下
-	verts[3].pos.x = x + width;
-	verts[3].pos.y = y + height;
+	verts[3].pos.x = static_cast<float>(x + width);
+	verts[3].pos.y = static_cast<float>(y + height);
 	verts[3].u = 1.0f;
 	verts[3].v = 1.0f;
 	// 描画
-	DrawPrimitive2DToShader(verts.data(), verts.size(), DX_PRIMTYPE_TRIANGLESTRIP);
+	DrawPrimitive2DToShader(verts.data(), static_cast<int>(verts.size()), DX_PRIMTYPE_TRIANGLESTRIP);
 }

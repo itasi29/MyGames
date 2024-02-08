@@ -66,23 +66,21 @@ public:
 	/// <param name="frame">揺らすフレーム</param>
 	/// <param name="size">揺らす際の幅</param>
 	void ShakeScreen(int frame, int size);
-	/// <summary>
-	/// 画面を指定ベクトルに動かす
-	/// </summary>
-	/// <param name="vec">ベクトル</param>
-	void MoveScreen(const Vec2& vec);
 
 	/// <summary>
 	/// シェーダー開始
 	/// </summary>
 	void OnShader();
-	/// <summary>
-	/// シェーダー終了
-	/// </summary>
-	void EndShader();
 
-	void OnBgMove();
-	void OnBgGaussianBlur();
+	/// <summary>
+	/// ガウスぼかし開始
+	/// </summary>
+	void OnGaussianBlur(bool isAll = false);
+
+	/// <summary>
+	/// 通常描画へ
+	/// </summary>
+	void OnNormal();
 
 	/// <summary>
 	/// 末尾のSceneを取得
@@ -98,13 +96,11 @@ public:
 private:
 	void NormalUpdate(Input& input);
 	void ShakeUpdate(Input& input);
-	void MoveUpdate(Input& input);
 	void ShaderUpdate(Input& input);
 	void GaussianBlurUpdate(Input& input);
 
 	void NormalDraw() const;
 	void ShakeDraw() const;
-	void MoveDraw() const;
 	void ShaderDraw() const;
 	void GaussianBlurDraw() const;
 
@@ -126,6 +122,8 @@ private:
 
 	// シーンを入れる
 	std::list<std::shared_ptr<Scene>> m_scenes;
+	// 背景用シーン
+	std::shared_ptr<BackgroundScene> m_bg;
 
 	// 画面を揺らすときに使う画面
 	int m_shakeHandle;
@@ -136,24 +134,12 @@ private:
 	// 画面を揺らすか
 	bool m_isShake;
 
-	int m_moveScreen;
-
-
-	bool m_isMove;
-	// 画面を動かすベクトル
-	Vec2 m_vec;
-	// 動かす基準がX軸か
-	bool m_isBaseX;
-	// sinfを使うよう
-	float m_angle;
-
-	// 背景用
-	std::shared_ptr<BackgroundScene> m_bg;
-
+	// 背景を描画するか
 	bool m_isDrawBg;
 
 	// シェーダーに使う用
 	int m_cbuffer;
+	float m_angle;
 	float* m_gAngle;
 	int m_wavePs;
 	int m_ps;
@@ -162,5 +148,6 @@ private:
 
 	// ガウスぼかしに使うよう
 	int m_gaussianBlurScreen;
+	bool m_isAllGaussianBlur;
 };
 

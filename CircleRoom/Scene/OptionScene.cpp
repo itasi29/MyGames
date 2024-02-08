@@ -88,7 +88,7 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_optionScn = std::make_shared<SceneManager>(false);
 	m_optionScn->Init();
 
-	m_mgr.GetScene()->OnBgGaussianBlur();
+	m_mgr.GetScene()->OnGaussianBlur();
 
 	ChangeScene(input);
 }
@@ -97,7 +97,7 @@ OptionScene::~OptionScene()
 {
 	DeleteGraph(m_brightScreen);
 
-	m_mgr.GetScene()->OnBgMove();
+	m_mgr.GetScene()->OnNormal();
 }
 
 void OptionScene::Update(Input& input)
@@ -294,7 +294,7 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 		auto& str = strs[i];
 		
 		// •¶š‚ğ’†S•Ó‚è‚É•`‰æ‚·‚é‚æ‚¤‚É”¼•ª‚ÌˆÊ’u‚ÉˆÚ“®
-		int subX = str.size() / 2 * 32;
+		int subX = static_cast<int>(str.size()) / 2 * 32;
 		DrawStringToHandle(x + width * i + centerX - subX, kStrPosY, str.c_str(), color, fontHandle);
 	}
 }
