@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include <cassert>
+#include "Application.h"
 #include "Input.h"
 
 #include "GameManager.h"
@@ -79,10 +80,14 @@ ConfigScene::ConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneMa
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
+
+	const auto& size = Application::GetInstance().GetWindowSize();
+	m_frameScreen = MakeScreen(size.w, size.h, true);
 }
 
 ConfigScene::~ConfigScene()
 {
+	DeleteGraph(m_frameScreen);
 }
 
 void ConfigScene::Update(Input& input)
@@ -129,10 +134,18 @@ void ConfigScene::Draw()
 {
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
+	SetDrawScreen(m_frameScreen);
+	ClearDrawScreen();
+
 	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
 	DrawBox(128 - kFrameMargin, y,
 		kMenuMargin + 800, y + 44,
 		kFrameColor, true);
+
+	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
+	SetDrawScreen(nowScreen);
+	GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * m_currentLineIndex, 0, 0);
+	DrawGraph(0, 0, m_frameScreen, true);
 
 	y = kMenuMargin + 42;
 

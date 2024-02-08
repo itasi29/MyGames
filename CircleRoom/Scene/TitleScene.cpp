@@ -401,8 +401,8 @@ void TitleScene::NormalDraw()
 			DrawGraph(kStrDrawX + kMenuLength, frameY, m_frame->GetHandle(), true);
 			DrawBox(kStrDrawX - kFrameMargin, frameY, kStrDrawX + kMenuLength, frameY + 44, kFrameColor, true);
 
-			GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * i, 0, 0);
 			SetDrawScreen(nowScreen);
+			GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * i, 0, 0);
 			DrawGraph(0, 0, m_frameScreen, true);
 
 

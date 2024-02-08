@@ -94,10 +94,14 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr, Input& input) :
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
+
+	const auto& size = Application::GetInstance().GetWindowSize();
+	m_frameScreen = MakeScreen(size.w, size.h, true);
 }
 
 SoundOptionScene::~SoundOptionScene()
 {
+	DeleteGraph(m_frameScreen);
 }
 
 void SoundOptionScene::Update(Input& input)
@@ -111,6 +115,8 @@ void SoundOptionScene::Draw()
 {	
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
+	SetDrawScreen(m_frameScreen);
+	ClearDrawScreen();
 	// ‘I‘ð‚µ‚Ä‚¢‚éêŠ‚ð•`‰æ
 	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
 	DrawBox(128 - kFrameMargin, y,
@@ -130,7 +136,13 @@ void SoundOptionScene::Draw()
 			kFrameColorDeff, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
-	else
+	
+	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
+	SetDrawScreen(nowScreen);
+	GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * m_currentLineIndex, 0, 0);
+	DrawGraph(0, 0, m_frameScreen, true);
+
+	if (!m_isEdit)
 	{
 		DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 		m_isWaveDraw = true;

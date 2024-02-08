@@ -60,6 +60,8 @@ private:
 	// Inputクラスのテーブル
 	InputTable_t m_commandTable;
 
+	int m_frameScreen;
+
 	// 現在行のインデックス
 	int m_currentLineIndex;
 	// 編集中

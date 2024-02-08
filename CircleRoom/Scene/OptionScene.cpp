@@ -23,11 +23,13 @@
 namespace
 {
 	// フレームの色
-	constexpr unsigned int kFrameColor = 0xd2001a;
+	constexpr unsigned int kFrameColor = 0xffde00;
 	// 通常文字列の色
 	constexpr unsigned int kStrColor = 0xf0ece5;
-	// 選択時文字列の色
+	// 選択時文字列の色 
 	constexpr unsigned int kYellowColor = 0xffde00;
+	// 強調文字列の色
+	constexpr unsigned int kRedColor = 0xd2001a;
 
 	// フェード時間
 	constexpr int kAppeaInterval = 5;
@@ -83,7 +85,7 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
-	m_brightScreen = MakeScreen(1280, 720, true);
+	m_selectScreen = MakeScreen(1280, 720, true);
 
 	m_optionScn = std::make_shared<SceneManager>(false);
 	m_optionScn->Init();
@@ -95,7 +97,7 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 
 OptionScene::~OptionScene()
 {
-	DeleteGraph(m_brightScreen);
+	DeleteGraph(m_selectScreen);
 
 	m_mgr.GetScene()->OnNormal();
 }
@@ -221,25 +223,6 @@ void OptionScene::NormalDraw()
 
 void OptionScene::DrawWave(const size& size)
 {
-#if false
-	SetDrawScreen(m_brightScreen);
-	if (m_type == InputType::keybd)
-	{
-		m_key->DrawKey(L"Ｑキー", kMenuMargin + 7, kMenuMargin, 2.8);
-		m_key->DrawKey(L"Ｅキー", size.w - kMenuMargin - 43, kMenuMargin, 2.8);
-	}
-	else
-	{
-		m_bt->DrawBottan(L"ＬBottan", kMenuMargin + 7, kMenuMargin, 2.8);
-		m_bt->DrawBottan(L"ＲBottan", size.w - kMenuMargin - 48, kMenuMargin, 2.8);
-	}
-
-	int nowScreen = GameManager::GetInstance().GetScene()->GetScreenHandle();
-	SetDrawScreen(nowScreen);
-	GraphFilter(m_brightScreen, DX_GRAPH_FILTER_HSB, 0, 0, 0, 128);
-	DrawGraph(0, 0, m_brightScreen, true);
-#endif
-
 	if (m_type == InputType::keybd)
 	{
 		m_key->DrawKey(L"Ｑキー", kMenuMargin + 7, kMenuMargin, 2.5);
@@ -273,9 +256,17 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 {
 	// 選択している場所を描画
 	int x = kMenuMargin * 2;
+
+	SetDrawScreen(m_selectScreen);
+	ClearDrawScreen();
 	DrawBox(x + width * m_currentMenuLine + 1, static_cast<int>(kMenuMargin + 1),
 		x + width * (m_currentMenuLine + 1), static_cast<int>(kMenuMargin + kMenuMarginHeight),
 		kFrameColor, true);
+
+	GraphFilter(m_selectScreen, DX_GRAPH_FILTER_HSB, 0, 15 * m_currentMenuLine, 0, 0);
+	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
+	SetDrawScreen(nowScreen);
+	DrawGraph(0, 0, m_selectScreen, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 	unsigned int color;
@@ -288,7 +279,7 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 		color = kStrColor;
 		if (m_currentMenuLine == i)
 		{
-			color = kYellowColor;
+			color = kRedColor;
 		}
 
 		auto& str = strs[i];

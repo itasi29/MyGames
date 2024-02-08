@@ -104,12 +104,16 @@ OtherOptionScene::OtherOptionScene(GameManager& mgr, Input& input, std::shared_p
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
 
+	const auto& size = Application::GetInstance().GetWindowSize();
+	m_frameScreen = MakeScreen(size.w, size.h, true);
+
 	m_updateFunc = &OtherOptionScene::NormalUpdate;
 	m_drawFunc = &OtherOptionScene::NormalDraw;
 }
 
 OtherOptionScene::~OtherOptionScene()
 {
+	DeleteGraph(m_frameScreen);
 }
 
 void OtherOptionScene::Update(Input& input)
@@ -206,10 +210,17 @@ void OtherOptionScene::NormalDraw()
 	// ‘I‘ð‚µ‚Ä‚¢‚éêŠ‚ð•`‰æ
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
+	SetDrawScreen(m_frameScreen);
+	ClearDrawScreen();
 	DrawGraph(kDrawX + kFrameWidht, y, m_frame->GetHandle(), true);
 	DrawBox(kDrawX - kFrameMargin, y,
 		kDrawX + kFrameWidht, y + 44,
 		kFrameColor, true);
+
+	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
+	SetDrawScreen(nowScreen);
+	GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * m_currentLineIndex, 0, 0);
+	DrawGraph(0, 0, m_frameScreen, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
