@@ -49,9 +49,9 @@ namespace
 		//{L"Enemy/wallEffect.png", kGraph},
 		{L"Player/blood.png", kGraph},
 		{L"UI/backFrame.png", kGraph},
-		{L"Bgm/provisionalBgm.mp4", kSound},
-		{L"Bgm/fieldFight.mp4", kSound},
-		{L"Bgm/boss.mp4", kSound}
+		{L"Bgm/provisionalBgm.mp3", kSound},
+		{L"Bgm/fieldFight.mp3", kSound},
+		{L"Bgm/boss.mp3", kSound}
 	};
 
 }
@@ -79,7 +79,7 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 
 	m_mgr.GetStage()->ResetClear();
 
-	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp4");
+	m_bgm = m_mgr.GetFile()->LoadSound(L"Bgm/provisionalBgm.mp3");
 
 	// 事前にステージ内で多く使うものはここで読み込んでおく
 	auto size = kPath.size();

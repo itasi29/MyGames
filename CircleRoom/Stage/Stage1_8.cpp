@@ -51,7 +51,7 @@ Stage1_8::Stage1_8(GameManager& mgr, Input& input) :
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// 1-8はボスのためBGMを変更する
-	m_playBgm = m_mgr.GetFile()->LoadSound(L"Bgm/boss.mp4");
+	m_playBgm = m_mgr.GetFile()->LoadSound(L"Bgm/boss.mp3");
 	m_explanation = m_mgr.GetFile()->LoadGraphic(L"UI/bossExplanation.png");
 
 	// データの生成
