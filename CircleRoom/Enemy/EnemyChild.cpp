@@ -9,9 +9,6 @@ namespace
 	// 半径
 	constexpr float kRadius = 20.0f;
 
-	// カラー
-	constexpr int kColor = 0xf0f008;
-
 	// 消えるまでのフレーム
 	constexpr int kDeleteFrame = 60 * 2;
 }
@@ -20,7 +17,6 @@ EnemyChild::EnemyChild(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Child";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();

@@ -7,9 +7,6 @@ namespace
 	// 半径
 	constexpr float kRadius = 20.0f;
 
-	// カラー
-	constexpr int kColor = 0xffffff;
-
 	// バウンド回数
 	constexpr int kBoundNum = 2;
 }
@@ -19,7 +16,6 @@ EnemySplitTwoBound::EnemySplitTwoBound(const size& windowSize, float fieldSize) 
 	m_boundNo(0)
 {
 	m_name = "SplitTwoBound";
-	m_color = kColor;
 	m_radius = kRadius;
 }
 

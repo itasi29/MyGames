@@ -25,6 +25,7 @@ private:
 	void NormalUpdate() override;
 
 private:
+	// ステージのポインタ
 	StageBase* m_stage;
 
 	// 変換後の移動ベクトル

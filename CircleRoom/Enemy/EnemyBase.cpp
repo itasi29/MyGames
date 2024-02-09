@@ -33,7 +33,6 @@ namespace
 EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_size(windowSize),
 	m_fieldSize(fieldSize),
-	m_color(0),
 	m_radius(0),
 	m_isExsit(true),
 	m_frame(0),
@@ -352,10 +351,12 @@ void EnemyBase::DrawHitWallEffect() const
 void EnemyBase::AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, float shiftY)
 {
 	std::vector<WallEff> effs;
+	// エフェクト数でリサイズ
 	effs.resize(kWallEffNum);
 
 	float x, y;
 
+	// エフェクトの追加
 	for (auto& eff : effs)
 	{
 		eff.size = 0.6 + GetRand(10) * 0.1 - 0.5;

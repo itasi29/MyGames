@@ -18,9 +18,6 @@ namespace
 	// ”¼Œa
 	constexpr float kRadius = 43.0f;
 
-	// ƒJƒ‰[
-	constexpr int kColor = 0xffff08;
-
 	// 1ƒtƒŒ[ƒ€‚²‚Æ‚ÌŠp“x
 	constexpr float kRadian = 2.0f * (DX_PI_F / 180.0f);
 	// c‚Ì—h‚ê•
@@ -34,7 +31,6 @@ EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Create";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
@@ -47,7 +43,6 @@ EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize, StageBase* sta
 	m_radian(0)
 {
 	m_name = "Create";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();

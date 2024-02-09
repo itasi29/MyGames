@@ -10,16 +10,12 @@ namespace
 	constexpr float kSpeed = 6.0f;
 	// îºåa
 	constexpr float kRadius = 20.0f;
-
-	// ÉJÉâÅ[
-	constexpr int kColor = 0xffffff;
 }
 
 EnemySplit::EnemySplit(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Split";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();

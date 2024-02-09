@@ -69,7 +69,12 @@ protected:
 	/// <summary>
 	/// 反射させる計算
 	/// </summary>
+	/// /// <param name="norVec">法線ベクトル</param>
 	void ReflectionCal(const Vec2& norVec);
+	/// <summary>
+	/// 反射時にずらす
+	/// </summary>
+	/// <param name="shift">ずらす方向</param>
 	void ShiftReflection(const Vec2& shift);
 
 	/// <summary>
@@ -86,9 +91,20 @@ protected:
 	virtual void StartDraw() const;
 	virtual void NormalDraw() const;
 
+	/// <summary>
+	/// 壁に当たった時のエフェクト描画
+	/// </summary>
 	void DrawHitWallEffect() const;
 
 private:
+	/// <summary>
+	/// 壁に当たった時のエフェクトの追加
+	/// </summary>
+	/// <param name="pos">場所</param>
+	/// <param name="sizeX">方向サイズX : 16方向中どの方向まで対応させるか</param>
+	/// <param name="shiftX">ずらし度X</param>
+	/// <param name="sizeY">方向サイズY</param>
+	/// <param name="shiftY">ずらし度Y</param>
 	void AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, float shiftY);
 
 protected:
@@ -112,10 +128,9 @@ protected:
 	// フィールドのサイズ
 	const float m_fieldSize;
 
-	// キャラ画像
+	// 画像
 	std::shared_ptr<FileBase> m_charImg;
 	std::shared_ptr<FileBase> m_shadow;
-	// 壁エフェクト
 	std::shared_ptr<FileBase> m_wallEffect;
 
 	// 生成時のSE
@@ -123,8 +138,6 @@ protected:
 
 	// 敵の名前
 	std::string m_name;
-	// 敵のカラー(グラフに変えたら消えるやつ)
-	unsigned int m_color;
 
 	// 中心座標
 	Vec2 m_pos;
@@ -138,11 +151,13 @@ protected:
 	// 生存判定
 	bool m_isExsit;
 
+	// 画像の回転
 	double m_angle;
 
 	// フレーム
 	int m_frame;
 
+	// 壁に当たった時のエフェクト
 	std::list<WallEffMass> m_wallEff;
 };
 

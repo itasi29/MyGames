@@ -34,6 +34,7 @@ private:
 	void DrawDashEff() const;
 
 private:
+	// プレイヤーのポインタ
 	std::shared_ptr<Player> m_player;
 
 	// ダッシュSe

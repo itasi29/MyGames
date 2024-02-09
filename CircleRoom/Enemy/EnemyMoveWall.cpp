@@ -13,16 +13,12 @@ namespace
 	constexpr float kSpeed = 9.0f;
 	// îºåa
 	constexpr float kRadius = 43.0f;
-
-	// ÉJÉâÅ[
-	constexpr int kColor = 0x888888;
 }
 
 EnemyMoveWall::EnemyMoveWall(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "MoveWall";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();

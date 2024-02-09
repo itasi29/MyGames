@@ -13,16 +13,12 @@ namespace
 	constexpr float kSpeed = 2.5f;
 	// îºåa
 	constexpr float kRadius = 80.0f;
-
-	// ÉJÉâÅ[
-	constexpr int kColor = 0xffffff;
 }
 
 EnemyLarge::EnemyLarge(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Large";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();

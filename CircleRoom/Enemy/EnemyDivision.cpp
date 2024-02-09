@@ -20,9 +20,6 @@ namespace
 	// 半径
 	constexpr float kRadius = 43.0f;
 
-	// カラー
-	constexpr int kColor = 0xffffff;
-
 	// 分裂する数
 	constexpr int kDivisionNum = 4;
 	// 分裂するまでのフレーム
@@ -45,7 +42,6 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize) :
 	EnemyBase(windowSize, fieldSize)
 {
 	m_name = "Division";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
@@ -60,7 +56,6 @@ EnemyDivision::EnemyDivision(const size& windowSize, float fieldSize, StageBase*
 	m_ripple(static_cast<int>(kRadius))
 {
 	m_name = "Division";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
@@ -170,6 +165,7 @@ void EnemyDivision::UsuallyUpdate()
 void EnemyDivision::DivisionUpdate()
 {
 	m_divisionWaitFrame++;
+	// 発射前に高速回転させる
 	if (m_divisionWaitFrame < kRotationFrame)
 	{
 		m_angle -= (kRad * 20);
@@ -226,11 +222,15 @@ void EnemyDivision::UsuallyDraw() const
 
 void EnemyDivision::EndDraw() const
 {
+	// 別のスクリーンに変更
 	SetDrawScreen(m_rippleScreen);
+	// 少し黒くする
 	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
 	DrawBox(0, 0, m_size.w, m_size.h, 0x5f6976, true);
+	// 波紋の描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 64);
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_ripple, 0x0b60b0, false, kRipple);
+	// 本体の方に描画
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	int handle = GameManager::GetInstance().GetScene()->GetScreenHandle();
 	SetDrawScreen(handle);

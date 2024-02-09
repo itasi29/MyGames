@@ -40,12 +40,13 @@ private:
 	UpdateFunc_t m_dUpdateFunc;
 	DrawFunc_t m_dDrawFunc;
 
+	// ステージのポインタ
 	StageBase* m_stage;
 
 	// 分裂前待機フレーム
 	int m_divisionWaitFrame;
 
-	// 破門用
+	// 波紋用
 	int m_ripple;
 	int m_rippleScreen;
 };

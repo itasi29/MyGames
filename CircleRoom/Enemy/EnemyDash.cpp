@@ -19,9 +19,6 @@ namespace
 	// 半径
 	constexpr float kRadius = 43.0f;
 
-	// カラー
-	constexpr int kColor = 0x0808ff;
-
 	// ログ数
 	constexpr int kDashLogNum = 8;
 	// ダッシュ時のスピード
@@ -68,7 +65,6 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize) :
 	m_circleSize(1.0)
 {
 	m_name = "Dash";
-	m_color = kColor;
 	m_radius = kRadius;
 
 	auto& mgr = GameManager::GetInstance().GetFile();
@@ -88,7 +84,6 @@ EnemyDash::EnemyDash(const size& windowSize, float fieldSize, std::shared_ptr<Pl
 	m_circleSize(1.0)
 {
 	m_name = "Dash";
-	m_color = kColor;
 	m_radius = kRadius;
 	m_posLog.resize(kDashLogNum);
 	m_dashEffScreen = MakeScreen(m_size.w, m_size.h, true);
@@ -171,10 +166,13 @@ void EnemyDash::NormalUpdate()
 	Dash();
 	m_pos += m_vec;
 
+	// ダッシュ後の円を描画する時
 	if (m_isDashEff)
 	{
+		// 半径の増加
 		m_dashEffRipper += kRipple;
 
+		// 描画終了判定
 		m_isDashEff = (m_dashEffRipper < kMaxRippleSize);
 	}
 
@@ -318,11 +316,15 @@ void EnemyDash::DrawDashEff() const
 {
 	if (!m_isDashEff) return;
 
+	// 別のスクリーンに変更
 	SetDrawScreen(m_dashEffScreen);
+	// 少し黒くする
 	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
 	DrawBox(0, 0, m_size.w, m_size.h, 0x5f6976, true);
+	// 半径を描画する
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 64);
 	DrawCircle(static_cast<int>(m_dashEffPos.x), static_cast<int>(m_dashEffPos.y), m_dashEffRipper, 0x0b60b0, false, kRipple);
+	// 本体の方に描画する
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	int handle = GameManager::GetInstance().GetScene()->GetScreenHandle();
 	SetDrawScreen(handle);
