@@ -41,6 +41,10 @@ namespace
 	// 文字Y座標
 	constexpr int kStrPosY = 58;
 
+	// 左右移動のボタン画像を揺らす高さ
+	constexpr int kShakeHeight = 10;
+	// 揺らす速度
+	constexpr float kRad = DX_PI_F / 180;
 
 	// ゲーム中選択幅
 	constexpr int kGameMargin = 270;
@@ -73,7 +77,8 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_isEdit{ false },
 	m_currentMenuLine(0),
 	m_isFadeOut(false),
-	m_type(InputType::pad)
+	m_type(InputType::pad),
+	m_radian(0.0f)
 {
 	m_updateFunc = &OptionScene::AppearUpdate;
 
@@ -107,6 +112,9 @@ void OptionScene::Update(Input& input)
 	m_isEdit[1] = m_isEdit[0];
 
 	m_optionScn->Update(input);
+
+	// 左右移動の揺らす位置更新
+	m_radian += kRad;
 
 	// 編集中は処理の変更をしない
 	if (m_isEdit[1]) return;
@@ -223,15 +231,17 @@ void OptionScene::NormalDraw()
 
 void OptionScene::DrawWave(const size& size)
 {
+	int addY = static_cast<int>(sinf(m_radian) * kShakeHeight);
+
 	if (m_type == InputType::keybd)
 	{
-		m_key->DrawKey(L"Ｑキー", kMenuMargin + 7, kMenuMargin, 2.5);
-		m_key->DrawKey(L"Ｅキー", size.w - kMenuMargin - 43, kMenuMargin, 2.5);
+		m_key->DrawKey(L"Ｑキー", kMenuMargin + 7, kMenuMargin + addY , 2.5);
+		m_key->DrawKey(L"Ｅキー", size.w - kMenuMargin - 43, kMenuMargin + addY, 2.5);
 	}
 	else
 	{
-		m_bt->DrawBottan(L"ＬBottan", kMenuMargin + 7, kMenuMargin, 2.5);
-		m_bt->DrawBottan(L"ＲBottan", size.w - kMenuMargin - 48, kMenuMargin, 2.5);
+		m_bt->DrawBottan(L"ＬBottan", kMenuMargin + 7, kMenuMargin + addY, 2.5);
+		m_bt->DrawBottan(L"ＲBottan", size.w - kMenuMargin - 48, kMenuMargin + addY, 2.5);
 	}
 
 }

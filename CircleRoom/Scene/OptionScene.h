@@ -83,6 +83,8 @@ private:
 
 	InputType m_type;
 
+	float m_radian;
+
 	// Se
 	std::shared_ptr<FileBase> m_cancelSe;
 	std::shared_ptr<FileBase> m_cursorUpSe;

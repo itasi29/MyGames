@@ -25,7 +25,8 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_shakeFrame(0),
 	m_shakeSize(kShakeSize),
 	m_isDrawBg(isDrawBg),
-	m_angle(0.0)
+	m_angle(0.0),
+	m_isAllGaussianBlur(false)
 {
 	m_updateFunc = &SceneManager::NormalUpdate;
 	m_drawFunc = &SceneManager::NormalDraw;
