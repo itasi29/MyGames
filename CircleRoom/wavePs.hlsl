@@ -26,13 +26,7 @@ PsOutput main(PsInput psInput)
 
 	float len = length(xy);
 
-	float h = 0.5 + (clamp(sin(len - angle), 0.0, 0.5) * cos((posAngle + 3.14))) * abs(sin(angle / 5.0));
-
-
-	// 0.5が真ん中
-	// 0に近づくほど右下に
-	// 1に近づくほど左上に
-	// ズレる
+	float h = 0.5 + (clamp(sin(len - angle), 0.0, 0.5) * cos(posAngle + 3.14)) * abs(sin(angle / 5.0));
 
 	// 色の計算
 	psOutput.output.rgb = h;
