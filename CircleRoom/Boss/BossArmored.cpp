@@ -57,29 +57,14 @@ namespace
 BossArmored::BossArmored(const size& windowSize, float fieldSize) :
 	BossBase(windowSize, fieldSize, kMaxHp)
 {
-	m_name = "BossArmored";
-	m_color = kColor;
-	m_radius = kRadius;
-
-	auto& mgr = GameManager::GetInstance().GetFile();
-	m_char[0] = mgr->LoadGraphic(L"Enemy/BossArmoredOutside.png");
-	m_char[1] = mgr->LoadGraphic(L"Enemy/BossArmoredMiddle.png");
-	m_char[2] = mgr->LoadGraphic(L"Enemy/BossArmoredCenter.png");
+	InitData();
 }
 
 BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* stage) :
 	BossBase(windowSize, fieldSize, kMaxHp),
 	m_stage(stage)
 {
-	m_name = "BossArmored";
-	m_color = kColor;
-	m_radius = kRadius;
-
-	auto& mgr = GameManager::GetInstance().GetFile();
-	m_charAll = mgr->LoadGraphic(L"Enemy/BossArmored.png");
-	m_char[0] = mgr->LoadGraphic(L"Enemy/BossArmoredOutside.png");
-	m_char[1] = mgr->LoadGraphic(L"Enemy/BossArmoredMiddle.png");
-	m_char[2] = mgr->LoadGraphic(L"Enemy/BossArmoredCenter.png");
+	InitData();
 }
 
 BossArmored::~BossArmored()
@@ -235,16 +220,16 @@ void BossArmored::StartUpdate()
 
 void BossArmored::NormalUpdate()
 {
+	m_angle[0] += -kRad * 2;
+	m_angle[1] += kRad;
+	m_angle[2] += -kRad;
+
 	m_radian += kRadian;
 
 	if (m_radian > DX_TWO_PI_F)
 	{
 		m_radian = 0;
 	}
-	m_angle[0] += -kRad * 2;
-	m_angle[1] += kRad;
-	m_angle[2] += -kRad;
-
 	m_conversionVec.x = m_vec.x * cosf(m_radian);
 	m_conversionVec.y = m_vec.y * sinf(m_radian);
 
@@ -270,7 +255,6 @@ void BossArmored::NormalUpdate()
 
 void BossArmored::NormalDraw() const
 {
-	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
@@ -360,4 +344,17 @@ void BossArmored::CreateEnemy()
 		// ¶¬‘O‘Ò‹@ƒtƒŒ[ƒ€‚Ì‰Šú‰»
 		m_waitCreateFrame = kWaitCreateFrame;
 	}
+}
+
+void BossArmored::InitData()
+{
+	m_name = "BossArmored";
+	m_color = kColor;
+	m_radius = kRadius;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charAll = mgr->LoadGraphic(L"Enemy/BossArmored.png");
+	m_char[0] = mgr->LoadGraphic(L"Enemy/BossArmoredOutside.png");
+	m_char[1] = mgr->LoadGraphic(L"Enemy/BossArmoredMiddle.png");
+	m_char[2] = mgr->LoadGraphic(L"Enemy/BossArmoredCenter.png");
 }

@@ -110,11 +110,6 @@ protected:
 	/// </summary>
 	void OnDeath();
 
-protected:
-	// メンバ関数ポインタ
-	using updateFunc_t = void(BossBase::*)();
-	using drawFunc_t = void(BossBase::*)() const;
-
 	virtual void StartUpdate() = 0;
 	virtual void NormalUpdate() = 0;
 	void HitStopUpdate();
@@ -155,14 +150,20 @@ protected:
 	// ダメージを受けた際のフレーム
 	const int kOnDamageFrame = 33;
 
+	// 実体化するまでの時間
+	static const int kApeearFrame = 30;
+
+protected:
+	// メンバ関数ポインタ
+	using updateFunc_t = void(BossBase::*)();
+	using drawFunc_t = void(BossBase::*)() const;
+
 	updateFunc_t m_updateFunc;
 	drawFunc_t m_drawFunc;
 	updateFunc_t m_deathUpdateFunc;
 	drawFunc_t m_deathDrawFunc;
 
-	// 実体化するまでの時間
-	static const int kApeearFrame = 30;
-
+	// 画像ごとの回転角度保存
 	std::array<double, kGraphNum> m_angle;
 
 	// スクリーンサイズ

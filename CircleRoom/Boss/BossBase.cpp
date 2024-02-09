@@ -217,7 +217,6 @@ void BossBase::TitleUpdate()
 
 void BossBase::TitleDraw() const
 {
-	// ‰e‚Ì•`‰æ
 	DrawRotaGraph(static_cast<int>(m_pos.x + 10), static_cast<int>(m_pos.y + 10), 1.0, m_angle[0],
 		m_shadow->GetHandle(), true);
 
@@ -691,17 +690,14 @@ void BossBase::AddWallEff(const Vec2& pos, int sizeX, float shiftX, int sizeY, f
 
 	float x, y;
 
-	shiftX *= 0.125f;
-	shiftY *= 0.125f;
-
 	for (auto& eff : effs)
 	{
 		eff.size = 0.6 + GetRand(10) * 0.1 - 0.5;
 
 		eff.pos = pos;
 
-		x = GetRand(sizeX) * 0.125f - shiftX;
-		y = GetRand(sizeY) * 0.125f - shiftY;
+		x = (GetRand(sizeX) - shiftX) * 0.125f;
+		y = (GetRand(sizeY) - shiftY) * 0.125f;
 
 		eff.vec = { x, y };
 		eff.vec.Normalize();

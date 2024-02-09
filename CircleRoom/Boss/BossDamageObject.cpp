@@ -17,7 +17,7 @@ namespace
 	// フラッシュ間隔
 	constexpr int kFlashInterval = 30;
 
-	// ミサイル？のスピード
+	// ミサイルのスピード
 	constexpr float kMissileSpeed = 8.0f;
 	// 半径
 	constexpr int kMissileRadius = 8;
@@ -38,15 +38,7 @@ BossDamageObject::BossDamageObject(const size& windowSize, float fieldSize, Boss
 	m_pos.x = windowSize.w * 0.5f + GetRand(static_cast<int>(fieldSize * 2 - kRadius * 2)) - fieldSize + kRadius;
 	m_pos.y = windowSize.h * 0.5f + GetRand(static_cast<int>(fieldSize * 2 - kRadius * 2)) - fieldSize + kRadius;
 
-	m_col.SetCenter(m_pos, kRadius);
-
-	auto& file = GameManager::GetInstance().GetFile();
-	m_missileEff = file->LoadGraphic(L"Enemy/missileEff.png");
-	m_objShadow = file->LoadGraphic(L"Enemy/ObjShadow.png");
-	m_missileShadow = file->LoadGraphic(L"Enemy/MissileShadow.png");
-
-	m_updateFunc = &BossDamageObject::FlashUpdate;
-	m_drawFunc = &BossDamageObject::FlashDraw;
+	Init();
 }
 
 BossDamageObject::BossDamageObject(const Vec2& col, BossBase* boss) :
@@ -59,15 +51,7 @@ BossDamageObject::BossDamageObject(const Vec2& col, BossBase* boss) :
 	m_pos.x = col.x + GetRand(static_cast<int>(kRand * 0.5f)) - kRand;
 	m_pos.y = col.y + GetRand(static_cast<int>(kRand * 0.5f)) - kRand;
 
-
-	auto& file = GameManager::GetInstance().GetFile();
-	m_missileEff = file->LoadGraphic(L"Enemy/missileEff.png");
-	m_objShadow = file->LoadGraphic(L"Enemy/ObjShadow.png");
-	m_missileShadow = file->LoadGraphic(L"Enemy/MissileShadow.png");
-
-	m_col.SetCenter(m_pos, kRadius);
-	m_updateFunc = &BossDamageObject::FlashUpdate;
-	m_drawFunc = &BossDamageObject::FlashDraw;
+	Init();
 }
 
 BossDamageObject::~BossDamageObject()
@@ -109,6 +93,18 @@ void BossDamageObject::OnUse()
 	m_drawFunc = &BossDamageObject::AimDraw;
 }
 
+void BossDamageObject::Init()
+{
+	auto& file = GameManager::GetInstance().GetFile();
+	m_missileEff = file->LoadGraphic(L"Enemy/missileEff.png");
+	m_objShadow = file->LoadGraphic(L"Enemy/ObjShadow.png");
+	m_missileShadow = file->LoadGraphic(L"Enemy/MissileShadow.png");
+
+	m_col.SetCenter(m_pos, kRadius);
+	m_updateFunc = &BossDamageObject::FlashUpdate;
+	m_drawFunc = &BossDamageObject::FlashDraw;
+}
+
 void BossDamageObject::FlashUpdate()
 {
 	m_flashFrame++;
@@ -116,15 +112,18 @@ void BossDamageObject::FlashUpdate()
 
 void BossDamageObject::AimUpdae()
 {
+	// ミサイル本体の更新
 	for (auto& missile : m_missiles)
 	{
 		Move(missile);
 
+		// 当たったら
 		if (missile.col.IsCollsion(m_boss->GetRect()))
 		{
 			missile.isHit = true;
 			m_boss->OnDamage();
 
+			// エフェクトの追加
 			for (auto& effs : m_missileEffs)
 			{
 				if (effs.isUse) continue;
@@ -136,16 +135,17 @@ void BossDamageObject::AimUpdae()
 				float x, y;
 				for (auto& eff : missileEff)
 				{
+					// サイズの決定
 					eff.size = 0.6 + GetRand(10) * 0.1 - 0.5;
 
+					// 場所の決定
 					eff.pos = missile.pos;
 
+					// 進む方向・速度の決定
 					x = GetRand(16) * 0.125f - 1.0f;
 					y = GetRand(16) * 0.125f - 1.0f;
-
 					eff.vec = { x, y };
 					eff.vec.Normalize();
-
 					eff.vec = eff.vec * static_cast<float>(eff.size) * kMissileEffSpeed;
 				}
 
@@ -156,6 +156,7 @@ void BossDamageObject::AimUpdae()
 			}
 		}
 	}
+	// 当たったミサイルは消去
 	auto rmlt = std::remove_if(m_missiles.begin(), m_missiles.end(),
 		[](const auto& missile)
 		{
@@ -164,6 +165,7 @@ void BossDamageObject::AimUpdae()
 	);
 	m_missiles.erase(rmlt, m_missiles.end());
 
+	// エフェクトの更新
 	for (auto& effs : m_missileEffs)
 	{
 		if (!effs.isUse) continue;
@@ -179,6 +181,7 @@ void BossDamageObject::AimUpdae()
 			effs.isEnd = true;
 		}
 	}
+	// 終了したものは消去
 	auto rmlt2 = std::remove_if(m_missileEffs.begin(), m_missileEffs.end(),
 		[](const auto& effs)
 		{

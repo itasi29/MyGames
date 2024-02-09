@@ -47,13 +47,17 @@ protected:
 
 	virtual void CreateEnemy();
 
+private:
+	void InitData();
+
 protected:
+	// ステージのポインタ
 	StageBase* m_stage;
 
 	// 実際の移動は別の動きとなるので変数としてもっておく
 	Vec2 m_conversionVec;
 
-	// ラジアン
+	// 移動時のいびつな移動用
 	float m_radian;
 
 	// ダメージを与える物体のリスト

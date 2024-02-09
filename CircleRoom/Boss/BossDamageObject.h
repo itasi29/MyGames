@@ -70,6 +70,11 @@ public:
 	bool IsPickUp() const { return m_isPickUp; }
 
 private:
+	/// <summary>
+	/// 共通初期化部分
+	/// </summary>
+	void Init();
+
 	// 拾われるまでのアップデート
 	void FlashUpdate();
 	// 拾ったあとのアップデート
@@ -87,6 +92,7 @@ private:
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 
+	// 画像
 	std::shared_ptr<FileBase> m_missileEff;
 	std::shared_ptr<FileBase> m_objShadow;
 	std::shared_ptr<FileBase> m_missileShadow;
@@ -94,13 +100,18 @@ private:
 	// ボスのポインタ
 	BossBase* m_boss;
 
+	// 場所
 	Vec2 m_pos;
 	Collision m_col;
 
+	// 拾ったか(触れたか)
 	bool m_isPickUp;
+	// 全て使ったか
 	bool m_isUsed;
+	// 点滅フレーム
 	int m_flashFrame;
 
+	// ミサイル系の配列
 	std::vector<Missile> m_missiles;
 	std::vector<MissileEffMass> m_missileEffs;
 };

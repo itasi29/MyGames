@@ -48,25 +48,13 @@ namespace
 BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize) :
 	BossArmored(windowSize, fieldSize)
 {
-	m_name = "BossStrongArmored";
-	m_color = kColor;
-
-	auto& mgr = GameManager::GetInstance().GetFile();
-	m_char[0] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredOutside.png");
-	m_char[1] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredMiddle.png");
-	m_char[2] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredCenter.png");
+	InitData();
 }
 
 BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage) :
 	BossArmored(windowSize, fieldSize, stage)
 {
-	m_name = "BossStrongArmored";
-	m_color = kColor;
-
-	auto& mgr = GameManager::GetInstance().GetFile();
-	m_char[0] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredOutside.png");
-	m_char[1] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredMiddle.png");
-	m_char[2] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredCenter.png");
+	InitData();
 }
 
 BossStrongArmored::~BossStrongArmored()
@@ -125,6 +113,17 @@ void BossStrongArmored::OnDamage()
 //	HitStop();
 
 	return;
+}
+
+void BossStrongArmored::InitData()
+{
+	m_name = "BossStrongArmored";
+	m_color = kColor;
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_char[0] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredOutside.png");
+	m_char[1] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredMiddle.png");
+	m_char[2] = mgr->LoadGraphic(L"Enemy/BossStrongArmoredCenter.png");
 }
 
 void BossStrongArmored::NormalDraw() const

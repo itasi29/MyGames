@@ -11,6 +11,8 @@ public:
 	void OnDamage() override;
 
 private:
+	void InitData();
+
 	void NormalDraw() const override;
 
 	void CreateEnemy() override;
