@@ -105,8 +105,6 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
-
-	m_frameScreen = MakeScreen(1280, 720, true);
 }
 
 PadConfigScene::~PadConfigScene()
@@ -120,8 +118,6 @@ PadConfigScene::~PadConfigScene()
 
 	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
 	optionScene->InverseIsEdit();
-
-	DeleteGraph(m_frameScreen);
 }
 
 void PadConfigScene::Update(Input& input)
@@ -138,18 +134,11 @@ void PadConfigScene::Draw()
 	// 選択している場所を描画
 	int y = kMenuMargin + 62 + m_currentLineIndex * kMenuLineInterval;
 
-	SetDrawScreen(m_frameScreen);
-	ClearDrawScreen();
 	// 選択している場所を描画
 	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
 	DrawBox(128 - kFrameMargin, y,
 		kMenuMargin + 800, y + 44,
 		kFrameColor, true);
-
-	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
-	SetDrawScreen(nowScreen);
-	GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * m_currentLineIndex, 0, 0);
-	DrawGraph(0, 0, m_frameScreen, true);
 
 	// 選択中の場合は色を追加して点滅させる
 	if (m_isEdit)

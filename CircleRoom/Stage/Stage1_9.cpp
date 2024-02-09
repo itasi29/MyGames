@@ -33,6 +33,7 @@ namespace
 	constexpr int kCreateLargeInterval = 60 * 4;
 
 	// ディレイフレーム
+	constexpr int kStartDeleyFrame = 15;
 	constexpr int kDeleyFrame = 60 * 6;
 
 	// 上クリア条件　生存時間
@@ -66,6 +67,7 @@ void Stage1_9::Init()
 	StageBase::Init();
 
 	// 生成関係の初期化
+	m_createDashFrame = kStartDeleyFrame;
 	m_createDashNum = 0;
 	m_createEneCreateNum = 0;
 	m_createLargeNum = 0;
@@ -139,8 +141,11 @@ void Stage1_9::CreateEnemy()
 
 	if (m_createDashNum < kCreatDashNum)
 	{
-		m_createDashNum++;
-		CreateDash(m_createDashFrame);
+		if (m_createDashFrame > kStartDeleyFrame)
+		{
+			m_createDashNum++;
+			CreateDash(m_createDashFrame);
+		}
 	}
 	else
 	{

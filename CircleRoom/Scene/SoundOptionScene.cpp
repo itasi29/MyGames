@@ -31,6 +31,11 @@ namespace
 	// 点滅間隔
 	constexpr int kFlashInterval = 40;
 
+	// ゲージの色
+	constexpr int kGaugeColor = 0x2dffe5;
+	// ゲージの下地色
+	constexpr int kGaugeBaseColor = 0xa9a9a9;
+
 	// フレームの左余白
 	constexpr int kFrameMargin = 16;
 
@@ -96,12 +101,10 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr, Input& input) :
 	m_key = std::make_shared<KeyFile>(file);
 
 	const auto& size = Application::GetInstance().GetWindowSize();
-	m_frameScreen = MakeScreen(size.w, size.h, true);
 }
 
 SoundOptionScene::~SoundOptionScene()
 {
-	DeleteGraph(m_frameScreen);
 }
 
 void SoundOptionScene::Update(Input& input)
@@ -115,8 +118,6 @@ void SoundOptionScene::Draw()
 {	
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
-	SetDrawScreen(m_frameScreen);
-	ClearDrawScreen();
 	// 選択している場所を描画
 	DrawGraph(kMenuMargin + 800, y, m_frame->GetHandle(), true);
 	DrawBox(128 - kFrameMargin, y,
@@ -136,13 +137,7 @@ void SoundOptionScene::Draw()
 			kFrameColorDeff, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
-	
-	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
-	SetDrawScreen(nowScreen);
-	GraphFilter(m_frameScreen, DX_GRAPH_FILTER_HSB, 0, -15 * m_currentLineIndex, 0, 0);
-	DrawGraph(0, 0, m_frameScreen, true);
-
-	if (!m_isEdit)
+	else
 	{
 		DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 		m_isWaveDraw = true;
@@ -266,10 +261,10 @@ void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
 void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate)
 {
 	// 下地描画
-	DrawBox(drawX, drawY, drawX + kGaugeLength, drawY + 32, 0xa9a9a9, true);
+	DrawBox(drawX, drawY, drawX + kGaugeLength, drawY + 32, kGaugeBaseColor, true);
 	
 	// ゲージ割合描画
-	DrawBox(drawX, drawY, drawX + static_cast<int>(kGaugeLength * rate), drawY + 32, 0xff9130, true);
+	DrawBox(drawX, drawY, drawX + static_cast<int>(kGaugeLength * rate), drawY + 32, kGaugeColor, true);
 }
 
 void SoundOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)

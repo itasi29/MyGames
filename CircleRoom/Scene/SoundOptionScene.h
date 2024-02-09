@@ -46,8 +46,6 @@ private:
 private:
 	updateFunc_t m_updateFunc;
 
-	int m_frameScreen;
-
 	int m_currentLineIndex;
 	bool m_isEdit;
 

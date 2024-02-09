@@ -75,8 +75,6 @@ private:
 	std::list<std::shared_ptr<EnemyBase>> m_enemy;
 	std::list<std::shared_ptr<BossBase>> m_boss;
 
-	int m_frameScreen;
-
 	// タイトルで動く敵の生成フレーム
 	int m_createEnemyFrame;
 	int m_createBossFrame;

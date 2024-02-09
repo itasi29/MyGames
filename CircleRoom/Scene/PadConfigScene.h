@@ -57,8 +57,6 @@ private:
 	// Inputクラスのテーブル
 	InputTable_t m_commandTable;
 
-	int m_frameScreen;
-
 	// 選択位置
 	int m_currentLineIndex;
 	// 編集中

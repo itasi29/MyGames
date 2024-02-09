@@ -72,8 +72,6 @@ private:
 	// おかしくなる可能性があるため要確認
 	std::shared_ptr<SceneManager> m_optionScn;
 
-	int m_selectScreen;
-
 	int m_frame = 0;
 	std::array<bool, 2> m_isEdit;
 

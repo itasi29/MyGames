@@ -90,8 +90,6 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
 	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
 
-	m_selectScreen = MakeScreen(1280, 720, true);
-
 	m_optionScn = std::make_shared<SceneManager>(false);
 	m_optionScn->Init();
 
@@ -102,8 +100,6 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 
 OptionScene::~OptionScene()
 {
-	DeleteGraph(m_selectScreen);
-
 	m_mgr.GetScene()->OnNormal();
 }
 
@@ -267,16 +263,9 @@ void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
 	// ‘I‘ğ‚µ‚Ä‚¢‚éêŠ‚ğ•`‰æ
 	int x = kMenuMargin * 2;
 
-	SetDrawScreen(m_selectScreen);
-	ClearDrawScreen();
 	DrawBox(x + width * m_currentMenuLine + 1, static_cast<int>(kMenuMargin + 1),
 		x + width * (m_currentMenuLine + 1), static_cast<int>(kMenuMargin + kMenuMarginHeight),
 		kFrameColor, true);
-
-	GraphFilter(m_selectScreen, DX_GRAPH_FILTER_HSB, 0, 15 * m_currentMenuLine, 0, 0);
-	int nowScreen = m_mgr.GetScene()->GetScreenHandle();
-	SetDrawScreen(nowScreen);
-	DrawGraph(0, 0, m_selectScreen, true);
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 	unsigned int color;

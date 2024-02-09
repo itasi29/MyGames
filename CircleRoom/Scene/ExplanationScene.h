@@ -49,8 +49,6 @@ private:
 	// option‚ÌƒV[ƒ“
 	std::shared_ptr<SceneManager> m_optionScn;
 
-	int m_frameScreen;
-
 	int m_currentLineIndex;
 
 	int m_fadeFrame;

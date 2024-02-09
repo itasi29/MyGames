@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Common\Application.cpp" />
     <ClCompile Include="Boss\BossArmored.cpp" />
     <ClCompile Include="Boss\BossDamageObject.cpp" />
     <ClCompile Include="Boss\BossStrongArmored.cpp" />
@@ -79,7 +79,7 @@
     <ClCompile Include="Utility\Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
+    <ClInclude Include="Common\Application.h" />
     <ClInclude Include="Boss\BossArmored.h" />
     <ClInclude Include="Boss\BossDamageObject.h" />
     <ClInclude Include="Boss\BossStrongArmored.h" />
