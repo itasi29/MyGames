@@ -29,7 +29,6 @@ enum Ability
 class StageManager
 {
 public:
-	// FIXME:–¼‘O‚Í•Ï‚¦‚é
 	enum StageDir
 	{
 		kStageLeft,

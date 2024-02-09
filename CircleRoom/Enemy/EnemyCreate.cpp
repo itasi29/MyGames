@@ -13,9 +13,6 @@
 
 namespace
 {
-	// FIXME:Šm‚©DxLib‚ÅƒÎ‚ª’è‹`‚³‚ê‚Ä‚½‚Í‚¸‚¾‚¯‚Ç–Y‚ê‚½‚©‚çŽ©•ª‚Å’è‹`‚µ‚Ä‚¨‚­
-	constexpr float kPai = 3.1415926535f;
-
 	// “®‚­ƒXƒs[ƒh
 	constexpr float kSpeed = 3.0f;
 	// ”¼Œa
@@ -25,7 +22,7 @@ namespace
 	constexpr int kColor = 0xffff08;
 
 	// 1ƒtƒŒ[ƒ€‚²‚Æ‚ÌŠp“x
-	constexpr float kRadian = 2.0f * (kPai / 180.0f);
+	constexpr float kRadian = 2.0f * (DX_PI_F / 180.0f);
 	// c‚Ì—h‚ê•
 	constexpr float kSwingHeight = 2.0f;
 
@@ -128,7 +125,7 @@ void EnemyCreate::StartUpdate()
 void EnemyCreate::NormalUpdate()
 {
 	m_radian += kRadian;
-	if (m_radian > 2 * kPai)
+	if (m_radian > DX_TWO_PI_F)
 	{
 		m_radian = 0.0f;
 	}

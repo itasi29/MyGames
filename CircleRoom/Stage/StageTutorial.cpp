@@ -205,11 +205,8 @@ void StageTutorial::UpdatePlaying(Input& input)
 		{
 			// ƒvƒŒƒCƒ„[‚ÌŽ€–Sˆ—
 			m_player->Death();
-#if true
+
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
-#else
-			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
-#endif
 
 			// ŽE‚µ‚½‚±‚Æ‚ª‚ ‚é“Gî•ñ‚ÌXV
 			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());

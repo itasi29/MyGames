@@ -14,9 +14,6 @@
 
 namespace
 {
-	// FIXME:確かDxLibでπが定義されてたはずだけど忘れたから自分で定義しておく
-	constexpr float kPai = 3.1415927f;
-
 	// カラー
 	constexpr int kColor = 0xaaffaa;
 
@@ -30,7 +27,7 @@ namespace
 	// 生成前待機フレーム
 	constexpr int kWaitCreateFrame = 15;
 	// 生成するときの角度
-	constexpr float kCreateRadian = 45.0f * (kPai / 180.0f);
+	constexpr float kCreateRadian = 45.0f * (DX_PI_F / 180.0f);
 
 	// ダメージを受けた際のフレーム
 	constexpr int kOnDamageFrame = 33;

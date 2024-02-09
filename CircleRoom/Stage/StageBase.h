@@ -87,12 +87,11 @@ protected:
 	/// <param name="input">入力情報</param>
 	virtual void UpdatePlaying(Input& input);
 	
-	// FIXME:とりあえず仮実装させたいから名前は後で変更させる
 	/// <summary>
 	/// ボス倒した後の更新処理
 	/// </summary>
 	/// <param name="input">入力情報</param>
-	void UpdateBossDeath(Input& input);
+	void UpdateAfterBossDeath(Input& input);
 
 	/// <summary>
 	/// 選択中の描画処理
@@ -103,11 +102,10 @@ protected:
 	/// </summary>
 	void DrawPlaying();
 
-	// FIXME:とりあえず仮実装させたいから名前は後で変更させる
 	/// <summary>
 	/// ボス倒した後の描画処理
 	/// </summary>
-	void DrawBossDeath();
+	void DrawAfterBossDeath();
 
 	/// <summary>
 	/// ステージのクリア確認

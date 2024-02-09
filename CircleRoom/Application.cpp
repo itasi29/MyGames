@@ -65,6 +65,7 @@ bool Application::Init()
 
     SetGraphMode(m_size.w, m_size.h, 32);
     SetWindowText(L"CircleRoom");
+
     if (DxLib_Init() == -1)
     {
         return false;

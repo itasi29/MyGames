@@ -43,11 +43,7 @@ EnemyBase::EnemyBase(const size& windowSize, float fieldSize) :
 	m_drawFunc = &EnemyBase::StartDraw;
 
 	auto& file = GameManager::GetInstance().GetFile();
-#if false
-	m_wallEffect = file->LoadGraphic(L"Enemy/wallEffect.png");
-#else
 	m_wallEffect = file->LoadGraphic(L"Enemy/wallEff.png");
-#endif
 	m_shadow = file->LoadGraphic(L"Enemy/ShadowNormal.png");
 	m_createSe = file->LoadSound(L"Se/create.mp3");
 }
@@ -274,8 +270,6 @@ void EnemyBase::ReflectionCal(const Vec2& norVec)
 
 void EnemyBase::ShiftReflection(const Vec2& shift)
 {
-	// FIXME:現状はこれでいいけど、できたら参考元にできるように
-
 	Vec2 temp = m_vec;
 	
 	// 進んでいる方向にshift分進ませる

@@ -337,8 +337,6 @@ void BossBase::ReflectionCal(const Vec2& norVec)
 
 void BossBase::ShiftReflection(const Vec2& shift)
 {
-	// FIXME:現状はこれでいいけど、できたら参考元にできるように
-
 	Vec2 temp = m_vec;
 
 	// 進んでいる方向にshift分進ませる
@@ -617,10 +615,6 @@ void BossBase::LastDraw() const
 
 			DrawRectRotaGraph(drawX, drawY, rectX * kRectWidth, rectY * kRectHeight, kRectWidth, kRectHeight,
 				1.0, angle * (rectX * kRectRow + rectY), m_charAll->GetHandle(), true);
-#if false
-			DrawRotaGraph(drawX, drawY, 1.0, 0.0,
-				m_charAll->GetHandle(), true);
-#endif
 
 			y += kRectHeight;
 		}

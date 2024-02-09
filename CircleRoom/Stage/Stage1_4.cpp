@@ -150,8 +150,6 @@ void Stage1_4::ChangeStage(Input& input)
 
 void Stage1_4::CheckStageConditions(int timeFrame)
 {
-	// FIXME:上方向に関してはステージ全体の合計時間が必要なため、あとからやる
-
 	CheckConditionsTime(kLeftStName, timeFrame, kLeftExsitTime, L"左");
 	CheckConditionsTime(kRightStName, timeFrame, kRightExsitTime, L"右");
 	CheckConditionsSumTime(kUpStName, kNames, timeFrame, kUpExistTime, L"上");

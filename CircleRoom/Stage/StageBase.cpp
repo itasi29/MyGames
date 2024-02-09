@@ -191,7 +191,7 @@ void StageBase::Init()
 	// 経過時間初期化
 	m_frame = 0;
 	// 時間更新有効化
-	m_isUpdateBestTime = true;
+	m_isUpdateTime = true;
 	// プレイヤー初期化
 	m_player->Init();
 	// 敵の配列初期化
@@ -202,11 +202,7 @@ void StageBase::Init()
 
 void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 {
-#if false
-	m_enemy.push_back(enemy);
-#else
 	m_backEnemy.push_back(enemy);
-#endif
 }
 
 void StageBase::UpdateSelect(Input& input)
@@ -413,7 +409,7 @@ void StageBase::UpdatePlaying(Input& input)
 #endif
 }
 
-void StageBase::UpdateBossDeath(Input& input)
+void StageBase::UpdateAfterBossDeath(Input& input)
 {
 	m_sound->PlayFadeBgm(m_playBgm->GetHandle(), 0.6f);
 
@@ -545,7 +541,7 @@ void StageBase::DrawPlaying()
 	auto y = DrawStageConditions(244 + 16 + 20);
 	SetDrawScreen(m_extScreen);
 	ClearDrawScreen();
-	// MEMO:条件後ろにあるフレーム背景を描画する
+	// 条件後ろにあるフレーム背景を描画する
 	if (y >= 0)
 	{
 		DrawBox(0, 268, 310, 268 + y, kBackFrameColor, true);
@@ -578,7 +574,7 @@ void StageBase::DrawPlaying()
 	DrawConditionsAchived(y + 24);
 }
 
-void StageBase::DrawBossDeath()
+void StageBase::DrawAfterBossDeath()
 {
 	DrawWall();
 
@@ -885,11 +881,8 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 			// プレイヤーの死亡処理
 			m_player->Death();
 			m_mgr.UpdateDeathCcount();
-#if true
+
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
-#else
-			m_mgr.GetScene()->MoveScreen(m_player->GetFront());
-#endif
 
 			// 殺したことがある敵情報の更新
 			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
@@ -933,8 +926,8 @@ void StageBase::BossDeath()
 	m_frontEnemy.clear();
 	m_backEnemy.clear();
 
-	m_updateFunc = &StageBase::UpdateBossDeath;
-	m_drawFunc = &StageBase::DrawBossDeath;
+	m_updateFunc = &StageBase::UpdateAfterBossDeath;
+	m_drawFunc = &StageBase::DrawAfterBossDeath;
 }
 
 void StageBase::DrawTime(int x, int y, int handle)

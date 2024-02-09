@@ -90,8 +90,6 @@ OtherOptionScene::OtherOptionScene(GameManager& mgr, Input& input, std::shared_p
 	m_waveAngle(DX_PI_F),
 	m_isWaveDraw(true)
 {
-	// FIXME:‰¼‰æ‘œ
-
 	auto& file = m_mgr.GetFile();
 	m_rightNotationImg = file->LoadGraphic(L"UI/16-9.png");
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);

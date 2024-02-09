@@ -22,9 +22,6 @@ namespace
 	constexpr int kMaxHp = 40;
 #endif
 
-	// FIXME:確かDxLibでπが定義されてたはずだけど忘れたから自分で定義しておく
-	constexpr float kPai = 3.1415927f;
-
 	// 動くスピード
 	constexpr float kSpeed = 3.0f;
 	// 揺れ幅
@@ -37,7 +34,7 @@ namespace
 	constexpr int kColor = 0x08ff08;
 
 	// 1フレームごとの角度
-	constexpr float kRadian = 1.0f * (kPai / 180.0f);
+	constexpr float kRadian = 1.0f * (DX_PI_F / 180.0f);
 
 	// 生成するダメージオブジェクトの数
 	constexpr int kDamageObjectNum = 1;
@@ -49,7 +46,7 @@ namespace
 	// 生成前待機フレーム
 	constexpr int kWaitCreateFrame = 30;
 	// 生成するときの角度
-	constexpr float kCreateRadian = 45.0f * (kPai / 180.0f);
+	constexpr float kCreateRadian = 45.0f * (DX_PI_F / 180.0f);
 
 	// ダメージを受けた際画面を揺らす時間
 	constexpr int kShakeFrame = 5;
@@ -233,11 +230,6 @@ void BossArmored::StartUpdate()
 		sound->PlaySe(m_createSe->GetHandle());
 
 		BossBase::ChangeNormalFunc();
-
-#if false
-		m_updateFunc = &BossBase::NormalUpdate;
-		m_drawFunc = &BossBase::NormalDraw;
-#endif
 	}
 }
 
@@ -245,7 +237,7 @@ void BossArmored::NormalUpdate()
 {
 	m_radian += kRadian;
 
-	if (m_radian > 2 * kPai)
+	if (m_radian > DX_TWO_PI_F)
 	{
 		m_radian = 0;
 	}

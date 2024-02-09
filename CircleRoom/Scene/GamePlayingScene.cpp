@@ -86,7 +86,6 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 	m_stgData.resize(size);
 	for (int i = 0; i < size; i++)
 	{
-#if true
 		if (kPath[i].type == kGraph)
 		{
 			m_stgData[i] = m_mgr.GetFile()->LoadGraphic(kPath[i].path);
@@ -95,17 +94,6 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 		{
 			m_stgData[i] = m_mgr.GetFile()->LoadSound(kPath[i].path);
 		}
-#else
-		switch (kPath[i].type)
-		{
-		default:
-			assert(false);
-		case kGraph:
-			break;
-		case kSound:
-			break;
-		}
-#endif
 	}
 }
 
