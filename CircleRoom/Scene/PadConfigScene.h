@@ -37,8 +37,6 @@ private:
 	/// <param name="num">文字列数</param>
 	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const;
 
-	std::wstring GetPadName(int padstate) const;
-
 private:
 	using updateFunc_t = void (PadConfigScene::*)(Input&);
 	updateFunc_t m_updateFunc;
@@ -64,9 +62,6 @@ private:
 	int m_fadeFrame;
 	// キャンセル確認フレーム
 	int m_cancleFrame;
-
-	// PADの番号と名前の連携
-	std::unordered_map<int, std::wstring> m_bottanTable;
 
 	// 画像
 	std::shared_ptr<FileBase> m_frame;
