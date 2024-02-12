@@ -112,9 +112,6 @@ private:
 	// ダッシュ時Se
 	std::shared_ptr<FileBase> m_dashSe;
 
-	// ダッシュ時に光らせる用の画面ハンドル
-	int m_dashScreen;
-
 	// 中心座標
 	Vec2 m_pos;
 	// 正面方向

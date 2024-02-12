@@ -105,6 +105,7 @@ OptionScene::~OptionScene()
 
 void OptionScene::Update(Input& input)
 {
+	m_sound->PlayBgm();
 	m_isEdit[1] = m_isEdit[0];
 
 	m_optionScn->Update(input);

@@ -111,6 +111,7 @@ void Application::Run()
                 break;
             }
 
+            // FPS�̌Œ艻
             while (kFpsFrame > GetNowHiPerformanceCount() - m_time);
         }
     }
