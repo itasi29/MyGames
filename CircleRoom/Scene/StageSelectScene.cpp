@@ -134,6 +134,16 @@ void StageSelectScene::Update(Input& input)
 	m_waveAngle -= kWaveSpeed;
 	m_fadeFrame++;
 
+	// MEMO:展示会用コード
+	if (CheckHitKey(KEY_INPUT_M))
+	{
+		auto& stage = m_mgr.GetStage();
+		for (const auto& name : m_stageData)
+		{
+			stage->SaveClear(name.first);
+		}
+	}
+
 	// 上下のインデックスの変更
 	if (input.IsTriggered("up"))
 	{
