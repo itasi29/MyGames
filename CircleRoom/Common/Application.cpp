@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
+#include "FileSystem/SoundSystem.h"
 
 #include "Scene/SceneManager.h"
 #include "Scene/TitleScene.h"
@@ -61,7 +62,7 @@ bool Application::Init()
     SetWindowIconID(111);
 
     // 背景色の指定 5f6976
-    SetBackgroundColor(0x5f, 0x69, 0x76);
+//    SetBackgroundColor(0x5f, 0x69, 0x76);
 
     SetGraphMode(m_size.w, m_size.h, 32);
     SetWindowText(L"CircleRoom");
@@ -98,7 +99,10 @@ void Application::Run()
 
 
             ClearDrawScreen();
-            input.Update(); // 入力を更新
+            // 入力を更新
+            input.Update();
+            // 何かしら問題があっても通常状態でBGMが流れるように
+            manager.GetSound()->PlayBgm();
             manager.GetScene()->Update(input);
             manager.GetScene()->Draw();
 

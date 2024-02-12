@@ -19,7 +19,7 @@ public:
 	/// <param name="soundHnadle">BGMハンドル</param>
 	/// <param name="isLoop">ループするか(デフォでtrue)</param>
 	/// /// <param name="isSoundPosSave">再生場所の保存後の再生か</param>
-	void PlayBgm(int soundHnadle, bool isLoop = true, bool isSoundPosSave = false);
+	void PlayBgm(int soundHnadle = -1, bool isLoop = true, bool isSoundPosSave = false);
 
 	/// <summary>
 	/// Fade設定ありBGM
