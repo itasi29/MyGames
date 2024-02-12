@@ -79,42 +79,6 @@ KeyConfigScene::KeyConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 		"pause"		// ポーズボタン
 	};
 
-	m_keynameTable[KEY_INPUT_A] = L"Ａキー";
-	m_keynameTable[KEY_INPUT_B] = L"Ｂキー";
-	m_keynameTable[KEY_INPUT_C] = L"Ｃキー";
-	m_keynameTable[KEY_INPUT_D] = L"Ｄキー";
-	m_keynameTable[KEY_INPUT_E] = L"Ｅキー";
-	m_keynameTable[KEY_INPUT_F] = L"Ｆキー";
-	m_keynameTable[KEY_INPUT_G] = L"Ｇキー";
-	m_keynameTable[KEY_INPUT_H] = L"Ｈキー";
-	m_keynameTable[KEY_INPUT_I] = L"Ｉキー";
-	m_keynameTable[KEY_INPUT_J] = L"Ｊキー";
-	m_keynameTable[KEY_INPUT_K] = L"Ｋキー";
-	m_keynameTable[KEY_INPUT_L] = L"Ｌキー";
-	m_keynameTable[KEY_INPUT_M] = L"Ｍキー";
-	m_keynameTable[KEY_INPUT_N] = L"Ｎキー";
-	m_keynameTable[KEY_INPUT_O] = L"Ｏキー";
-	m_keynameTable[KEY_INPUT_P] = L"Ｐキー";
-	m_keynameTable[KEY_INPUT_Q] = L"Ｑキー";
-	m_keynameTable[KEY_INPUT_R] = L"Ｒキー";
-	m_keynameTable[KEY_INPUT_S] = L"Ｓキー";
-	m_keynameTable[KEY_INPUT_T] = L"Ｔキー";
-	m_keynameTable[KEY_INPUT_U] = L"Ｕキー";
-	m_keynameTable[KEY_INPUT_V] = L"Ｖキー";
-	m_keynameTable[KEY_INPUT_W] = L"Ｗキー";
-	m_keynameTable[KEY_INPUT_X] = L"Ｘキー";
-	m_keynameTable[KEY_INPUT_Y] = L"Ｙキー";
-	m_keynameTable[KEY_INPUT_Z] = L"Ｚキー";
-	m_keynameTable[KEY_INPUT_BACK] = L"BSキー";
-	m_keynameTable[KEY_INPUT_TAB] = L"Tabキー";
-	m_keynameTable[KEY_INPUT_RETURN] = L"Enterキー";
-	m_keynameTable[KEY_INPUT_LSHIFT] = L"左Shiftキー";
-	m_keynameTable[KEY_INPUT_RSHIFT] = L"右Shiftキー";
-	m_keynameTable[KEY_INPUT_LCONTROL] = L"左Ctrlキー";
-	m_keynameTable[KEY_INPUT_RCONTROL] = L"右Ctrlキー";
-	m_keynameTable[KEY_INPUT_ESCAPE] = L"Escキー";
-	m_keynameTable[KEY_INPUT_SPACE] = L"スペースキー";
-
 	m_keyImg = std::make_shared<KeyFile>(m_mgr.GetFile());
 
 	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
@@ -335,7 +299,6 @@ void KeyConfigScene::DrawCommandList() const
 			DrawFormatStringToHandle(kMenuMargin + 50, y, kWhiteColor, fontHandle, L"%s", cmdName.c_str());
 		}
 
-		//m_keyImg->DrawKey(GetKeyName(cmd.at(InputType::keybd)[0]), kMenuMargin + 50 + 376, y, kExtendRate);
 		m_keyImg->DrawKey(m_input.GetHardDataName(m_menuTable[i], InputType::keybd), kMenuMargin + 50 + 376, y, kExtendRate);
 
 		y += kMenuLineInterval;
@@ -387,16 +350,4 @@ void KeyConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t
 		DrawStringToHandle(strX, strY, str[i], kWhiteColor, handle);
 		strX += 24;
 	}
-}
-
-std::wstring KeyConfigScene::GetKeyName(int keycode) const
-{
-	wchar_t name[16];
-	auto it = m_keynameTable.find(keycode);
-	if (it == m_keynameTable.end())
-	{
-		wsprintf(name, L"%02x", keycode);
-		return name;
-	}
-	return (it->second);
 }
