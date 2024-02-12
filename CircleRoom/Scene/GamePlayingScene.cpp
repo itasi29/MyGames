@@ -106,7 +106,7 @@ void GamePlayingScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void GamePlayingScene::Draw()
+void GamePlayingScene::Draw() const
 {
 	(this->*m_drawFunc)();
 }
@@ -168,7 +168,7 @@ void GamePlayingScene::UpdateNormal(Input& input)
 #endif
 }
 
-void GamePlayingScene::DrawFade()
+void GamePlayingScene::DrawFade() const
 {
 	m_mgr.GetStage()->Draw();
 
@@ -179,7 +179,7 @@ void GamePlayingScene::DrawFade()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void GamePlayingScene::DrawNormal()
+void GamePlayingScene::DrawNormal() const
 {
 	m_mgr.GetStage()->Draw();
 }

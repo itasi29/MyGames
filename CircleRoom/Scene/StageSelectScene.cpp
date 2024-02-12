@@ -175,7 +175,7 @@ void StageSelectScene::Update(Input& input)
 	}
 }
 
-void StageSelectScene::Draw()
+void StageSelectScene::Draw() const
 {
 	for(int x = 0; x < kRowNum; x++)
 	{
@@ -210,11 +210,11 @@ void StageSelectScene::Draw()
 			// ƒXƒe[ƒW‚Ì•`‰æ
 			if (m_mgr.GetStage()->IsClearStage(stageName))
 			{
-				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_stage[stageName][0]->GetHandle(), true);
+				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_stage.at(stageName)[0]->GetHandle(), true);
 			}
 			else
 			{
-				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_stage[stageName][1]->GetHandle(), true);
+				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_stage.at(stageName)[1]->GetHandle(), true);
 				DrawGraph(drawX + 16, drawY + 12, m_lock->GetHandle(), true);
 			}
 
@@ -231,7 +231,7 @@ void StageSelectScene::Draw()
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
-void StageSelectScene::DrawInf(const std::string& str)
+void StageSelectScene::DrawInf(const std::string& str) const
 {
 	int font = m_mgr.GetFont()->GetHandle(32);
 
@@ -255,11 +255,11 @@ void StageSelectScene::DrawInf(const std::string& str)
 	y += 48;
 
 	// ŽE‚³‚ê‚½Ží—Þ‚Ì•`‰æ
-	m_stageData[str]->DrawKilledEnemyType(kDrawStringX, y);
+	m_stageData.at(str)->DrawKilledEnemyType(kDrawStringX, y);
 
 }
 
-void StageSelectScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void StageSelectScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 

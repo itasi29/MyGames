@@ -129,7 +129,7 @@ void StageManager::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void StageManager::Draw()
+void StageManager::Draw() const
 {
 	(this->*m_drawFunc)();
 }

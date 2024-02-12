@@ -119,7 +119,7 @@ void OtherOptionScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void OtherOptionScene::Draw()
+void OtherOptionScene::Draw() const
 {
 	(this->*m_drawFunc)();
 }
@@ -189,7 +189,7 @@ void OtherOptionScene::NormalUpdate(Input& input)
 	}
 }
 
-void OtherOptionScene::FadeDraw()
+void OtherOptionScene::FadeDraw() const
 {
 	NormalDraw();
 
@@ -202,7 +202,7 @@ void OtherOptionScene::FadeDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void OtherOptionScene::NormalDraw()
+void OtherOptionScene::NormalDraw() const
 {
 	// ëIëÇµÇƒÇ¢ÇÈèÍèäÇï`âÊ
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
@@ -242,7 +242,7 @@ void OtherOptionScene::NormalDraw()
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
-void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int color)
+void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int color) const
 {
 	if (index != kWindowsMode) return;
 
@@ -256,7 +256,7 @@ void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int
 	}
 }
 
-void OtherOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void OtherOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	if (!m_isWaveDraw) return;
 

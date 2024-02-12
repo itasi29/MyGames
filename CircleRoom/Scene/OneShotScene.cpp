@@ -59,7 +59,7 @@ void OneShotScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void OneShotScene::Draw()
+void OneShotScene::Draw() const
 {
 	(this->*m_drawFunc)();
 }
@@ -97,7 +97,7 @@ void OneShotScene::DisAppearUpdate(Input& input)
 	}
 }
 
-void OneShotScene::MoveDraw()
+void OneShotScene::MoveDraw() const
 {
 	const size& size = Application::GetInstance().GetWindowSize();
 
@@ -107,7 +107,7 @@ void OneShotScene::MoveDraw()
 		0, 0, m_sizeW, m_sizeH, 0.0, m_handle, true);
 }
 
-void OneShotScene::NormalDraw()
+void OneShotScene::NormalDraw() const
 {
 	DrawRotaGraph3(kDrawX, kDrawY,
 		0, 0, m_sizeW, m_sizeH, 0.0, m_handle, true);

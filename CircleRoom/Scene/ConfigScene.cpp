@@ -129,7 +129,7 @@ void ConfigScene::Update(Input& input)
 	}
 }
 
-void ConfigScene::Draw()
+void ConfigScene::Draw() const
 {
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
@@ -150,7 +150,7 @@ void ConfigScene::Draw()
 	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 }
 
-void ConfigScene::DrawName(int drawY, int index, std::wstring str)
+void ConfigScene::DrawName(int drawY, int index, std::wstring str) const
 {
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
@@ -169,7 +169,7 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 	}
 }
 
-void ConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void ConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	if (!m_isWaveDraw) return;
 

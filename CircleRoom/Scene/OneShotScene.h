@@ -19,19 +19,19 @@ public:
 	~OneShotScene();
 
 	void Update(Input& input);
-	void Draw();
+	void Draw() const;
 
 private:
 	void AppearUpdate(Input& input);
 	void NormalUpdate(Input& input);
 	void DisAppearUpdate(Input& input);
 
-	void MoveDraw();
-	void NormalDraw();
+	void MoveDraw() const;
+	void NormalDraw() const;
 
 private:
 	using UpdateFunc_t = void(OneShotScene::*)(Input&);
-	using DrawFunc_t = void(OneShotScene::*)();
+	using DrawFunc_t = void(OneShotScene::*)() const;
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 

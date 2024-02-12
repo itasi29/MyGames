@@ -112,7 +112,7 @@ void SoundOptionScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void SoundOptionScene::Draw()
+void SoundOptionScene::Draw() const
 {	
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
 
@@ -233,7 +233,7 @@ void SoundOptionScene::EditUpdate(Input& input)
 	m_fadeFrame++;
 }
 
-void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
+void SoundOptionScene::DrawName(int drawY, int index, std::wstring str) const
 {
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
@@ -255,7 +255,7 @@ void SoundOptionScene::DrawName(int drawY, int index, std::wstring str)
 	}
 }
 
-void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate)
+void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate) const
 {
 	// ‰º’n•`‰æ
 	DrawBox(drawX, drawY, drawX + kGaugeLength, drawY + 32, kGaugeBaseColor, true);
@@ -264,7 +264,7 @@ void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate)
 	DrawBox(drawX, drawY, drawX + static_cast<int>(kGaugeLength * rate), drawY + 32, kGaugeColor, true);
 }
 
-void SoundOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void SoundOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 

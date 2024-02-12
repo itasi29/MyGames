@@ -18,18 +18,15 @@ public:
 	~KeyConfigScene();
 
 	void Update(Input& input);
-	void Draw();
+	void Draw() const;
 
-private:
-	// 更新メンバ関数ポインタ
-	using UpdateFunc_t = void(KeyConfigScene::*)(Input& input);
-	
+private:	
 	// 更新関数
 	void NormalUpdate(Input&);		// 通常状態
 	void EditUpdate(Input&);		// 編集状態
 	void EditEndUpdate(Input&);		// 編集終了状態
 
-	void DrawCommandList();	// コマンドリストの描画(テキスト描画)
+	void DrawCommandList() const;	// コマンドリストの描画(テキスト描画)
 
 	void CommitCurrenKeySetting();
 
@@ -39,11 +36,13 @@ private:
 	/// /// <param name="cmd">コマンド名</param>
 	/// <param name="str">ウェーブさせる文字列</param>
 	/// <param name="num">文字列数</param>
-	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num);
+	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const;
 
-	std::wstring GetKeyName(int keycode);
+	std::wstring GetKeyName(int keycode) const;
 
 private:
+	// 更新メンバ関数ポインタ
+	using UpdateFunc_t = void(KeyConfigScene::*)(Input& input);
 	UpdateFunc_t  m_updateFunc;
 
 	// Optionのシーン

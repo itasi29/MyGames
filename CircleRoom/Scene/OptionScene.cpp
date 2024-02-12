@@ -117,7 +117,7 @@ void OptionScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void OptionScene::Draw()
+void OptionScene::Draw() const
 {
 	// フェードアウト時は描画しない
 	if (m_isFadeOut) return;
@@ -199,7 +199,7 @@ void OptionScene::DisappearUpdate(Input&)
 	m_mgr.GetScene()->PopScene();
 }
 
-void OptionScene::NormalDraw()
+void OptionScene::NormalDraw() const
 {
 	Application& app = Application::GetInstance();
 	const auto& size = app.GetWindowSize();
@@ -225,7 +225,7 @@ void OptionScene::NormalDraw()
 	}
 }
 
-void OptionScene::DrawWave(const size& size)
+void OptionScene::DrawWave(const size& size) const
 {
 	int addY = static_cast<int>(sinf(m_radian) * kShakeHeight);
 
@@ -242,7 +242,7 @@ void OptionScene::DrawWave(const size& size)
 
 }
 
-void OptionScene::DrawFrame(int divisionNum, int width, const size& size)
+void OptionScene::DrawFrame(int divisionNum, int width, const size& size) const
 {
 	int y = kMenuMargin + kMenuMarginHeight;
 	// 下の線の描画
@@ -258,7 +258,7 @@ void OptionScene::DrawFrame(int divisionNum, int width, const size& size)
 	}
 }
 
-void OptionScene::DrawContent(std::vector<std::wstring> strs, int width)
+void OptionScene::DrawContent(std::vector<std::wstring> strs, int width) const
 {
 	// 選択している場所を描画
 	int x = kMenuMargin * 2;

@@ -118,7 +118,7 @@ void ExplanationScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void ExplanationScene::Draw()
+void ExplanationScene::Draw() const
 {
 	// ‘I‘ğ‚µ‚Ä‚¢‚éêŠ‚ğ•`‰æ
 	int y = kMenuMargin + 36 + m_currentLineIndex * kMenuLineInterval;
@@ -255,7 +255,7 @@ void ExplanationScene::BossUpdate(Input&)
 	m_index++;
 }
 
-void ExplanationScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void ExplanationScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	if (!m_isWaveDraw) return;
 

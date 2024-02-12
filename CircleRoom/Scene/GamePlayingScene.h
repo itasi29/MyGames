@@ -14,15 +14,9 @@ public:
     GamePlayingScene(GameManager& mgr, Input& input);
     ~GamePlayingScene();
     virtual void Update(Input& input);
-    virtual void Draw();
+    virtual void Draw() const;
 
 private:
-    // メンバ関数ポインタの宣言
-    using UpdateFunc_t = void (GamePlayingScene::*)(Input&);
-    using DrawFunc_t = void (GamePlayingScene::*)();
-    UpdateFunc_t m_updateFunc = nullptr;
-    DrawFunc_t m_drawFunc = nullptr;
-
     /* 更新処理 */
     /// <summary>
     /// フェードインするときの更新処理
@@ -44,15 +38,22 @@ private:
     /// <summary>
     /// フェード時の描画
     /// </summary>
-    void DrawFade();
+    void DrawFade() const;
     /// <summary>
     /// 通常時の描画
     /// </summary>
-    void DrawNormal();
+    void DrawNormal() const;
 
     void StartStage(Input& input);
 
 private:
+    // メンバ関数ポインタの宣言
+    using UpdateFunc_t = void (GamePlayingScene::*)(Input&);
+    using DrawFunc_t = void (GamePlayingScene::*)() const;
+
+    UpdateFunc_t m_updateFunc;
+    DrawFunc_t m_drawFunc;
+
     // ステージを動かすときの画面のハンドル
     int m_screenHandle;
 

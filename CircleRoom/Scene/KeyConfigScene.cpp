@@ -155,7 +155,7 @@ void KeyConfigScene::Update(Input & input)
 	(this->*m_updateFunc)(input);
 }
 
-void KeyConfigScene::Draw()
+void KeyConfigScene::Draw() const
 {
 	DrawStringToHandle(100, kMenuMargin + 10, L"キー変更", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 
@@ -306,14 +306,14 @@ void KeyConfigScene::EditEndUpdate(Input& input)
 	}
 }
 
-void KeyConfigScene::DrawCommandList()
+void KeyConfigScene::DrawCommandList() const
 {
 	int y = kMenuMargin + 64;
 
 	for (int i = 0; i < m_menuTable.size(); i++)
 	{
 		// 表示するコマンドの情報を取得
-		auto& cmd = m_commandTable[m_menuTable[i]];
+		auto& cmd = m_commandTable.at(m_menuTable[i]);
 
 		std::wstring cmdName = StringUtility::StringToWString(m_menuTable[i]);
 		int fontHandle = m_mgr.GetFont()->GetHandle(32);
@@ -351,7 +351,7 @@ void KeyConfigScene::CommitCurrenKeySetting()
 	m_input.Save("Data/key.conf");
 }
 
-void KeyConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void KeyConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
@@ -388,7 +388,7 @@ void KeyConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t
 	}
 }
 
-std::wstring KeyConfigScene::GetKeyName(int keycode)
+std::wstring KeyConfigScene::GetKeyName(int keycode) const
 {
 	wchar_t name[16];
 	auto it = m_keynameTable.find(keycode);

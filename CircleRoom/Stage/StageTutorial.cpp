@@ -186,6 +186,8 @@ void StageTutorial::UpdateSelect(Input& input)
 
 void StageTutorial::UpdatePlaying(Input& input)
 {
+	m_soundFrame++;
+
 	m_player->Update(input, m_mgr.GetStage()->GetAbility());
 
 	// ƒvƒŒƒCƒ„[‚Ìî•ñ‚ð”²‚«Žæ‚é
@@ -257,7 +259,7 @@ void StageTutorial::UpdatePlaying(Input& input)
 	m_extRateFrame++;
 }
 
-void StageTutorial::UniqueDraw()
+void StageTutorial::UniqueDraw() const
 {
 	if (m_soundFrame > kSoundFade)
 	{
@@ -265,7 +267,6 @@ void StageTutorial::UniqueDraw()
 	}
 	else
 	{
-		m_soundFrame++;
 		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
@@ -294,7 +295,7 @@ void StageTutorial::CheckStageConditions(int timeFrame)
 	CheckConditionsTime(kStageName, timeFrame, kExsitTime, L"ã");
 }
 
-int StageTutorial::DrawStageConditions(int drawY)
+int StageTutorial::DrawStageConditions(int drawY) const
 {
 	DrawTimeConditions(drawY, m_mgr.GetFont()->GetHandle(28), kExsitTime);
 

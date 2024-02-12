@@ -28,7 +28,7 @@ public:
 	/// <summary>
 	/// 持っているシーンの描画Draw関数を呼び出す
 	/// </summary>
-	void Draw();
+	void Draw() const;
 
 	/// <summary>
 	/// 現在末尾で実行中のシーンを引数で指定されたシーンに切り替える

@@ -35,7 +35,7 @@ public:
 	virtual ~StageBase();
 
 	void Update(Input& input);
-	void Draw();
+	void Draw() const;
 
 	/// <summary>
 	/// 各ステージの初期化処理
@@ -75,9 +75,6 @@ public:
 	void OffWaveDraw() { m_isWaveDraw = false; }
 
 protected:
-	using UpdateFunc_t = void (StageBase::*)(Input&);
-	using DrawFunc_t = void (StageBase::*)();
-
 	/// <summary>
 	/// 選択中の更新処理
 	/// </summary>
@@ -98,16 +95,16 @@ protected:
 	/// <summary>
 	/// 選択中の描画処理
 	/// </summary>
-	void DrawSelect();
+	void DrawSelect() const;
 	/// <summary>
 	/// プレイ中の描画処理
 	/// </summary>
-	void DrawPlaying();
+	void DrawPlaying() const;
 
 	/// <summary>
 	/// ボス倒した後の描画処理
 	/// </summary>
-	void DrawAfterBossDeath();
+	void DrawAfterBossDeath() const;
 
 	/// <summary>
 	/// ステージのクリア確認
@@ -118,7 +115,7 @@ protected:
 	/// </summary>
 	/// <param name="drawY">描画する位置 書かなければ48が初期位置</param>
 	/// <returns>Y軸の描画位置</returns>
-	virtual int DrawStageConditions(int drawY = 96) = 0;
+	virtual int DrawStageConditions(int drawY = 96) const = 0;
 	/// <summary>
 	/// ステージの矢印描画
 	/// </summary>
@@ -142,7 +139,7 @@ protected:
 	/// <summary>
 	/// 特殊描画
 	/// </summary>
-	virtual void UniqueDraw() {}
+	virtual void UniqueDraw() const {}
 
 	/// <summary>
 	/// 時間の更新処理
@@ -180,21 +177,21 @@ protected:
 	/// <param name="angle">矢印角度(上基準の時計回り)</param>
 	/// <param name="isReverseX">反転X</param>
 	/// <param name="isReverxeY">反転Y/param>
-	void DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX = false, bool isReverxeY = false);
+	void DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX = false, bool isReverxeY = false) const;
 	/// <summary>
 	/// クリア条件のタイムを描画
 	/// </summary>
 	/// <param name="y">Y座標</param>
 	/// <param name="handle">フォントハンドル</param>
 	/// <param name="existTime">クリアタイム</param>
-	void DrawTimeConditions(int y, int handle, int existTime);
+	void DrawTimeConditions(int y, int handle, int existTime) const;
 	/// <summary>
 	/// クリア条件の敵タイプを描画
 	/// </summary>
 	/// <param name="y">Y座標</param>
 	/// <param name="handle">フォントハンドル</param>
 	/// <param name="killedNum">倒される種類数</param>
-	void DrawKilledConditions(int y, int handle, int killedNum);
+	void DrawKilledConditions(int y, int handle, int killedNum) const;
 	/// <summary>
 	/// クリア条件の合計時間のやつ描画
 	/// </summary>
@@ -202,7 +199,7 @@ protected:
 	/// <param name="y">Y座標</param>
 	/// <param name="handle">フォントハンドル</param>
 	/// <param name="existTime">合計クリア時間</param>
-	void DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime);
+	void DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const;
 
 	/// <summary>
 	/// 左矢印の描画
@@ -230,7 +227,7 @@ protected:
 	/// <param name="radius">半径 : def = 16</param>
 	void DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, unsigned int color, int radius = 16) const;
 
-	void DrawExpansion();
+	void DrawExpansion() const;
 
 	/// <summary>
 	/// クリアした文字の描画群に追加
@@ -263,15 +260,15 @@ private:
 	/// <param name="x">X描画位置</param>
 	/// <param name="y">Y描画位置</param>
 	/// <param name="handle">フォントハンドル</param>
-	void DrawTime(int x, int y, int handle);
+	void DrawTime(int x, int y, int handle) const;
 
-	void DrawBestTime();
+	void DrawBestTime() const;
 
 	/// <summary>
 	/// 条件達成の描画
 	/// </summary>
 	/// <param name="y">Y描画位置</param>
-	void DrawConditionsAchived(int y);
+	void DrawConditionsAchived(int y) const;
 
 	/// <summary>
 	/// 矢印の上に鍵の描画
@@ -281,7 +278,7 @@ private:
 	/// <summary>
 	/// 壁の描画
 	/// </summary>
-	void DrawWall();
+	void DrawWall() const;
 
 	/// <summary>
 	/// 選択等の文字・画像描画
@@ -289,11 +286,14 @@ private:
 	/// /// <param name="cmd">コマンド名</param>
 	/// <param name="str">ウェーブさせる文字列</param>
 	/// <param name="num">文字列数</param>
-	void DrawWave(const char* const cmd, const wchar_t* const str[], int num);
+	void DrawWave(const char* const cmd, const wchar_t* const str[], int num) const;
 
 	int GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const;
 
 protected:
+	using UpdateFunc_t = void (StageBase::*)(Input&);
+	using DrawFunc_t = void (StageBase::*)() const;
+
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 

@@ -20,14 +20,14 @@ public:
 	~PadConfigScene();
 
 	void Update(Input& input);
-	void Draw();
+	void Draw() const;
 
 private:
 	void NormalUpdate(Input& input);
 	void EditUpdate(Input& input);
 	void EditEndUpdate(Input& input);
 
-	void DrawCommandList();
+	void DrawCommandList() const;
 
 	/// <summary>
 	/// 選択等の文字・画像描画
@@ -35,9 +35,9 @@ private:
 	/// /// <param name="cmd">コマンド名</param>
 	/// <param name="str">ウェーブさせる文字列</param>
 	/// <param name="num">文字列数</param>
-	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num);
+	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const;
 
-	std::wstring GetPadName(int padstate);
+	std::wstring GetPadName(int padstate) const;
 
 private:
 	using updateFunc_t = void (PadConfigScene::*)(Input&);

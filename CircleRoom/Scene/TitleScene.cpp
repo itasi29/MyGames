@@ -190,7 +190,7 @@ void TitleScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void TitleScene::Draw()
+void TitleScene::Draw() const
 {
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
 	for (const auto& enemy : m_enemy)
@@ -366,7 +366,7 @@ void TitleScene::FadeOutUpdate(Input& input)
 	}
 }
 
-void TitleScene::FadeDraw()
+void TitleScene::FadeDraw() const
 {
 	// í èÌÇÃï˚ÇÃï`âÊ
 	NormalDraw();
@@ -379,7 +379,7 @@ void TitleScene::FadeDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void TitleScene::NormalDraw()
+void TitleScene::NormalDraw() const
 {
 	DrawLogo();
 	
@@ -419,7 +419,7 @@ void TitleScene::NormalDraw()
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
-void TitleScene::StartSelectDraw()
+void TitleScene::StartSelectDraw() const
 {
 	DrawLogo();
 
@@ -566,14 +566,14 @@ void TitleScene::CreateBoss()
 	}
 }
 
-void TitleScene::DrawLogo()
+void TitleScene::DrawLogo() const
 {
 	int y = kLogoDrawY + static_cast<int>(kLogoShitY * sinf(m_logoAngle));
 
 	DrawRotaGraph(kLogoDrawX, y, 1.0, 0.0, m_logo->GetHandle(), true);
 }
 
-void TitleScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void TitleScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	if (!m_isWaveDraw) return;
 

@@ -125,7 +125,7 @@ void PadConfigScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void PadConfigScene::Draw()
+void PadConfigScene::Draw() const
 {
 	DrawStringToHandle(100, kMenuMargin + 10, L"パッド変更", 0xffffff, m_mgr.GetFont()->GetHandle(32));
 
@@ -273,7 +273,7 @@ void PadConfigScene::EditEndUpdate(Input& input)
 	}
 }
 
-void PadConfigScene::DrawCommandList()
+void PadConfigScene::DrawCommandList() const
 {
 
 
@@ -282,7 +282,7 @@ void PadConfigScene::DrawCommandList()
 	for (int i = 0; i < m_menuTable.size(); i++)
 	{
 		// 表示するコマンドの情報を取得
-		auto& cmd = m_commandTable[m_menuTable[i]];
+		auto& cmd = m_commandTable.at(m_menuTable[i]);
 
 		std::wstring cmdName = StringUtility::StringToWString(m_menuTable[i]);
 		int fontHandle = m_mgr.GetFont()->GetHandle(32);
@@ -310,7 +310,7 @@ void PadConfigScene::DrawCommandList()
 	}
 }
 
-void PadConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+void PadConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const
 {
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
@@ -347,7 +347,7 @@ void PadConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t
 	}
 }
 
-std::wstring PadConfigScene::GetPadName(int padstate)
+std::wstring PadConfigScene::GetPadName(int padstate) const
 {
 	wchar_t name[16];
 	auto it = m_bottanTable.find(padstate);

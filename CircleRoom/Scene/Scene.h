@@ -30,6 +30,6 @@ public:
 	/// <summary>
 	/// ƒV[ƒ“‚Ì•`‰æ
 	/// </summary>
-	virtual void Draw() = 0;
+	virtual void Draw() const = 0;
 };
 

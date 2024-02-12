@@ -66,7 +66,7 @@ void GameClearScene::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void GameClearScene::Draw()
+void GameClearScene::Draw() const
 {
 	(this->*m_drawFunc)();
 }
@@ -120,7 +120,7 @@ void GameClearScene::FadeOutUpdate(Input& input)
 	}
 }
 
-void GameClearScene::FadeDraw()
+void GameClearScene::FadeDraw() const
 {
 	NormalDraw();
 
@@ -130,7 +130,7 @@ void GameClearScene::FadeDraw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
-void GameClearScene::NormalDraw()
+void GameClearScene::NormalDraw() const
 {
 //	DrawStringToHandle(550, 50, L"ƒŠƒUƒ‹ƒg", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 	const auto& size = Application::GetInstance().GetWindowSize();
@@ -172,7 +172,7 @@ void GameClearScene::NormalDraw()
 	}
 }
 
-void GameClearScene::DrawInf(int index, int drawY, int handle)
+void GameClearScene::DrawInf(int index, int drawY, int handle) const
 {
 	const auto& data = m_mgr.GetData();
 

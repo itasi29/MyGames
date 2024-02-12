@@ -21,7 +21,7 @@ public:
 	~OptionScene();
 
 	void Update(Input& input);
-	void Draw();
+	void Draw() const;
 
 	void ChangeScene(std::shared_ptr<Scene> scene);
 
@@ -40,20 +40,20 @@ private:
 	void DisappearUpdate(Input&);	// 退場状態
 
 	// 描画関数
-	void NormalDraw();	// 非フェード描画
+	void NormalDraw() const;
 	
 	/// <summary>
 	/// 左右移動させる画像の描画
 	/// </summary>
-	void DrawWave(const size& size);
+	void DrawWave(const size& size) const;
 	/// <summary>
 	/// 枠線の描画
 	/// </summary>
-	void DrawFrame(int divisionNum, int width, const size& size);
+	void DrawFrame(int divisionNum, int width, const size& size) const;
 	/// <summary>
 	/// 内容の文字列描画
 	/// </summary>
-	void DrawContent(std::vector<std::wstring> strs, int width);
+	void DrawContent(std::vector<std::wstring> strs, int width) const;
 
 	/// <summary>
 	/// メニューを変更したときに何を描画するかを変更する

@@ -20,7 +20,7 @@ public:
 	TitleScene(GameManager& mgr, Input& input);
 	~TitleScene();
 	virtual void Update(Input& input);
-	virtual void Draw();
+	virtual void Draw() const;
 
 private:
 	// 更新関数
@@ -30,9 +30,9 @@ private:
 	void FadeOutUpdate(Input&);	// フェードアウト状態
 
 	// 描画関数
-	void FadeDraw();	// フェード中描画
-	void NormalDraw();	// 非フェード描画
-	void StartSelectDraw();	// スタート選択状態描画
+	void FadeDraw() const;	// フェード中描画
+	void NormalDraw() const;	// 非フェード描画
+	void StartSelectDraw() const;	// スタート選択状態描画
 
 	// 敵の生成関数
 	void CreateEnemy();
@@ -42,7 +42,7 @@ private:
 	/// <summary>
 	/// ロゴの描画
 	/// </summary>
-	void DrawLogo();
+	void DrawLogo() const;
 
 	/// <summary>
 	/// 選択等の文字・画像描画
@@ -50,7 +50,7 @@ private:
 	/// /// <param name="cmd">コマンド名</param>
 	/// <param name="str">ウェーブさせる文字列</param>
 	/// <param name="num">文字列数</param>
-	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num);
+	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const;
 
 	/// <summary>
 	/// デモムービーの再生処理

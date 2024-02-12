@@ -40,7 +40,6 @@ void SoundSystem::PlayBgm(int soundHandle, bool isLoop, bool isSoundPosSave)
 		soundHandle = m_nowPlayBgm;
 	}
 
-
 #ifdef _DEBUG
 	auto result = CheckSoundMem(soundHandle);
 

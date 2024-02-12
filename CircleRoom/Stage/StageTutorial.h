@@ -30,7 +30,7 @@ private:
 	void UniqueDraw() override;
 
 	void CheckStageConditions(int timeFrame) override;
-	int DrawStageConditions(int drawY) override;
+	int DrawStageConditions(int drawY) const override;
 	void DrawArrow() const override;
 	void DrawKilledEnemyType(int x, int y) const override {}
 	void CreateEnemy() override;

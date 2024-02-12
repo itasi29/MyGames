@@ -70,7 +70,7 @@ void SceneManager::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void SceneManager::Draw()
+void SceneManager::Draw() const
 {
 	(this->*m_drawFunc)();
 }

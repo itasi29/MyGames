@@ -181,7 +181,7 @@ void StageBase::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void StageBase::Draw()
+void StageBase::Draw() const
 {
 	(this->*m_drawFunc)();
 }
@@ -442,7 +442,7 @@ void StageBase::UpdateAfterBossDeath(Input& input)
 	}
 }
 
-void StageBase::DrawSelect()
+void StageBase::DrawSelect() const
 {
 	DrawWall();
 
@@ -511,7 +511,7 @@ void StageBase::DrawSelect()
 	DrawConditionsAchived(y);
 }
 
-void StageBase::DrawPlaying()
+void StageBase::DrawPlaying() const
 {
 	DrawWall();
 
@@ -585,7 +585,7 @@ void StageBase::DrawPlaying()
 	DrawConditionsAchived(y + 24);
 }
 
-void StageBase::DrawAfterBossDeath()
+void StageBase::DrawAfterBossDeath() const
 {
 	DrawWall();
 
@@ -655,7 +655,7 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 	}
 }
 
-void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY)
+void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY) const
 {
 	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kFlashInterval) % 2 != 0)
 	{
@@ -664,21 +664,21 @@ void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double
 	DrawRotaGraph(kConditionsPosX + 14, y + 14, 1.0, angle, m_arrowConditions->GetHandle(), true, isReverseX, isReverxeY);
 }
 
-void StageBase::DrawTimeConditions(int y, int handle, int existTime)
+void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
 {
 	DrawStringToHandle(kConditionsPosX, y, L"　　   秒間生き残る\n　　(           )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
 		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, existTime);
 }
 
-void StageBase::DrawKilledConditions(int y, int handle, int killedNum)
+void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
 {
 	DrawStringToHandle(kConditionsPosX, y, L"　　   種類の敵に殺される\n　　(          )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
 		killedNum, m_mgr.GetStage()->GetEnemyTypeCount(), killedNum);
 }
 
-void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime)
+void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const
 {
 	auto& stage = m_mgr.GetStage();
 	int sumTime = 0;
@@ -774,7 +774,7 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int 
 	}
 }
 
-void StageBase::DrawExpansion()
+void StageBase::DrawExpansion() const
 {
 	int width = m_size.w;
 	int height = m_size.h;
@@ -941,7 +941,7 @@ void StageBase::BossDeath()
 	m_drawFunc = &StageBase::DrawAfterBossDeath;
 }
 
-void StageBase::DrawTime(int x, int y, int handle)
+void StageBase::DrawTime(int x, int y, int handle) const
 {
 	DrawStringToHandle(x, y, L"> タイム", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
 	y += 24;
@@ -951,7 +951,7 @@ void StageBase::DrawTime(int x, int y, int handle)
 	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"%01d:%02d.%03d", min, sec, minSec);
 }
 
-void StageBase::DrawBestTime()
+void StageBase::DrawBestTime() const
 {
 	// フレーム描画
 	DrawRotaGraph(m_size.w - 128, 128, 1.0, 0.0, m_bFrameImg->GetHandle(), true, true, true);
@@ -990,7 +990,7 @@ void StageBase::DrawBestTime()
 	DrawStringToHandle(m_size.w - 336, 256, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 }
 
-void StageBase::DrawConditionsAchived(int y)
+void StageBase::DrawConditionsAchived(int y) const
 {
 	y += 244 + 100;
 	int backFrameY = y - 4;
@@ -1024,7 +1024,7 @@ void StageBase::DrawArrowLock(int x, int y, bool isBossStage, bool isClear) cons
 	DrawRotaGraph(x, y, 1.0, 0.0, m_arrowLock->GetHandle(), true);
 }
 
-void StageBase::DrawWall()
+void StageBase::DrawWall() const
 {
 	int centerX = static_cast<int>(m_size.w * 0.5f);
 	int centerY = static_cast<int>(m_size.h * 0.5f);
@@ -1034,7 +1034,7 @@ void StageBase::DrawWall()
 	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_field->GetHandle(), true);
 }
 
-void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
+void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num) const
 {
 	if (!m_isWaveDraw) return;
 
