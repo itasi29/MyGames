@@ -80,8 +80,6 @@ private:
 
 	// 文字ウェーブ用の角度
 	float m_waveAngle;
-	// ウエーブのやつ描画するか
-	bool m_isWaveDraw;
 
 	std::shared_ptr<BottansFile> m_bt;
 	std::shared_ptr<KeyFile> m_key;

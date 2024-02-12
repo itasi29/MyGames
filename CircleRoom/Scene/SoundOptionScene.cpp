@@ -82,8 +82,7 @@ SoundOptionScene::SoundOptionScene(GameManager& mgr, Input& input) :
 	m_fadeFrame(0),
 	m_repeatUpFrame(0),
 	m_repeatDownFrame(0),
-	m_waveAngle(DX_PI_F),
-	m_isWaveDraw(true)
+	m_waveAngle(DX_PI_F)
 {
 	m_updateFunc = &SoundOptionScene::NormalUpdate;
 
@@ -109,7 +108,6 @@ SoundOptionScene::~SoundOptionScene()
 
 void SoundOptionScene::Update(Input& input)
 {
-	m_isWaveDraw = true;
 	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
 }
@@ -140,7 +138,6 @@ void SoundOptionScene::Draw()
 	else
 	{
 		DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
-		m_isWaveDraw = true;
 	}
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
@@ -269,9 +266,6 @@ void SoundOptionScene::DrawGauge(int drawX, int drawY, float rate)
 
 void SoundOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
-	if (!m_isWaveDraw) return;
-	m_isWaveDraw = false;
-
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
 	switch (m_input.GetType())

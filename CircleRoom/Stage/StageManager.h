@@ -55,6 +55,7 @@ public:
 	bool IsClear() const { return m_isClear; }
 	void OnClear() { m_isClear = true; }
 	void ResetClear() { m_isClear = false; }
+	void OffWaveDraw() const;
 
 	/// <summary>
 	///  ステージの切り替え

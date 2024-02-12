@@ -95,6 +95,7 @@ void ConfigScene::Update(Input& input)
 
 	if (input.IsTriggered("OK"))
 	{
+		m_isWaveDraw = false;
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 		switch (m_currentLineIndex)
 		{
@@ -146,7 +147,6 @@ void ConfigScene::Draw()
 	DrawName(y, kPad, L"PADİ’è");
 
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
-	m_isWaveDraw = true;
 	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 }
 
@@ -172,7 +172,6 @@ void ConfigScene::DrawName(int drawY, int index, std::wstring str)
 void ConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
 	if (!m_isWaveDraw) return;
-	m_isWaveDraw = false;
 
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 

@@ -65,8 +65,7 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	m_isEdit(false),
 	m_fadeFrame(0),
 	m_cancleFrame(0),
-	m_waveAngle(DX_PI_F),
-	m_isWaveDraw(true)
+	m_waveAngle(DX_PI_F)
 {
 	m_updateFunc = &PadConfigScene::EditEndUpdate;
 
@@ -122,7 +121,6 @@ PadConfigScene::~PadConfigScene()
 
 void PadConfigScene::Update(Input& input)
 {
-	m_isWaveDraw = true;
 	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
 }
@@ -156,7 +154,6 @@ void PadConfigScene::Draw()
 	else
 	{
 		DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
-		m_isWaveDraw = true;
 	}
 	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 
@@ -315,9 +312,6 @@ void PadConfigScene::DrawCommandList()
 
 void PadConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
-	if (!m_isWaveDraw) return;
-	m_isWaveDraw = false;
-
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
 	switch (m_input.GetType())

@@ -72,6 +72,8 @@ public:
 	/// </summary>
 	virtual void UpTime() {}
 
+	void OffWaveDraw() { m_isWaveDraw = false; }
+
 protected:
 	using UpdateFunc_t = void (StageBase::*)(Input&);
 	using DrawFunc_t = void (StageBase::*)();

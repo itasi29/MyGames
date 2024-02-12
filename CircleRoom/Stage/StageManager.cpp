@@ -139,6 +139,11 @@ std::string StageManager::GetStageName() const
 	return m_stage->GetStageName();
 }
 
+void StageManager::OffWaveDraw() const
+{
+	m_stage->OffWaveDraw();
+}
+
 void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
 {
 	// ‰‰ñ‚Ì‚İA‚½‚¾“ü‚ê‚é‚¾‚¯

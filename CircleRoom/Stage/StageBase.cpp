@@ -1037,7 +1037,6 @@ void StageBase::DrawWall()
 void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num)
 {
 	if (!m_isWaveDraw) return;
-	m_isWaveDraw = false;
 
 	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
 

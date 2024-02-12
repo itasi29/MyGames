@@ -274,6 +274,7 @@ void TitleScene::NormalUpdate(Input& input)
 		// 1”Ô–Ú‚Ì‚Æ‚«‚ÍƒIƒvƒVƒ‡ƒ“ˆ—
 		if (m_currentLinePos == 1)
 		{
+			m_isWaveDraw = false;
 			m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input, false));
 			return;
 		}
@@ -471,7 +472,6 @@ void TitleScene::StartSelectDraw()
 	}
 
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
-	m_isWaveDraw = true;
 	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
 }
 
@@ -576,7 +576,6 @@ void TitleScene::DrawLogo()
 void TitleScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
 	if (!m_isWaveDraw) return;
-	m_isWaveDraw = false;
 
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 

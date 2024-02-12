@@ -153,7 +153,6 @@ void ExplanationScene::Draw()
 	}
 
 	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
-	m_isWaveDraw = true;
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
@@ -183,6 +182,7 @@ void ExplanationScene::SelectUpdate(Input& input)
 	{
 		auto& sound = GameManager::GetInstance().GetSound();
 		sound->PlaySe(m_selectSe->GetHandle());
+		m_isWaveDraw = false;
 		m_index = 0;
 		switch (m_currentLineIndex)
 		{
@@ -258,7 +258,6 @@ void ExplanationScene::BossUpdate(Input&)
 void ExplanationScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
 	if (!m_isWaveDraw) return;
-	m_isWaveDraw = false;
 
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 

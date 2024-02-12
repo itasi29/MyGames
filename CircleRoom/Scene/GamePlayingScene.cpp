@@ -142,6 +142,8 @@ void GamePlayingScene::UpdateNormal(Input& input)
 	if (input.IsTriggered("pause"))
 	{
 		m_mgr.GetScene()->PushScene(std::make_shared<OptionScene>(m_mgr, input));
+		m_mgr.GetStage()->OffWaveDraw();
+		return;
 	}
 
 	m_mgr.GetStage()->Update(input);

@@ -82,14 +82,13 @@ StageTutorial::~StageTutorial()
 
 void StageTutorial::Init()
 {
+	StageBase::Init();
 	m_achived.clear();
 
 	m_frame = 0;
 	m_createFrame = 0;
 	m_extRateFrame = 0;
-	m_isUpdateTime = true;
-
-	m_player->Init();
+	m_isUpdateBestTime = false;
 
 	m_enemy.clear();
 	m_enemy.push_back(std::make_shared<EnemyNormal>(m_size, m_fieldSize));

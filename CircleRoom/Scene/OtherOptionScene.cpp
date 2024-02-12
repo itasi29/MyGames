@@ -173,6 +173,7 @@ void OtherOptionScene::NormalUpdate(Input& input)
 			break;
 
 		case kExplanation:
+			m_isWaveDraw = false;
 			m_optionScn->ChangeScene(std::make_shared<ExplanationScene>(m_mgr, input, m_optionScn));
 			break;
 
@@ -238,7 +239,6 @@ void OtherOptionScene::NormalDraw()
 	}
 
 	DrawWave(kBackWavePosX, kBackWavePosY, "cancel", kBackWave, kBackWaveNum);
-	m_isWaveDraw = true;
 	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
@@ -259,7 +259,6 @@ void OtherOptionScene::DrawWindowMode(int index, int handle, int y, unsigned int
 void OtherOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
 {
 	if (!m_isWaveDraw) return;
-	m_isWaveDraw = false;
 
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 

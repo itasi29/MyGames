@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <cassert>
 #include <sstream>
 
 #include "StringUtility.h"
@@ -10,6 +11,8 @@
 #include "FileSystem/SoundSystem.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/FontSystem.h"
+#include "FileSystem/BottansFile.h"
+#include "FileSystem/KeyFile.h"
 #include "Input.h"
 
 #include "Stage/Stage1_1.h"
@@ -61,13 +64,26 @@ namespace
 		{"Stage1-3", "Stage1-4", "Stage1-6"},
 		{"Stage1-2", "Stage1-1", "Master"}
 	};
+
+	// スタート文字のウェーブスピード
+	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
+	// ウェーブの間隔
+	constexpr float kWaveInterval = DX_PI_F / 15.0f;
+
+	// ウェーブ文字列
+	int kSelectWaveNum = 4;
+	int kSelectWavePosX = 1064;
+	int kSelectWavePosY = 592;
+	const wchar_t* const kSelectWave[] = { L"け", L"っ", L"て", L"い" };
 }
 
 StageSelectScene::StageSelectScene(GameManager& mgr, Input& input) :
 	Scene(mgr),
 	m_indexRow(0),
 	m_indexLine(0),
-	m_fadeFrame(0)
+	m_fadeFrame(0),
+	m_waveAngle(0.0),
+	m_input(input)
 {
 	CurrosrPos();
 
@@ -87,7 +103,7 @@ StageSelectScene::StageSelectScene(GameManager& mgr, Input& input) :
 	m_frame = file->LoadGraphic(L"UI/selectFrame.png");
 	m_nowPos = file->LoadGraphic(L"UI/nowPos.png");
 	m_lock = file->LoadGraphic(L"UI/lock.png");
-
+	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
 	for (int x = 0; x < kRowNum; x++)
 	{
 		for (int y = 0; y < kLineNum; y++)
@@ -104,6 +120,9 @@ StageSelectScene::StageSelectScene(GameManager& mgr, Input& input) :
 	}
 
 	m_selectSe = file->LoadSound(L"Se/select.mp3");
+
+	m_bt = std::make_shared<BottansFile>(file);
+	m_key = std::make_shared<KeyFile>(file);
 }
 
 StageSelectScene::~StageSelectScene()
@@ -112,6 +131,7 @@ StageSelectScene::~StageSelectScene()
 
 void StageSelectScene::Update(Input& input)
 {
+	m_waveAngle -= kWaveSpeed;
 	m_fadeFrame++;
 
 	// 上下のインデックスの変更
@@ -207,6 +227,8 @@ void StageSelectScene::Draw()
 			}
 		}
 	}
+
+	DrawWave(kSelectWavePosX, kSelectWavePosY, "OK", kSelectWave, kSelectWaveNum);
 }
 
 void StageSelectScene::DrawInf(const std::string& str)
@@ -235,6 +257,43 @@ void StageSelectScene::DrawInf(const std::string& str)
 	// 殺された種類の描画
 	m_stageData[str]->DrawKilledEnemyType(kDrawStringX, y);
 
+}
+
+void StageSelectScene::DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num)
+{
+	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
+
+	switch (m_input.GetType())
+	{
+	case InputType::keybd:
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), x - 48, y, 2.0);
+		break;
+	default:
+		assert(false);
+	case InputType::pad:
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), x - 48, y, 2.0);
+		break;
+	}
+
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int strX = x;
+
+	for (int i = 0; i < num; i++)
+	{
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int strY = y + add;
+
+
+		DrawStringToHandle(strX, strY, str[i], kWhiteColor, handle);
+		strX += 24;
+	}
 }
 
 void StageSelectScene::CurrosrPos()
