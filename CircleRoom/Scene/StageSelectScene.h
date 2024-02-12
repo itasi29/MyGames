@@ -19,10 +19,10 @@ public:
 	~StageSelectScene();
 
 	void Update(Input& input);
-	void Draw();
+	void Draw() const;
 
 private:
-	void DrawInf(const std::string& st);
+	void DrawInf(const std::string& st) const;
 
 	/// <summary>
 	/// 選択等の文字・画像描画
@@ -30,7 +30,7 @@ private:
 	/// /// <param name="cmd">コマンド名</param>
 	/// <param name="str">ウェーブさせる文字列</param>
 	/// <param name="num">文字列数</param>
-	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num);
+	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const;
 
 	void CurrosrPos();
 

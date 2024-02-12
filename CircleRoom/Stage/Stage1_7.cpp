@@ -119,7 +119,7 @@ void Stage1_7::CheckStageConditions(int timeFrame)
 	CheckConditionsKilled(kDownStName, kDownExsitTime, L"‰º");
 }
 
-int Stage1_7::DrawStageConditions(int drawY)
+int Stage1_7::DrawStageConditions(int drawY) const
 {
 	int startY = drawY;
 	int fontHandle = m_mgr.GetFont()->GetHandle(28);

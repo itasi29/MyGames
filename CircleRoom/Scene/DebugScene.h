@@ -11,7 +11,7 @@ public:
 	~DebugScene();
 
 	virtual void Update(Input& input);
-	virtual void Draw();
+	virtual void Draw() const;
 
 private:
 	int m_line;

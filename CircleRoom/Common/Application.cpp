@@ -6,7 +6,6 @@
 #include "Input.h"
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
-#include "FileSystem/SoundSystem.h"
 
 #include "Scene/SceneManager.h"
 #include "Scene/TitleScene.h"
@@ -97,12 +96,9 @@ void Application::Run()
             // 新しいゲームループを始めた時間を記憶
             m_time = GetNowHiPerformanceCount();
 
-
             ClearDrawScreen();
             // 入力を更新
             input.Update();
-            // 何かしら問題があっても通常状態でBGMが流れるように
-            manager.GetSound()->PlayBgm();
             manager.GetScene()->Update(input);
             manager.GetScene()->Draw();
 

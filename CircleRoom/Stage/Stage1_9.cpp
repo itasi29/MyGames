@@ -108,7 +108,7 @@ void Stage1_9::CheckStageConditions(int timeFrame)
 	CheckConditionsTime(kUpStName, timeFrame, kUpExistTime, L"ã");
 }
 
-int Stage1_9::DrawStageConditions(int drawY)
+int Stage1_9::DrawStageConditions(int drawY) const
 {
 	int startY = drawY;
 	int fontHandle = m_mgr.GetFont()->GetHandle(28);

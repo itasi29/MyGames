@@ -56,6 +56,7 @@ OneShotScene::~OneShotScene()
 
 void OneShotScene::Update(Input& input)
 {
+	m_sound->PlayBgm();
 	(this->*m_updateFunc)(input);
 }
 

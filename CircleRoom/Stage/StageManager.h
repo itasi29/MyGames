@@ -48,7 +48,7 @@ public:
 	void InitPos();
 
 	void Update(Input& input);
-	void Draw();
+	void Draw() const;
 
 	std::string GetStageName() const;
 

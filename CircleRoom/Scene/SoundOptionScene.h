@@ -17,7 +17,7 @@ public:
     ~SoundOptionScene();
 
     void Update(Input& input);
-    void Draw();
+    void Draw() const;
 
 private:
 	using updateFunc_t = void(SoundOptionScene::*)(Input&);
@@ -25,7 +25,7 @@ private:
 	void NormalUpdate(Input& input);
 	void EditUpdate(Input& input);
 
-	void DrawName(int drawY, int index, std::wstring str);
+	void DrawName(int drawY, int index, std::wstring str) const;
 
 	/// <summary>
 	/// ゲージの描画
@@ -33,7 +33,7 @@ private:
 	/// <param name="drawX">左端描画位置</param>
 	/// <param name="drawY">上端描画位置</param>
 	/// <param name="rate">ボリューム割合</param>
-	void DrawGauge(int drawX, int drawY, float rate);
+	void DrawGauge(int drawX, int drawY, float rate) const;
 
 	/// <summary>
 	/// 選択等の文字・画像描画
@@ -41,7 +41,7 @@ private:
 	/// /// <param name="cmd">コマンド名</param>
 	/// <param name="str">ウェーブさせる文字列</param>
 	/// <param name="num">文字列数</param>
-	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num);
+	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const;
 
 private:
 	updateFunc_t m_updateFunc;

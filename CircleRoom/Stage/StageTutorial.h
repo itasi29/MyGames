@@ -27,7 +27,7 @@ private:
 	void UpdateSelect(Input& input);
 	void UpdatePlaying(Input& input);
 
-	void UniqueDraw() override;
+	void UniqueDraw() const override;
 
 	void CheckStageConditions(int timeFrame) override;
 	int DrawStageConditions(int drawY) const override;

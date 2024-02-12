@@ -49,7 +49,7 @@ void DebugScene::Update(Input& input)
 	}
 }
 
-void DebugScene::Draw()
+void DebugScene::Draw() const
 {
 	DrawLine(100, 26 + m_line * 30, 300, 26 + m_line * 30, 0xff0000);
 

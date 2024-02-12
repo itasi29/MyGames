@@ -61,7 +61,7 @@ private:
 	// 更新メンバ関数ポインタ
 	void(TitleScene::* m_updateFunc)(Input& input);
 	// 描画メンバ関数ポインタ
-	using DrawFunc_t = void (TitleScene::*)();
+	using DrawFunc_t = void (TitleScene::*)() const;
 	DrawFunc_t m_drawFunc;
 
 	// 画像群
