@@ -55,6 +55,23 @@ namespace
 	int kBackWavePosX = 1128;
 	int kBackWavePosY = 544;
 	const wchar_t* const kBackWave[] = { L"も", L"ど", L"る" };
+
+	// メニューに並ぶ数
+	constexpr int kMenuNum = 4;
+	// メニューに並ぶ順
+	const char* const kMenuTable[] = {
+		"dash",		// ダッシュ
+		"OK",		// 選択or確定
+		"cancel",	// キャンセル
+		"pause"		// ポーズボタン
+	};
+	// 文字
+	const wchar_t* const kMenuStr[] = {
+		L"ダッシュ",
+		L"決定",
+		L"キャンセル",
+		L"ポーズ"
+	};
 }
 
 PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<SceneManager> scn) :
@@ -70,13 +87,6 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 	m_updateFunc = &PadConfigScene::EditEndUpdate;
 
 	m_commandTable = input.GetCommandTable();
-
-	m_menuTable = {
-		"dash",		// ダッシュ
-		"OK",		// 選択or確定
-		"cancel",	// キャンセル
-		"pause"		// ポーズボタン
-	};
 
 	m_btImg = std::make_shared<BottansFile>(m_mgr.GetFile());
 
@@ -172,13 +182,13 @@ void PadConfigScene::NormalUpdate(Input& input)
 
 	if (input.IsTriggered("up"))
 	{
-		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(m_menuTable.size())) % static_cast<int>(m_menuTable.size());
+		m_currentLineIndex = (m_currentLineIndex - 1 + kMenuNum) % kMenuNum;
 		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorUpSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
-		m_currentLineIndex = (m_currentLineIndex + 1) % m_menuTable.size();
+		m_currentLineIndex = (m_currentLineIndex + 1) % kMenuNum;
 		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorDownSe->GetHandle());
 	}
@@ -189,7 +199,7 @@ void PadConfigScene::EditUpdate(Input& input)
 	m_fadeFrame++;
 
 	// 現在選択しているコマンドのデータを参照
-	const auto& strItem = m_menuTable[m_currentLineIndex];
+	const auto& strItem = kMenuTable[m_currentLineIndex];
 	auto& cmd = m_commandTable[strItem];
 
 	if (input.IsPress("cancel"))
@@ -266,16 +276,13 @@ void PadConfigScene::EditEndUpdate(Input& input)
 
 void PadConfigScene::DrawCommandList() const
 {
+	int y = kMenuMargin + 68;
 
-
-	int y = kMenuMargin + 64;
-
-	for (int i = 0; i < m_menuTable.size(); i++)
+	for (int i = 0; i < kMenuNum; i++)
 	{
 		// 表示するコマンドの情報を取得
-		auto& cmd = m_commandTable.at(m_menuTable[i]);
+		auto& cmd = m_commandTable.at(kMenuTable[i]);
 
-		std::wstring cmdName = StringUtility::StringToWString(m_menuTable[i]);
 		int fontHandle = m_mgr.GetFont()->GetHandle(32);
 
 		if (i == m_currentLineIndex)
@@ -287,15 +294,15 @@ void PadConfigScene::DrawCommandList() const
 				int alpha = static_cast <int>(255 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			}
-			DrawFormatStringToHandle(kMenuMargin + 50, y, kYellowColor, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kYellowColor, fontHandle, L"%s", kMenuStr[i]);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else
 		{
-			DrawFormatStringToHandle(kMenuMargin + 50, y, kWhiteColor, fontHandle, L"%s", cmdName.c_str());
+			DrawFormatStringToHandle(kMenuMargin + 50, y, kWhiteColor, fontHandle, L"%s", kMenuStr[i]);
 		}
 
-		m_btImg->DrawBottan(m_input.GetHardDataName(m_menuTable[i], InputType::pad), kMenuMargin + 50 + 376, y, kExtendRate);
+		m_btImg->DrawBottan(m_input.GetHardDataName(kMenuTable[i], InputType::pad), kMenuMargin + 50 + 376, y, kExtendRate);
 
 		y += kMenuLineInterval;
 	}

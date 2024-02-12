@@ -47,9 +47,6 @@ private:
 	// PADの画像用
 	std::shared_ptr<BottansFile> m_btImg;
 
-	// メニューの並ぶ順用
-	std::vector<std::string> m_menuTable;
-
 	// Inputクラスを元から持っておく
 	Input& m_input;
 	// Inputクラスのテーブル

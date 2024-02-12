@@ -49,9 +49,6 @@ private:
 	// KEYの画像用
 	std::shared_ptr<KeyFile> m_keyImg;
 
-	// 特定の純情にコマンドを並び替えるための配列
-	std::vector<std::string> m_menuTable;
-
 	// Inputクラスの参照を持っておく
 	Input& m_input;
 	// Inputクラスのテーブル
