@@ -281,6 +281,7 @@ void StageBase::UpdateSelect(Input& input)
 		m_sound->Stop(m_selectBgm->GetHandle());
 		m_isUpdateBestTime = false;
 		m_soundFrame = 0;
+		m_waitFrame = 0;
 		m_waveAngle = 0;
 		m_extRateFrame = 0;
 
@@ -363,6 +364,7 @@ void StageBase::UpdatePlaying(Input& input)
 	}
 #endif
 	UpdateTime();
+	CheckStageConditions(m_frame);
 
 	if (!m_player->IsExsit())
 	{
@@ -388,11 +390,20 @@ void StageBase::UpdatePlaying(Input& input)
 			m_isUpdateBestTime = true;
 		}
 
-		// クリアしているかの確認
+		return;
 	}
-	CheckStageConditions(m_frame);
 
 	m_extRateFrame++;
+
+	if (m_isUpdateBestTime)
+	{
+		m_waitFrame++;
+		m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame);
+	}
+	else if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))	
+	{
+		m_isUpdateBestTime = true;
+	}
 
 	// MEMO:途中で消したい場合はこれをオンに
 #if false
