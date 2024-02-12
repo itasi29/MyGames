@@ -102,7 +102,7 @@ private:
 	// フィールドのサイズ
 	float m_fieldSize;
 
-	// キャラクター画像
+	// 画像
 	std::shared_ptr<FileBase> m_charImg;
 	std::shared_ptr<FileBase> m_charDeathImg;
 	std::shared_ptr<FileBase> m_charEffImg;
@@ -111,6 +111,9 @@ private:
 	std::shared_ptr<FileBase> m_deathSe;
 	// ダッシュ時Se
 	std::shared_ptr<FileBase> m_dashSe;
+
+	// ダッシュ時に光らせる用の画面ハンドル
+	int m_dashScreen;
 
 	// 中心座標
 	Vec2 m_pos;

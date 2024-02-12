@@ -4,6 +4,7 @@
 #include "Stage/StageManager.h"
 
 #include "GameManager.h"
+#include "Scene/SceneManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/SoundSystem.h"
@@ -84,12 +85,14 @@ Player::Player(const size& windowSize, float fieldSize) :
 	m_charEffImg = mgr->LoadGraphic(L"Player/PlayerEff.png");
 
 	m_deathSe = mgr->LoadSound(L"Se/playerDeath.mp3");
-	// MEMO:プレイヤーダッシュの音見つけられなかったから現状敵と混合で
 	m_dashSe = mgr->LoadSound(L"Se/enemyDash.mp3");
+
+	m_dashScreen = MakeScreen(m_size.w, m_size.h, true);
 }
 
 Player::~Player()
 {
+	DeleteGraph(m_dashScreen);
 }
 
 void Player::Init()
@@ -225,6 +228,13 @@ void Player::Draw() const
 			m_dir.right.x + m_pos.x + kShadowShift, m_dir.right.y + m_pos.y + kShadowShift,
 			0x000000, true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		if (m_isDash)
+		{
+			SetDrawScreen(m_dashScreen);
+			ClearDrawScreen();
+		}
+
 		// 現在のプレイヤーを描画
 		DrawTriangleAA(m_dir.front.x + m_pos.x, m_dir.front.y + m_pos.y,
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
@@ -235,6 +245,14 @@ void Player::Draw() const
 			m_dir.left.x + m_pos.x, m_dir.left.y + m_pos.y,
 			m_dir.right.x + m_pos.x, m_dir.right.y + m_pos.y,
 			0x161a30, false, 2.0f);
+
+		if (m_isDash)
+		{
+			auto nowHandle = GameManager::GetInstance().GetScene()->GetScreenHandle();
+			SetDrawScreen(nowHandle);
+			GraphFilter(m_dashScreen, DX_GRAPH_FILTER_HSB, 0, 0, 0, 128);
+			DrawGraph(0, 0, m_dashScreen, true);
+		}
 	}
 
 	// 死亡時のエフェクト
