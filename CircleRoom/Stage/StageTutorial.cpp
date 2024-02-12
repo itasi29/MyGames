@@ -57,12 +57,11 @@ StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	m_isStart(true),
 	m_emphasisFrame(0)
 {
-	m_handle[0] = m_mgr.GetFile()->LoadGraphic(L"UI/keybordExplanation.png");
-	m_handle[1] = m_mgr.GetFile()->LoadGraphic(L"UI/padExplanation.png");
-	m_handle[2] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation0.png");
-	m_handle[3] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation1.png");
-	m_handle[4] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation2.png");
-	m_handle[5] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation3.png");
+	m_handle[0] = m_mgr.GetFile()->LoadGraphic(L"UI/operationExplanation.png");
+	m_handle[1] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation0.png");
+	m_handle[2] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation1.png");
+	m_handle[3] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation2.png");
+	m_handle[4] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation3.png");
 
 	m_arrow[0] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis0.png");
 	m_arrow[1] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis1.png");
@@ -151,7 +150,7 @@ void StageTutorial::UpdateSelect(Input& input)
 	case kOperation:
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
 		m_index++;
-		if (m_index >= 2)
+		if (m_index >= 1)
 		{
 			m_explanation = kClear;
 		}
@@ -161,7 +160,7 @@ void StageTutorial::UpdateSelect(Input& input)
 	case kClear:
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
 		m_index++;
-		if (m_index >= 6)
+		if (m_index >= 5)
 		{
 			m_explanation = kPlay;
 		}

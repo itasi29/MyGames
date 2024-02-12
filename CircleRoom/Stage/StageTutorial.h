@@ -41,7 +41,7 @@ private:
 	UpdateFunc_t m_updateFunc;
 
 	int  m_index;
-	std::array<std::shared_ptr<FileBase>, 6> m_handle;
+	std::array<std::shared_ptr<FileBase>, 5> m_handle;
 	std::array<std::shared_ptr<FileBase>, 2> m_arrow;
 
 	Explanation m_explanation;

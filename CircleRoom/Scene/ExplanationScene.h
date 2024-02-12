@@ -39,7 +39,7 @@ private:
 	// ‰æ‘œ
 	std::shared_ptr<FileBase> m_frame;
 	std::shared_ptr<FileBase> m_startFrame;
-	std::array<std::shared_ptr<FileBase>, 2> m_operator;
+	std::shared_ptr<FileBase> m_operator;
 	std::array<std::shared_ptr<FileBase>, 3> m_proceed;
 	std::shared_ptr<FileBase> m_dash;
 	std::shared_ptr<FileBase> m_boss;

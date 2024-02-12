@@ -87,8 +87,7 @@ ExplanationScene::ExplanationScene(GameManager& mgr, Input& input, std::shared_p
 	auto& file = m_mgr.GetFile();
 	m_frame = file->LoadGraphic(L"UI/normalFrame.png", true);
 	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
-	m_operator[0] = file->LoadGraphic(L"UI/keybordExplanation.png");
-	m_operator[1] = file->LoadGraphic(L"UI/padExplanation.png");
+	m_operator = file->LoadGraphic(L"UI/operationExplanation.png");
 	for (int i = 0; i < 3; i++)
 	{
 		std::wostringstream woss;
@@ -209,13 +208,13 @@ void ExplanationScene::SelectUpdate(Input& input)
 
 void ExplanationScene::OperationUpdate(Input&)
 {
-	if (m_index >= 2)
+	if (m_index >= 1)
 	{
 		m_updateFunc = &ExplanationScene::SelectUpdate;
 		return;
 	}
 
-	m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_operator[m_index]->GetHandle()));
+	m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_operator->GetHandle()));
 	m_index++;
 }
 
