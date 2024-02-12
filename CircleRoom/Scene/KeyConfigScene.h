@@ -38,8 +38,6 @@ private:
 	/// <param name="num">文字列数</param>
 	void DrawWave(int x, int y, const char* const cmd, const wchar_t* const str[], int num) const;
 
-	std::wstring GetKeyName(int keycode) const;
-
 private:
 	// 更新メンバ関数ポインタ
 	using UpdateFunc_t = void(KeyConfigScene::*)(Input& input);
@@ -66,9 +64,6 @@ private:
 	int m_fadeFrame;
 	// キャンセル確認フレーム
 	int m_cancleFrame;
-
-	// MEMO:これは変更させる可能性高い
-	std::unordered_map<int, std::wstring> m_keynameTable;
 
 	// 画像
 	std::shared_ptr<FileBase> m_frame;

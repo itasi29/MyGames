@@ -78,15 +78,6 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 		"pause"		// ƒ|[ƒYƒ{ƒ^ƒ“
 	};
 
-	m_bottanTable[PAD_INPUT_A] = L"‚`Bottan";
-	m_bottanTable[PAD_INPUT_B] = L"‚aBottan";
-	m_bottanTable[PAD_INPUT_C] = L"‚wBottan";
-	m_bottanTable[PAD_INPUT_X] = L"‚xBottan";
-	m_bottanTable[PAD_INPUT_5] = L"‚kBottan";
-	m_bottanTable[PAD_INPUT_6] = L"‚qBottan";
-	m_bottanTable[PAD_INPUT_R] = L"‚r‚s‚`‚q‚sBottan";
-	m_bottanTable[PAD_INPUT_L] = L"‚lBottan";
-
 	m_btImg = std::make_shared<BottansFile>(m_mgr.GetFile());
 
 	std::shared_ptr<OptionScene > optionScene = std::dynamic_pointer_cast<OptionScene>(m_mgr.GetScene()->GetTopScene());
@@ -304,7 +295,7 @@ void PadConfigScene::DrawCommandList() const
 			DrawFormatStringToHandle(kMenuMargin + 50, y, kWhiteColor, fontHandle, L"%s", cmdName.c_str());
 		}
 
-		m_btImg->DrawBottan(GetPadName(cmd.at(InputType::pad)[0]), kMenuMargin + 50 + 376, y, kExtendRate);
+		m_btImg->DrawBottan(m_input.GetHardDataName(m_menuTable[i], InputType::pad), kMenuMargin + 50 + 376, y, kExtendRate);
 
 		y += kMenuLineInterval;
 	}
@@ -345,16 +336,4 @@ void PadConfigScene::DrawWave(int x, int y, const char* const cmd, const wchar_t
 		DrawStringToHandle(strX, strY, str[i], kWhiteColor, handle);
 		strX += 24;
 	}
-}
-
-std::wstring PadConfigScene::GetPadName(int padstate) const
-{
-	wchar_t name[16];
-	auto it = m_bottanTable.find(padstate);
-	if (it == m_bottanTable.end())
-	{
-		wsprintf(name, L"%04x", padstate);
-		return name;
-	}
-	return (it->second);
 }

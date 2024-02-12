@@ -335,7 +335,8 @@ void KeyConfigScene::DrawCommandList() const
 			DrawFormatStringToHandle(kMenuMargin + 50, y, kWhiteColor, fontHandle, L"%s", cmdName.c_str());
 		}
 
-		m_keyImg->DrawKey(GetKeyName(cmd.at(InputType::keybd)[0]), kMenuMargin + 50 + 376, y, kExtendRate);
+		//m_keyImg->DrawKey(GetKeyName(cmd.at(InputType::keybd)[0]), kMenuMargin + 50 + 376, y, kExtendRate);
+		m_keyImg->DrawKey(m_input.GetHardDataName(m_menuTable[i], InputType::keybd), kMenuMargin + 50 + 376, y, kExtendRate);
 
 		y += kMenuLineInterval;
 	}
