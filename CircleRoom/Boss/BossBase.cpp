@@ -13,6 +13,9 @@
 namespace
 {
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
+	constexpr unsigned int kYellowColor = 0xffde00;
+	constexpr unsigned int kRedColor = 0xd2001a;
+	constexpr unsigned int kBackFrameColor = 0x161a30;
 
 	// タイトルでの動くスピード
 	constexpr float kTitleSpeed = 4.0f;
@@ -661,8 +664,20 @@ void BossBase::DrawHpBar() const
 	// フレームの描画
 	DrawGraph(kDrawHpBarX, kDrawHpBarY, m_hpBarFrame->GetHandle(), true);
 
+	// 文字見やすくするように背景描画
+	DrawBox(kDrawHpBarX - 4, kDrawHpBarY - 52, kDrawHpBarX + 140, kDrawHpBarY - 12, kBackFrameColor, true);
+	// 残量HPによって文字の色を変更
+	unsigned int color = kWhiteColor;
+	if (m_hp < static_cast<int>(m_maxHp * 0.2f))
+	{
+		color = kRedColor;
+	}
+	else if (m_hp < static_cast<int>(m_maxHp * 0.5f))
+	{
+		color = kYellowColor;
+	}
 	auto& font = GameManager::GetInstance().GetFont();
-	DrawFormatStringToHandle(kDrawHpBarX, kDrawHpBarY -48, kWhiteColor, font->GetHandle(32),
+	DrawFormatStringToHandle(kDrawHpBarX, kDrawHpBarY -48, color, font->GetHandle(32),
 		L"BOSS : %02d / %02d", m_hp, m_maxHp);
 }
 

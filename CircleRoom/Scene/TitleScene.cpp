@@ -46,7 +46,6 @@ namespace
 
 	// ’Êí•¶š—ñ‚ÌF
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
-	//constexpr unsigned int kWhiteColor = 0x161A30;
 	// ‘I‘ğ•¶š—ñ‚ÌF
 	constexpr unsigned int kYellowColor = 0xffde00;
 
