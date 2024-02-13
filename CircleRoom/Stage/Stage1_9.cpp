@@ -33,7 +33,7 @@ namespace
 	constexpr int kCreateLargeInterval = 60 * 4;
 
 	// ディレイフレーム
-	constexpr int kStartDeleyFrame = 15;
+	constexpr int kStartDeleyFrame = 40;
 	constexpr int kDeleyFrame = 60 * 6;
 
 	// 上クリア条件　生存時間

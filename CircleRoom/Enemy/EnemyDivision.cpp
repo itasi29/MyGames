@@ -188,6 +188,9 @@ void EnemyDivision::DivisionUpdate()
 			vec = vec.Right();
 		}
 
+		// 判定をステージ外に持っていく
+		m_col = {};
+
 		m_dUpdateFunc = &EnemyDivision::EndUpdate;
 		m_dDrawFunc = &EnemyDivision::EndDraw;
 	}
