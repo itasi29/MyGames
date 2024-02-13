@@ -45,6 +45,8 @@ private:
 	std::shared_ptr<FileBase> m_boss;
 	// SE
 	std::shared_ptr<FileBase> m_selectSe;
+	std::shared_ptr<FileBase> m_cancelSe;
+	std::shared_ptr<FileBase> m_cursorSe;
 
 	// option‚ÌƒV[ƒ“
 	std::shared_ptr<SceneManager> m_optionScn;

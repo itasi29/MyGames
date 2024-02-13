@@ -100,8 +100,7 @@ PadConfigScene::PadConfigScene(GameManager& mgr, Input& input, std::shared_ptr<S
 
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
-	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
-	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+	m_cursorSe = file->LoadSound(L"Se/cursor.mp3", true);
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
@@ -184,13 +183,13 @@ void PadConfigScene::NormalUpdate(Input& input)
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + kMenuNum) % kMenuNum;
 		m_fadeFrame = 0;
-		m_sound->PlaySe(m_cursorUpSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % kMenuNum;
 		m_fadeFrame = 0;
-		m_sound->PlaySe(m_cursorDownSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 }
 

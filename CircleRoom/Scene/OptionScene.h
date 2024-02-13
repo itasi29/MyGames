@@ -85,7 +85,6 @@ private:
 
 	// Se
 	std::shared_ptr<FileBase> m_cancelSe;
-	std::shared_ptr<FileBase> m_cursorUpSe;
-	std::shared_ptr<FileBase> m_cursorDownSe;
+	std::shared_ptr<FileBase> m_cursorSe;
 };
 

@@ -87,8 +87,7 @@ OptionScene::OptionScene(GameManager& mgr, Input& input, bool isGame) :
 
 	auto& file = m_mgr.GetFile();
 	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
-	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
-	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+	m_cursorSe = file->LoadSound(L"Se/cursor.mp3", true);
 
 	m_optionScn = std::make_shared<SceneManager>(false);
 	m_optionScn->Init();
@@ -174,7 +173,7 @@ void OptionScene::NormalUpdate(Input& input)
 		{
 			m_currentMenuLine = (m_currentMenuLine - 1 + static_cast<int>(kTitleMenu.size())) % static_cast<int>(kTitleMenu.size());
 		}
-		m_sound->PlaySe(m_cursorUpSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 		ChangeScene(input);
 	}
 	if (input.IsTriggered("optionRight"))
@@ -187,7 +186,7 @@ void OptionScene::NormalUpdate(Input& input)
 		{
 			m_currentMenuLine = (m_currentMenuLine + 1) % static_cast<int>(kTitleMenu.size());
 		}
-		m_sound->PlaySe(m_cursorDownSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 		ChangeScene(input);
 	}
 }

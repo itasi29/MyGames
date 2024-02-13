@@ -67,8 +67,7 @@ private:
 	// Se
 	std::shared_ptr<FileBase> m_selectSe;
 	std::shared_ptr<FileBase> m_cancelSe;
-	std::shared_ptr<FileBase> m_cursorUpSe;
-	std::shared_ptr<FileBase> m_cursorDownSe;
+	std::shared_ptr<FileBase> m_cursorSe;
 
 	// 文字ウェーブ用の角度
 	float m_waveAngle;

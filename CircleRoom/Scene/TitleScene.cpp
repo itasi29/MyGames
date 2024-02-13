@@ -143,8 +143,7 @@ TitleScene::TitleScene(GameManager& mgr, Input& input) :
 	m_bgm = file->LoadSound(L"Bgm/title.mp3");
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
 	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
-	m_cursorUpSe = file->LoadSound(L"Se/cursorUp.mp3", true);
-	m_cursorDownSe = file->LoadSound(L"Se/cursorDown.mp3", true);
+	m_cursorSe = file->LoadSound(L"Se/cursor.mp3", true);
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
@@ -229,13 +228,13 @@ void TitleScene::NormalUpdate(Input& input)
 		// 現在のラインの位置をメニューのラインの数で繰り返す
 		m_currentLinePos = (kMenuLineNum + m_currentLinePos - 1) % kMenuLineNum;
 		m_fadeFrame = 0;
-		m_sound->PlaySe(m_cursorUpSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLinePos = (m_currentLinePos + 1) % kMenuLineNum;
 		m_fadeFrame = 0;
-		m_sound->PlaySe(m_cursorDownSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 
 	if (input.IsTriggered("pause"))
@@ -312,13 +311,13 @@ void TitleScene::StartSelectUpdate(Input& input)
 		// 現在のラインの位置をメニューのラインの数で繰り返す
 		m_currentLinePos = (kStartSelectNum + m_currentLinePos - 1) % kStartSelectNum;
 		m_fadeFrame = 0;
-		m_sound->PlaySe(m_cursorUpSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLinePos = (m_currentLinePos + 1) % kStartSelectNum;
 		m_fadeFrame = 0;
-		m_sound->PlaySe(m_cursorDownSe->GetHandle());
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 
 	if (input.IsTriggered("OK"))

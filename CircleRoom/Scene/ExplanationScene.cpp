@@ -98,6 +98,8 @@ ExplanationScene::ExplanationScene(GameManager& mgr, Input& input, std::shared_p
 	m_boss = file->LoadGraphic(L"UI/bossExplanation.png");
 
 	m_selectSe = file->LoadSound(L"Se/select.mp3", true);
+	m_cancelSe = file->LoadSound(L"Se/cancel.mp3", true);
+	m_cursorSe = file->LoadSound(L"Se/cursor.mp3", true);
 
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
@@ -163,18 +165,22 @@ void ExplanationScene::SelectUpdate(Input& input)
 
 	if (input.IsTriggered("cancel"))
 	{
+		m_sound->PlaySe(m_cancelSe->GetHandle());
 		m_optionScn->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr, input, m_optionScn));
+		return;
 	}
 
 	if (input.IsTriggered("up"))
 	{
 		m_currentLineIndex = (m_currentLineIndex - 1 + static_cast<int>(kGameMenu.size())) % static_cast<int>(kGameMenu.size());
 		m_fadeFrame = 0;
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 	if (input.IsTriggered("down"))
 	{
 		m_currentLineIndex = (m_currentLineIndex + 1) % kGameMenu.size();
 		m_fadeFrame = 0;
+		m_sound->PlaySe(m_cursorSe->GetHandle());
 	}
 
 	if (input.IsTriggered("OK"))

@@ -71,6 +71,15 @@ private:
 	std::shared_ptr<FileBase> m_startFrame;
 	std::shared_ptr<FileBase> m_backFrame;
 
+	// 音関係
+	std::shared_ptr<SoundSystem> m_soundSys;
+	// Bgm
+	std::shared_ptr<FileBase> m_bgm;
+	// 選択時Se
+	std::shared_ptr<FileBase> m_selectSe;
+	std::shared_ptr<FileBase> m_cancelSe;
+	std::shared_ptr<FileBase> m_cursorSe;
+
 	// タイトルで動く敵
 	std::list<std::shared_ptr<EnemyBase>> m_enemy;
 	std::list<std::shared_ptr<BossBase>> m_boss;
@@ -95,16 +104,6 @@ private:
 
 	// 背景フレーム
 	int m_bgFrame;
-
-	// 音関係
-	std::shared_ptr<SoundSystem> m_soundSys;
-	// Bgm
-	std::shared_ptr<FileBase> m_bgm;
-	// 選択時Se
-	std::shared_ptr<FileBase> m_selectSe;
-	std::shared_ptr<FileBase> m_cancelSe;
-	std::shared_ptr<FileBase> m_cursorUpSe;
-	std::shared_ptr<FileBase> m_cursorDownSe;
 
 	// 文字ウェーブ用の角度
 	float m_waveAngle;

@@ -177,6 +177,9 @@ void StageSelectScene::Update(Input& input)
 		// そのステージがクリアされていなければ終了
 		if (!m_mgr.GetStage()->IsClearStage(stgName)) return;
 
+		// 止めないと音が二重になる
+		m_soundSys->Stop();
+
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 
 		m_mgr.GetStage()->ChangeStage(m_stageData[stgName]);

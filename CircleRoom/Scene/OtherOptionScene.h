@@ -44,8 +44,7 @@ private:
 	std::shared_ptr<FileBase> m_rightNotationImg;
 	std::shared_ptr<FileBase> m_startFrame;
 	// Se
-	std::shared_ptr<FileBase> m_cursorUpSe;
-	std::shared_ptr<FileBase> m_cursorDownSe;
+	std::shared_ptr<FileBase> m_cursorSe;
 	std::shared_ptr<FileBase> m_selectSe;
 
 	// option‚ÌƒV[ƒ“
