@@ -328,7 +328,6 @@ void BossArmored::CreateEnemy()
 
 					m_stage->GenericEnemy(split);
 
-					// ‰ñ“]‚³‚¹‚é
 					vec = vec.Right();
 				}
 			}

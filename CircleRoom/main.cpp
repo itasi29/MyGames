@@ -7,7 +7,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	if (!application.Init())
 	{
-		return -1;// このアプリは不正終了しました。
+		// このアプリは不正終了しました。
+		return -1;
 	}
 	application.Run();
 	application.Terminate();
