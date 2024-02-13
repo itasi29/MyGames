@@ -278,6 +278,12 @@ void Input::Save(const std::string& path)
 {
     FILE* fp = nullptr; // ファイルポインタ
     auto err = fopen_s(&fp, path.c_str(), "wb");
+    if (err != errno)
+    {
+        // 読み込みに失敗したため終了
+        assert(false);
+        return;
+    }
     // ヘッダの書き込み
     KeyConfHeader header;
     header.dataCount = m_commandTable.size();
