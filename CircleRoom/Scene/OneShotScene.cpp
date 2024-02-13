@@ -77,7 +77,7 @@ void OneShotScene::AppearUpdate(Input& input)
 
 void OneShotScene::NormalUpdate(Input& input)
 {
-	if (input.IsAnyTriggerd())
+	if (input.IsTriggered("OK"))
 	{
 		auto& sound = m_mgr.GetSound();
 		sound->PlaySe(m_selectSe->GetHandle());
