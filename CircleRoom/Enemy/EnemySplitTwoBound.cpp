@@ -1,4 +1,6 @@
 #include "EnemySplitTwoBound.h"
+#include "GameManager.h"
+#include "FileSystem/FileManager.h"
 
 namespace
 {
@@ -17,6 +19,10 @@ EnemySplitTwoBound::EnemySplitTwoBound(const size& windowSize, float fieldSize) 
 {
 	m_name = "SplitTwoBound";
 	m_radius = kRadius;
+
+
+	auto& mgr = GameManager::GetInstance().GetFile();
+	m_charImg = mgr->LoadGraphic(L"Enemy/SplitTwoBound.png");
 }
 
 EnemySplitTwoBound::~EnemySplitTwoBound()

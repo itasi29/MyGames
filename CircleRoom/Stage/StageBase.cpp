@@ -155,7 +155,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_enemysImg["Create"] = file->LoadGraphic(L"Enemy/Create.png");
 	m_enemysImg["Child"] = file->LoadGraphic(L"Enemy/Child.png");
 	m_enemysImg["Split"] = file->LoadGraphic(L"Enemy/Split.png");
-	m_enemysImg["SplitTwoBound"] = file->LoadGraphic(L"Enemy/Split.png");
+	m_enemysImg["SplitTwoBound"] = file->LoadGraphic(L"Enemy/SplitTwoBound.png");
 	m_enemysImg["BossArmored"] = file->LoadGraphic(L"Enemy/BossArmored.png");
 	m_enemysImg["BossStrongArmored"] = file->LoadGraphic(L"Enemy/BossStrongArmored.png");
 	m_check = file->LoadGraphic(L"UI/check.png");

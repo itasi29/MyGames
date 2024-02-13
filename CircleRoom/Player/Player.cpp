@@ -265,7 +265,7 @@ void Player::Draw() const
 	// ‘–‚Á‚Ä‚¢‚È‚¢ê‡“–‚½‚è”»’è‚Ì•`‰æ
 	if (!m_isDash)
 	{
-		m_col.Draw(0xff0000, false);
+		m_col.Draw(0x00ff00, false);
 		m_objCol.Draw(0x0000ff, false);
 	}
 #endif
