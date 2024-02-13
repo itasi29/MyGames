@@ -177,7 +177,7 @@ void GameClearScene::DrawInf(int index, int drawY, int handle) const
 	{
 		int sec = (data.playTime / 60) % 60;
 		int min = (data.playTime / 3600) % 60;
-		int hour = (data.playTime / 21600);
+		int hour = (data.playTime / 216000);
 		DrawFormatStringToHandle(kDrawResultDataX, drawY, kRedColor, handle, L"%02dŽžŠÔ%02d•ª%02d•b", hour, min, sec);
 	}
 	else if (index == 1)
