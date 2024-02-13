@@ -331,6 +331,7 @@ void Input::Load(const std::wstring& path)
     // ヘッダの読み込み
     KeyConfHeader header;
     FileRead_read(&header, sizeof(header), handle);
+    // バージョンが違う場合は読み込みしない
     if (header.version != kVersion)
     {
         FileRead_close(handle);
