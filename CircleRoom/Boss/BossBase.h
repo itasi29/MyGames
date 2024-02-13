@@ -23,7 +23,7 @@ struct ParticleEff
 	Vec2 pos;
 	Vec2 vec;
 
-	double size;
+	double size = 0.0;
 
 	int frame = 0;
 	bool isEnd = false;

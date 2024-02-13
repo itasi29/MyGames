@@ -212,6 +212,9 @@ void OptionScene::NormalDraw() const
 	// ˜gü
 	DrawBox(kMenuMargin, kMenuMargin, size.w - kMenuMargin, size.h - kMenuMargin,
 		0xffffff, false);
+	// ¶‰EˆÚ“®‚Ìƒ{ƒ^ƒ“Œã‚ë“h‚è‚Â‚Ô‚µ
+	DrawBox(kMenuMargin, kMenuMargin, kMenuMargin * 2, kMenuMargin * 2 - 1, 0xffffff, true);
+	DrawBox(size.w - kMenuMargin * 2, kMenuMargin, size.w - kMenuMargin, kMenuMargin * 2 - 1, 0xffffff, true);
 
 	DrawWave(size);
 	if (m_isGame)

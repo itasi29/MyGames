@@ -15,7 +15,7 @@ struct WallEff
 	Vec2 pos;
 	Vec2 vec;
 
-	double size;
+	double size = 0.0;
 };
 
 struct WallEffMass

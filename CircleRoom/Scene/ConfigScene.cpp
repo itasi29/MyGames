@@ -97,17 +97,14 @@ void ConfigScene::Update(Input& input)
 	{
 		m_isWaveDraw = false;
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
-		switch (m_currentLineIndex)
-		{
-		default:
-			assert(false);
-		case kKey:
-			m_optionScn->ChangeScene(std::make_shared<KeyConfigScene>(m_mgr, input, m_optionScn));
-			break;
 
-		case kPad:
+		if (m_currentLineIndex == kKey)
+		{
+			m_optionScn->ChangeScene(std::make_shared<KeyConfigScene>(m_mgr, input, m_optionScn));
+		}
+		else if (m_currentLineIndex == kPad)
+		{
 			m_optionScn->ChangeScene(std::make_shared<PadConfigScene>(m_mgr, input, m_optionScn));
-			break;
 		}
 
 		return;
