@@ -303,28 +303,20 @@ void OptionScene::ChangeScene(Input& input)
 		current++;
 	}
 
-	switch (current)
+	if (current == kStageSelect)
 	{
-		// ステージ選択
-	case kStageSelect:
 		m_optionScn->ChangeScene(std::make_shared<StageSelectScene>(m_mgr, input));
-		break;
-
-		// キー設定
-	case kOperat:
+	}
+	else if (current == kOperat)
+	{
 		m_optionScn->ChangeScene(std::make_shared<ConfigScene>(m_mgr, input, m_optionScn));
-		break;
-
-		// 音量設定
-	case kValume:
+	}
+	else if (current == kValume)
+	{
 		m_optionScn->ChangeScene(std::make_shared<SoundOptionScene>(m_mgr, input));
-		break;
-
-		// その他設定
-	default:
-		assert(false);
-	case kOther:
+	}
+	else if (current == kOther)
+	{
 		m_optionScn->ChangeScene(std::make_shared<OtherOptionScene>(m_mgr, input, m_optionScn));
-		break;
 	}
 }

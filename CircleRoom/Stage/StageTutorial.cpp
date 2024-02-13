@@ -144,10 +144,8 @@ void StageTutorial::UpdateSelect(Input& input)
 		enemy->Update();
 	}
 
-	switch (m_explanation)
+	if (m_explanation == kOperation)
 	{
-		// à–¾1‚Â–Ú
-	case kOperation:
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
 		m_index++;
 		if (m_index >= 1)
@@ -155,9 +153,9 @@ void StageTutorial::UpdateSelect(Input& input)
 			m_explanation = kClear;
 		}
 		m_isWaveDraw = false;
-		break;
-		// à–¾2‚Â–Ú
-	case kClear:
+	}
+	else if (m_explanation == kClear)
+	{
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
 		m_index++;
 		if (m_index >= 5)
@@ -165,9 +163,9 @@ void StageTutorial::UpdateSelect(Input& input)
 			m_explanation = kPlay;
 		}
 		m_isWaveDraw = false;
-		break;
-		// ŽÀƒvƒŒƒC
-	case kPlay:
+	}
+	else if (kPlay)
+	{
 		if (input.IsTriggered("OK"))
 		{
 			ChangePlayingFunc();
@@ -175,11 +173,6 @@ void StageTutorial::UpdateSelect(Input& input)
 			m_soundFrame = 0;
 			m_sound->Stop();
 		}
-		break;
-	default:
-		assert(false);
-	case kEnd:
-		break;;
 	}
 }
 

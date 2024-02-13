@@ -158,33 +158,29 @@ void OtherOptionScene::NormalUpdate(Input& input)
 	{
 		auto& sound = GameManager::GetInstance().GetSound();
 		sound->PlaySe(m_selectSe->GetHandle());
-		switch (m_currentLineIndex)
+		if (m_currentLineIndex == kTitle)
 		{
-		default:
-			assert(false);
-		case kTitle:
 			m_fadeFrame = 0;
 			m_updateFunc = &OtherOptionScene::FadeUpdate;
 			m_drawFunc = &OtherOptionScene::FadeDraw;
-			break;
-
-		case kWindowsMode:
+		}
+		else if (m_currentLineIndex == kWindowsMode)
+		{
 			Application::GetInstance().ChangeWindows();
-			break;
-
-		case kExplanation:
+		}
+		else if (m_currentLineIndex == kExplanation)
+		{
 			m_isWaveDraw = false;
 			m_optionScn->ChangeScene(std::make_shared<ExplanationScene>(m_mgr, input, m_optionScn));
-			break;
-
-		//case kRightsNotation:
+		}
+		//else if (m_currentLineIndex == kRightsNotation)
+		//{
 		//	m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_rightNotationImg->GetHandle()));
-		//	break;
-
-		case kEnd:
+		//}
+		else if (m_currentLineIndex == kEnd)
+		{
 			Application& app = Application::GetInstance();
 			app.End();
-			break;
 		}
 	}
 }
@@ -262,16 +258,14 @@ void OtherOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar
 
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
-	switch (m_input.GetType())
+	const auto& type = m_input.GetType();
+	if (type == InputType::keybd)
 	{
-	case InputType::keybd:
 		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), x - 48, y, 2.0);
-		break;
-	default:
-		assert(false);
-	case InputType::pad:
+	}
+	else if (type == InputType::pad)
+	{
 		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), x - 48, y, 2.0);
-		break;
 	}
 
 	int handle = m_mgr.GetFont()->GetHandle(32);

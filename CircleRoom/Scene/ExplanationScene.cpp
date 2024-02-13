@@ -183,25 +183,21 @@ void ExplanationScene::SelectUpdate(Input& input)
 		sound->PlaySe(m_selectSe->GetHandle());
 		m_isWaveDraw = false;
 		m_index = 0;
-		switch (m_currentLineIndex)
+		if (m_currentLineIndex == kOperation)
 		{
-		default:
-			assert(false);
-		case kOperation:
 			m_updateFunc = &ExplanationScene::OperationUpdate;
-			break;
-
-		case kProceed:
+		}
+		else if (m_currentLineIndex == kProceed)
+		{
 			m_updateFunc = &ExplanationScene::ProceedUpdate;
-			break;
-
-		case kDash:
+		}
+		else if (m_currentLineIndex == kDash)
+		{
 			m_updateFunc = &ExplanationScene::DashUpdate;
-			break;
-
-		case kBoss:
+		}
+		else if (m_currentLineIndex == kBoss)
+		{
 			m_updateFunc = &ExplanationScene::BossUpdate;
-			break;
 		}
 	}
 }
@@ -260,16 +256,14 @@ void ExplanationScene::DrawWave(int x, int y, const char* const cmd, const wchar
 
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
-	switch (m_input.GetType())
+	const auto& type = m_input.GetType();
+	if (type == InputType::keybd)
 	{
-	case InputType::keybd:
 		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), x - 48, y, 2.0);
-		break;
-	default:
-		assert(false);
-	case InputType::pad:
+	}
+	else if (type == InputType::pad)
+	{
 		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), x - 48, y, 2.0);
-		break;
 	}
 
 	int handle = m_mgr.GetFont()->GetHandle(32);

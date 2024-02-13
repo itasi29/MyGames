@@ -135,17 +135,9 @@ void Player::Update(Input& input, Ability ability)
 
 	Move(input);
 	// アビリティ処理
-	switch (ability)
+	if (ability == kDash)
 	{
-		// アビリティなし
-	case kNone:
-	default:
-		break;
-
-		// ダッシュ
-	case kDash:
 		Dash(input);
-		break;
 	}
 	// 移動エフェクトの更新
 	for (auto& eff : m_effs)

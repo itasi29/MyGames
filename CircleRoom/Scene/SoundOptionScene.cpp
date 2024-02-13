@@ -201,32 +201,24 @@ void SoundOptionScene::EditUpdate(Input& input)
 
 	if (input.IsReepat("right", m_repeatUpFrame, kRepeatInterval))
 	{
-		switch (m_currentLineIndex)
+		if (m_currentLineIndex == kBgm)
 		{
-		default:
-			assert(false);
-		case kBgm:
 			m_mgr.GetSound()->ChangeBgmVol(10);
-			break;
-
-		case kSe:
+		}
+		else if (m_currentLineIndex == kSe)
+		{
 			m_mgr.GetSound()->ChangeSeVol(10);
-			break;
 		}
 	}
 	if (input.IsReepat("left", m_repeatDownFrame, kRepeatInterval))
 	{
-		switch (m_currentLineIndex)
+		if (m_currentLineIndex == kBgm)
 		{
-		default:
-			assert(false);
-		case kBgm:
 			m_mgr.GetSound()->ChangeBgmVol(-10);
-			break;
-
-		case kSe:
+		}
+		else if (m_currentLineIndex == kSe)
+		{
 			m_mgr.GetSound()->ChangeSeVol(-10);
-			break;
 		}
 	}
 
@@ -268,16 +260,14 @@ void SoundOptionScene::DrawWave(int x, int y, const char* const cmd, const wchar
 {
 	DrawGraph(x - 84, y - 5, m_startFrame->GetHandle(), true);
 
-	switch (m_input.GetType())
+	const auto& type = m_input.GetType();
+	if (type == InputType::keybd)
 	{
-	case InputType::keybd:
 		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), x - 48, y, 2.0);
-		break;
-	default:
-		assert(false);
-	case InputType::pad:
+	}
+	else if (type == InputType::pad)
+	{
 		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), x - 48, y, 2.0);
-		break;
 	}
 
 	int handle = m_mgr.GetFont()->GetHandle(32);

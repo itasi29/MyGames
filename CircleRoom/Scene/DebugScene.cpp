@@ -31,20 +31,17 @@ void DebugScene::Update(Input& input)
 
 	if (input.IsTriggered("OK"))
 	{
-		switch (m_line)
+		if (m_line == 0)
 		{
-		case 0:
 			m_mgr.GetScene()->ChangeScene(std::make_shared<TitleScene>(m_mgr, input), 1.0f);
-			break;
-
-		case 1:
+		}
+		else if (m_line == 1)
+		{
 			m_mgr.GetScene()->ChangeScene(std::make_shared<GamePlayingScene>(m_mgr, input), 0.5f);
-			break;
-		case 2:
+		}
+		else if (m_line == 2)
+		{
 			m_mgr.GetScene()->ChangeScene(std::make_shared<GameClearScene>(m_mgr));
-			break;
-		default:
-			break;
 		}
 	}
 }

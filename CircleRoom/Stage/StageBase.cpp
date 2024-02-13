@@ -1040,16 +1040,14 @@ void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int 
 
 	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
 
-	switch (m_input.GetType())
+	const auto& type = m_input.GetType();
+	if (type == InputType::keybd)
 	{
-	case InputType::keybd:
 		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
-		break;
-	default:
-		assert(false);
-	case InputType::pad:
+	}
+	else if (type == InputType::pad)
+	{
 		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
-		break;
 	}
 
 	int handle = m_mgr.GetFont()->GetHandle(32);
