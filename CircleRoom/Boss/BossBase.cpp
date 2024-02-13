@@ -89,7 +89,7 @@ namespace
 
 	// 最後の円の線の大きさとスピード
 	// MEMO:線の大きさとスピードは同じほうが見栄えが良い
-	constexpr int kRipple = 4;
+	constexpr int kRipple = 8;
 }
 
 BossBase::BossBase(const size& windowSize, float fieldSize, int maxHp) :
@@ -630,8 +630,8 @@ void BossBase::LastDraw() const
 	y = static_cast<int>(m_pos.y);
 
 	SetDrawScreen(m_rippleScreen);
-	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
-	DrawBox(0, 0, m_size.w, m_size.h, 0x5f6976, true);
+	SetDrawBlendMode(DX_BLENDMODE_SUB, 16);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x010101, true);
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 96);
 	DrawCircle(x, y, m_ripple3, 0x789461, false, kRipple);

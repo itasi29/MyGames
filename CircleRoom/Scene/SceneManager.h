@@ -131,12 +131,14 @@ private:
 	int m_shakeFrame;
 	// 画面を揺らす際のサイズ
 	int m_shakeSize;
-	// 画面を揺らすか
+	// 画面を揺しているか
 	bool m_isShake;
 
 	// 背景を描画するか
 	bool m_isDrawBg;
 
+	// シェーダーしているか
+	bool m_isShader;
 	// シェーダーに使う用
 	int m_cbuffer;
 	float m_angle;

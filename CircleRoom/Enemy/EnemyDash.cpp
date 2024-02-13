@@ -319,8 +319,8 @@ void EnemyDash::DrawDashEff() const
 	// 別のスクリーンに変更
 	SetDrawScreen(m_dashEffScreen);
 	// 少し黒くする
-	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
-	DrawBox(0, 0, m_size.w, m_size.h, 0x5f6976, true);
+	SetDrawBlendMode(DX_BLENDMODE_SUB, 16);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x010101, true);
 	// 半径を描画する
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 64);
 	DrawCircle(static_cast<int>(m_dashEffPos.x), static_cast<int>(m_dashEffPos.y), m_dashEffRipper, 0x0b60b0, false, kRipple);

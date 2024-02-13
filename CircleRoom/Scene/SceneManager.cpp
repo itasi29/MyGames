@@ -25,6 +25,7 @@ SceneManager::SceneManager(bool isDrawBg) :
 	m_shakeFrame(0),
 	m_shakeSize(kShakeSize),
 	m_isDrawBg(isDrawBg),
+	m_isShader(false),
 	m_angle(0.0),
 	m_isAllGaussianBlur(false)
 {
@@ -123,6 +124,7 @@ void SceneManager::ShakeScreen(int frame, int size = kShakeSize)
 void SceneManager::OnShader()
 {
 	m_angle = 3.14f;
+	m_isShader = true;
 
 	m_updateFunc = &SceneManager::ShaderUpdate;
 	m_drawFunc = &SceneManager::ShaderDraw;
@@ -139,6 +141,7 @@ void SceneManager::OnGaussianBlur(bool isAll)
 void SceneManager::OnNormal()
 {
 	m_isShake = false;
+	m_isShader = false;
 	m_updateFunc = &SceneManager::NormalUpdate;
 	m_drawFunc = &SceneManager::NormalDraw;
 }
@@ -153,6 +156,10 @@ int SceneManager::GetScreenHandle() const
 	if (m_isShake)
 	{
 		return m_shakeHandle;
+	}
+	else if (m_isShader)
+	{
+		return m_drawScreen;
 	}
 	else
 	{

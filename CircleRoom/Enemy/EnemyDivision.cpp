@@ -225,8 +225,8 @@ void EnemyDivision::EndDraw() const
 	// 別のスクリーンに変更
 	SetDrawScreen(m_rippleScreen);
 	// 少し黒くする
-	SetDrawBlendMode(DX_BLENDMODE_MULA, 16);
-	DrawBox(0, 0, m_size.w, m_size.h, 0x5f6976, true);
+	SetDrawBlendMode(DX_BLENDMODE_SUB, 16);
+	DrawBox(0, 0, m_size.w, m_size.h, 0x010101, true);
 	// 波紋の描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 64);
 	DrawCircle(static_cast<int>(m_pos.x), static_cast<int>(m_pos.y), m_ripple, 0x0b60b0, false, kRipple);

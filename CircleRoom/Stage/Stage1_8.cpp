@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "StageManager.h"
 #include "Scene/SceneManager.h"
+#include "FileSystem/SoundSystem.h"
 #include "FileSystem/FontSystem.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
@@ -78,6 +79,8 @@ void Stage1_8::Init()
 	// ボスステージに入ったことがなければ説明
 	if (!m_mgr.GetStage()->IsBossIn())
 	{
+		// 先にBGMをならして置かないと選択画面の音楽が流れるため流しておく
+		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation->GetHandle()));
 		m_mgr.GetStage()->BossStageIn();
 	}
