@@ -470,7 +470,7 @@ void StageBase::DrawSelect() const
 	m_player->Draw();
 	auto name = StringUtility::StringToWString(m_stageName);
 	// ステージ名の描画
-	DrawBox(0, 28, 288, 104, kFrameColor, true);
+	DrawBox(0, 24, 288, 104, kFrameColor, true);
 	DrawFormatStringToHandle(64, 32, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);

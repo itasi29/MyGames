@@ -33,16 +33,16 @@ namespace
 	constexpr int kUpExsitTime = 10;
 
 
-	const std::string kRightStName = "Stage1-4";
-	const std::string kDownStName = "Stage1-2";
-	const std::string kUpStName = "Stage1-5";
+	const std::string kRightStName = "切断";
+	const std::string kDownStName = "巨壁";
+	const std::string kUpStName = "ランナー";
 }
 
 Stage1_3::Stage1_3(GameManager& mgr, Input& input) :
 	StageBase(mgr, input),
 	m_createFrame(0)
 {
-	m_stageName = "Stage1-3";
+	m_stageName = "近接遭遇";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成

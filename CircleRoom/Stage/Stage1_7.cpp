@@ -33,25 +33,25 @@ namespace
 	constexpr int kDownExsitTime = 10;
 	constexpr int kLeftExsitTime = 60;
 
-	const std::string kLeftStName = "StageBoss";
-	const std::string kDownStName = "Stage1-6";
+	const std::string kLeftStName = "Reaper";
+	const std::string kDownStName = "発生";
 
 	const std::vector<std::string> kNames =
 	{
-		"Stage1-1",
-		"Stage1-2",
-		"Stage1-3",
-		"Stage1-4",
-		"Stage1-5",
-		"Stage1-6",
-		"Stage1-7"
+		"サークル",
+		"巨壁",
+		"近接遭遇",
+		"切断",
+		"ランナー",
+		"発生",
+		"分離"
 	};
 }
 
 Stage1_7::Stage1_7(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
-	m_stageName = "Stage1-7";
+	m_stageName = "分離";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成

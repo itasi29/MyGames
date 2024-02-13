@@ -40,13 +40,13 @@ namespace
 	constexpr int kUpExistTime = 5;
 
 	// 上の部屋の名前
-	const std::string kUpStName = "Stage1-6";
+	const std::string kUpStName = "発生";
 }
 
 Stage1_9::Stage1_9(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
-	m_stageName = "Master";
+	m_stageName = "要警戒";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成

@@ -37,15 +37,15 @@ namespace
 	constexpr int kUpExsitTime = 10;
 	constexpr int kDownKilledNum = 11;
 
-	const std::string kLeftStName = "Stage1-4";
-	const std::string kUpStName = "Stage1-7";
-	const std::string kDownStName = "Master";
+	const std::string kLeftStName = "切断";
+	const std::string kUpStName = "分離";
+	const std::string kDownStName = "要警戒";
 }
 
 Stage1_6::Stage1_6(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
-	m_stageName = "Stage1-6";
+	m_stageName = "発生";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成

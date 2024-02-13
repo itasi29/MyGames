@@ -23,7 +23,7 @@ namespace
 	// 通常文字列の色
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 
-	const std::string kStageName = "Stage1-1";
+	const std::string kStageName = "サークル";
 	constexpr int kExsitTime = 2;
 
 	// 生成時間
@@ -66,7 +66,7 @@ StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	m_arrow[0] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis0.png");
 	m_arrow[1] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis1.png");
 
-	m_stageName = "Tutorial";
+	m_stageName = "練習";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成

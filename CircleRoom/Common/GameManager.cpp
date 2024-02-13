@@ -38,7 +38,7 @@ void GameManager::Init()
 void GameManager::InitData()
 {
 	// プレイデータの初期化
-	m_nowStage = "Tutorial";
+	m_nowStage = "練習";
 	m_data.playTime = 0;
 	m_data.deathCount = 0;
 	m_data.dashCount = 0;	

@@ -24,14 +24,14 @@ namespace
 
 	constexpr int kDownExsitTime = 10;
 
-	const std::string kDownStName = "Stage1-3";
+	const std::string kDownStName = "近接遭遇";
 }
 
 Stage1_5::Stage1_5(GameManager& mgr, Input& input) :
 	StageBase(mgr, input),
 	m_createFrame(0)
 {
-	m_stageName = "Stage1-5";
+	m_stageName = "ランナー";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成

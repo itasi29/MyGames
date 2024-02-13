@@ -67,7 +67,7 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 
 	// ステージの設定
 	// チュートリアルステージを通常ステージに
-	if (m_mgr.GetStage()->IsClearStage("Tutorial"))
+	if (m_mgr.GetStage()->IsClearStage("練習"))
 	{
 		StartStage(input);
 	}
@@ -188,42 +188,42 @@ void GamePlayingScene::StartStage(Input& input)
 {
 	const auto& nowStage = m_mgr.GetNowStage();
 	
-	if (nowStage == "Stage1-2")
+	if (nowStage == "巨壁")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr, input));
 		return;
 	}
-	if (nowStage == "Stage1-3")
+	if (nowStage == "近接遭遇")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_3>(m_mgr, input));
 		return;
 	}
-	if (nowStage == "Stage1-4")
+	if (nowStage == "切断")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_4>(m_mgr, input));
 		return;
 	}
-	if (nowStage == "Stage1-5")
+	if (nowStage == "ランナー")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr, input));
 		return;
 	}
-	if (nowStage == "Stage1-6")
+	if (nowStage == "発生")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_6>(m_mgr, input));
 		return;
 	}
-	if (nowStage == "Stage1-7")
+	if (nowStage == "分離")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_7>(m_mgr, input));
 		return;
 	}
-	if (nowStage == "StageBoss")
+	if (nowStage == "Reaper")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_8>(m_mgr, input));
 		return;
 	}
-	if (nowStage == "Master")
+	if (nowStage == "要警戒")
 	{
 		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
 		return;

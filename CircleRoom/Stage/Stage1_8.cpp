@@ -41,14 +41,14 @@ namespace
 	constexpr int kRightExsitTime = 10;
 	constexpr int kDownKilledNum = 4;
 
-	const std::string kRightStName = "Stage1-7";
-	const std::string kDownStName = "Stage1-4";
+	const std::string kRightStName = "•ª—£";
+	const std::string kDownStName = "Ø’f";
 }
 
 Stage1_8::Stage1_8(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
-	m_stageName = "StageBoss";
+	m_stageName = "Reaper";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// 1-8‚Íƒ{ƒX‚Ì‚½‚ßBGM‚ğ•ÏX‚·‚é

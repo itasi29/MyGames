@@ -58,11 +58,16 @@ namespace
 	constexpr int kLineNum = 3;
 	constexpr int kRowNum = 3;
 	// ステージ名簿
-	const std::string kStageStr[kLineNum][kRowNum] =
+	const std::string kStageName[kLineNum][kRowNum] =
 	{
-		{"Stage1-5", "StageBoss", "Stage1-7"},
-		{"Stage1-3", "Stage1-4", "Stage1-6"},
-		{"Stage1-2", "Stage1-1", "Master"}
+		{"ランナー", "Reaper", "分離"},
+		{"近接遭遇", "切断", "発生"},
+		{"巨壁", "サークル", "要警戒"}
+	};
+	const std::wstring kFileName[kLineNum][kRowNum] = {
+		{ L"Stage1-5", L"StageBoss", L"Stage1-7" },
+		{ L"Stage1-3", L"Stage1-4", L"Stage1-6" },
+		{ L"Stage1-2", L"Stage1-1", L"Master"}
 	};
 
 	// スタート文字のウェーブスピード
@@ -87,15 +92,15 @@ StageSelectScene::StageSelectScene(GameManager& mgr, Input& input) :
 {
 	CurrosrPos();
 
-	m_stageData["Stage1-1"] = std::make_shared<Stage1_1>(mgr, input);
-	m_stageData["Stage1-2"] = std::make_shared<Stage1_2>(mgr, input);
-	m_stageData["Stage1-3"] = std::make_shared<Stage1_3>(mgr, input);
-	m_stageData["Stage1-4"] = std::make_shared<Stage1_4>(mgr, input);
-	m_stageData["Stage1-5"] = std::make_shared<Stage1_5>(mgr, input);
-	m_stageData["Stage1-6"] = std::make_shared<Stage1_6>(mgr, input);
-	m_stageData["Stage1-7"] = std::make_shared<Stage1_7>(mgr, input);
-	m_stageData["StageBoss"] = std::make_shared<Stage1_8>(mgr, input);
-	m_stageData["Master"] = std::make_shared<Stage1_9>(mgr, input);
+	m_stageData["サークル"] = std::make_shared<Stage1_1>(mgr, input);
+	m_stageData["巨壁"] = std::make_shared<Stage1_2>(mgr, input);
+	m_stageData["近接遭遇"] = std::make_shared<Stage1_3>(mgr, input);
+	m_stageData["切断"] = std::make_shared<Stage1_4>(mgr, input);
+	m_stageData["ランナー"] = std::make_shared<Stage1_5>(mgr, input);
+	m_stageData["発生"] = std::make_shared<Stage1_6>(mgr, input);
+	m_stageData["分離"] = std::make_shared<Stage1_7>(mgr, input);
+	m_stageData["Reaper"] = std::make_shared<Stage1_8>(mgr, input);
+	m_stageData["要警戒"] = std::make_shared<Stage1_9>(mgr, input);
 
 	m_soundSys = mgr.GetSound();
 
@@ -104,18 +109,20 @@ StageSelectScene::StageSelectScene(GameManager& mgr, Input& input) :
 	m_nowPos = file->LoadGraphic(L"UI/nowPos.png");
 	m_lock = file->LoadGraphic(L"UI/lock.png");
 	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
+	
 	for (int x = 0; x < kRowNum; x++)
 	{
 		for (int y = 0; y < kLineNum; y++)
 		{
-			auto& name = kStageStr[y][x];
+			const auto& stgName = kStageName[y][x];
+			const auto& fileName = kFileName[y][x];
 			std::wostringstream oss1;
-			oss1 << L"UI/" << name.c_str() << L".png";
-			m_stage[name][0] = file->LoadGraphic(oss1.str());
+			oss1 << L"UI/" << fileName << L".png";
+			m_stage[stgName][0] = file->LoadGraphic(oss1.str());
 
 			std::wostringstream oss2;
-			oss2 << L"UI/n" << name.c_str() << L".png";
-			m_stage[name][1] = file->LoadGraphic(oss2.str());
+			oss2 << L"UI/n" << fileName << L".png";
+			m_stage[stgName][1] = file->LoadGraphic(oss2.str());
 		}
 	}
 
@@ -171,8 +178,8 @@ void StageSelectScene::Update(Input& input)
 	if (input.IsTriggered("OK"))
 	{
 		// ステージがないなら終了
-		if (kStageStr[m_indexLine][m_indexRow] == "None") return;
-		auto stgName = kStageStr[m_indexLine][m_indexRow];
+		if (kStageName[m_indexLine][m_indexRow] == "None") return;
+		auto stgName = kStageName[m_indexLine][m_indexRow];
 
 		// そのステージがクリアされていなければ終了
 		if (!m_mgr.GetStage()->IsClearStage(stgName)) return;
@@ -199,7 +206,7 @@ void StageSelectScene::Draw() const
 		{
 			int drawY = static_cast<int>(kStartY + kStageMargine * y);
 			// 現在選択しているステージ
-			const std::string& stageName = kStageStr[y][x];
+			const std::string& stageName = kStageName[y][x];
 			// フレームの描画
 			if (isIndexRow && m_indexLine == y)
 			{
@@ -216,7 +223,7 @@ void StageSelectScene::Draw() const
 			}
 
 			// ステージの描画が無しの場合は以下のは描画しない
-			if (kStageStr[y][x] == "None") continue;
+			if (kStageName[y][x] == "None") continue;
 
 
 
@@ -315,7 +322,7 @@ void StageSelectScene::CurrosrPos()
 	{
 		for (int y = 0; y < kLineNum; y++)
 		{
-			if (nowStage == kStageStr[y][x])
+			if (nowStage == kStageName[y][x])
 			{
 				m_indexRow = x;
 				m_indexLine = y;

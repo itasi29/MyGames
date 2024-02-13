@@ -36,16 +36,16 @@ namespace
 	constexpr int kUpKilledNum = 4;
 
 	// 左の部屋の名前
-	const std::string kLeftStName = "Stage1-2";
+	const std::string kLeftStName = "巨壁";
 	// 上の部屋の名前
-	const std::string kUpStName = "Stage1-4";
+	const std::string kUpStName = "切断";
 }
 
 Stage1_1::Stage1_1(GameManager& mgr, Input& input) :
 	StageBase(mgr, input),
 	m_createFrame(0)
 {
-	m_stageName = "Stage1-1";
+	m_stageName = "サークル";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成

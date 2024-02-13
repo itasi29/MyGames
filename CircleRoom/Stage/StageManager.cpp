@@ -48,10 +48,10 @@ namespace
 	// 名前の場所
 	const std::string kStName[kLine][kRow] =
 	{
-		{"Stage1-5", "StageBoss", "Stage1-7"},
-		{"Stage1-3", "Stage1-4", "Stage1-6"},
-		{"Stage1-2", "Stage1-1", "Master"},
-		{"none", "Tutorial", "none"}
+		{"ランナー", "Reaper", "分離"},
+		{"近接遭遇", "切断", "発生"},
+		{"巨壁", "サークル", "要警戒"},
+		{"none", "練習", "none"}
 	};
 }
 
@@ -104,12 +104,12 @@ void StageManager::InitPos()
 	m_stage = nullptr;
 	m_nextStage = nullptr;
 
-	if (IsClearStage("Tutorial"))
+	if (IsClearStage("練習"))
 	{
 		const auto& stageName = GameManager::GetInstance().GetNowStage();
 		if (stageName == "")
 		{
-			m_pos = GetPos("Stage1-1");
+			m_pos = GetPos("サークル");
 		}
 		else
 		{
@@ -118,7 +118,7 @@ void StageManager::InitPos()
 	}
 	else
 	{
-		m_pos = GetPos("Tutorial");
+		m_pos = GetPos("練習");
 	}
 	m_targetPos = {};
 	m_vec = {};
