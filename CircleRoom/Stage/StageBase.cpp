@@ -278,12 +278,14 @@ void StageBase::UpdateSelect(Input& input)
 		m_updateFunc = &StageBase::UpdatePlaying;
 		m_drawFunc = &StageBase::DrawPlaying;
 
-		m_sound->Stop(m_selectBgm->GetHandle());
 		m_isUpdateBestTime = false;
-		m_soundFrame = 0;
 		m_waitFrame = 0;
 		m_waveAngle = 0;
 		m_extRateFrame = 0;
+
+		m_soundFrame = 0;
+		m_sound->Stop(m_selectBgm->GetHandle());
+		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 
 		// ğŒ’B¬•¶š‚ÌÁ‹
 		m_achived.clear();
@@ -379,6 +381,7 @@ void StageBase::UpdatePlaying(Input& input)
 		// ‰¹ŠÖŒW‚Ìİ’è
 		m_soundFrame = 0;
 		m_sound->Stop(m_playBgm->GetHandle());
+		m_sound->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 
 		// ƒtƒŒ[ƒ€‚Ì‰Šú‰»
 		m_waitFrame = 0;
