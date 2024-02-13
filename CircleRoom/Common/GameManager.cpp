@@ -94,7 +94,7 @@ AccountData GameManager::GetData() const
 void GameManager::Save()
 {
 	FILE* fp = nullptr;
-	auto err = fopen_s(&fp, "Data/sdt.inf", "wb");
+	auto err = fopen_s(&fp, "Data/Bin/sdt.inf", "wb");
 	if (err != errno)
 	{
 		// 読み込みに失敗したため終了
@@ -115,7 +115,7 @@ void GameManager::Save()
 
 void GameManager::Load()
 {
-	auto handle = FileRead_open(L"Data/sdt.inf");
+	auto handle = FileRead_open(L"Data/Bin/sdt.inf");
 	// エラー(ファイルがない)場合は処理しない
 	if (handle == 0)
 	{

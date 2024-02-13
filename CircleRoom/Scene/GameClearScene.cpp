@@ -12,9 +12,6 @@
 #include "TitleScene.h"
 #include "Application.h"
 
-#ifdef _DEBUG
-#endif
-
 namespace
 {
 	// •¶š—ñ‚ÌF

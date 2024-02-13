@@ -66,7 +66,7 @@ Input::Input() :
 
     m_exclusiveKeyConfigCommands = {"optionLeft", "optionRight", "up", "down", "left", "right"};
 
-    Load(L"Data/key.cnf");
+    Load(L"Data/Bin/key.cnf");
 
     auto& pad = m_corrTable[InputType::pad];
     pad[PAD_INPUT_A] = L"‚`Bottan";

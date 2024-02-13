@@ -62,7 +62,7 @@ StageManager::StageManager(std::shared_ptr<SceneManager>& mgr) :
 {
 	// ‰Šú‰»(“Ç‚İ‚İ‚É¸”s‚µ‚½ê‡‚Í‰ƒvƒŒƒC‚Æ“¯‚¶‚Æ‚·‚é)
 	InitData();
-	Load(L"Data/stg.inf");
+	Load(L"Data/Bin/stg.inf");
 
 	m_drawScreen = MakeScreen(m_size.w, m_size.h, true);
 	m_screen = MakeScreen(m_size.w * kRow + kStageMarginX * kRow, m_size.h * kLine + kStageMarginY * kLine, true);
@@ -77,7 +77,7 @@ StageManager::~StageManager()
 	DeleteGraph(m_drawScreen);
 	DeleteGraph(m_screen);
 	DeleteGraph(m_keepScreen);
-	Save("Data/stg.inf");
+	Save("Data/Bin/stg.inf");
 }
 
 void StageManager::Init()
