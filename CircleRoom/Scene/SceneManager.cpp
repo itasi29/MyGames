@@ -138,6 +138,7 @@ void SceneManager::OnGaussianBlur(bool isAll)
 
 void SceneManager::OnNormal()
 {
+	m_isShake = false;
 	m_updateFunc = &SceneManager::NormalUpdate;
 	m_drawFunc = &SceneManager::NormalDraw;
 }
