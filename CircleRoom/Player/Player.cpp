@@ -135,7 +135,7 @@ void Player::Update(Input& input, Ability ability)
 
 	Move(input);
 	// アビリティ処理
-	if (ability == kDash)
+	if (ability == Ability::kDash)
 	{
 		Dash(input);
 	}
@@ -161,9 +161,9 @@ void Player::Update(Input& input, Ability ability)
 	// ログの更新
 	for (int i = kDashLogNum - 1; i > 0; i--)
 	{
-		m_posLog[i] = m_posLog[i - 1];
-		m_dirLog[i] = m_dirLog[i - 1];
-		m_angleLog[i] = m_angleLog[i - 1];
+		m_posLog[i] = m_posLog[static_cast<std::vector<Vec2, std::allocator<Vec2>>::size_type>(i) - 1];
+		m_dirLog[i] = m_dirLog[static_cast<std::vector<DirectionVec, std::allocator<DirectionVec>>::size_type>(i) - 1];
+		m_angleLog[i] = m_angleLog[static_cast<std::vector<double, std::allocator<double>>::size_type>(i) - 1];
 	}
 	m_posLog[0] = m_pos;
 	m_dirLog[0] = m_dir;
@@ -182,13 +182,13 @@ void Player::Draw() const
 {
 	if (m_isExsit)
 	{
-		double rate;
+		float rate;
 		int alpha;
 
 		// 移動時のエフェクトを描画
 		for (const auto& eff : m_effs)
 		{
-			rate = 1.0f - eff.frame / static_cast<double>(kEffFrame);
+			rate = 1.0f - eff.frame / static_cast<float>(kEffFrame);
 			alpha = static_cast<int>(153 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawRotaGraph(static_cast<int>(eff.pos.x), static_cast<int>(eff.pos.y), 1.0, eff.angle, m_charEffImg->GetHandle(), true);
@@ -198,7 +198,7 @@ void Player::Draw() const
 		{
 			for (int i = 0; i < kDashLogNum; i++)
 			{
-				rate = 1.0f - (m_logFrame + i + 1) / static_cast<double>(m_logFrame + kDashLogNum);
+				rate = 1.0f - (m_logFrame + i + 1) / static_cast<float>(m_logFrame + kDashLogNum);
 				alpha = static_cast<int>(128 * rate);
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 				DrawTriangle(static_cast<int>(m_dirLog[i].front.x + m_posLog[i].x), static_cast<int>(m_dirLog[i].front.y + m_posLog[i].y),

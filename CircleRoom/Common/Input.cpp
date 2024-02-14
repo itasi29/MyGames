@@ -12,7 +12,7 @@ namespace
 
     struct KeyConfHeader
     {
-        char id[4] = "kyc"; // 最後に'\0'入ってるので4バイト
+        const char* const id = "kyc"; // 最後に'\0'入ってるので4バイト
         float version = kVersion;
         size_t dataCount = 0;
         // 空白の4バイト(パディング)
@@ -278,7 +278,7 @@ void Input::Save(const std::string& path)
 {
     FILE* fp = nullptr; // ファイルポインタ
     auto err = fopen_s(&fp, path.c_str(), "wb");
-    if (err != errno)
+    if (err != 0)
     {
         // 読み込みに失敗したため終了
         assert(false);

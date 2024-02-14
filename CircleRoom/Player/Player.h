@@ -8,7 +8,7 @@ class Input;
 class Application;
 class FileBase;
 struct size;
-enum Ability;
+enum class Ability;
 
 struct DirectionVec
 {

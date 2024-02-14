@@ -52,7 +52,7 @@ namespace
 StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	StageBase(mgr, input),
 	m_index(0),
-	m_explanation(kOperation),
+	m_explanation(Explanation::kOperation),
 	m_createFrame(0),
 	m_isStart(true),
 	m_emphasisFrame(0)
@@ -137,34 +137,34 @@ void StageTutorial::UpdateSelect(Input& input)
 		}
 	);
 
-	m_player->Update(input, kNone);
+	m_player->Update(input, Ability::kNone);
 
 	for (auto& enemy : m_enemy)
 	{
 		enemy->Update();
 	}
 
-	if (m_explanation == kOperation)
+	if (m_explanation == Explanation::kOperation)
 	{
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
 		m_index++;
 		if (m_index >= 1)
 		{
-			m_explanation = kClear;
+			m_explanation = Explanation::kClear;
 		}
 		m_isWaveDraw = false;
 	}
-	else if (m_explanation == kClear)
+	else if (m_explanation == Explanation::kClear)
 	{
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_handle[m_index]->GetHandle()));
 		m_index++;
 		if (m_index >= 5)
 		{
-			m_explanation = kPlay;
+			m_explanation = Explanation::kPlay;
 		}
 		m_isWaveDraw = false;
 	}
-	else if (kPlay)
+	else if (m_explanation == Explanation::kPlay)
 	{
 		if (input.IsTriggered("OK"))
 		{

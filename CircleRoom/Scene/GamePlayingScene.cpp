@@ -28,7 +28,7 @@
 
 namespace
 {
-	enum PathType
+	enum class PathType
 	{
 		kGraph,
 		kSound
@@ -47,11 +47,11 @@ namespace
 	const std::vector<PathData> kPath =
 	{
 		//{L"Enemy/wallEffect.png", kGraph},
-		{L"Player/blood.png", kGraph},
-		{L"UI/backFrame.png", kGraph},
-		{L"Bgm/provisionalBgm.mp3", kSound},
-		{L"Bgm/fieldFight.mp3", kSound},
-		{L"Bgm/boss.mp3", kSound}
+		{L"Player/blood.png", PathType::kGraph},
+		{L"UI/backFrame.png", PathType::kGraph},
+		{L"Bgm/provisionalBgm.mp3", PathType::kSound},
+		{L"Bgm/fieldFight.mp3", PathType::kSound},
+		{L"Bgm/boss.mp3", PathType::kSound}
 	};
 
 }
@@ -86,11 +86,11 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 	m_stgData.resize(size);
 	for (int i = 0; i < size; i++)
 	{
-		if (kPath[i].type == kGraph)
+		if (kPath[i].type == PathType::kGraph)
 		{
 			m_stgData[i] = m_mgr.GetFile()->LoadGraphic(kPath[i].path);
 		}
-		else if (kPath[i].type == kSound)
+		else if (kPath[i].type == PathType::kSound)
 		{
 			m_stgData[i] = m_mgr.GetFile()->LoadSound(kPath[i].path);
 		}

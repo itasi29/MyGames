@@ -4,7 +4,7 @@
 
 class FileBase;
 
-enum Explanation
+enum class Explanation
 {
 	kOperation,	// ‘€ìà–¾
 	kClear,		// ƒNƒŠƒA•û–@

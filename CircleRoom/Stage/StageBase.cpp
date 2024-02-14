@@ -220,7 +220,7 @@ void StageBase::UpdateSelect(Input& input)
 	// 待機フレームの増加
 	m_waitFrame++;
 
-	m_player->Update(input, kNone);
+	m_player->Update(input, Ability::kNone);
 
 	// 敵の更新
 	for (const auto& enemy : m_backEnemy)
@@ -294,7 +294,7 @@ void StageBase::UpdateSelect(Input& input)
 		Init();
 	}
 
-	m_mgr.GetStage()->ChangeAbility(kDash);
+	m_mgr.GetStage()->ChangeAbility(Ability::kDash);
 }
 
 void StageBase::UpdatePlaying(Input& input)
@@ -575,7 +575,7 @@ void StageBase::DrawPlaying() const
 		DrawGraph(0, 0, m_extScreen, true);
 	}
 
-	if (m_mgr.GetStage()->GetAbility() == kDash)
+	if (m_mgr.GetStage()->GetAbility() == Ability::kDash)
 	{
 		DrawWave("dash", kDashWave, kDashWaveNum);
 	}

@@ -20,10 +20,9 @@ namespace
 	// ファイル用
 	struct StageInfHeader
 	{
-		char id[4] = "sti"; // 最後に'\0'入ってるので4バイト
+		const char* const id = "sti"; // 最後に'\0'入ってるので4バイト
 		float version = kVersion;
 		size_t dataCount = 0;
-		// 空白の4バイト(パディング)
 	};
 
 	// 移動スピード
@@ -94,7 +93,7 @@ void StageManager::InitData()
 	m_killedEnemyNameTable.clear();
 	m_killedEnemyCount = 0;
 	m_clearBossTable.clear();
-	m_ability = kNone;
+	m_ability = Ability::kNone;
 	m_abilityActive.clear();
 	m_isBossIn = false;
 }
@@ -229,7 +228,7 @@ void StageManager::Save(const std::string& path)
 {
 	FILE* fp = nullptr; // ファイルポインタ
 	auto err = fopen_s(&fp, path.c_str(), "wb");
-	if (err != errno)
+	if (err != 0)
 	{
 		// 読み込みに失敗したため終了
 		assert(false);
@@ -551,7 +550,7 @@ void StageManager::UpdateEnemyType(const std::string& name)
 	// アビリティの有効化
 	if (name == "Dash")
 	{
-		m_abilityActive[kDash] = true;
+		m_abilityActive[Ability::kDash] = true;
 
 		// ダッシュ説明画像
 		auto& mgr = GameManager::GetInstance();

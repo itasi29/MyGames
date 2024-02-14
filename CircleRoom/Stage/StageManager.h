@@ -17,7 +17,7 @@ struct StageData
 	bool isClear = false;
 };
 
-enum Ability
+enum class Ability
 {
 	kNone,
 	kDash,
