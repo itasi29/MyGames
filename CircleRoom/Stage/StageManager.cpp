@@ -143,10 +143,10 @@ void StageManager::OffWaveDraw() const
 	m_stage->OffWaveDraw();
 }
 
-void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage)
+void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage, bool isGameScene)
 {
-	// 初回のみ、ただ入れるだけ
-	if (!m_stage)
+	// 初回またはゲームシーンからのみ、ただ入れるだけ
+	if (!m_stage || isGameScene)
 	{
 		m_stage = nextStage;
 		return;

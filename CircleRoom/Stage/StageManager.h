@@ -61,7 +61,8 @@ public:
 	///  ステージの切り替え
 	/// </summary>
 	/// <param name="nextStage">次のステージ</param>
-	void ChangeStage(std::shared_ptr<StageBase> nextStage);
+	/// <param name="isGameScene">ゲームシーンからの変更か</param>
+	void ChangeStage(std::shared_ptr<StageBase> nextStage, bool isGameScene = false);
 
 	/// <summary>
 	/// ステージの即時変更

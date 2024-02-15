@@ -187,50 +187,47 @@ void GamePlayingScene::DrawNormal() const
 void GamePlayingScene::StartStage(Input& input)
 {
 	const auto& nowStage = m_mgr.GetNowStage();
+	std::shared_ptr<StageBase> stage;
 	
 	if (nowStage == "‹•Ç")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_2>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_2>(m_mgr, input);
 	}
-	if (nowStage == "‹ßÚ‘˜‹ö")
+	else if (nowStage == "‹ßÚ‘˜‹ö")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_3>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_3>(m_mgr, input);
 	}
-	if (nowStage == "Ø’f")
+	else if (nowStage == "Ø’f")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_4>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_4>(m_mgr, input);
 	}
-	if (nowStage == "ƒ‰ƒ“ƒi[")
+	else if (nowStage == "ƒ‰ƒ“ƒi[")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_5>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_5>(m_mgr, input);
 	}
-	if (nowStage == "”­¶")
+	else if (nowStage == "”­¶")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_6>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_6>(m_mgr, input);
 	}
-	if (nowStage == "•ª—£")
+	else if (nowStage == "•ª—£")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_7>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_7>(m_mgr, input);
 	}
-	if (nowStage == "Reaper")
+	else if (nowStage == "Reaper")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_8>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_8>(m_mgr, input);
 	}
-	if (nowStage == "—vŒx‰ú")
+	else if (nowStage == "—vŒx‰ú")
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_9>(m_mgr, input));
-		return;
+		stage = std::make_shared<Stage1_9>(m_mgr, input);
+	}
+	else
+	{
+		// ‚Ç‚±‚É‚à“ü‚ç‚È‚©‚Á‚½‚ç1-1‚É“ü‚é‚æ‚¤‚É‚·‚é
+		stage = std::make_shared<Stage1_1>(m_mgr, input);
 	}
 
-	// ‚Ç‚±‚É‚à“ü‚ç‚È‚©‚Á‚½‚ç1-1‚É“ü‚é‚æ‚¤‚É‚·‚é
-	m_mgr.GetStage()->ChangeStage(std::make_shared<Stage1_1>(m_mgr, input));
+	m_mgr.GetStage()->ChangeStage(stage, true);
 	return;
 }
 

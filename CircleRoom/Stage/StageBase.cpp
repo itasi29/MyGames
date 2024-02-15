@@ -135,7 +135,6 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_strHandle = MakeScreen(m_size.w, m_size.h, true);
 	m_extScreen = MakeScreen(m_size.w, m_size.h, true);
 
-
 	m_sound = m_mgr.GetSound();
 
 	auto& file = m_mgr.GetFile();
