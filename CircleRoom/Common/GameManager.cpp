@@ -95,7 +95,7 @@ void GameManager::Save()
 {
 	FILE* fp = nullptr;
 	auto err = fopen_s(&fp, "Data/Bin/sdt.inf", "wb");
-	if (err != errno)
+	if (err != 0)
 	{
 		// “Ç‚İ‚İ‚É¸”s‚µ‚½‚½‚ßI—¹
 		assert(false);

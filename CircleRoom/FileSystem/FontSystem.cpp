@@ -4,10 +4,12 @@
 
 namespace
 {
+	const wchar_t* const kFontPath = L"Data/Font/Kaisotai-Next-UP-B.otf";
 	const wchar_t* const kFontName = L"廻想体 ネクスト UP B";
 }
 
-FontSystem::FontSystem()
+FontSystem::FontSystem() :
+	m_fontPath()
 {}
 
 FontSystem::~FontSystem()
@@ -28,7 +30,7 @@ FontSystem::~FontSystem()
 void FontSystem::Init()
 {
 	// 読み込むフォントファイルのパス
-	m_fontPath = L"Data/Font/Kaisotai-Next-UP-B.otf";
+	m_fontPath = kFontPath;
 	if (AddFontResourceEx(m_fontPath, FR_PRIVATE, NULL) > 0) {
 	}
 	else {

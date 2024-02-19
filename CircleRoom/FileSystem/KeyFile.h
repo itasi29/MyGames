@@ -8,8 +8,8 @@ class FileManager;
 struct KeySrcData
 {
 	// カットする左上座標
-	int x;
-	int y;
+	int x = 0;
+	int y = 0;
 	// 横続きになっているか
 	bool isLink = false;
 };

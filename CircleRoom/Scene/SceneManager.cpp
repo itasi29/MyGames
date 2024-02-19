@@ -14,10 +14,6 @@ namespace
 
 	// ˆê“x‚Éi‚Ü‚¹‚é—Ê
 	constexpr float kRad = DX_PI_F / 180 * 2.5f;
-
-	// •E‚‚³‚Ì‘å‚«‚³
-	constexpr int kWidth = 64;
-	constexpr int kHeight = 320;
 }
 
 SceneManager::SceneManager(bool isDrawBg) :
