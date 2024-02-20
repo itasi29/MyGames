@@ -225,7 +225,6 @@ void TitleScene::NormalUpdate(Input& input)
 
 	if (input.IsTriggered("up"))
 	{
-		// 現在のラインの位置をメニューのラインの数で繰り返す
 		m_currentLinePos = (kMenuLineNum + m_currentLinePos - 1) % kMenuLineNum;
 		m_fadeFrame = 0;
 		m_sound->PlaySe(m_cursorSe->GetHandle());

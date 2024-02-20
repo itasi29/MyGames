@@ -29,7 +29,7 @@ namespace
 	constexpr unsigned int kYellowColor = 0xffde00;
 
 	// 条件の描画基準位置
-	constexpr int kConditionsPosX = 20;
+	constexpr int kConditionStrPosX = 20;
 	// 生成間隔フレーム
 	constexpr int kCreateFrame = static_cast<int>(60 * 5.5);
 
@@ -161,7 +161,7 @@ int Stage1_8::DrawStageConditions(int drawY) const
 
 	if (!m_mgr.GetStage()->IsClearBoss("BossArmored"))
 	{
-		DrawStringToHandle(kConditionsPosX, drawY + 14, L"ボスを倒せ！", kYellowColor, fontHandle);
+		DrawStringToHandle(kConditionStrPosX, drawY + 14, L"ボスを倒せ！", kYellowColor, fontHandle);
 
 		drawY += 70;
 	}

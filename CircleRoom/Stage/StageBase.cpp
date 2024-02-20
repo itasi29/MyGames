@@ -27,8 +27,7 @@
 
 namespace
 {
-	// フィールドサイズの倍率
-	// フィールドはwindowsizeの縦幅に倍率をかけたものとする
+	// フィールドサイズの倍率　(半分の大きさ)
 	constexpr float kSizeScale = 0.4f;
 
 	// 色定数
@@ -44,8 +43,6 @@ namespace
 
 	// 条件の描画基準位置
 	constexpr int kConditionStrPosX = 20;
-	// 条件達成時の文字列描画位置
-	constexpr int kAchivedStrPosX = 12;
 
 	// 殺された種類の基準描画位置
 	constexpr int kKillTypePosX = 156;
@@ -146,6 +143,38 @@ namespace
 
 	// １秒のフレーム数
 	constexpr int kFrameToSec = 60;
+
+	// ベストタイム座標定数
+	constexpr int kBestTimeFrameSubX = 128;
+	constexpr int kBestTimeFramePosY = 128;
+	constexpr int kBestTimeFrameSizeW = 155;
+	constexpr int kBestTimeFrameSizeH = 96;
+	constexpr int kBestTimeStrSubX = 256;
+	constexpr int kBestTimeStrPosY = 112;
+	constexpr int kBestTimeStrAddY = 48;
+	constexpr int kBestTimeFlashInterval = 30;
+	constexpr int kBestTimeBoxPosX = 344;
+	constexpr int kBestTimeBoxPosY = 248;
+	constexpr int kBestTimeBoxHeight = 64;
+	constexpr int kBestTimeUpStrPosX = 336;
+	constexpr int kBestTimeUpStrPosY = 256;
+
+	// 達成文字描画定数
+	constexpr int kAchivedStrShiftPosY = 344;
+	constexpr int kAchivedStrPosX = 12;
+	constexpr int kAchivedFrameWidth = 352;
+	constexpr int kAchivedFrameHeight = 68;
+	constexpr int kAchivedStrAdd = 64;
+	constexpr int kAchivedFrameDiff = 4;
+
+	// ウェーブ文字描画定数
+	constexpr int kWaveFramePosX = 980;
+	constexpr int kWaveFramePosY = 595;
+	constexpr int kWaveStrPosX = 1064;
+	constexpr int kWaveStrPosY = 600;
+	constexpr int kWaveStrAdd = 24;
+	constexpr int kWaveImgPosX = 1016;
+	constexpr int kWaveImgPosY = 600;
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
@@ -835,6 +864,7 @@ void StageBase::CreateMoveWall()
 	auto enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
 	enemy->Init({ 0, -1 });
 	m_enemy.push_back(enemy);
+	// 下側
 	enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
 	enemy->Init({ 0, 1 });
 	m_enemy.push_back(enemy);
@@ -962,22 +992,22 @@ void StageBase::DrawTime(int x, int y, int handle) const
 void StageBase::DrawBestTime() const
 {
 	// フレーム描画
-	DrawRotaGraph(m_size.w - 128, 128, 1.0, 0.0, m_backFrameImg->GetHandle(), true, true, true);
-	DrawBox(m_size.w - 128 - 155, 158, m_size.w, 224, kBackFrameColor, true);
+	DrawRotaGraph(m_size.w - kBestTimeFrameSubX, kBestTimeFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, true, true);
+	DrawBox(m_size.w - kBestTimeFrameSubX - kBestTimeFrameSizeW, kBestTimeFramePosY + static_cast<int>(kBestTimeFrameSizeH * 0.5f), 
+		m_size.w, kBestTimeFramePosY + kBestTimeFrameSizeH, kBackFrameColor, true);
 	// ベストタイムの描画
 	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
-	int minSec = (bestTime * 1000 / 60) % 1000;
-	int sec = (bestTime / 60) % 60;
-	int min = bestTime / 3600;
-	DrawStringToHandle(m_size.w - 256, 112, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
-	DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+	int minSec = (bestTime * 1000 / kFrameToSec) % 1000;
+	int sec = (bestTime / kFrameToSec) % kFrameToSec;
+	int min = bestTime / (kFrameToSec * kFrameToSec);
+	DrawStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
+	DrawFormatStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY + kBestTimeStrAddY, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
 
 	if (!m_isUpdateBestTime) return;
 
-
-	if (((m_waitFrame / 30) % 2) == 1)
+	if (((m_waitFrame / kBestTimeFlashInterval) % 2) == 1)
 	{
-		DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+		DrawFormatStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY + kBestTimeStrAddY, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
 	}
 	
 	if (m_waitFrame > kAchivedFrame) return;
@@ -987,28 +1017,28 @@ void StageBase::DrawBestTime() const
 		float rate = 1.0f - (m_waitFrame - (kAchivedFrame * 0.5f)) / (kAchivedFrame * 0.5f);
 		int alpha = static_cast<int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-		DrawBox(m_size.w - 344, 248, m_size.w, 312, kBackFrameColor, true);
-		DrawStringToHandle(m_size.w - 336, 256, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+		DrawBox(m_size.w - kBestTimeBoxPosX, kBestTimeBoxPosY, m_size.w, kBestTimeBoxPosY + kBestTimeBoxHeight, kBackFrameColor, true);
+		DrawStringToHandle(m_size.w - kBestTimeUpStrPosX, kBestTimeUpStrPosY, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		return;
 	}
 
-	DrawBox(m_size.w - 344, 248, m_size.w, 312, kBackFrameColor, true);
-	DrawStringToHandle(m_size.w - 336, 256, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+	DrawBox(m_size.w - kBestTimeBoxPosX, kBestTimeBoxPosY, m_size.w, kBestTimeBoxPosY + kBestTimeBoxHeight, kBackFrameColor, true);
+	DrawStringToHandle(m_size.w - kBestTimeUpStrPosX, kBestTimeUpStrPosY, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 }
 
 void StageBase::DrawConditionsAchived(int y) const
 {
 	// 送られてきた座標をずらす
-	y += 244 + 100;
-	int backFrameY = y - 4;
+	y += kAchivedStrShiftPosY;
+	int backFrameY = y - kAchivedFrameDiff;
 
 	for (const auto& achived : m_achived)
 	{
 		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
 		{
-			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
+			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
 			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
 		}
 		else
@@ -1016,14 +1046,14 @@ void StageBase::DrawConditionsAchived(int y) const
 			float rate = (kAchivedFrame - achived.frame) / (kAchivedFrame * 0.5f);
 			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
+			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
 			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 
 		// 描画位置の更新
-		y += 64;
-		backFrameY += 68;
+		y += kAchivedStrAdd;
+		backFrameY += kAchivedStrAdd + kAchivedFrameDiff;
 	}
 }
 
@@ -1048,21 +1078,21 @@ void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int 
 {
 	if (!m_isWaveDraw) return;
 
-	DrawGraph(980, 595, m_frameImg->GetHandle(), true);
+	DrawGraph(kWaveFramePosX, kWaveFramePosY, m_frameImg->GetHandle(), true);
 
 	const auto& type = m_input.GetType();
 	if (type == InputType::keybd)
 	{
-		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), 1016, 600, 2.0);
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), kWaveImgPosX, kWaveImgPosY, 2.0);
 	}
 	else if (type == InputType::pad)
 	{
-		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), 1016, 600, 2.0);
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), kWaveImgPosX, kWaveImgPosY, 2.0);
 	}
 
 	int handle = m_mgr.GetFont()->GetHandle(32);
 
-	int x = 1064;
+	int x = kWaveStrPosX;
 
 	for (int i = 0; i < num; i++)
 	{
@@ -1073,11 +1103,11 @@ void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int 
 			add = 0;
 		}
 
-		int y = 600 + add;
+		int y = kWaveStrPosY + add;
 
 
 		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
-		x += 24;
+		x += kWaveStrAdd;
 	}
 }
 
