@@ -147,8 +147,9 @@ namespace
 	// ベストタイム座標定数
 	constexpr int kBestTimeFrameSubX = 128;
 	constexpr int kBestTimeFramePosY = 128;
-	constexpr int kBestTimeFrameSizeW = 155;
-	constexpr int kBestTimeFrameSizeH = 96;
+	constexpr int kBestTimeFrameBoxPosY = 158;
+	constexpr int kBestTimeFrameBoxSizeW = 155;
+	constexpr int kBestTimeFrameBoxSizeH = 66;
 	constexpr int kBestTimeStrSubX = 256;
 	constexpr int kBestTimeStrPosY = 112;
 	constexpr int kBestTimeStrAddY = 48;
@@ -993,8 +994,9 @@ void StageBase::DrawBestTime() const
 {
 	// フレーム描画
 	DrawRotaGraph(m_size.w - kBestTimeFrameSubX, kBestTimeFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, true, true);
-	DrawBox(m_size.w - kBestTimeFrameSubX - kBestTimeFrameSizeW, kBestTimeFramePosY + static_cast<int>(kBestTimeFrameSizeH * 0.5f), 
-		m_size.w, kBestTimeFramePosY + kBestTimeFrameSizeH, kBackFrameColor, true);
+	DrawBox(m_size.w - 128 - 155, 158, m_size.w, 224, kBackFrameColor, true);
+	DrawBox(m_size.w - kBestTimeFrameSubX - kBestTimeFrameBoxSizeW, kBestTimeFrameBoxPosY, 
+		m_size.w, kBestTimeFramePosY + kBestTimeFrameBoxSizeH, kBackFrameColor, true);
 	// ベストタイムの描画
 	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
 	int minSec = (bestTime * 1000 / kFrameToSec) % 1000;
