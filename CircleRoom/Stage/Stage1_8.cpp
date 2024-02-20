@@ -80,7 +80,7 @@ void Stage1_8::Init()
 	if (!m_mgr.GetStage()->IsBossIn())
 	{
 		// æ‚ÉBGM‚ð‚È‚ç‚µ‚Ä’u‚©‚È‚¢‚Æ‘I‘ð‰æ–Ê‚Ì‰¹Šy‚ª—¬‚ê‚é‚½‚ß—¬‚µ‚Ä‚¨‚­
-		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
+		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
 		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation->GetHandle()));
 		m_mgr.GetStage()->BossStageIn();
 	}
@@ -123,7 +123,7 @@ void Stage1_8::ChangeStage(Input& input)
 
 void Stage1_8::UpTime()
 {
-	m_frame += 15;
+	m_timeFrame += 15;
 }
 
 void Stage1_8::UniqueEndProcessing()
@@ -175,12 +175,12 @@ void Stage1_8::DrawArrow() const
 	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
-void Stage1_8::DrawKilledEnemyType(int x, int y) const
+void Stage1_8::DrawEnemyKilledInfo(int x, int y) const
 {
-	DrawKilledEnemy("MoveWall", x, y, 0, 0xb6bbc4);
-	DrawKilledEnemy("BossArmored", x, y, 40, 0x294b29, 20);
-	DrawKilledEnemy("BossStrongArmored", x, y, 88, 0xdbe7c9, 20);
-	DrawKilledEnemy("SplitTwoBound", x, y, 132, 0xd5f0c1, 12);
+	DrawKilledEnemy("MoveWall", x, y, 0);
+	DrawKilledEnemy("BossArmored", x, y, 40, 20);
+	DrawKilledEnemy("BossStrongArmored", x, y, 88, 20);
+	DrawKilledEnemy("SplitTwoBound", x, y, 132, 12);
 }
 
 void Stage1_8::CreateEnemy()

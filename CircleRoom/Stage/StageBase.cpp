@@ -1,4 +1,4 @@
-#include <DxLib.h>
+ï»¿#include <DxLib.h>
 #include <cassert>
 #include "Application.h"
 #include "Input.h"
@@ -27,125 +27,163 @@
 
 namespace
 {
-	// ƒtƒŒ[ƒ€‚ÌF
-	constexpr unsigned int kFrameColor = 0xd80032;
-
-	// ƒtƒB[ƒ‹ƒhƒTƒCƒY‚Ì”{—¦
-	// ƒtƒB[ƒ‹ƒh‚Íwindowsize‚Ìc•‚É”{—¦‚ğ‚©‚¯‚½‚à‚Ì‚Æ‚·‚é
+	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚µã‚¤ã‚ºã®å€ç‡
+	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã¯windowsizeã®ç¸¦å¹…ã«å€ç‡ã‚’ã‹ã‘ãŸã‚‚ã®ã¨ã™ã‚‹
 	constexpr float kSizeScale = 0.4f;
 
-	// ’Êí•¶š—ñ‚ÌF
+	// è‰²å®šæ•°
+	constexpr unsigned int kFrameColor = 0xd80032;
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
-	// ‹­’²•¶š—ñ‚ÌF
 	constexpr unsigned int kYellowColor = 0xffde00;
-	// ‚³‚ç‚É‹­’²•¶š—ñ‚ÌF
 	constexpr unsigned int kRedColor = 0xd2001a;
-	// ƒoƒbƒNƒtƒŒ[ƒ€‚ÌF
 	constexpr unsigned int kBackFrameColor = 0x161a30;
 
-	// –îˆó‚Ì“_–ÅŠÔŠu
+	// çŸ¢å°ã®ç‚¹æ»…é–“éš”
 	constexpr int kFlashInterval = 20;
 
 
-	// ğŒ‚Ì•`‰æŠî€ˆÊ’u
-	constexpr int kConditionsPosX = 20;
-	// ğŒ’B¬‚Ì•¶š—ñ•`‰æˆÊ’u
-	constexpr int kConditionsStrPosX = 12;
+	// æ¡ä»¶ã®æç”»åŸºæº–ä½ç½®
+	constexpr int kConditionStrPosX = 20;
+	// æ¡ä»¶é”æˆæ™‚ã®æ–‡å­—åˆ—æç”»ä½ç½®
+	constexpr int kAchivedStrPosX = 12;
 
-	// E‚³‚ê‚½í—Ş‚ÌŠî€•`‰æˆÊ’u
+	// æ®ºã•ã‚ŒãŸç¨®é¡ã®åŸºæº–æç”»ä½ç½®
 	constexpr int kKillTypePosX = 156;
 	constexpr int kKillTypePosY = 200;
-	// ƒfƒtƒHƒ‹ƒgŠg‘å—¦
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ‹¡å¤§ç‡
 	constexpr double kKillTypeDefExtRate = 0.372;
-	// ‘å‚«‚ßŠg‘å—¦
+	// å¤§ãã‚æ‹¡å¤§ç‡
 	constexpr double kKillTypeLargeExtRate = 0.6;
-	// ‚»‚ê‚É‘Î‰‚·‚é–¼‘O
+	// ãã‚Œã«å¯¾å¿œã™ã‚‹åå‰
 	const std::vector<std::string> kLargeTypeName = {
 		"Child",
 		"Split",
 		"SplitTwoBound"
 	};
-	// ¬‚³‚ßŠg‘å—¦
+	// å°ã•ã‚æ‹¡å¤§ç‡
 	constexpr double kKillTypeSmallExtRate = 0.25;
-	// ‚»‚ê‚É‘Î‰‚·‚é–¼‘O
+	// ãã‚Œã«å¯¾å¿œã™ã‚‹åå‰
 	const std::vector<std::string> kSmallTypeName = {
 		"Large",
 		"BossArmored",
 		"BossStrongArmored"
 	};
 
-	// ƒvƒŒƒCƒ„[€–S‚Ì‰æ–Ê‚Ì—h‚êƒtƒŒ[ƒ€
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ­»äº¡æ™‚ã®ç”»é¢ã®æºã‚Œãƒ•ãƒ¬ãƒ¼ãƒ 
 	constexpr int kShakeFrameDeath = 10;
 
-	// ƒTƒEƒ“ƒh‚ÌƒtƒF[ƒhƒtƒŒ[ƒ€
+	// ã‚µã‚¦ãƒ³ãƒ‰ã®ãƒ•ã‚§ãƒ¼ãƒ‰ãƒ•ãƒ¬ãƒ¼ãƒ 
 	constexpr int kSoundFade = 30;
 
-	// ƒ‰ƒWƒAƒ“‚Å‚Ì90“x
+	// ãƒ©ã‚¸ã‚¢ãƒ³ã§ã®90åº¦
 	constexpr double kRad90 = DX_PI / 2;
 
-	// ğŒ’B¬‚Ì•`‰æŠÔ("›‚ÌğŒ’B¬‚Ì•¶š")
+	// æ¡ä»¶é”æˆæ™‚ã®æç”»æ™‚é–“("â—‹ã®æ¡ä»¶é”æˆã®æ–‡å­—")
 	constexpr int kAchivedFrame = 120;
 
-	// ƒXƒ^[ƒg•¶š‚ÌƒEƒF[ƒuƒXƒs[ƒh
+	// ã‚¹ã‚¿ãƒ¼ãƒˆæ–‡å­—ã®ã‚¦ã‚§ãƒ¼ãƒ–ã‚¹ãƒ”ãƒ¼ãƒ‰
 	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
-	// ƒEƒF[ƒu‚ÌŠÔŠu
+	// ã‚¦ã‚§ãƒ¼ãƒ–ã®é–“éš”
 	constexpr float kWaveInterval = DX_PI_F / 15.0f;
 
-	// ƒEƒF[ƒu•¶š—ñ
+	// ã‚¦ã‚§ãƒ¼ãƒ–æ–‡å­—åˆ—
 	int kTitleWaveNum = 4;
-	const wchar_t* const kTitleWave[] = {L"ƒX", L"ƒ^", L"[", L"ƒg"};
+	const wchar_t* const kTitleWave[] = {L"ã‚¹", L"ã‚¿", L"ãƒ¼", L"ãƒˆ"};
 	int kDashWaveNum = 4;
-	const wchar_t* const kDashWave[] = {L"ƒ_", L"ƒb", L"ƒV", L"ƒ…"};
+	const wchar_t* const kDashWave[] = {L"ãƒ€", L"ãƒƒ", L"ã‚·", L"ãƒ¥"};
 
-	// Šg‘åƒtƒŒ[ƒ€
+	// æ‹¡å¤§ãƒ•ãƒ¬ãƒ¼ãƒ 
 	constexpr int kExtRateFrame = 45;
-	// Šg‘å‚µ‚½‚Ü‚Ü‚ÌƒtƒŒ[ƒ€
+	// æ‹¡å¤§ã—ãŸã¾ã¾ã®ãƒ•ãƒ¬ãƒ¼ãƒ 
 	constexpr int kWaitExtRateFrame = 30;
-	// Šg‘åƒTƒCƒY
+	// æ‹¡å¤§ã‚µã‚¤ã‚º
 	constexpr float kExtRateSize = 2.0f;
 	// 
 	constexpr int kShiftWidth = 256;
-	// ‰E‚É‚¸‚ç‚·—Ê
+	// å³ã«ãšã‚‰ã™é‡
 	constexpr int kShiftRight = 320;
-	// ã‚É‚¸‚ç‚·—Ê
+	// ä¸Šã«ãšã‚‰ã™é‡
 	constexpr int kShiftUp = 360;
-	// ‚Í‚¶‚ß‚Ìƒ¿’l
+	// ã¯ã˜ã‚ã®Î±å€¤
 	constexpr int kExtRateAlpha = 224;
+
+	// ã‚¹ãƒ†ãƒ¼ã‚¸ååº§æ¨™å®šæ•°
+	constexpr int kNamePosX = 64;
+	constexpr int kNamePosY = 32;
+	constexpr int kNameFramePosX = 0;
+	constexpr int kNameFramePosY = 24;
+	constexpr int kNameFrameWidth = 288;
+	constexpr int kNameFrameHeight = 80;
+
+	// æ™‚é–“åº§æ¨™å®šæ•°
+	constexpr int kTimePosX = 20;
+	constexpr int kTimePosY = 160;
+	constexpr int kTimePlayingDiff = -16;
+	constexpr int kTimeAddY = 24;
+	// æ•µç¨®é¡å®šæ•°
+	constexpr int kKilledStrPosX = 136;
+	constexpr int kKilledStrPosY = 160;
+	// æƒ…å ±å®šæ•°
+	constexpr int kInfoFramePosX = 155;
+	constexpr int kInfoFramePosY = 168;
+	constexpr int kInfoBoxPosX = 0;
+	constexpr int kInfoBoxPosY = 198;
+	constexpr int kInfoBoxWidth = 310;
+	constexpr int kInfoBoxHeight = 30;
+	constexpr int kInfoBoxPlayingDiff = 6;
+
+	// æ¡ä»¶å®šæ•°
+	constexpr int kConditionPlayingDiff = 24;
+	constexpr int kConditionPosY = 256;
+	constexpr int kConditionBoxPosX = 0;
+	constexpr int kConditionBoxPosY = 244;
+	constexpr int kConditionBoxWidth = 310;
+
+	// æ¡ä»¶å´çŸ¢å°å®šæ•°
+	constexpr int kArrowSize = 28;
+	// ã‚¹ãƒ†ãƒ¼ã‚¸å´çŸ¢å°å®šæ•°
+	constexpr int kArrowShiftPos = 150;
+
+	// ï¼‘ç§’ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+	constexpr int kFrameToSec = 60;
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_mgr(mgr),
+	m_soundSys(m_mgr.GetSound()),
 	m_input(input),
 	m_size(Application::GetInstance().GetWindowSize()),
 	m_fieldSize(m_size.h* kSizeScale),
 	m_centerPos({m_size.w * 0.5f, m_size.h * 0.5f}),
+	m_stageName({}),
+	m_achived({}),
 	m_soundFrame(kSoundFade),
-	m_frame(0),
+	m_timeFrame(0),
 	m_waitFrame(kWaitChangeFrame),
-	m_waveAngle(DX_PI_F),
-	m_isWaveDraw(true),
-	m_isUpdateTime(false),
+	m_extRateFrame(0),
 	m_isUpdateBestTime(false),
-	m_isExtRate(true)
+	m_isExtRate(true),
+	m_isWaveDraw(true),
+	m_waveAngle(DX_PI_F)
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
 
-	// ‘æOˆø”‚ğtrue‚É‚µ‚Ä‚¨‚©‚È‚¢‚Æì‚Á‚½‰æ–Ê‚ª“§‰ß‚µ‚È‚¢
-	m_strHandle = MakeScreen(m_size.w, m_size.h, true);
+	// ç”»é¢ã®ä½œæˆ
+	m_strScreen = MakeScreen(m_size.w, m_size.h, true);
 	m_extScreen = MakeScreen(m_size.w, m_size.h, true);
 
-	m_sound = m_mgr.GetSound();
-
+	// èª­ã¿è¾¼ã¿
 	auto& file = m_mgr.GetFile();
-	m_field = file->LoadGraphic(L"field.png");
-	m_arrow = file->LoadGraphic(L"UI/arrow.png");
-	m_arrowFlash = file->LoadGraphic(L"UI/arrowFlash.png");
-	m_arrowNo = file->LoadGraphic(L"UI/arrowNo.png");
-	m_arrowLock = file->LoadGraphic(L"UI/lock.png");
-	m_arrowConditions = file->LoadGraphic(L"UI/arrowConditions.png");
-	m_startFrame = file->LoadGraphic(L"UI/startFrame.png");
-	m_bFrameImg = file->LoadGraphic(L"UI/backFrame.png");
+	// ç”»åƒ
+	m_fieldImg = file->LoadGraphic(L"field.png");
+	m_arrowImg = file->LoadGraphic(L"UI/arrow.png");
+	m_arrowFlashImg = file->LoadGraphic(L"UI/arrowFlash.png");
+	m_arrowNoImg = file->LoadGraphic(L"UI/arrowNo.png");
+	m_arrowLockImg = file->LoadGraphic(L"UI/lock.png");
+	m_arrowConditionsImg = file->LoadGraphic(L"UI/arrowConditions.png");
+	m_frameImg = file->LoadGraphic(L"UI/startFrame.png");
+	m_backFrameImg = file->LoadGraphic(L"UI/backFrame.png");
 	m_enemysImg["Normal"] = file->LoadGraphic(L"Enemy/Normal.png");
 	m_enemysImg["MoveWall"] = file->LoadGraphic(L"Enemy/Wall.png");
 	m_enemysImg["Large"] = file->LoadGraphic(L"Enemy/Large.png");
@@ -157,24 +195,26 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_enemysImg["SplitTwoBound"] = file->LoadGraphic(L"Enemy/SplitTwoBound.png");
 	m_enemysImg["BossArmored"] = file->LoadGraphic(L"Enemy/BossArmored.png");
 	m_enemysImg["BossStrongArmored"] = file->LoadGraphic(L"Enemy/BossStrongArmored.png");
-	m_check = file->LoadGraphic(L"UI/check.png");
-
+	m_checkImg = file->LoadGraphic(L"UI/check.png");
+	// BGM
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
+	// SE
 	m_clearSe = file->LoadSound(L"Se/clear.mp3");
-
+	// ã‚­ãƒ¼ãƒ»ãƒœã‚¿ãƒ³
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
 }
 
 StageBase::~StageBase()
 {
-	DeleteGraph(m_strHandle);
+	DeleteGraph(m_strScreen);
 	DeleteGraph(m_extScreen);
 }
 
 void StageBase::Update(Input& input)
 {
+	// ã‚¦ã‚§ãƒ¼ãƒ–æ–‡å­—æ›´æ–°
 	m_isWaveDraw = true;
 	m_waveAngle -= kWaveSpeed;
 	(this->*m_updateFunc)(input);
@@ -187,16 +227,20 @@ void StageBase::Draw() const
 
 void StageBase::Init()
 {
-	// Œo‰ßŠÔ‰Šú‰»
-	m_frame = 0;
-	// ŠÔXV—LŒø‰»
-	m_isUpdateTime = true;
-	// ƒvƒŒƒCƒ„[‰Šú‰»
+	m_timeFrame = 0;
+	m_waitFrame = 0;
+	m_extRateFrame = 0;
+
+	m_isUpdateBestTime = false;
+
+	m_waveAngle = 0;
+
 	m_player->Init();
-	// “G‚Ì”z—ñ‰Šú‰»
 	m_enemy.clear();
 	m_backEnemy.clear();
 	m_frontEnemy.clear();
+
+	m_achived.clear();
 }
 
 void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
@@ -208,20 +252,19 @@ void StageBase::UpdateSelect(Input& input)
 {
 	if (m_soundFrame > kSoundFade)
 	{
-		m_sound->PlayBgm(m_selectBgm->GetHandle());
+		m_soundSys->PlayBgm(m_selectBgm->GetHandle());
 	}
 	else
 	{
 		m_soundFrame++;
-		m_sound->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+		m_soundSys->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
-	// ‘Ò‹@ƒtƒŒ[ƒ€‚Ì‘‰Á
 	m_waitFrame++;
 
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ›´æ–°
 	m_player->Update(input, Ability::kNone);
-
-	// “G‚ÌXV
+	// æ•µæ›´æ–°
 	for (const auto& enemy : m_backEnemy)
 	{
 		enemy->Update();
@@ -235,7 +278,7 @@ void StageBase::UpdateSelect(Input& input)
 	{
 		enemy->Update();
 	}
-	// €–S‚µ‚½“G‚Ìˆ—
+	// æ­»äº¡ã—ãŸæ•µã®å‡¦ç†
 	m_backEnemy.remove_if(
 		[](const auto& enemy)
 		{
@@ -251,12 +294,13 @@ void StageBase::UpdateSelect(Input& input)
 		{
 			return !enemy->IsExsit();
 		});
-	// ƒ{ƒX‚ÌXV
+	// ãƒœã‚¹æ›´æ–°
 	if (m_boss)
 	{
 		m_boss->Update();
 	}
 
+	// æ¡ä»¶é”æˆæ–‡å­—æ›´æ–°
 	for (auto& achived : m_achived)
 	{
 		achived.frame++;
@@ -270,29 +314,21 @@ void StageBase::UpdateSelect(Input& input)
 
 	if (input.IsTriggered("OK"))
 	{
-		// ˆÚ“®’†‚Å‚ ‚Á‚Ä‚à‘¦ˆÚ“®
+		// ç§»å‹•ä¸­ã§ã‚ã£ã¦ã‚‚å³æ™‚ç§»å‹•
 		m_mgr.GetStage()->ImmediatelyChange();
 
-		// ƒƒ“ƒoŠÖ”ƒ|ƒCƒ“ƒ^‚ÌXV
+		// BGMå¤‰æ›´
+		m_soundFrame = 0;
+		m_soundSys->Stop(m_selectBgm->GetHandle());
+		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+
+		Init();
+
 		m_updateFunc = &StageBase::UpdatePlaying;
 		m_drawFunc = &StageBase::DrawPlaying;
-
-		m_isUpdateBestTime = false;
-		m_waitFrame = 0;
-		m_waveAngle = 0;
-		m_extRateFrame = 0;
-
-		m_soundFrame = 0;
-		m_sound->Stop(m_selectBgm->GetHandle());
-		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
-
-		// ğŒ’B¬•¶š‚ÌÁ‹
-		m_achived.clear();
-
-		// Šeí‰Šú‰»ˆ—
-		Init();
 	}
 
+	// ã‚¢ãƒ“ãƒªãƒ†ã‚£å¤‰æ›´
 	m_mgr.GetStage()->ChangeAbility(Ability::kDash);
 }
 
@@ -300,114 +336,26 @@ void StageBase::UpdatePlaying(Input& input)
 {
 	if (m_soundFrame > kSoundFade)
 	{
-		m_sound->PlayBgm(m_playBgm->GetHandle());
+		m_soundSys->PlayBgm(m_playBgm->GetHandle());
 	}
 	else
 	{
 		m_soundFrame++;
-		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
-	}
-
-	m_player->Update(input, m_mgr.GetStage()->GetAbility());
-
-	// ƒvƒŒƒCƒ„[‚Ìî•ñ‚ğ”²‚«æ‚é
-	bool playerIsDash = m_player->IsDash();
-	bool playerIsExsit = m_player->IsExsit();
-	const Collision& playerCol = m_player->GetRect();
-
-#ifdef _DEBUG
-	// ƒfƒoƒbƒO—p–³“Gƒ‚[ƒh
-	if (CheckHitKey(KEY_INPUT_M))
-	{
-		playerIsDash = true;
-	}
-#endif
-
-	CreateEnemy();
-	// “G‚ÌXV
-	UpdateEnemy(m_frontEnemy, playerIsDash, playerCol);
-	UpdateEnemy(m_enemy, playerIsDash, playerCol);
-	UpdateEnemy(m_backEnemy, playerIsDash, playerCol);
-
-	if (m_boss)
-	{
-		m_boss->Update();
-		// ƒ{ƒX‚Éƒ_ƒ[ƒW‚ğ—^‚¦‚½‚çŠÔ‚ğ‘‚â‚·
-		m_boss->OnAttack(playerIsDash, m_player->GetObjRect());
-
-		// ƒ{ƒX‚Ì€–Sˆ—
-		if (!m_boss->IsExsit())
-		{
-			BossDeath();
-		}
-		// ƒ{ƒX‚ª¶‘¶‚µ‚Ä‚¢‚ê‚Î
-		// ƒvƒŒƒCƒ„[‚Æ‚Ì”»’èˆ—
-		else if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
-		{
-			// ƒvƒŒƒCƒ„[‚Ì€–Sˆ—
-			m_player->Death();
-			m_mgr.UpdateDeathCcount();
-			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
-
-			// E‚µ‚½‚±‚Æ‚ª‚ ‚é“Gî•ñ‚ÌXV
-			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());
-		}
-	}
-
-#ifdef _DEBUG
-	// ƒfƒoƒbƒO—p‚Æ‚µ‚Ä‚‘¬‚ÅŠÔ‚ªi‚Ş‚æ‚¤‚É
-	if (CheckHitKey(KEY_INPUT_U))
-	{
-		for (int i = 0; i < 60; i++)
-		{
-			UpdateTime();
-		}
-	}
-#endif
-	UpdateTime();
-	CheckStageConditions(m_frame);
-
-	if (!m_player->IsExsit())
-	{
-		UniqueEndProcessing();
-
-		m_isExtRate = false;
-
-		// ƒƒ“ƒoŠÖ”ƒ|ƒCƒ“ƒ^‚ğ‘I‘ğ‚Ì•û‚É–ß‚·
-		m_updateFunc = &StageBase::UpdateSelect;
-		m_drawFunc = &StageBase::DrawSelect;
-
-		// ‰¹ŠÖŒW‚Ìİ’è
-		m_soundFrame = 0;
-		m_sound->Stop(m_playBgm->GetHandle());
-		m_sound->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
-
-		// ƒtƒŒ[ƒ€‚Ì‰Šú‰»
-		m_waitFrame = 0;
-		m_waveAngle = 0.0;
-
-		// ƒxƒXƒgƒ^ƒCƒ€‚ÌXV
-		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
-		{
-			m_isUpdateBestTime = true;
-		}
-
-		return;
+		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
 	m_extRateFrame++;
-
 	if (m_isUpdateBestTime)
 	{
+		// ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ã®å¸¸æ™‚æ›´æ–°
 		m_waitFrame++;
-		m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame);
+		m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame);
 	}
-	else if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))	
+	else if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame))
 	{
 		m_isUpdateBestTime = true;
 	}
-
-	// MEMO:“r’†‚ÅÁ‚µ‚½‚¢ê‡‚Í‚±‚ê‚ğƒIƒ“‚É
+	// MEMO:é€”ä¸­ã§æ¶ˆã—ãŸã„å ´åˆã¯ã“ã‚Œã‚’ã‚ªãƒ³ã«
 #if false
 	for (auto& achived : m_achived)
 	{
@@ -420,20 +368,97 @@ void StageBase::UpdatePlaying(Input& input)
 		}
 	);
 #endif
+
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ›´æ–°
+	m_player->Update(input, m_mgr.GetStage()->GetAbility());
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±ã‚’æŠœãå–ã‚‹
+	bool playerIsDash = m_player->IsDash();
+	bool playerIsExsit = m_player->IsExsit();
+	const Collision& playerCol = m_player->GetRect();
+#ifdef _DEBUG
+	// ãƒ‡ãƒãƒƒã‚°ç”¨ç„¡æ•µãƒ¢ãƒ¼ãƒ‰
+	if (CheckHitKey(KEY_INPUT_M))
+	{
+		playerIsDash = true;
+	}
+#endif
+
+	// æ•µç”Ÿæˆ
+	CreateEnemy();
+	// æ•µæ›´æ–°
+	UpdateEnemy(m_frontEnemy, playerIsDash, playerCol);
+	UpdateEnemy(m_enemy, playerIsDash, playerCol);
+	UpdateEnemy(m_backEnemy, playerIsDash, playerCol);
+
+	if (m_boss)
+	{
+		// ãƒœã‚¹æ›´æ–°
+		m_boss->Update();
+		m_boss->OnAttack(playerIsDash, m_player->GetObjRect());
+
+		if (!m_boss->IsExsit())
+		{
+			BossDeath();
+		}
+		else if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
+		{
+			m_player->Death();
+
+			m_mgr.UpdateDeathCcount();
+			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());
+			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+		}
+	}
+
+#ifdef _DEBUG
+	// ãƒ‡ãƒãƒƒã‚°ç”¨ã¨ã—ã¦é«˜é€Ÿã§æ™‚é–“ãŒé€²ã‚€ã‚ˆã†ã«
+	if (CheckHitKey(KEY_INPUT_U))
+	{
+		for (int i = 0; i < 60; i++)
+		{
+			UpdateTime();
+		}
+	}
+#endif
+	UpdateTime();
+	CheckStageConditions(m_timeFrame);
+
+	if (!m_player->IsExsit())
+	{
+		// BGMå¤‰æ›´
+		m_soundFrame = 0;
+		m_soundSys->Stop(m_playBgm->GetHandle());
+		m_soundSys->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+
+		m_waitFrame = 0;
+		m_waveAngle = 0.0;
+		m_isExtRate = false;
+
+		// ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ã®æ›´æ–°
+		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame))
+		{
+			m_isUpdateBestTime = true;
+		}
+
+		UniqueEndProcessing();
+
+		m_updateFunc = &StageBase::UpdateSelect;
+		m_drawFunc = &StageBase::DrawSelect;
+
+		return;
+	}
 }
 
 void StageBase::UpdateAfterBossDeath(Input& input)
 {
-	m_sound->PlayFadeBgm(m_playBgm->GetHandle(), 0.6f);
-
 	if (m_soundFrame > kSoundFade)
 	{
-		m_sound->PlayBgm(m_playBgm->GetHandle());
+		m_soundSys->PlayBgm(m_playBgm->GetHandle());
 	}
 	else
 	{
 		m_soundFrame++;
-		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
 	m_boss->Update();
@@ -467,49 +492,45 @@ void StageBase::DrawSelect() const
 	}
 	SetDrawMode(DX_DRAWMODE_NEAREST);
 	m_player->Draw();
-	auto name = StringUtility::StringToWString(m_stageName);
-	// ƒXƒe[ƒW–¼‚Ì•`‰æ
-	DrawBox(0, 24, 288, 104, kFrameColor, true);
-	DrawFormatStringToHandle(64, 32, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
+	auto name = StringUtility::StringToWString(m_stageName);
 	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 	int drawScreenHandle = m_mgr.GetScene()->GetScreenHandle();
 
-	SetDrawScreen(m_strHandle);
-	ClearDrawScreen();
-	// ŠÔ‚Ì•`‰æ
-	DrawTime(20, 160, fontHandle);
-	// E‚³‚ê‚½‚±‚Æ‚ª‚ ‚é“G‚Ì•`‰æ
-	DrawStringToHandle(136, 160, L"> Circle", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
-	DrawKilledEnemyType(kKillTypePosX, kKillTypePosY);
-	SetDrawScreen(drawScreenHandle);
-	// ã‰º”½“]‚µ‚Ä•`‰æƒtƒŒ[ƒ€
-	DrawRotaGraph(155, 168, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
-	DrawBox(0, 198, 310, 198 + 30, kBackFrameColor, true);
-	DrawGraph(0, 0, m_strHandle, true);
+	// ã‚¹ãƒ†ãƒ¼ã‚¸åã®æç”»
+	DrawBox(kNameFramePosX, kNameFramePosY, kNameFramePosX + kNameFrameWidth, kNameFramePosY + kNameFrameHeight, kFrameColor, true);
+	DrawFormatStringToHandle(kNamePosX, kNamePosY, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
-	// ƒXƒe[ƒWğŒ‚Ì•`‰æ
-	SetDrawScreen(m_strHandle);
+	// ã‚¹ãƒ†ãƒ¼ã‚¸æƒ…å ±ã®æç”»
+	SetDrawScreen(m_strScreen);
 	ClearDrawScreen();
-	auto y = DrawStageConditions(256);
+	// æ™‚é–“
+	DrawTime(kTimePosX, kTimePosY, fontHandle);
+	// ç¨®é¡
+	DrawStringToHandle(kKilledStrPosX, kKilledStrPosY, L"> Circle", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
+	DrawEnemyKilledInfo(kKillTypePosX, kKillTypePosY);
 	SetDrawScreen(drawScreenHandle);
-	// ğŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ğ•`‰æ‚·‚é
+	// ãƒ•ãƒ¬ãƒ¼ãƒ 
+	DrawRotaGraph(kInfoFramePosX, kInfoFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, false, true);
+	DrawBox(kInfoBoxPosX, kInfoBoxPosY, kInfoBoxPosX + kInfoBoxWidth, kInfoBoxPosY + kInfoBoxHeight, kBackFrameColor, true);
+	DrawGraph(0, 0, m_strScreen, true);
+
+	// ã‚¹ãƒ†ãƒ¼ã‚¸æ¡ä»¶ã®æç”»
+	SetDrawScreen(m_strScreen);
+	ClearDrawScreen();
+	auto y = DrawStageConditions(kConditionPosY);
+	SetDrawScreen(drawScreenHandle);
+	// Yåº§æ¨™ã®å¤‰å‹•ãŒã‚ã‚Œã°ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æç”»
 	if (y >= 0)
 	{
-		DrawBox(0, 244, 310, 244 + y, kBackFrameColor, true);
-		DrawGraph(0, 244 + y, m_bFrameImg->GetHandle(), true);
+		DrawBox(kConditionBoxPosX, kConditionBoxPosY, kConditionBoxPosX + kConditionBoxWidth, kConditionBoxPosY + y, kBackFrameColor, true);
+		DrawGraph(kConditionBoxPosX, kConditionBoxPosY + y, m_backFrameImg->GetHandle(), true);
 	}
-	DrawGraph(0, 0, m_strHandle, true);
+	DrawGraph(0, 0, m_strScreen, true);
 
 	DrawBestTime();
-
-	// –îˆó‚Ì•`‰æ
 	DrawArrow();
-
-	// ƒXƒ^[ƒg‚Ì‰æ‘œ‚Ì•`‰æ
 	DrawWave("OK", kTitleWave, kTitleWaveNum);
-
-	// ğŒ’B¬‚Ì‚ğ•`‰æ
 	DrawConditionsAchived(y);
 }
 
@@ -539,36 +560,36 @@ void StageBase::DrawPlaying() const
 
 	int drawScreenHandle = m_mgr.GetScene()->GetScreenHandle();
 
-	SetDrawScreen(m_strHandle);
+	// ã‚¹ãƒ†ãƒ¼ã‚¸æƒ…å ±ã®æç”»
+	SetDrawScreen(m_strScreen);
 	ClearDrawScreen();
-	// ŠÔ‚Ì•`‰æ
-	DrawTime(20, 144, m_mgr.GetFont()->GetHandle(64));
+	// æ™‚é–“
+	DrawTime(kTimePosX, kTimePosY + kTimePlayingDiff, m_mgr.GetFont()->GetHandle(64));
+	// ãƒ•ãƒ¬ãƒ¼ãƒ 
 	SetDrawScreen(drawScreenHandle);
-	DrawRotaGraph(155, 168, 1.0, 0.0, m_bFrameImg->GetHandle(), true, false, true);
-	DrawBox(0, 198, 310, 198 + 36, kBackFrameColor, true);
-	DrawGraph(0, 0, m_strHandle, true);
+	DrawRotaGraph(kInfoFramePosX, kInfoFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, false, true);
+	DrawBox(kInfoBoxPosX, kInfoBoxPosY, kInfoBoxPosX + kInfoBoxWidth, kInfoBoxPosY + kInfoBoxHeight + kInfoBoxPlayingDiff, kBackFrameColor, true);
+	DrawGraph(0, 0, m_strScreen, true);
 
-	// ğŒ‚Ì•`‰æ
-	SetDrawScreen(m_strHandle);
+	// æ¡ä»¶ã®æç”»
+	SetDrawScreen(m_strScreen);
 	ClearDrawScreen();
-	auto y = DrawStageConditions(244 + 16 + 20);
+	auto y = DrawStageConditions(kConditionPosY + kConditionPlayingDiff);
+	// Yåº§æ¨™ã®å¤‰å‹•ãŒã‚ã‚Œã°ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æç”»
 	SetDrawScreen(m_extScreen);
 	ClearDrawScreen();
-	// ğŒŒã‚ë‚É‚ ‚éƒtƒŒ[ƒ€”wŒi‚ğ•`‰æ‚·‚é
 	if (y >= 0)
 	{
-		DrawBox(0, 268, 310, 268 + y, kBackFrameColor, true);
-		DrawGraph(0, 268 + y, m_bFrameImg->GetHandle(), true);
+		DrawBox(kConditionBoxPosX, kConditionBoxPosY + kConditionPlayingDiff, kConditionBoxPosX + kConditionBoxWidth, kConditionBoxPosY + kConditionPlayingDiff + y, kBackFrameColor, true);
+		DrawGraph(kConditionBoxPosX, kConditionBoxPosY + kConditionPlayingDiff + y, m_backFrameImg->GetHandle(), true);
 	}
-	DrawGraph(0, 0, m_strHandle, true);
-
+	DrawGraph(0, 0, m_strScreen, true);
+	// æœ¬ä½“ã«æç”»
 	SetDrawScreen(drawScreenHandle);
-	// Šg‘å•`‰æ
 	if (m_isExtRate && m_extRateFrame < kExtRateFrame)
 	{
 		DrawExpansion();
 	}
-	// ‚»‚Ì‚Ü‚Ü•`‰æ
 	else
 	{
 		DrawGraph(0, 0, m_extScreen, true);
@@ -580,11 +601,8 @@ void StageBase::DrawPlaying() const
 	}
 
 	DrawBestTime();
-
-	UniqueDraw();
-
-	// ğŒ’B¬‚Ì‚ğ•`‰æ
-	DrawConditionsAchived(y + 24);
+	DrawUnique();
+	DrawConditionsAchived(y + kConditionPlayingDiff);
 }
 
 void StageBase::DrawAfterBossDeath() const
@@ -600,13 +618,11 @@ void StageBase::CheckConditionsTime(const std::string& stageName, int timeFrame,
 {
 	auto& stage = m_mgr.GetStage();
 
-	// Šù‚ÉƒNƒŠƒA‚µ‚Ä‚¢‚½‚çŠm”F‚µ‚È‚¢
 	if (stage->IsClearStage(stageName)) return;
 
-	// ƒxƒXƒgƒ^ƒCƒ€‚ªğŒŠÔ‚ğ’´‚¦‚Ä‚¢‚é‚©
-	if (timeFrame > exsitTime * 60)
+	if (timeFrame > exsitTime * kFrameToSec)
 	{
-		m_sound->PlaySe(m_clearSe->GetHandle());
+		m_soundSys->PlaySe(m_clearSe->GetHandle());
 		stage->SaveClear(stageName);
 		AddAchivedStr(dir);
 	}
@@ -616,12 +632,11 @@ void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNu
 {
 	auto& stage = m_mgr.GetStage();
 
-	// Šù‚ÉƒNƒŠƒA‚µ‚Ä‚¢‚½‚çŠm”F‚µ‚È‚¢
 	if (stage->IsClearStage(stageName)) return;
 
 	if (stage->GetEnemyTypeCount() >= killedNum)
 	{
-		m_sound->PlaySe(m_clearSe->GetHandle());
+		m_soundSys->PlaySe(m_clearSe->GetHandle());
 		stage->SaveClear(stageName);
 		AddAchivedStr(dir);
 	}
@@ -632,10 +647,9 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 	auto& stage = m_mgr.GetStage();
 	int sumTime = 0;
 
-	// Šù‚ÉƒNƒŠƒA‚µ‚Ä‚¢‚½‚çŠm”F‚µ‚È‚¢
 	if (stage->IsClearStage(stageName)) return;
 
-	// Šm”F‚·‚éƒXƒe[ƒW‚Ì‚·‚×‚Ä‚Ìƒ^ƒCƒ€‚ğ‰ÁZ‚·‚é
+	// ç¢ºèªã™ã‚‹ã‚¹ãƒ†ãƒ¼ã‚¸ã®ã™ã¹ã¦ã®ã‚¿ã‚¤ãƒ ã‚’åŠ ç®—ã™ã‚‹
 	for (const auto& name : names)
 	{
 		if (name == m_stageName)
@@ -648,10 +662,9 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 		}
 	}
 
-	// ‰ÁZ‚µ‚½ŠÔ‚ª’´‚¦‚Ä‚¢‚é‚©
-	if (sumTime >= exsitTime * 60)
+	if (sumTime >= exsitTime * kFrameToSec)
 	{
-		m_sound->PlaySe(m_clearSe->GetHandle());
+		m_soundSys->PlaySe(m_clearSe->GetHandle());
 		stage->SaveClear(stageName);
 		AddAchivedStr(dir);
 	}
@@ -661,22 +674,22 @@ void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double
 {
 	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kFlashInterval) % 2 != 0)
 	{
-		DrawBox(kConditionsPosX, y, kConditionsPosX + 28, y + 28, 0xffde00, true);
+		DrawBox(kConditionStrPosX, y, kConditionStrPosX + kArrowSize, y + kArrowSize, 0xffde00, true);
 	}
-	DrawRotaGraph(kConditionsPosX + 14, y + 14, 1.0, angle, m_arrowConditions->GetHandle(), true, isReverseX, isReverxeY);
+	DrawRotaGraph(kConditionStrPosX + static_cast<int>(kArrowSize * 0.5), y + static_cast<int>(kArrowSize * 0.5), 1.0, angle, m_arrowConditionsImg->GetHandle(), true, isReverseX, isReverxeY);
 }
 
 void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
 {
-	DrawStringToHandle(kConditionsPosX, y, L"@@   •bŠÔ¶‚«c‚é\n@@(           )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"@@%2d\n@@  %2d / %2d",
+	DrawStringToHandle(kConditionStrPosX, y, L"ã€€ã€€   ç§’é–“ç”Ÿãæ®‹ã‚‹\nã€€ã€€(           )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"ã€€ã€€%2d\nã€€ã€€  %2d / %2d",
 		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, existTime);
 }
 
 void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
 {
-	DrawStringToHandle(kConditionsPosX, y, L"@@   í—Ş‚Ì“G‚ÉE‚³‚ê‚é\n@@(          )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"@@%2d\n@@  %2d / %2d",
+	DrawStringToHandle(kConditionStrPosX, y, L"ã€€ã€€   ç¨®é¡ã®æ•µã«æ®ºã•ã‚Œã‚‹\nã€€ã€€(          )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"ã€€ã€€%2d\nã€€ã€€  %2d / %2d",
 		killedNum, m_mgr.GetStage()->GetEnemyTypeCount(), killedNum);
 }
 
@@ -685,17 +698,17 @@ void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int
 	auto& stage = m_mgr.GetStage();
 	int sumTime = 0;
 
-	// Šm”F‚·‚éƒXƒe[ƒW‚Ì‚·‚×‚Ä‚Ìƒ^ƒCƒ€‚ğ‰ÁZ‚·‚é
+	// ç¢ºèªã™ã‚‹ã‚¹ãƒ†ãƒ¼ã‚¸ã®ã™ã¹ã¦ã®ã‚¿ã‚¤ãƒ ã‚’åŠ ç®—ã™ã‚‹
 	for (const auto& name : names)
 	{
 		sumTime += stage->GetBestTime(name);
 	}
 
-	// •b‚É–ß‚·
-	sumTime /= 60;
+	// ç§’ã«æˆ»ã™
+	sumTime /= kFrameToSec;
 
-	DrawStringToHandle(kConditionsPosX, y, L"@@‘SƒXƒe[ƒW‡Œv\n@@    •bŠÔ¶‚«c‚é\n@@(           )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionsPosX, y, kYellowColor, handle, L"\n@@%02d\n@@  %2d / %2d",
+	DrawStringToHandle(kConditionStrPosX, y, L"ã€€ã€€å…¨ã‚¹ãƒ†ãƒ¼ã‚¸åˆè¨ˆ\nã€€ã€€    ç§’é–“ç”Ÿãæ®‹ã‚‹\nã€€ã€€(           )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"\nã€€ã€€%02d\nã€€ã€€  %2d / %2d",
 		existTime, sumTime, existTime);
 }
 
@@ -703,7 +716,7 @@ void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName
 {
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
-	int x = static_cast<int>(m_size.w * 0.5f - 150);
+	int x = static_cast<int>(m_size.w * 0.5f - kArrowShiftPos);
 	int y = static_cast<int>(m_size.h * 0.5f);
 	DrawRotaGraph(x, y, 1.0, -kRad90, handle, true);
 	DrawArrowLock(x, y, isBossStage, isClear);
@@ -713,9 +726,9 @@ void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStNam
 {
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
-	int x = static_cast<int>(m_size.w * 0.5f + 150);
+	int x = static_cast<int>(m_size.w * 0.5f + kArrowShiftPos);
 	int y = static_cast<int>(m_size.h * 0.5f);
-	// MEMO:‰½ŒÌ‚©ReverX‚ğtrue‚É‚·‚é‚Æ‚ª‚Ñ‚ç‚È‚¢‚©‚ç‚µ‚Ä‚¨‚¢‚Ä‚é
+	// MEMO:ä½•æ•…ã‹ReverXã‚’trueã«ã™ã‚‹ã¨ãŒã³ã‚‰ãªã„ã‹ã‚‰ã—ã¦ãŠã„ã¦ã‚‹
 	DrawRotaGraph(x, y, 1.0, kRad90, handle, true, true);
 	DrawArrowLock(x, y, isBossStage, isClear);
 }
@@ -725,7 +738,7 @@ void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName, 
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
 	int x = static_cast<int>(m_size.w * 0.5f);
-	int y = static_cast<int>(m_size.h * 0.5f - 150);
+	int y = static_cast<int>(m_size.h * 0.5f - kArrowShiftPos);
 	DrawRotaGraph(x, y, 1.0, 0.0, handle, true);
 	DrawArrowLock(x, y, isBossStage, isClear);
 }
@@ -735,14 +748,15 @@ void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName
 	int handle = GetArrowHandle(isAlreadyClear, nextStName);
 
 	int x = static_cast<int>(m_size.w * 0.5f);
-	int y = static_cast<int>(m_size.h * 0.5f + 150);
+	int y = static_cast<int>(m_size.h * 0.5f + kArrowShiftPos);
 	DrawRotaGraph(x, y, 1.0, 0.0, handle, true, false, true);
 	DrawArrowLock(x, y, isBossStage, isClear);
 }
 
-void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, unsigned int color, int radius) const
+void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius) const
 {
 	double enemyExtRate = kKillTypeDefExtRate;
+	// å°ã•ãã™ã‚‹æ•µã®å ´åˆã¯å°ã•ã
 	for (const auto& name : kSmallTypeName)
 	{
 		if (name == enemyName)
@@ -751,6 +765,7 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int 
 			break;
 		}
 	}
+	// å¤§ããã™ã‚‹æ•µã®å ´åˆã¯å¤§ãã
 	for (const auto& name : kLargeTypeName)
 	{
 		if (name == enemyName)
@@ -764,15 +779,13 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int 
 	if (m_mgr.GetStage()->IsKilledEnemy(enemyName))
 	{
 		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
-		DrawRotaGraph(x + addX, y, 0.5, 0.0, m_check->GetHandle(), true);
+		DrawRotaGraph(x + addX, y, 0.5, 0.0, m_checkImg->GetHandle(), true);
 	}
 	else
 	{
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
 		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-//		DrawCircle(kKillTypePosX + addX, kKillTypePosY, radius, color, false);
 	}
 }
 
@@ -783,7 +796,6 @@ void StageBase::DrawExpansion() const
 
 	int posX = 0;
 
-	//int left = -kShiftRight * kExtRateSize;
 	int left = 0;
 	int right = width + static_cast<int>((width - kShiftRight) * kExtRateSize);
 	int top = static_cast<int>(-kShiftUp * kExtRateSize);
@@ -795,7 +807,6 @@ void StageBase::DrawExpansion() const
 
 		posX = static_cast<int>(kShiftWidth * rate);
 
-		//left = -kShiftRight * kExtRateSize * rate;
 		right = width + static_cast<int>((width - kShiftRight) * kExtRateSize * rate);
 		top = static_cast<int>(-kShiftUp * kExtRateSize * rate);
 		bottom = height + static_cast<int>((height - kShiftUp) * kExtRateSize * rate);
@@ -815,12 +826,12 @@ void StageBase::DrawExpansion() const
 
 void StageBase::AddAchivedStr(const std::wstring& dir)
 {
-	m_achived.push_back({ dir + L"‚ÌğŒ’B¬I", 0 });
+	m_achived.push_back({ dir + L"ã®æ¡ä»¶é”æˆï¼", 0 });
 }
 
 void StageBase::CreateMoveWall()
 {
-	// ã‘¤
+	// ä¸Šå´
 	auto enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
 	enemy->Init({ 0, -1 });
 	m_enemy.push_back(enemy);
@@ -887,18 +898,14 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 	{
 		enemy->Update();
 
-		// ƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’èˆ—
-		// ƒ_ƒbƒVƒ…‚µ‚Ä‚¢‚½‚çˆ—‚Í‚µ‚È‚¢
 		if (!isDash && col.IsCollsion(enemy->GetRect()))
 		{
-			// ƒvƒŒƒCƒ„[‚Ì€–Sˆ—
 			m_player->Death();
+
 			m_mgr.UpdateDeathCcount();
+			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
 
 			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
-
-			// E‚µ‚½‚±‚Æ‚ª‚ ‚é“Gî•ñ‚ÌXV
-			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
 
 			break;
 		}
@@ -914,27 +921,26 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 
 void StageBase::BossDeath()
 {
-	// ‚·‚Å‚ÉƒNƒŠƒA‚³‚ê‚Ä‚¢‚½ê‡‚Í‹­‰»ƒ{ƒX‚ğo‚·
+	// ã™ã§ã«ã‚¯ãƒªã‚¢ã•ã‚Œã¦ã„ãŸå ´åˆã¯å¼·åŒ–ãƒœã‚¹ã‚’å‡ºã™
 	if (m_mgr.GetStage()->IsClearBoss(m_boss->GetName()))
 	{
 		CreateStrongBoss();
 		return;
 	}
 
-//	m_mgr.GetStage()->m_clear = true;
-	// ƒxƒXƒgƒ^ƒCƒ€‚ÌXV
-	if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
+	// ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ã®æ›´æ–°
+	if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame))
 	{
 		m_isUpdateBestTime = true;
 	}
 
-	// ƒNƒŠƒA‚µ‚Ä‚¢‚é‚©‚ÌŠm”F
+	// ã‚¯ãƒªã‚¢ã—ã¦ã„ã‚‹ã‹ã®ç¢ºèª
 	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
 
-	// “|‚µ‚½î•ñ‚Ì’Ç‰Á
+	// å€’ã—ãŸæƒ…å ±ã®è¿½åŠ 
 	m_mgr.GetStage()->UpdateClearBoss(m_boss->GetName());
 
-	// “G‘S‚ÄÁ‚·
+	// æ•µå…¨ã¦æ¶ˆã™
 	m_enemy.clear();
 	m_frontEnemy.clear();
 	m_backEnemy.clear();
@@ -945,25 +951,25 @@ void StageBase::BossDeath()
 
 void StageBase::DrawTime(int x, int y, int handle) const
 {
-	DrawStringToHandle(x, y, L"> ƒ^ƒCƒ€", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
-	y += 24;
-	int minSec = (m_frame * 1000 / 60) % 1000;
-	int sec = (m_frame / 60) % 60;
-	int min = m_frame / 3600;
+	DrawStringToHandle(x, y, L"> ã‚¿ã‚¤ãƒ ", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
+	y += kTimeAddY;
+	int minSec = (m_timeFrame * 1000 / kFrameToSec) % 1000;
+	int sec = (m_timeFrame / kFrameToSec) % kFrameToSec;
+	int min = m_timeFrame / (kFrameToSec * kFrameToSec);
 	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"%01d:%02d.%03d", min, sec, minSec);
 }
 
 void StageBase::DrawBestTime() const
 {
-	// ƒtƒŒ[ƒ€•`‰æ
-	DrawRotaGraph(m_size.w - 128, 128, 1.0, 0.0, m_bFrameImg->GetHandle(), true, true, true);
+	// ãƒ•ãƒ¬ãƒ¼ãƒ æç”»
+	DrawRotaGraph(m_size.w - 128, 128, 1.0, 0.0, m_backFrameImg->GetHandle(), true, true, true);
 	DrawBox(m_size.w - 128 - 155, 158, m_size.w, 224, kBackFrameColor, true);
-	// ƒxƒXƒgƒ^ƒCƒ€‚Ì•`‰æ
+	// ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ã®æç”»
 	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
 	int minSec = (bestTime * 1000 / 60) % 1000;
 	int sec = (bestTime / 60) % 60;
 	int min = bestTime / 3600;
-	DrawStringToHandle(m_size.w - 256, 112, L"> ƒxƒXƒgƒ^ƒCƒ€", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
+	DrawStringToHandle(m_size.w - 256, 112, L"> ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
 	DrawFormatStringToHandle(m_size.w - 256, 112 + 48, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
 
 	if (!m_isUpdateBestTime) return;
@@ -982,18 +988,19 @@ void StageBase::DrawBestTime() const
 		int alpha = static_cast<int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		DrawBox(m_size.w - 344, 248, m_size.w, 312, kBackFrameColor, true);
-		DrawStringToHandle(m_size.w - 336, 256, L"ƒxƒXƒgƒ^ƒCƒ€XVI", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+		DrawStringToHandle(m_size.w - 336, 256, L"ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ æ›´æ–°ï¼", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		return;
 	}
 
 	DrawBox(m_size.w - 344, 248, m_size.w, 312, kBackFrameColor, true);
-	DrawStringToHandle(m_size.w - 336, 256, L"ƒxƒXƒgƒ^ƒCƒ€XVI", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+	DrawStringToHandle(m_size.w - 336, 256, L"ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ æ›´æ–°ï¼", kYellowColor, m_mgr.GetFont()->GetHandle(48));
 }
 
 void StageBase::DrawConditionsAchived(int y) const
 {
+	// é€ã‚‰ã‚Œã¦ããŸåº§æ¨™ã‚’ãšã‚‰ã™
 	y += 244 + 100;
 	int backFrameY = y - 4;
 
@@ -1002,7 +1009,7 @@ void StageBase::DrawConditionsAchived(int y) const
 		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
 		{
 			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
-			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
 		}
 		else
 		{
@@ -1010,10 +1017,11 @@ void StageBase::DrawConditionsAchived(int y) const
 			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawBox(0, backFrameY, 352, backFrameY + 68, kBackFrameColor, true);
-			DrawStringToHandle(kConditionsStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
+			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 
+		// æç”»ä½ç½®ã®æ›´æ–°
 		y += 64;
 		backFrameY += 68;
 	}
@@ -1023,7 +1031,7 @@ void StageBase::DrawArrowLock(int x, int y, bool isBossStage, bool isClear) cons
 {
 	if (!isBossStage || isClear) return;
 
-	DrawRotaGraph(x, y, 1.0, 0.0, m_arrowLock->GetHandle(), true);
+	DrawRotaGraph(x, y, 1.0, 0.0, m_arrowLockImg->GetHandle(), true);
 }
 
 void StageBase::DrawWall() const
@@ -1031,16 +1039,16 @@ void StageBase::DrawWall() const
 	int centerX = static_cast<int>(m_size.w * 0.5f);
 	int centerY = static_cast<int>(m_size.h * 0.5f);
 
-	// ‰æ‘œ’†S‚ğŒ³‚É‚µ‚½•`‰æ‚ğ‚·‚é‚½‚ß‚É
-	// Rota‚É‚µ‚Ä‚¢‚é
-	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_field->GetHandle(), true);
+	// ç”»åƒä¸­å¿ƒã‚’å…ƒã«ã—ãŸæç”»ã‚’ã™ã‚‹ãŸã‚ã«
+	// Rotaã«ã—ã¦ã„ã‚‹
+	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_fieldImg->GetHandle(), true);
 }
 
 void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num) const
 {
 	if (!m_isWaveDraw) return;
 
-	DrawGraph(980, 595, m_startFrame->GetHandle(), true);
+	DrawGraph(980, 595, m_frameImg->GetHandle(), true);
 
 	const auto& type = m_input.GetType();
 	if (type == InputType::keybd)
@@ -1081,16 +1089,16 @@ int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName
 	{
 		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
 		{
-			handle = m_arrow->GetHandle();
+			handle = m_arrowImg->GetHandle();
 		}
 		else
 		{
-			handle = m_arrowFlash->GetHandle();
+			handle = m_arrowFlashImg->GetHandle();
 		}
 	}
 	else
 	{
-		handle = m_arrowNo->GetHandle();
+		handle = m_arrowNoImg->GetHandle();
 	}
 
 	return handle;

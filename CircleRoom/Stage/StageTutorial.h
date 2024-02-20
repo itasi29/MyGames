@@ -27,12 +27,12 @@ private:
 	void UpdateSelect(Input& input);
 	void UpdatePlaying(Input& input);
 
-	void UniqueDraw() const override;
+	void DrawUnique() const override;
 
 	void CheckStageConditions(int timeFrame) override;
 	int DrawStageConditions(int drawY) const override;
 	void DrawArrow() const override;
-	void DrawKilledEnemyType(int x, int y) const override {}
+	void DrawEnemyKilledInfo(int x, int y) const override {}
 	void CreateEnemy() override;
 
 	void UpdateTime() override;
@@ -42,7 +42,7 @@ private:
 
 	int  m_index;
 	std::array<std::shared_ptr<FileBase>, 5> m_handle;
-	std::array<std::shared_ptr<FileBase>, 2> m_arrow;
+	std::array<std::shared_ptr<FileBase>, 2> m_arrowImg;
 
 	Explanation m_explanation;
 	int m_createFrame;

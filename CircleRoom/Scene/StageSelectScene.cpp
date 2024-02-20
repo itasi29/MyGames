@@ -275,7 +275,7 @@ void StageSelectScene::DrawInf(const std::string& str) const
 	y += 48;
 
 	// ŽE‚³‚ê‚½Ží—Þ‚Ì•`‰æ
-	m_stageData.at(str)->DrawKilledEnemyType(kDrawStringX, y);
+	m_stageData.at(str)->DrawEnemyKilledInfo(kDrawStringX, y);
 
 }
 

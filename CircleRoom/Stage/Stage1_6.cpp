@@ -163,12 +163,12 @@ void Stage1_6::DrawArrow() const
 	DrawDownArrow(m_isDownClear, kDownStName);
 }
 
-void Stage1_6::DrawKilledEnemyType(int x, int y) const
+void Stage1_6::DrawEnemyKilledInfo(int x, int y) const
 {
-	DrawKilledEnemy("Normal", x, y, 0, 0xfffae7);
-	DrawKilledEnemy("MoveWall", x, y, 36, 0xb6bbc4);
-	DrawKilledEnemy("Create", x, y, 72, 0xd9edbf);
-	DrawKilledEnemy("Child", x, y, 110, 0xffb996, 12);
+	DrawKilledEnemy("Normal", x, y, 0);
+	DrawKilledEnemy("MoveWall", x, y, 36);
+	DrawKilledEnemy("Create", x, y, 72);
+	DrawKilledEnemy("Child", x, y, 110, 12);
 }
 
 void Stage1_6::CreateEnemy()
@@ -204,5 +204,5 @@ void Stage1_6::CreateEnemy()
 
 void Stage1_6::UpdateTime()
 {
-	m_frame++;
+	m_timeFrame++;
 }

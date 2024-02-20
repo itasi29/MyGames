@@ -63,8 +63,8 @@ StageTutorial::StageTutorial(GameManager& mgr, Input& input) :
 	m_handle[3] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation2.png");
 	m_handle[4] = m_mgr.GetFile()->LoadGraphic(L"UI/explanation3.png");
 
-	m_arrow[0] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis0.png");
-	m_arrow[1] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis1.png");
+	m_arrowImg[0] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis0.png");
+	m_arrowImg[1] = m_mgr.GetFile()->LoadGraphic(L"UI/playerEmphasis1.png");
 
 	m_stageName = "練習";
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
@@ -84,7 +84,7 @@ void StageTutorial::Init()
 	StageBase::Init();
 	m_achived.clear();
 
-	m_frame = 0;
+	m_timeFrame = 0;
 	m_createFrame = 0;
 	m_extRateFrame = 0;
 	m_isUpdateBestTime = false;
@@ -116,12 +116,12 @@ void StageTutorial::UpdateSelect(Input& input)
 {
 	if (m_soundFrame > kSoundFade)
 	{
-		m_sound->PlayBgm(m_selectBgm->GetHandle());
+		m_soundSys->PlayBgm(m_selectBgm->GetHandle());
 	}
 	else
 	{
 		m_soundFrame++;
-		m_sound->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+		m_soundSys->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
 	m_waitFrame++;
@@ -171,7 +171,7 @@ void StageTutorial::UpdateSelect(Input& input)
 			ChangePlayingFunc();
 			Init();
 			m_soundFrame = 0;
-			m_sound->Stop();
+			m_soundSys->Stop();
 		}
 	}
 }
@@ -226,17 +226,17 @@ void StageTutorial::UpdatePlaying(Input& input)
 		m_waveAngle = 0.0;
 		m_soundFrame = 0;
 
-		m_sound->Stop();
+		m_soundSys->Stop();
 
 		// ベストタイムの更新
-		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_frame))
+		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame))
 		{
 			m_isUpdateBestTime = true;
 		}
 
 		// クリアしているかの確認
 	}
-	CheckStageConditions(m_frame);
+	CheckStageConditions(m_timeFrame);
 
 	if (m_isStart)
 	{
@@ -251,15 +251,15 @@ void StageTutorial::UpdatePlaying(Input& input)
 	m_extRateFrame++;
 }
 
-void StageTutorial::UniqueDraw() const
+void StageTutorial::DrawUnique() const
 {
 	if (m_soundFrame > kSoundFade)
 	{
-		m_sound->PlayBgm(m_playBgm->GetHandle());
+		m_soundSys->PlayBgm(m_playBgm->GetHandle());
 	}
 	else
 	{
-		m_sound->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
 	if (!m_isStart) return;
@@ -277,7 +277,7 @@ void StageTutorial::UniqueDraw() const
 
 	int index = (m_emphasisFrame / kEmlhasisInterval) % 2;
 
-	DrawRotaGraph(x, y, 1.0, 0.0, m_arrow[index]->GetHandle(), true);
+	DrawRotaGraph(x, y, 1.0, 0.0, m_arrowImg[index]->GetHandle(), true);
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
@@ -314,5 +314,5 @@ void StageTutorial::CreateEnemy()
 
 void StageTutorial::UpdateTime()
 {
-	m_frame++;
+	m_timeFrame++;
 }

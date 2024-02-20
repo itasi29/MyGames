@@ -128,7 +128,7 @@ void Stage1_9::DrawArrow() const
 	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
-void Stage1_9::DrawKilledEnemyType(int x, int y) const
+void Stage1_9::DrawEnemyKilledInfo(int x, int y) const
 {
 }
 
@@ -189,5 +189,5 @@ void Stage1_9::CreateEnemy()
 
 void Stage1_9::UpdateTime()
 {
-	m_frame++;
+	m_timeFrame++;
 }

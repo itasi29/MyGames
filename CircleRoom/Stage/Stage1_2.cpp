@@ -155,11 +155,11 @@ void Stage1_2::DrawArrow() const
 	DrawUpArrow(m_isUpClear, kUpStName);
 }
 
-void Stage1_2::DrawKilledEnemyType(int x, int y) const
+void Stage1_2::DrawEnemyKilledInfo(int x, int y) const
 {
-	DrawKilledEnemy("Normal", x, y, 0, 0xfffae7);
-	DrawKilledEnemy("MoveWall", x, y, 36, 0xb6bbc4);
-	DrawKilledEnemy("Large", x, y, 76, 0xfffae7, 20);
+	DrawKilledEnemy("Normal", x, y, 0);
+	DrawKilledEnemy("MoveWall", x, y, 36);
+	DrawKilledEnemy("Large", x, y, 76, 20);
 }
 
 void Stage1_2::CreateEnemy()
@@ -195,5 +195,5 @@ void Stage1_2::CreateEnemy()
 
 void Stage1_2::UpdateTime()
 {
-	m_frame++;
+	m_timeFrame++;
 }
