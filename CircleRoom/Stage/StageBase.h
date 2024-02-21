@@ -80,7 +80,7 @@ public:
 	/// <summary>
 	/// ウェーブする文字の非描画化
 	/// </summary>
-	void OffWaveDraw() { m_isWaveDraw = false; }
+	void OffDrawWave() { m_isWaveDraw = false; }
 
 protected:
 	/// <summary>
@@ -265,7 +265,7 @@ private:
 	/// <summary>
 	/// ボスの死亡処理
 	/// </summary>
-	void BossDeath();
+	void DeathBoss();
 
 	/// <summary>
 	/// 現在のタイムを描画

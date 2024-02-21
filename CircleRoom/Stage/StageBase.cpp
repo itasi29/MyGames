@@ -31,17 +31,17 @@ namespace
 	constexpr float kSizeScale = 0.4f;
 
 	// プレイヤー死亡時の画面の揺れフレーム
-	constexpr int kShakeFrameDeath = 10;
+	constexpr int kPlayerDeathShakeFrame = 10;
 
 	// サウンドのフェードフレーム
 	constexpr int kSoundFade = 30;
 
 	// 色定数
 	constexpr unsigned int kFrameColor = 0xd80032;
+	constexpr unsigned int kBackFrameColor = 0x161a30;
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
 	constexpr unsigned int kYellowColor = 0xffde00;
 	constexpr unsigned int kRedColor = 0xd2001a;
-	constexpr unsigned int kBackFrameColor = 0x161a30;
 
 	// 矢印画像定数
 	constexpr int kArrowFlashInterval = 20;
@@ -408,7 +408,7 @@ void StageBase::UpdatePlaying(Input& input)
 
 		if (!m_boss->IsExsit())
 		{
-			BossDeath();
+			DeathBoss();
 		}
 		else if (!playerIsDash && playerCol.IsCollsion(m_boss->GetRect()))
 		{
@@ -416,7 +416,7 @@ void StageBase::UpdatePlaying(Input& input)
 
 			m_mgr.UpdateDeathCcount();
 			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());
-			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+			m_mgr.GetScene()->ShakeScreen(kPlayerDeathShakeFrame);
 		}
 	}
 
@@ -916,7 +916,7 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 			m_mgr.UpdateDeathCcount();
 			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
 
-			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+			m_mgr.GetScene()->ShakeScreen(kPlayerDeathShakeFrame);
 
 			break;
 		}
@@ -930,7 +930,7 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 	);
 }
 
-void StageBase::BossDeath()
+void StageBase::DeathBoss()
 {
 	// すでにクリアされていた場合は強化ボスを出す
 	if (m_mgr.GetStage()->IsClearBoss(m_boss->GetName()))

@@ -138,9 +138,9 @@ std::string StageManager::GetStageName() const
 	return m_stage->GetStageName();
 }
 
-void StageManager::OffWaveDraw() const
+void StageManager::OffDrawWave() const
 {
-	m_stage->OffWaveDraw();
+	m_stage->OffDrawWave();
 }
 
 void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage, bool isGameScene)
