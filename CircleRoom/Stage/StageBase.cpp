@@ -30,6 +30,12 @@ namespace
 	// フィールドサイズの倍率　(半分の大きさ)
 	constexpr float kSizeScale = 0.4f;
 
+	// プレイヤー死亡時の画面の揺れフレーム
+	constexpr int kShakeFrameDeath = 10;
+
+	// サウンドのフェードフレーム
+	constexpr int kSoundFade = 30;
+
 	// 色定数
 	constexpr unsigned int kFrameColor = 0xd80032;
 	constexpr unsigned int kWhiteColor = 0xf0ece5;
@@ -37,72 +43,26 @@ namespace
 	constexpr unsigned int kRedColor = 0xd2001a;
 	constexpr unsigned int kBackFrameColor = 0x161a30;
 
-	// 矢印の点滅間隔
-	constexpr int kFlashInterval = 20;
-
-
-	// 条件の描画基準位置
-	constexpr int kConditionStrPosX = 20;
-
-	// 殺された種類の基準描画位置
-	constexpr int kKillTypePosX = 156;
-	constexpr int kKillTypePosY = 200;
-	// デフォルト拡大率
-	constexpr double kKillTypeDefExtRate = 0.372;
-	// 大きめ拡大率
-	constexpr double kKillTypeLargeExtRate = 0.6;
-	// それに対応する名前
-	const std::vector<std::string> kLargeTypeName = {
-		"Child",
-		"Split",
-		"SplitTwoBound"
-	};
-	// 小さめ拡大率
-	constexpr double kKillTypeSmallExtRate = 0.25;
-	// それに対応する名前
-	const std::vector<std::string> kSmallTypeName = {
-		"Large",
-		"BossArmored",
-		"BossStrongArmored"
-	};
-
-	// プレイヤー死亡時の画面の揺れフレーム
-	constexpr int kShakeFrameDeath = 10;
-
-	// サウンドのフェードフレーム
-	constexpr int kSoundFade = 30;
-
-	// ラジアンでの90度
+	// 矢印画像定数
+	constexpr int kArrowFlashInterval = 20;
 	constexpr double kRad90 = DX_PI / 2;
 
-	// 条件達成時の描画時間("○の条件達成の文字")
-	constexpr int kAchivedFrame = 120;
-
-	// スタート文字のウェーブスピード
+	// ウェーブ文字定数
 	constexpr float kWaveSpeed = DX_PI_F / 180 * 5;
-	// ウェーブの間隔
 	constexpr float kWaveInterval = DX_PI_F / 15.0f;
-
-	// ウェーブ文字列
 	int kTitleWaveNum = 4;
 	const wchar_t* const kTitleWave[] = {L"ス", L"タ", L"ー", L"ト"};
 	int kDashWaveNum = 4;
 	const wchar_t* const kDashWave[] = {L"ダ", L"ッ", L"シ", L"ュ"};
 
-	// 拡大フレーム
-	constexpr int kExtRateFrame = 45;
-	// 拡大したままのフレーム
-	constexpr int kWaitExtRateFrame = 30;
-	// 拡大サイズ
+	// 拡大文字定数
 	constexpr float kExtRateSize = 2.0f;
-	// 
-	constexpr int kShiftWidth = 256;
-	// 右にずらす量
-	constexpr int kShiftRight = 320;
-	// 上にずらす量
-	constexpr int kShiftUp = 360;
-	// はじめのα値
+	constexpr int kExtRateFrame = 45;
+	constexpr int kWaitExtRateFrame = 30;
 	constexpr int kExtRateAlpha = 224;
+	constexpr int kExtShiftWidth = 256;
+	constexpr int kExtShiftRight = 320;
+	constexpr int kExtShiftUp = 360;
 
 	// ステージ名座標定数
 	constexpr int kNamePosX = 64;
@@ -117,9 +77,27 @@ namespace
 	constexpr int kTimePosY = 160;
 	constexpr int kTimePlayingDiff = -16;
 	constexpr int kTimeAddY = 24;
+
 	// 敵種類定数
 	constexpr int kKilledStrPosX = 136;
 	constexpr int kKilledStrPosY = 160;
+	constexpr int kKillTypePosX = 156;
+	constexpr int kKillTypePosY = 200;
+	constexpr int kKillTypeAlpha = 192;
+	constexpr double kKillTypeDefExtRate = 0.372;
+	constexpr double kKillTypeLargeExtRate = 0.6;
+	const std::vector<std::string> kLargeTypeName = {
+		"Child",
+		"Split",
+		"SplitTwoBound"
+	};
+	constexpr double kKillTypeSmallExtRate = 0.25;
+	const std::vector<std::string> kSmallTypeName = {
+		"Large",
+		"BossArmored",
+		"BossStrongArmored"
+	};
+
 	// 情報定数
 	constexpr int kInfoFramePosX = 155;
 	constexpr int kInfoFramePosY = 168;
@@ -130,6 +108,7 @@ namespace
 	constexpr int kInfoBoxPlayingDiff = 6;
 
 	// 条件定数
+	constexpr int kConditionStrPosX = 20;
 	constexpr int kConditionPlayingDiff = 24;
 	constexpr int kConditionPosY = 256;
 	constexpr int kConditionBoxPosX = 0;
@@ -161,6 +140,7 @@ namespace
 	constexpr int kBestTimeUpStrPosY = 256;
 
 	// 達成文字描画定数
+	constexpr int kAchivedDrawFrame = 120;
 	constexpr int kAchivedStrShiftPosY = 344;
 	constexpr int kAchivedStrPosX = 12;
 	constexpr int kAchivedFrameWidth = 352;
@@ -338,7 +318,7 @@ void StageBase::UpdateSelect(Input& input)
 	m_achived.remove_if(
 		[](const auto& achived)
 		{
-			return achived.frame > kAchivedFrame;
+			return achived.frame > kAchivedDrawFrame;
 		}
 	);
 
@@ -702,7 +682,7 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 
 void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY) const
 {
-	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kFlashInterval) % 2 != 0)
+	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kArrowFlashInterval) % 2 != 0)
 	{
 		DrawBox(kConditionStrPosX, y, kConditionStrPosX + kArrowSize, y + kArrowSize, 0xffde00, true);
 	}
@@ -713,7 +693,7 @@ void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
 {
 	DrawStringToHandle(kConditionStrPosX, y, L"　　   秒間生き残る\n　　(           )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
-		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / 60, existTime);
+		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / kFrameToSec, existTime);
 }
 
 void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
@@ -813,7 +793,7 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int 
 	}
 	else
 	{
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kKillTypeAlpha);
 		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
@@ -827,26 +807,26 @@ void StageBase::DrawExpansion() const
 	int posX = 0;
 
 	int left = 0;
-	int right = width + static_cast<int>((width - kShiftRight) * kExtRateSize);
-	int top = static_cast<int>(-kShiftUp * kExtRateSize);
-	int bottom = height + static_cast<int>((height - kShiftUp) * kExtRateSize);
+	int right = width + static_cast<int>((width - kExtShiftRight) * kExtRateSize);
+	int top = static_cast<int>(-kExtShiftUp * kExtRateSize);
+	int bottom = height + static_cast<int>((height - kExtShiftUp) * kExtRateSize);
 
 	if (m_extRateFrame > kWaitExtRateFrame)
 	{
 		float rate = 1.0f - ((m_extRateFrame - kWaitExtRateFrame) / static_cast<float>(kExtRateFrame - kWaitExtRateFrame));
 
-		posX = static_cast<int>(kShiftWidth * rate);
+		posX = static_cast<int>(kExtShiftWidth * rate);
 
-		right = width + static_cast<int>((width - kShiftRight) * kExtRateSize * rate);
-		top = static_cast<int>(-kShiftUp * kExtRateSize * rate);
-		bottom = height + static_cast<int>((height - kShiftUp) * kExtRateSize * rate);
+		right = width + static_cast<int>((width - kExtShiftRight) * kExtRateSize * rate);
+		top = static_cast<int>(-kExtShiftUp * kExtRateSize * rate);
+		bottom = height + static_cast<int>((height - kExtShiftUp) * kExtRateSize * rate);
 
 		int alpha = kExtRateAlpha + static_cast<int>((255 - kExtRateAlpha) * (1.0f - rate));
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 	}
 	else
 	{
-		posX = kShiftWidth;
+		posX = kExtShiftWidth;
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kExtRateAlpha);
 	}
 
@@ -1007,16 +987,18 @@ void StageBase::DrawBestTime() const
 
 	if (!m_isUpdateBestTime) return;
 
+	// 点滅描画
 	if (((m_waitFrame / kBestTimeFlashInterval) % 2) == 1)
 	{
 		DrawFormatStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY + kBestTimeStrAddY, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
 	}
 	
-	if (m_waitFrame > kAchivedFrame) return;
+	if (m_waitFrame > kAchivedDrawFrame) return;
 
-	if (m_waitFrame > static_cast<int>(kAchivedFrame * 0.5f))
+	// 更新した場合教える用
+	if (m_waitFrame > static_cast<int>(kAchivedDrawFrame * 0.5f))
 	{
-		float rate = 1.0f - (m_waitFrame - (kAchivedFrame * 0.5f)) / (kAchivedFrame * 0.5f);
+		float rate = 1.0f - (m_waitFrame - (kAchivedDrawFrame * 0.5f)) / (kAchivedDrawFrame * 0.5f);
 		int alpha = static_cast<int>(255 * rate);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		DrawBox(m_size.w - kBestTimeBoxPosX, kBestTimeBoxPosY, m_size.w, kBestTimeBoxPosY + kBestTimeBoxHeight, kBackFrameColor, true);
@@ -1038,14 +1020,15 @@ void StageBase::DrawConditionsAchived(int y) const
 
 	for (const auto& achived : m_achived)
 	{
-		if (achived.frame < static_cast<int>(kAchivedFrame * 0.5f))
+		if (achived.frame < static_cast<int>(kAchivedDrawFrame * 0.5f))
 		{
 			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
 			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
 		}
+		// 少しずつ透明に描画
 		else
 		{
-			float rate = (kAchivedFrame - achived.frame) / (kAchivedFrame * 0.5f);
+			float rate = (kAchivedDrawFrame - achived.frame) / (kAchivedDrawFrame * 0.5f);
 			int alpha = static_cast<int>(255 * rate);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
@@ -1082,6 +1065,7 @@ void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int 
 
 	DrawGraph(kWaveFramePosX, kWaveFramePosY, m_frameImg->GetHandle(), true);
 
+	// 事前に入力したタイプで画像変更
 	const auto& type = m_input.GetType();
 	if (type == InputType::keybd)
 	{
@@ -1096,6 +1080,7 @@ void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int 
 
 	int x = kWaveStrPosX;
 
+	// 文字一つずつ描画
 	for (int i = 0; i < num; i++)
 	{
 		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
@@ -1119,7 +1104,7 @@ int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName
 
 	if (m_mgr.GetStage()->IsClearStage(nextStName))
 	{
-		if (isAlreadyClear || (m_waitFrame / kFlashInterval) % 2 == 0)
+		if (isAlreadyClear || (m_waitFrame / kArrowFlashInterval) % 2 == 0)
 		{
 			handle = m_arrowImg->GetHandle();
 		}
