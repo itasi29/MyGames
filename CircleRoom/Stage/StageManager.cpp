@@ -195,23 +195,21 @@ void StageManager::ChangeStage(std::shared_ptr<StageBase> nextStage, bool isGame
 	// 向かう先の場所の保存
 	m_targetPos = pos;
 
-	// メンバ関数ポインタの更新
-	m_updateFunc = &StageManager::StageMoveUpdate;
-	m_drawFunc = &StageManager::StageMoveDraw;
-
 	// 次のステージの保存
 	m_nextStage = nextStage;
 	SaveClear(m_nextStage->GetStageName());
 	m_nextStage->StartCheck();
 
-	// 動いていることに
 	m_isMove = true;
 
-	// 現在いるステージの更新
 	GameManager::GetInstance().UpdateNowStage(m_nextStage->GetStageName());
 
 	// 現在の描画先へと戻す(本来は)
 	SetDrawScreen(DX_SCREEN_BACK);
+
+	// メンバ関数ポインタの更新
+	m_updateFunc = &StageManager::StageMoveUpdate;
+	m_drawFunc = &StageManager::StageMoveDraw;
 }
 
 void StageManager::ImmediatelyChange()
@@ -226,15 +224,14 @@ void StageManager::ImmediatelyChange()
 
 void StageManager::Save(const std::string& path)
 {
-	FILE* fp = nullptr; // ファイルポインタ
+	// ファイルポインタ
+	FILE* fp = nullptr;
 	auto err = fopen_s(&fp, path.c_str(), "wb");
 	if (err != 0)
 	{
-		// 読み込みに失敗したため終了
 		assert(false);
 		return;
 	}
-	// ヘッダの書き込み
 	StageInfHeader header;
 	header.dataCount = m_stageSaveData.size();
 	fwrite(&header, sizeof(header), 1, fp);

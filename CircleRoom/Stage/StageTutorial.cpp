@@ -36,7 +36,7 @@ namespace
 	constexpr int kSoundFade = 30;
 
 	// プレイヤー死亡時の画面の揺れフレーム
-	constexpr int kShakeFrameDeath = 10;
+	constexpr int kPlayerDeathShakeFrame = 10;
 
 	// プレイヤー強調描画フレーム
 	constexpr int kEmphasisFrame = 60 * 5;
@@ -199,7 +199,7 @@ void StageTutorial::UpdatePlaying(Input& input)
 			// プレイヤーの死亡処理
 			m_player->Death();
 
-			m_mgr.GetScene()->ShakeScreen(kShakeFrameDeath);
+			m_mgr.GetScene()->ShakeScreen(kPlayerDeathShakeFrame);
 
 			// 殺したことがある敵情報の更新
 			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());

@@ -23,27 +23,26 @@ enum class Ability
 	kDash,
 };
 
+enum class StageDir
+{
+	kStageLeft,
+	kStageRight,
+	kStageUp,
+	kStageDown,
+	kStageMax,
+};
+
 /// <summary>
 /// ステージの遷移をコントロール
 /// </summary>
 class StageManager
 {
 public:
-	enum StageDir
-	{
-		kStageLeft,
-		kStageRight,
-		kStageUp,
-		kStageDown,
-		kStageMax,
-	};
 
 	StageManager(std::shared_ptr<SceneManager>& mgr);
 	~StageManager();
 
 	void Init();
-
-	// 後で変更or消す
 	void InitData();
 	void InitPos();
 
@@ -55,7 +54,7 @@ public:
 	bool IsClear() const { return m_isClear; }
 	void OnClear() { m_isClear = true; }
 	void ResetClear() { m_isClear = false; }
-	void OffWaveDraw() const;
+	void OffDrawWave() const;
 
 	/// <summary>
 	///  ステージの切り替え
@@ -172,7 +171,6 @@ public:
 	void BossStageIn() { m_isBossIn = true; }
 
 private:
-
 	// 通常の更新
 	void NormalUpdate(Input& input);
 	// ステージ移動の更新
@@ -202,6 +200,16 @@ private:
 
 	std::shared_ptr<SceneManager>& m_mgr;
 
+	// 画面描画用ハンドル
+	int m_drawScreen;
+	// 移動時の画面ハンドル
+	int m_screen;
+	// キープ用画面ハンドル
+	int m_keepScreen;
+
+	// ダッシュ説明画像クラス
+	std::shared_ptr<FileBase> m_dashImg;
+
 	// ステージのクリア情報群
 	std::unordered_map<std::string, StageData> m_stageSaveData;
 	// 殺された敵の情報群
@@ -216,8 +224,7 @@ private:
 	std::unordered_map<Ability, bool> m_abilityActive;
 	// ボスステージに入ったことがあるか
 	bool m_isBossIn;
-
-	// ステージクリア
+	// ゲームクリア
 	bool m_isClear;
 
 	// ステージのポインタ
@@ -234,15 +241,5 @@ private:
 	Vec2 m_pos;
 	// 次のステージの場所
 	Vec2 m_targetPos;
-
-	// 画面描画用ハンドル
-	int m_drawScreen;
-	// 移動時の画面ハンドル
-	int m_screen;
-	// キープ用画面ハンドル
-	int m_keepScreen;
-
-	// ダッシュ説明画像クラス
-	std::shared_ptr<FileBase> m_dashImg;
 };
 

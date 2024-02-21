@@ -33,10 +33,6 @@ namespace
 	// 生成間隔フレーム
 	constexpr int kCreateFrame = static_cast<int>(60 * 5.5);
 
-	// 生成数
-	constexpr int kCreateNum = 2;
-
-
 	// クリア時間
 	constexpr int kRightExsitTime = 10;
 	constexpr int kDownKilledNum = 4;
