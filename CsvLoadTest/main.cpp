@@ -1,4 +1,4 @@
-#include <DxLib.h>
+#include <iostream>
 #include <cassert>
 #include <fstream>
 #include <sstream>
@@ -80,15 +80,8 @@ struct LevelData
 };
 
 // プログラムは WinMain から始まります
-int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
+int main()
 {
-	// 一部の関数はDxLib_Init()の前に実行する必要がある
-	ChangeWindowMode(true);
-
-	if (DxLib_Init() == -1)		// ＤＸライブラリ初期化処理
-	{
-		return -1;			// エラーが起きたら直ちに終了
-	}
 
 	// 一時保存用string
 	std::string strBuf;
@@ -103,7 +96,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	if (!ifs)
 	{
 		assert(false);
-		DxLib_End();
 		return 0;
 	}
 
@@ -143,18 +135,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			// 条件読み込み
 			levelInfo.type = static_cast<ConditionsType>(std::stoi(strConmaBuf[2]));
 			// 条件詳細
-			if (levelInfo.type == ConditionsType::kSumTime)
+			levelInfo.info = std::stoi(strConmaBuf[3]);
+
+			if (levelInfo.type != ConditionsType::kSumTime) continue;
+
+			int num = std::stoi(strConmaBuf[4]);
+			levelInfo.infoGroup.resize(num);
+			for (int k = 0; k < num ; k++)
 			{
-				int num = std::stoi(strConmaBuf[3]);
-				levelInfo.infoGroup.resize(num);
-				for (int k = 0; k < num ; k++)
-				{
-					levelInfo.infoGroup[k] = strConmaBuf[k + 4];
-				}
-			}
-			else
-			{
-				levelInfo.info = std::stoi(strConmaBuf[3]);
+				levelInfo.infoGroup[k] = strConmaBuf[k + 5];
 			}
 		}
 
@@ -176,36 +165,58 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			enemyInfo.name = strConmaBuf[0];
 			// 同名別種類数読み込み
 			enemyInfo.num = std::stoi(strConmaBuf[1]);
+			enemyInfo.info.resize(enemyInfo.num);
 			/* 生成情報読み込み */
-			for ()
+			for (int k = 0; k < enemyInfo.num; k++)
 			{
+				std::getline(ifs, strBuf);
+				strConmaBuf = Split(strBuf, ',');
 
+				auto& info = enemyInfo.info[k];
+
+				// 最初に生成する数
+				info.startNum = std::stoi(strConmaBuf[0]);
+				// 最初の生成間隔
+				info.startInterval = std::stoi(strConmaBuf[1]);
+				// 最初のディレイフレーム
+				info.startDelayFrame = std::stoi(strConmaBuf[2]);
+				// 生成間隔
+				info.createInterval = std::stoi(strConmaBuf[3]);
 			}
 		}
+
+		/* ボス生成フラグ */
+		std::getline(ifs, strBuf);
+		strConmaBuf = Split(strBuf, ',');
+
+		data.isBoss = std::stoi(strConmaBuf[0]);
 	}
 
 	// close処理はデストラクタで行われる
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-	DxLib_End();				// ＤＸライブラリ使用の終了処理
+	printf_s("ステージ数 : %d\n", m_levelData.size());
+	for (const auto& level : m_levelData)
+	{
+		printf_s("name : %s\n", level.first.c_str());
+		auto& data = level.second;
+		printf_s("隣接数： %d\n", data.nextNum);
+		for (int i = 0; i < data.nextNum; i++)
+		{
+			auto& aaa = data.levelInfo[i];
+			printf_s("方向：%d   name : %s   条件 : %d   情報 : %d\n", aaa.dir, aaa.name.c_str(), aaa.type, aaa.info);
+		}
+		printf_s("敵数 : %d\n", data.enemyNum);
+		for (int i = 0; i < data.enemyNum; i++)
+		{
+			auto& aaa = data.enemyInfo[i];
+			printf_s("name : %s   同別情報数 : %d\n", aaa.name.c_str(), aaa.num);
+			for (int j = 0; j < aaa.num; j++)
+			{
+				auto& bbb = aaa.info[j];
+				printf_s("生成数 : %d   S生成間隔 : %d   Sディレイ : %d   間隔 : %d", bbb.startNum, bbb.startInterval, bbb.startDelayFrame, bbb.createInterval);
+			}
+		}
+		printf_s("ボス生成 : %d\n\n", data.isBoss);
+	}
 
 	return 0;				// ソフトの終了
 }
