@@ -601,6 +601,7 @@ void StageManager::StageMoveDraw() const
 	DrawGraph(static_cast <int>(-m_pos.x), static_cast <int>(-m_pos.y), m_screen, true);
 
 #ifdef _DEBUG
+	// MEMO:デバッグなので未定数化
 	DrawFormatString(100, 100, 0xffffff, L"dis:%.2f", (m_targetPos - m_pos).Length());
 #endif
 }
