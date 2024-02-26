@@ -30,7 +30,7 @@ enum class ConditionsType
 };
 
 // 次ステージの情報構造体
-struct NextLevelInfo
+struct NextStageInfo
 {
 	// 方向情報
 	MapDir dir;
@@ -67,17 +67,38 @@ struct EnemyInfo
 	std::vector<CreateInfo> info;
 };
 
-struct LevelData
+struct StageData
 {
 	// 次ステージ情報
 	int nextNum;
-	std::vector<NextLevelInfo> levelInfo;
+	std::vector<NextStageInfo> stageInfo;
 	// 敵情報
 	int enemyNum;
 	std::vector<EnemyInfo> enemyInfo;
 	// ボスステージ情報
 	bool isBoss;
 };
+
+namespace
+{
+	// インデックス番号
+	constexpr int kIndexStageName			= 0;
+	constexpr int kIndexEnemyTypeNum		= 1;
+	constexpr int kIndexEnemyName			= 2;
+	constexpr int kIndexEnemyInfoNum		= 3;
+	constexpr int kIndexStartCreateNum		= 4;
+	constexpr int kIndexStartCreateFrame	= 5;
+	constexpr int kIndexStartDelayFrame		= 6;
+	constexpr int kIndexCreateFrame			= 7;
+	constexpr int kIndexIsCreateBoss		= 8;
+	constexpr int kIndexNextStageNum		= 9;
+	constexpr int kIndexNextStageName		= 10;
+	constexpr int kIndexDir					= 11;
+	constexpr int kIndexInfoType			= 12;
+	constexpr int kIndexInfo				= 13;
+	constexpr int kIndexInfoGroupNum		= 14;
+	constexpr int kIndexInfoGroup			= 15;
+}
 
 // プログラムは WinMain から始まります
 int main()
@@ -89,7 +110,7 @@ int main()
 	std::vector<std::string> strConmaBuf;
 
 	// ステージ情報保存
-	std::unordered_map<std::string, LevelData> m_levelData;
+	std::unordered_map<std::string, StageData> m_stageData;
 
 	// ファイル読み込み
 	std::ifstream ifs("StageData.csv");
@@ -99,124 +120,154 @@ int main()
 		return 0;
 	}
 
-	/* ステージ数の取得 */
+	// ステージ名保存
+	std::string stageName;
+	// 敵種類数情報
+	int enemyTypeIndex;
+	int enemyTypeNum;
+	bool isLoadAllEnemys = true;
+	// 敵1体の情報
+	int enemyInfoIndex;
+	int enemyInfoNum;
+	std::string enemyName;
+	bool isLoadAllEnmeyInfo = true;
+	// 隣接ステージ情報
+	int nextStageIndex;
+	int nextStageNum;
+	bool isLoadAllNextStages = true;
+
+	// 最初は対応表情報が入っているだけなので無視する
 	std::getline(ifs, strBuf);
-	strConmaBuf = Split(strBuf, ',');
-	int stageNum = std::stoi(strConmaBuf[0]);
-
-	for (int i = 0; i < stageNum; i++)
+	// 情報を読み切るまでループ
+	while (std::getline(ifs, strBuf))
 	{
-		/* 無の読み込み */
-		std::getline(ifs, strBuf);
-		/* ステージ名読み込み */
-		std::getline(ifs, strBuf);
 		strConmaBuf = Split(strBuf, ',');
 
-		auto& data = m_levelData[strConmaBuf[0]];
-
-		/* 隣接ステージ数読み込み */
-		std::getline(ifs, strBuf);
-		strConmaBuf = Split(strBuf, ',');
-		// 隣接ステージ数読み込み
-		data.nextNum = std::stoi(strConmaBuf[0]);
-		data.levelInfo.resize(data.nextNum);
-		/* 隣接ステージ情報読み込み */
-		for (int j = 0; j < data.nextNum; j++)
+		// 全ての情報を読み込んでいる場合のみ次の情報群に移行する
+		if (isLoadAllEnemys && isLoadAllNextStages)
 		{
-			std::getline(ifs, strBuf);
-			strConmaBuf = Split(strBuf, ',');
+			// ステージ名読み込み
+			stageName = strConmaBuf[kIndexStageName];
+			// 敵種類数読み込み
+			enemyTypeNum = std::stoi(strConmaBuf[kIndexEnemyTypeNum]);
+			// 隣接ステージ数読み込み
+			nextStageNum = std::stoi(strConmaBuf[kIndexNextStageNum]);
+			// ボス生成フラグ読み込み
+			bool isCreateBoss = static_cast<bool>(std::stoi(strConmaBuf[kIndexIsCreateBoss]));
 
-			auto& levelInfo = data.levelInfo[j];
+			// 情報の代入
+			auto& data = m_stageData[stageName];
+			data.enemyNum = enemyTypeNum;
+			data.enemyInfo.resize(enemyTypeNum);
+			data.nextNum = nextStageNum;
+			data.stageInfo.resize(nextStageNum);
+			data.isBoss = isCreateBoss;
 
-			// ステージ方向読み込み
-			levelInfo.dir = static_cast<MapDir>(std::stoi(strConmaBuf[0]));
-			// 次ステージ名読み込み
-			levelInfo.name = strConmaBuf[1];
-			// 条件読み込み
-			levelInfo.type = static_cast<ConditionsType>(std::stoi(strConmaBuf[2]));
-			// 条件詳細
-			levelInfo.info = std::stoi(strConmaBuf[3]);
+			// 情報読み込んでいないとする
+			isLoadAllEnemys = false;
+			enemyTypeIndex = 0;
+			isLoadAllNextStages = false;
+			nextStageIndex = 0;
+		}
 
-			if (levelInfo.type != ConditionsType::kSumTime) continue;
+		auto& data = m_stageData[stageName];
 
-			int num = std::stoi(strConmaBuf[4]);
-			levelInfo.infoGroup.resize(num);
-			for (int k = 0; k < num ; k++)
+		// 敵情報読み込み
+		if (!isLoadAllEnemys)
+		{
+			auto& enemy = data.enemyInfo[enemyTypeIndex];
+
+			if (isLoadAllEnmeyInfo)
 			{
-				levelInfo.infoGroup[k] = strConmaBuf[k + 5];
+				// 名前読み込み
+				enemyName = strConmaBuf[kIndexEnemyName];
+				// 同名別条件数読み込み
+				enemyInfoNum = std::stoi(strConmaBuf[kIndexEnemyInfoNum]);
+
+				// 情報代入
+				enemy.name = enemyName;
+				enemy.num = enemyInfoNum;
+				enemy.info.resize(enemyInfoNum);
+
+				// 情報読み込み初期化
+				isLoadAllEnmeyInfo = false;
+				enemyInfoIndex = 0;
+			}
+
+			auto& info = enemy.info[enemyInfoIndex];
+
+			// 初期生成数読み込み
+			int startNum = std::stoi(strConmaBuf[kIndexStartCreateNum]);
+			// 初期生成間隔読み込み
+			int startCreateFrame = std::stoi(strConmaBuf[kIndexStartCreateFrame]);
+			// 初期遅延フレーム
+			int startDelayFrame = std::stoi(strConmaBuf[kIndexStartDelayFrame]);
+			// 生成間隔
+			int CreateFrame = std::stoi(strConmaBuf[kIndexCreateFrame]);
+
+			// 情報代入
+			info.startNum = startNum;
+			info.startInterval = startCreateFrame;
+			info.startDelayFrame = startDelayFrame;
+			info.createInterval = CreateFrame;
+
+			// 情報更新
+			enemyInfoIndex++;
+			if (enemyInfoIndex >= enemyInfoNum)
+			{
+				isLoadAllEnmeyInfo = true;
+
+				enemyTypeIndex++;
+				if (enemyTypeIndex >= enemyTypeNum)
+				{
+					isLoadAllEnemys = true;
+				}
 			}
 		}
 
-		/* 敵種類数読み込み */
-		std::getline(ifs, strBuf);
-		strConmaBuf = Split(strBuf, ',');
-		// 種類数でサイズ変更
-		data.enemyNum = std::stoi(strConmaBuf[0]);
-		data.enemyInfo.resize(data.enemyNum);
-		/* 生成敵情報読み込み */
-		for (int j = 0; j < data.enemyNum; j++)
+		// 隣接ステージ情報読み込み
+		if (!isLoadAllNextStages)
 		{
-			std::getline(ifs, strBuf);
-			strConmaBuf = Split(strBuf, ',');
+			// ステージ名読み込み
+			std::string name = strConmaBuf[kIndexNextStageName];
+			// 方向読み込み
+			int dir = std::stoi(strConmaBuf[kIndexDir]);
+			// 条件タイプ読み込み
+			int infoType = std::stoi(strConmaBuf[kIndexInfoType]);
+			// 条件情報読み込み
+			int info = std::stoi(strConmaBuf[kIndexInfo]);
+			
+			// 情報代入
+			auto& stage = data.stageInfo[nextStageIndex];
+			stage.name = name;
+			stage.dir = static_cast<MapDir>(dir);
+			stage.type = static_cast<ConditionsType>(infoType);
+			stage.info = info;
 
-			auto& enemyInfo = data.enemyInfo[j];
-
-			// 名前読み込み
-			enemyInfo.name = strConmaBuf[0];
-			// 同名別種類数読み込み
-			enemyInfo.num = std::stoi(strConmaBuf[1]);
-			enemyInfo.info.resize(enemyInfo.num);
-			/* 生成情報読み込み */
-			for (int k = 0; k < enemyInfo.num; k++)
+			// 合計時間系のみ追加情報読み込み
+			if (static_cast<ConditionsType>(infoType) == ConditionsType::kSumTime)
 			{
-				std::getline(ifs, strBuf);
-				strConmaBuf = Split(strBuf, ',');
+				// 情報群数読み込み
+				int infoNum = std::stoi(strConmaBuf[kIndexInfoGroupNum]);
+				stage.infoGroup.resize(infoNum);
 
-				auto& info = enemyInfo.info[k];
+				// 情報群読み込み
+				for (int i = 0; i < infoNum; i++)
+				{
+					stage.infoGroup[i] = strConmaBuf[i + kIndexInfoGroup];
+				}
+			}
 
-				// 最初に生成する数
-				info.startNum = std::stoi(strConmaBuf[0]);
-				// 最初の生成間隔
-				info.startInterval = std::stoi(strConmaBuf[1]);
-				// 最初のディレイフレーム
-				info.startDelayFrame = std::stoi(strConmaBuf[2]);
-				// 生成間隔
-				info.createInterval = std::stoi(strConmaBuf[3]);
+			// 情報更新
+			nextStageIndex++;
+			if (nextStageIndex >= nextStageNum)
+			{
+				isLoadAllNextStages = true;
 			}
 		}
-
-		/* ボス生成フラグ */
-		std::getline(ifs, strBuf);
-		strConmaBuf = Split(strBuf, ',');
-
-		data.isBoss = std::stoi(strConmaBuf[0]);
 	}
 
-	// close処理はデストラクタで行われる
-	printf_s("ステージ数 : %d\n", m_levelData.size());
-	for (const auto& level : m_levelData)
-	{
-		printf_s("name : %s\n", level.first.c_str());
-		auto& data = level.second;
-		printf_s("隣接数： %d\n", data.nextNum);
-		for (int i = 0; i < data.nextNum; i++)
-		{
-			auto& aaa = data.levelInfo[i];
-			printf_s("方向：%d   name : %s   条件 : %d   情報 : %d\n", aaa.dir, aaa.name.c_str(), aaa.type, aaa.info);
-		}
-		printf_s("敵数 : %d\n", data.enemyNum);
-		for (int i = 0; i < data.enemyNum; i++)
-		{
-			auto& aaa = data.enemyInfo[i];
-			printf_s("name : %s   同別情報数 : %d\n", aaa.name.c_str(), aaa.num);
-			for (int j = 0; j < aaa.num; j++)
-			{
-				auto& bbb = aaa.info[j];
-				printf_s("生成数 : %d   S生成間隔 : %d   Sディレイ : %d   間隔 : %d", bbb.startNum, bbb.startInterval, bbb.startDelayFrame, bbb.createInterval);
-			}
-		}
-		printf_s("ボス生成 : %d\n\n", data.isBoss);
-	}
+	
 
 	return 0;				// ソフトの終了
 }
