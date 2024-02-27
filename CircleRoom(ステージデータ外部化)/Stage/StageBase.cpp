@@ -1,5 +1,7 @@
 ﻿#include <DxLib.h>
 #include <cassert>
+#include <fstream>
+#include <sstream>
 #include "Application.h"
 #include "Input.h"
 #include "StringUtility.h"
@@ -27,6 +29,24 @@
 
 namespace
 {
+	// ステージデータインデックス番号
+	constexpr int kIndexStageName = 0;
+	constexpr int kIndexEnemyTypeNum = 1;
+	constexpr int kIndexEnemyName = 2;
+	constexpr int kIndexEnemyInfoNum = 3;
+	constexpr int kIndexStartCreateNum = 4;
+	constexpr int kIndexStartCreateFrame = 5;
+	constexpr int kIndexStartDelayFrame = 6;
+	constexpr int kIndexCreateFrame = 7;
+	constexpr int kIndexIsCreateBoss = 8;
+	constexpr int kIndexNextStageNum = 9;
+	constexpr int kIndexNextStageName = 10;
+	constexpr int kIndexDir = 11;
+	constexpr int kIndexInfoType = 12;
+	constexpr int kIndexInfo = 13;
+	constexpr int kIndexInfoGroupNum = 14;
+	constexpr int kIndexInfoGroup = 15;
+
 	// フィールドサイズの倍率　(半分の大きさ)
 	constexpr float kSizeScale = 0.4f;
 
@@ -1286,4 +1306,172 @@ int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName
 	}
 
 	return handle;
+}
+
+void StageBase::LoadStageInfo()
+{
+	// 一時保存用string
+	std::string strBuf;
+	// カンマ分け一時保存用string
+	std::vector<std::string> strConmaBuf;
+
+	// ファイル読み込み
+	std::ifstream ifs("StageData.csv");
+	if (!ifs)
+	{
+		assert(false);
+		return;
+	}
+
+	// ステージ名保存
+	std::string stageName;
+	// 敵種類数情報
+	int enemyTypeIndex = 0;
+	bool isLoadAllEnemys = true;
+	// 敵1体の情報
+	int enemyInfoIndex = 0;
+	bool isLoadAllEnmeyInfo = true;
+	// 隣接ステージ情報
+	int nextStageIndex = 0;
+	bool isLoadAllNextStages = true;
+
+	// 最初は対応表情報が入っているだけなので無視する
+	std::getline(ifs, strBuf);
+	// 情報を読み切るまでループ
+	while (std::getline(ifs, strBuf))
+	{
+		strConmaBuf = StringUtility::Split(strBuf, ',');
+
+		LoadImportantStageInfo(strConmaBuf, stageName, isLoadAllEnemys, enemyTypeIndex, isLoadAllNextStages, nextStageIndex);
+		auto& data = m_stageData[stageName];
+		LoadEnemys(strConmaBuf, data, isLoadAllEnemys, enemyTypeIndex, isLoadAllEnmeyInfo, enemyInfoIndex);
+		LoadNextStages(strConmaBuf, data, isLoadAllNextStages, nextStageIndex);
+	}
+}
+
+void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllNextStages, int& nextStageIndex)
+{
+	// 全ての情報を読み込んでいる場合のみ次の情報群に移行する
+	if (!isLoadAllEnemys || !isLoadAllNextStages) return;
+
+	// ステージ名読み込み
+	stageName = strConmaBuf[kIndexStageName];
+	// 敵種類数読み込み
+	int enemyTypeNum = std::stoi(strConmaBuf[kIndexEnemyTypeNum]);
+	// 隣接ステージ数読み込み
+	int nextStageNum = std::stoi(strConmaBuf[kIndexNextStageNum]);
+	// ボス生成フラグ読み込み
+	bool isCreateBoss = static_cast<bool>(std::stoi(strConmaBuf[kIndexIsCreateBoss]));
+
+	// 情報の代入
+	auto& data = m_stageData[stageName];
+	data.enemyNum = enemyTypeNum;
+	data.enemyInfo.resize(enemyTypeNum);
+	data.nextNum = nextStageNum;
+	data.stageInfo.resize(nextStageNum);
+	data.isBoss = isCreateBoss;
+
+	// 情報読み込んでいないとする
+	isLoadAllEnemys = false;
+	enemyTypeIndex = 0;
+	isLoadAllNextStages = false;
+	nextStageIndex = 0;
+}
+
+void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex)
+{
+	// 敵情報すべて読み込んでいたら早期リターン
+	if (isLoadAllEnemys) return;
+
+	auto& enemy = data.enemyInfo[enemyTypeIndex];
+
+	if (isLoadAllEnmeyInfo)
+	{
+		// 名前読み込み
+		std::string enemyName = strConmaBuf[kIndexEnemyName];
+		// 同名別条件数読み込み
+		int enemyInfoNum = std::stoi(strConmaBuf[kIndexEnemyInfoNum]);
+
+		// 情報代入
+		enemy.name = enemyName;
+		enemy.num = enemyInfoNum;
+		enemy.info.resize(enemyInfoNum);
+
+		// 情報読み込み初期化
+		isLoadAllEnmeyInfo = false;
+		enemyInfoIndex = 0;
+	}
+
+	auto& info = enemy.info[enemyInfoIndex];
+
+	// 初期生成数読み込み
+	int startNum = std::stoi(strConmaBuf[kIndexStartCreateNum]);
+	// 初期生成間隔読み込み
+	int startCreateFrame = std::stoi(strConmaBuf[kIndexStartCreateFrame]);
+	// 初期遅延フレーム
+	int startDelayFrame = std::stoi(strConmaBuf[kIndexStartDelayFrame]);
+	// 生成間隔
+	int CreateFrame = std::stoi(strConmaBuf[kIndexCreateFrame]);
+
+	// 情報代入
+	info.startNum = startNum;
+	info.startInterval = startCreateFrame;
+	info.startDelayFrame = startDelayFrame;
+	info.createInterval = CreateFrame;
+
+	// 情報更新
+	enemyInfoIndex++;
+	if (enemyInfoIndex >= enemy.num)
+	{
+		isLoadAllEnmeyInfo = true;
+
+		enemyTypeIndex++;
+		if (enemyTypeIndex >= data.enemyNum)
+		{
+			isLoadAllEnemys = true;
+		}
+	}
+}
+
+void StageBase::LoadNextStages(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllNextStages, int& nextStageIndex)
+{
+	// 隣接情報すべて読み込んでいたら早期リターン
+	if (isLoadAllNextStages) return;
+
+	// ステージ名読み込み
+	std::string name = strConmaBuf[kIndexNextStageName];
+	// 方向読み込み
+	int dir = std::stoi(strConmaBuf[kIndexDir]);
+	// 条件タイプ読み込み
+	int infoType = std::stoi(strConmaBuf[kIndexInfoType]);
+	// 条件情報読み込み
+	int info = std::stoi(strConmaBuf[kIndexInfo]);
+
+	// 情報代入
+	auto& stage = data.stageInfo[nextStageIndex];
+	stage.name = name;
+	stage.dir = static_cast<MapDir>(dir);
+	stage.type = static_cast<ConditionsType>(infoType);
+	stage.info = info;
+
+	// 合計時間系のみ追加情報読み込み
+	if (static_cast<ConditionsType>(infoType) == ConditionsType::kSumTime)
+	{
+		// 情報群数読み込み
+		int infoNum = std::stoi(strConmaBuf[kIndexInfoGroupNum]);
+		stage.infoGroup.resize(infoNum);
+
+		// 情報群読み込み
+		for (int i = 0; i < infoNum; i++)
+		{
+			stage.infoGroup[i] = strConmaBuf[i + kIndexInfoGroup];
+		}
+	}
+
+	// 情報更新
+	nextStageIndex++;
+	if (nextStageIndex >= data.nextNum)
+	{
+		isLoadAllNextStages = true;
+	}
 }

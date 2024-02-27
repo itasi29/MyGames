@@ -37,3 +37,31 @@ std::wstring StringUtility::StringToWString(const std::string& str)
 
     return ret;
 }
+
+std::vector<std::string> StringUtility::Split(std::string& str, char del)
+{
+    // 区切り開始位置
+    int first = 0;
+    // 区切り最終位置
+    int last = str.find_first_of(del);
+
+    std::vector<std::string> result;
+
+    while (first < str.size())
+    {
+        // 区切ったものを結果に入れていく
+        std::string subStr(str, first, last - first);
+
+        result.push_back(subStr);
+
+        // 位置更新
+        first = last + 1;
+        last = str.find_first_of(del, first);
+        if (last == std::string::npos)
+        {
+            last = str.size();
+        }
+    }
+
+    return result;
+}

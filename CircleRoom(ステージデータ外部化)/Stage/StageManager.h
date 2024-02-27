@@ -11,7 +11,7 @@ class StageBase;
 class FileBase;
 struct size;
 
-struct StageData
+struct GameData
 {
 	int bestTime = 0;
 	bool isClear = false;
@@ -211,7 +211,7 @@ private:
 	std::shared_ptr<FileBase> m_dashImg;
 
 	// ステージのクリア情報群
-	std::unordered_map<std::string, StageData> m_stageSaveData;
+	std::unordered_map<std::string, GameData> m_stageSaveData;
 	// 殺された敵の情報群
 	std::vector<std::string> m_killedEnemyNameTable;
 	// プレイヤー殺した種類の数

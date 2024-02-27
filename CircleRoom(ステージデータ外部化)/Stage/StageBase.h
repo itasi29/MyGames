@@ -17,7 +17,7 @@ class Input;
 class BottansFile;
 class KeyFile;
 struct size;
-struct StageData;
+struct GameData;
 enum class StageDir;
 
 struct Achived
@@ -26,6 +26,71 @@ struct Achived
 	std::wstring str;
 	// フレーム
 	int frame;
+};
+
+enum class MapDir
+{
+	kUp,
+	kDown,
+	kRight,
+	kLeft
+};
+
+enum class ConditionsType
+{
+	kTime,
+	kKilled,
+	kSumTime
+};
+
+// 次ステージの情報構造体
+struct NextStageInfo
+{
+	// 方向情報
+	MapDir dir = MapDir::kUp;
+	// 名前
+	std::string name = {};
+	// 条件種類
+	ConditionsType type = ConditionsType::kTime;
+	// 条件情報
+	int info = 0;
+	std::vector<std::string> infoGroup = {};
+};
+
+// 生成情報構造体
+struct CreateInfo
+{
+	// 初期生成数
+	int startNum = 0;
+	// 初期生成間隔
+	int startInterval = 0;
+	// 初期ディレイフレーム
+	int startDelayFrame = 0;
+	// 生成間隔
+	int createInterval = 0;
+};
+
+// 敵情報構造体
+struct EnemyInfo
+{
+	// 名前
+	std::string name = {};
+	// 生成数
+	int num = 0;
+	// 生成情報
+	std::vector<CreateInfo> info = {};
+};
+
+struct StageData
+{
+	// 次ステージ情報
+	int nextNum = 0;
+	std::vector<NextStageInfo> stageInfo = {};
+	// 敵情報
+	int enemyNum = 0;
+	std::vector<EnemyInfo> enemyInfo = {};
+	// ボスステージ情報
+	bool isBoss = false;
 };
 
 class StageBase
@@ -178,12 +243,22 @@ private:
 
 	int GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const;
 
+private:
+	// ステージ情報読み込み
+	void LoadStageInfo();
+	void LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllNextStages, int& nextStageIndex);
+	void LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex);
+	void LoadNextStages(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllNextStages, int& nextStageIndex);
+
 protected:
 	// メンバ変数ポインタ
 	using UpdateFunc_t = void (StageBase::*)(Input&);
 	using DrawFunc_t = void (StageBase::*)() const;
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
+
+	// ステージの情報
+	std::unordered_map<std::string, StageData> m_stageData;
 
 	// マネジャーの参照
 	GameManager& m_mgr;

@@ -173,11 +173,9 @@ int main()
 		strConmaBuf = Split(strBuf, ',');
 
 		LoadImportantStageInfo(strConmaBuf, m_stageData, stageName, isLoadAllEnemys, enemyTypeIndex, isLoadAllNextStages, nextStageIndex);
-
 		auto& data = m_stageData[stageName];
 		LoadEnemys(strConmaBuf, data, isLoadAllEnemys, enemyTypeIndex, isLoadAllEnmeyInfo, enemyInfoIndex);
 		LoadNextStages(strConmaBuf, data, isLoadAllNextStages, nextStageIndex);
-
 	}
 
 	return 0;				// ソフトの終了
