@@ -339,6 +339,10 @@ void StageBase::UpdateSelect(Input& input)
 		}
 	);
 
+	// ここまではステージ外部化しても同じ処理
+
+
+#if false
 	if (input.IsTriggered("OK"))
 	{
 		// 移動中であっても即時移動
@@ -354,6 +358,23 @@ void StageBase::UpdateSelect(Input& input)
 		m_updateFunc = &StageBase::UpdatePlaying;
 		m_drawFunc = &StageBase::DrawPlaying;
 	}
+#else
+	if (input.IsTriggered("OK"))
+	{
+		// 移動中であっても即時移動
+		m_mgr.GetStage()->ImmediatelyChange();
+
+		// BGM変更
+		m_soundFrame = 0;
+		m_soundSys->Stop(m_selectBgm->GetHandle());
+		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+
+		Init();
+
+		m_updateFunc = &StageBase::UpdatePlaying;
+		m_drawFunc = &StageBase::DrawPlaying;
+	}
+#endif
 
 	// アビリティ変更
 	m_mgr.GetStage()->ChangeAbility(Ability::kDash);
