@@ -81,7 +81,22 @@ StageTutorial::~StageTutorial()
 
 void StageTutorial::Init()
 {
-	StageBase::Init();
+#if true
+	m_timeFrame = 0;
+	m_waitFrame = 0;
+	m_extRateFrame = 0;
+
+	m_isUpdateBestTime = false;
+
+	m_waveAngle = 0;
+
+	m_player->Init();
+	m_enemy.clear();
+	m_backEnemy.clear();
+	m_frontEnemy.clear();
+
+	m_achived.clear();
+#endif
 	m_achived.clear();
 
 	m_timeFrame = 0;

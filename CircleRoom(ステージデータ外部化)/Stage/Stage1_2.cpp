@@ -54,39 +54,12 @@ Stage1_2::Stage1_2(GameManager& mgr, Input& input) :
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
-	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
 
-	StartCheck();
+	Init();
 }
 
 Stage1_2::~Stage1_2()
 {
-}
-
-void Stage1_2::Init()
-{
-	StageBase::Init();
-
-	// 生成フレームの初期化
-	m_createLageFrame = 0;
-	m_createNormalFrame1 = kDeleyFrame1;
-	m_createNormalFrame2 = kDeleyFrame2;
-
-	// 生成数の初期化
-	m_createNum = 0;
-
-	// 壁動く敵の作成
-	CreateMoveWall();
-
-	// Largeの生成
-	CreateLarge(m_createLageFrame, true);
-}
-
-void Stage1_2::StartCheck()
-{
-	auto& stage = m_mgr.GetStage();
-	m_isRightClear = stage->IsClearStage(kRightStName);
-	m_isUpClear = stage->IsClearStage(kUpStName);
 }
 
 void Stage1_2::ChangeStage(Input& input)
@@ -117,79 +90,6 @@ void Stage1_2::ChangeStage(Input& input)
 		stage->ChangeStage(nextStage);
 
 		return;
-	}
-}
-
-void Stage1_2::CheckStageConditions(int timeFrame)
-{
-	CheckConditionsTime(kRightStName, timeFrame, kRightExsitTime, L"右");
-	CheckConditionsTime(kUpStName, timeFrame, kUpExsitTime, L"上");
-}
-
-int Stage1_2::DrawStageConditions(int drawY) const
-{
-	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(28);
-
-	if (!m_isRightClear)
-	{
-		DrawArrowConditions(kRightStName, drawY, kRad90);
-		DrawTimeConditions(drawY, fontHandle, kRightExsitTime);
-
-		drawY += 68;
-	}
-	if (!m_isUpClear)
-	{
-		DrawArrowConditions(kUpStName, drawY, 0.0);
-		DrawTimeConditions(drawY, fontHandle, kUpExsitTime);
-
-		drawY += 68;
-	}
-
-	return drawY - startY - 68;
-}
-
-void Stage1_2::DrawArrow() const
-{
-	DrawRightArrow(m_isRightClear, kRightStName);
-	DrawUpArrow(m_isUpClear, kUpStName);
-}
-
-void Stage1_2::DrawEnemyKilledInfo(int x, int y) const
-{
-	DrawKilledEnemy("Normal", x, y, 0);
-	DrawKilledEnemy("MoveWall", x, y, 36);
-	DrawKilledEnemy("Large", x, y, 76, 20);
-}
-
-void Stage1_2::CreateEnemy()
-{
-	m_createNormalFrame1++;
-	m_createNormalFrame2++;
-	m_createLageFrame++;
-
-	if (m_createLageFrame > kCreateLageFrame)
-	{
-		CreateLarge(m_createLageFrame);
-	}
-
-	if (m_createNum < kCreateNum)
-	{
-		m_createNum++;
-		CreateNormal(m_createNormalFrame1, true);
-		m_createNormalFrame1 = kDeleyFrame1;
-		m_createNormalFrame2 = kDeleyFrame2;
-	}
-	else
-	{
-		if (m_createNormalFrame1 > kCreateNormalFrame)
-		{
-			CreateNormal(m_createNormalFrame1);
-		}
-		if (m_createNormalFrame2 > kCreateNormalFrame)
-		{
-			CreateNormal(m_createNormalFrame2);
-		}
 	}
 }
 

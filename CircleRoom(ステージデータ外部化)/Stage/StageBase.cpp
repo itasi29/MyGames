@@ -246,27 +246,6 @@ StageBase::~StageBase()
 }
 
 /// <summary>
-/// ステージの初期化処理
-/// </summary>
-void StageBase::Init()
-{
-	m_timeFrame = 0;
-	m_waitFrame = 0;
-	m_extRateFrame = 0;
-
-	m_isUpdateBestTime = false;
-
-	m_waveAngle = 0;
-
-	m_player->Init();
-	m_enemy.clear();
-	m_backEnemy.clear();
-	m_frontEnemy.clear();
-
-	m_achived.clear();
-}
-
-/// <summary>
 /// 更新処理
 /// </summary>
 /// <param name="input">入力情報</param>
@@ -365,7 +344,7 @@ void StageBase::UpdateSelect(Input& input)
 	// ここまではステージ外部化しても同じ処理
 
 
-#if true
+#if false
 	if (input.IsTriggered("OK"))
 	{
 		// 移動中であっても即時移動
@@ -1479,6 +1458,270 @@ void StageBase::LoadNextStages(std::vector<std::string>& strConmaBuf, StageData&
 	}
 }
 
+/// <summary>
+/// ステージの初期化処理
+/// </summary>
+void StageBase::Init()
+{
+	auto& data = m_stageData[m_stageName];
+
+	// 敵の総数を確認
+	m_enemyNum = data.enemyNum;
+	int temp = 0;
+	for (int i = 0; i < m_enemyNum;i ++)
+	{
+		for (int j = 1; j < data.enemyInfo[i].num; j++)
+		{
+			temp++;
+		}
+	}
+	m_enemyNum += temp;
+	// サイズ更新
+	m_enemyStarCreateNum.resize(m_enemyNum);
+	m_enemyCreateFrame.resize(m_enemyNum);
+
+	// クリア情報更新
+	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
+	// 進行方向のクリアチェック
+	for (const auto& stage : data.stageInfo)
+	{
+		bool isCreal = m_mgr.GetStage()->IsClearStage(stage.name);
+
+		m_isClear[stage.dir] = isCreal;
+	}
+}
+
 void StageBase::PlayStart()
 {
+	// ゲーム動作側初期化
+	m_timeFrame = 0;
+	m_waitFrame = 0;
+	m_extRateFrame = 0;
+	m_isUpdateBestTime = false;
+	m_waveAngle = 0;
+	m_achived.clear();
+
+	// キャラ初期化
+	m_player->Init();
+	m_enemy.clear();
+	m_backEnemy.clear();
+	m_frontEnemy.clear();
+
+}
+
+void StageBase::CreateEnemyType(const std::string& name, int& frame, bool isStart)
+{
+	if (name == "Normal")
+	{
+		CreateNormal(frame, isStart);
+	}
+	else if (name == "MoveWall")
+	{
+		CreateMoveWall();
+	}
+	else if (name == "Large")
+	{
+		CreateLarge(frame, isStart);
+	}
+	else if (name == "Dash")
+	{
+		CreateDash(frame, isStart);
+	}
+	else if (name == "Create")
+	{
+		CreateEneCreate(frame, isStart);
+	}
+	else if (name == "Division")
+	{
+		CreateDivision(frame, isStart);
+	}
+}
+
+
+void StageBase::CreateEnemy()
+{
+	auto& data = m_stageData[m_stageName];
+
+	int index = 0;
+	// 敵種類全部回す
+	for (int i = 0; i < data.enemyNum; i++)
+	{
+		auto& enemy = data.enemyInfo[i];
+
+		// その種類のすべてのパターンを回す
+		for (const auto& info : enemy.info)
+		{
+			auto& startNum = m_enemyStarCreateNum[index];
+			auto& createFrame = m_enemyCreateFrame[index];
+
+			createFrame++;
+			// 初回生成
+			if (startNum < info.startNum && createFrame > info.startInterval)
+			{
+				CreateEnemyType(enemy.name, createFrame, true);
+				createFrame = info.startDelayFrame;
+
+				startNum++;
+			}
+			// 通常生成  生成間隔が０より大きいことが条件
+			else if (createFrame > info.createInterval && info.createInterval > 0)
+			{
+				CreateEnemyType(enemy.name, createFrame);
+			}
+
+			// 要素番号更新
+			index++;
+		}
+	}
+}
+
+void StageBase::CheckStageConditions(int frame)
+{
+	for (const auto& stage : m_stageData[m_stageName].stageInfo)
+	{
+		auto& type = stage.type;
+		if (type == ConditionsType::kTime)
+		{
+			CheckConditionsTime(stage.name, frame, stage.info, GetDirName(stage.dir));
+		}
+		else if (type == ConditionsType::kKilled)
+		{
+			CheckConditionsKilled(stage.name, stage.info, GetDirName(stage.dir));
+		}
+		else if (type == ConditionsType::kSumTime)
+		{
+			CheckConditionsSumTime(stage.name, stage.infoGroup, frame, stage.info, GetDirName(stage.dir));
+		}
+	}
+}
+
+std::wstring StageBase::GetDirName(MapDir dir)
+{
+	if (dir == MapDir::kUp)
+	{
+		return L"上";
+	}
+	else if (dir == MapDir::kDown)
+	{
+		return L"下";
+	}
+	else if (dir == MapDir::kRight)
+	{
+		return L"右";
+	}
+	else if (dir == MapDir::kLeft)
+	{
+		return L"左";
+	}
+
+	return L"";
+}
+
+int StageBase::DrawStageConditions(int drawY) const
+{
+	int startY = drawY;
+	int fontHandle = m_mgr.GetFont()->GetHandle(28);
+
+	for (const auto& stage : m_stageData.at(m_stageName).stageInfo)
+	{
+		// 既にクリアしていたら次へ
+		if (m_isClear.at(stage.dir)) continue;
+
+		// 矢印描画
+		if (stage.dir == MapDir::kUp)
+		{
+			DrawArrowConditions(stage.name, drawY, 0.0);
+		}
+		else if (stage.dir == MapDir::kDown)
+		{
+			DrawArrowConditions(stage.name, drawY, DX_PI);
+		}
+		else if (stage.dir == MapDir::kRight)
+		{
+			DrawArrowConditions(stage.name, drawY, kRad90);
+		}
+		else if (stage.dir == MapDir::kLeft)
+		{
+			DrawArrowConditions(stage.name, drawY, -kRad90);
+		}
+
+		// 条件描画
+		auto& type = stage.type;
+		if (type == ConditionsType::kTime)
+		{
+			DrawTimeConditions(drawY, fontHandle, stage.info);
+		}
+		else if (type == ConditionsType::kKilled)
+		{
+			DrawKilledConditions(drawY, fontHandle, stage.info);
+		}
+		else if (type == ConditionsType::kSumTime)
+		{
+			DrawSumTimeConditions(stage.infoGroup, drawY, fontHandle, stage.info);
+		}
+
+		drawY += 68;
+	}
+
+	return drawY - startY - 68;
+}
+
+void StageBase::DrawArrow() const
+{
+	for (const auto& stage : m_stageData.at(m_stageName).stageInfo)
+	{
+		// 矢印描画
+		if (stage.dir == MapDir::kUp)
+		{
+			DrawUpArrow(m_isClear.at(stage.dir), stage.name);
+		}
+		else if (stage.dir == MapDir::kDown)
+		{
+			DrawDownArrow(m_isClear.at(stage.dir), stage.name);
+		}
+		else if (stage.dir == MapDir::kRight)
+		{
+			DrawRightArrow(m_isClear.at(stage.dir), stage.name);
+		}
+		else if (stage.dir == MapDir::kLeft)
+		{
+			DrawLeftArrow(m_isClear.at(stage.dir), stage.name);
+		}
+	}
+}
+
+void StageBase::DrawEnemyKilledInfo(int x, int y) const
+{
+	int addX = 0;
+	const auto& data = m_stageData.at(m_stageName);
+
+	for (const auto& enemy : data.enemyInfo)
+	{
+		DrawKilledEnemy(enemy.name, x, y, addX);
+
+		addX += 36;
+
+		if (enemy.name == "Create")
+		{
+			addX += 2;
+			DrawKilledEnemy("Child", x, y, addX, 12);
+			addX += 38;
+		}
+		else if (enemy.name == "Division")
+		{
+			addX += 2;
+			DrawKilledEnemy("Split", x, y, addX, 12);
+			addX += 38;
+		}
+		else if (enemy.name == "Large")
+		{
+			addX += 4;
+		}
+		else if (data.isBoss)
+		{
+			addX += 6;
+			DrawKilledEnemy("SplitTwoBound", x, y, addX, 12);
+			addX += 38;
+		}
+	}
 }

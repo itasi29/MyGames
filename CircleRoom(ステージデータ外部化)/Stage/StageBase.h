@@ -123,7 +123,7 @@ public:
 	/// <summary>
 	/// 最初にステージのクリア条件を確認する
 	/// </summary>
-	virtual void StartCheck() = 0;
+	virtual void StartCheck() {};
 
 	/// <summary>
 	/// ステージ名を取得する
@@ -136,7 +136,7 @@ public:
 	/// </summary>
 	/// <param name="x">描画X座標</param>
 	/// <param name="y">描画Y座標</param>
-	virtual void DrawEnemyKilledInfo(int x, int y) const = 0;
+	virtual void DrawEnemyKilledInfo(int x, int y) const;
 
 	/// <summary>
 	/// ウェーブする文字の非描画化
@@ -192,22 +192,22 @@ protected:
 	/// ステージのクリア確認
 	/// </summary>
 	/// <param name="timeFrame">タイムフレーム</param>
-	virtual void CheckStageConditions(int timeFrame) = 0;
+	virtual void CheckStageConditions(int timeFrame);
 	/// <summary>
 	/// ステージ条件の描画
 	/// </summary>
 	/// <param name="drawY">描画Y座標</param>
 	/// <returns>背景フレーム描画Y座標</returns>
-	virtual int DrawStageConditions(int drawY) const = 0;
+	virtual int DrawStageConditions(int drawY) const;
 	/// <summary>
 	/// ステージの矢印描画
 	/// </summary>
-	virtual void DrawArrow() const = 0;
+	virtual void DrawArrow() const;
 
 	/// <summary>
 	/// 敵の生成
 	/// </summary>
-	virtual void CreateEnemy() = 0;
+	virtual void CreateEnemy();
 
 	/// <summary>
 	/// 強化ボスの生成
@@ -252,6 +252,13 @@ private:
 
 	// ゲーム開始処理
 	void PlayStart();
+
+	// 敵種類ごとの生成
+	void CreateEnemyType(const std::string& name, int& frame, bool isStart = false);
+
+
+	// 方向に合わせた文字列を返す
+	std::wstring GetDirName(MapDir dir);
 
 protected:
 	// メンバ変数ポインタ
@@ -341,5 +348,16 @@ protected:
 
 	// 文字ウェーブ用の角度
 	float m_waveAngle;
+
+private:
+	// 敵生成数
+	int m_enemyNum;
+	// 初期生成数
+	std::vector<int> m_enemyStarCreateNum;
+	// 敵生成フレーム
+	std::vector<int> m_enemyCreateFrame;
+
+	// ステージ入った時にクリアしているか
+	std::unordered_map<MapDir, bool> m_isClear;
 };
 
