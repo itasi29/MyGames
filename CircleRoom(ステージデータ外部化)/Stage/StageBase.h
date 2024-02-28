@@ -250,6 +250,9 @@ private:
 	void LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex);
 	void LoadNextStages(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllNextStages, int& nextStageIndex);
 
+	// ゲーム開始処理
+	void PlayStart();
+
 protected:
 	// メンバ変数ポインタ
 	using UpdateFunc_t = void (StageBase::*)(Input&);
@@ -259,6 +262,8 @@ protected:
 
 	// ステージの情報
 	std::unordered_map<std::string, StageData> m_stageData;
+	// ステージ名
+	std::string m_stageName;
 
 	// マネジャーの参照
 	GameManager& m_mgr;
@@ -282,6 +287,9 @@ protected:
 	int m_strScreen;
 	// 条件拡大用画面ハンドル
 	int m_extScreen;
+
+	// 達成の文字の描画用
+	std::list<Achived> m_achived;
 
 	// 画像
 	std::shared_ptr<FileBase> m_fieldImg;
@@ -314,12 +322,6 @@ protected:
 	std::list<std::shared_ptr<EnemyBase>> m_frontEnemy;
 	// ボス
 	std::shared_ptr<BossBase> m_boss;
-
-	// ステージ名
-	std::string m_stageName;
-
-	// 達成の文字の描画用
-	std::list<Achived> m_achived;
 
 	// サウンドのフェードフレーム
 	int m_soundFrame;

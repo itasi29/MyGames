@@ -199,6 +199,9 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
 
+	// ステージ情報読み込み
+	LoadStageInfo();
+
 	// 画面の作成
 	m_strScreen = MakeScreen(m_size.w, m_size.h, true);
 	m_extScreen = MakeScreen(m_size.w, m_size.h, true);
@@ -362,7 +365,7 @@ void StageBase::UpdateSelect(Input& input)
 	// ここまではステージ外部化しても同じ処理
 
 
-#if false
+#if true
 	if (input.IsTriggered("OK"))
 	{
 		// 移動中であっても即時移動
@@ -387,9 +390,9 @@ void StageBase::UpdateSelect(Input& input)
 		// BGM変更
 		m_soundFrame = 0;
 		m_soundSys->Stop(m_selectBgm->GetHandle());
-		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0);
 
-		Init();
+		PlayStart();
 
 		m_updateFunc = &StageBase::UpdatePlaying;
 		m_drawFunc = &StageBase::DrawPlaying;
@@ -500,7 +503,7 @@ void StageBase::UpdatePlaying(Input& input)
 		// BGM変更
 		m_soundFrame = 0;
 		m_soundSys->Stop(m_playBgm->GetHandle());
-		m_soundSys->PlayFadeBgm(m_selectBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
+		m_soundSys->PlayFadeBgm(m_selectBgm->GetHandle(), 0);
 
 		m_waitFrame = 0;
 		m_waveAngle = 0.0;
@@ -1474,4 +1477,8 @@ void StageBase::LoadNextStages(std::vector<std::string>& strConmaBuf, StageData&
 	{
 		isLoadAllNextStages = true;
 	}
+}
+
+void StageBase::PlayStart()
+{
 }
