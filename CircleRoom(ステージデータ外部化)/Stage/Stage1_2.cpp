@@ -50,7 +50,6 @@ Stage1_2::Stage1_2(GameManager& mgr, Input& input) :
 	m_createLageFrame(0)
 {
 	m_stageName = "‹•Ç";
-	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// ƒf[ƒ^‚Ì¶¬
 	m_mgr.GetStage()->CreateData(m_stageName);
@@ -91,9 +90,4 @@ void Stage1_2::ChangeStage(Input& input)
 
 		return;
 	}
-}
-
-void Stage1_2::UpdateTime()
-{
-	m_timeFrame++;
 }

@@ -10,9 +10,6 @@ public:
 	void ChangeStage(Input& input) override;
 
 private:
-	void UpdateTime() override;
-
-private:
 	// 敵(Lage)生成フレーム
 	int m_createLageFrame;
 	// 敵(Normal)生成フレーム1

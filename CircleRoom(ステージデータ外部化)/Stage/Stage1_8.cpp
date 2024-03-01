@@ -45,47 +45,15 @@ Stage1_8::Stage1_8(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
 	m_stageName = "Reaper";
-	m_player = std::make_shared<Player>(m_size, m_fieldSize);
-
-	// 1-8はボスのためBGMを変更する
-	m_playBgm = m_mgr.GetFile()->LoadSound(L"Bgm/boss.mp3");
-	m_explanation = m_mgr.GetFile()->LoadGraphic(L"UI/bossExplanation.png");
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
-	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
 
-	StartCheck();
+	Init();
 }
 
 Stage1_8::~Stage1_8()
 {
-}
-
-void Stage1_8::Init()
-{
-	StageBase::Init();
-	m_isUpdateBestTime = false;
-
-	CreateMoveWall();
-
-	m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
-	m_boss->Init(m_centerPos);
-
-	// ボスステージに入ったことがなければ説明
-	if (!m_mgr.GetStage()->IsBossIn())
-	{
-		// 先にBGMをならして置かないと選択画面の音楽が流れるため流しておく
-		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
-		m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation->GetHandle()));
-		m_mgr.GetStage()->BossStageIn();
-	}
-}
-
-void Stage1_8::StartCheck()
-{
-	m_isRightClear = m_mgr.GetStage()->IsClearStage(kRightStName);
-	m_isDownClear = m_mgr.GetStage()->IsClearStage(kDownStName);
 }
 
 void Stage1_8::ChangeStage(Input& input)
@@ -117,70 +85,11 @@ void Stage1_8::ChangeStage(Input& input)
 	}
 }
 
-void Stage1_8::UpTime()
-{
-	m_timeFrame += 15;
-}
-
 void Stage1_8::UniqueEndProcessing()
 {
 	const auto& armored = std::dynamic_pointer_cast<BossArmored>(m_boss);
 
 	armored->DeleteDamageObjects();
-}
-
-void Stage1_8::CheckStageConditions(int timeFrame)
-{
-	CheckConditionsTime(kRightStName, timeFrame, kRightExsitTime, L"右");
-	CheckConditionsKilled(kDownStName, kDownKilledNum, L"下");
-}
-
-int Stage1_8::DrawStageConditions(int drawY) const
-{
-	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(28);
-
-	if (!m_isRightClear)
-	{
-		DrawArrowConditions(kRightStName, drawY, kRad90);
-		DrawTimeConditions(drawY, fontHandle, kRightExsitTime);
-
-		drawY += 68;
-	}
-	if (!m_isDownClear)
-	{
-		DrawArrowConditions(kDownStName, drawY, DX_PI);
-		DrawKilledConditions(drawY, fontHandle, kDownKilledNum);
-
-		drawY += 68;
-	}
-
-	if (!m_mgr.GetStage()->IsClearBoss("BossArmored"))
-	{
-		DrawStringToHandle(kConditionStrPosX, drawY + 14, L"ボスを倒せ！", kYellowColor, fontHandle);
-
-		drawY += 70;
-	}
-
-	return drawY - startY - 68;
-}
-
-void Stage1_8::DrawArrow() const
-{
-	DrawRightArrow(m_isRightClear, kRightStName);
-	DrawDownArrow(m_isDownClear, kDownStName);
-}
-
-void Stage1_8::DrawEnemyKilledInfo(int x, int y) const
-{
-	DrawKilledEnemy("MoveWall", x, y, 0);
-	DrawKilledEnemy("BossArmored", x, y, 40, 20);
-	DrawKilledEnemy("BossStrongArmored", x, y, 88, 20);
-	DrawKilledEnemy("SplitTwoBound", x, y, 132, 12);
-}
-
-void Stage1_8::CreateEnemy()
-{
 }
 
 void Stage1_8::CreateStrongBoss()
@@ -190,8 +99,4 @@ void Stage1_8::CreateStrongBoss()
 	strong->Init(m_boss->GetPos());
 
 	m_boss = strong;
-}
-
-void Stage1_8::UpdateTime()
-{
 }

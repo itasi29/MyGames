@@ -32,33 +32,15 @@ Stage1_5::Stage1_5(GameManager& mgr, Input& input) :
 	m_createFrame(0)
 {
 	m_stageName = "ランナー";
-	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// データの生成
 	m_mgr.GetStage()->CreateData(m_stageName);
 
-	StartCheck();
+	Init();
 }
 
 Stage1_5::~Stage1_5()
 {
-}
-
-void Stage1_5::Init()
-{
-	StageBase::Init();
-
-	// 生成フレームの初期化
-	m_createFrame = 0;
-
-	m_createNum = 0;
-
-	CreateMoveWall();
-}
-
-void Stage1_5::StartCheck()
-{
-	m_isDownClear = m_mgr.GetStage()->IsClearStage(kDownStName);
 }
 
 void Stage1_5::ChangeStage(Input& input)
@@ -78,59 +60,4 @@ void Stage1_5::ChangeStage(Input& input)
 
 		return;
 	}
-}
-
-void Stage1_5::CheckStageConditions(int timeFrame)
-{
-	CheckConditionsTime(kDownStName, timeFrame, kDownExsitTime, L"下");
-}
-
-int Stage1_5::DrawStageConditions(int drawY) const
-{
-	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(28);
-
-	if (!m_isDownClear)
-	{
-		DrawArrowConditions(kDownStName, drawY, DX_PI);
-		DrawTimeConditions(drawY, fontHandle, kDownExsitTime);
-
-		drawY += 68;
-	}
-
-
-	return drawY - startY - 68;
-}
-
-void Stage1_5::DrawArrow() const
-{
-	DrawDownArrow(m_isDownClear, kDownStName);
-}
-
-void Stage1_5::DrawEnemyKilledInfo(int x, int y) const
-{
-	DrawKilledEnemy("MoveWall", x, y, 0);
-	DrawKilledEnemy("Large", x, y, 40, 20);
-}
-
-void Stage1_5::CreateEnemy()
-{
-	m_createFrame++;
-
-	if (m_createNum < kCreateNum)
-	{
-		m_createNum++;
-		CreateLarge(m_createFrame, true);
-		return;
-	}
-
-	if (m_createFrame > kCreateFrame)
-	{
-		CreateLarge(m_createFrame);
-	}
-}
-
-void Stage1_5::UpdateTime()
-{
-	m_timeFrame++;
 }

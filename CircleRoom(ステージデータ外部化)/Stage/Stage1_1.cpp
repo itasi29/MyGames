@@ -86,9 +86,3 @@ void Stage1_1::ChangeStage(Input& input)
 		return;
 	}
 }
-
-void Stage1_1::UpdateTime()
-{
-	m_timeFrame++;
-}
-

@@ -46,40 +46,15 @@ Stage1_6::Stage1_6(GameManager& mgr, Input& input) :
 	StageBase(mgr, input)
 {
 	m_stageName = "î≠ê∂";
-	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 
 	// ÉfÅ[É^ÇÃê∂ê¨
 	m_mgr.GetStage()->CreateData(m_stageName);
-	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
 
-	StartCheck();
+	Init();
 }
 
 Stage1_6::~Stage1_6()
 {
-}
-
-void Stage1_6::Init()
-{
-	StageBase::Init();
-
-	m_createNormalFrame1 = 0;
-	m_createNormalFrame2 = 0;
-	m_createEneCreateFrame = 0;
-
-	m_createNum = 0;
-
-	CreateMoveWall();
-
-	CreateEneCreate(m_createEneCreateFrame, true);
-}
-
-void Stage1_6::StartCheck()
-{
-	auto& stage = m_mgr.GetStage();
-	m_isLeftClear = stage->IsClearStage(kLeftStName);
-	m_isUpClear = stage->IsClearStage(kUpStName);
-	m_isDownClear = stage->IsClearStage(kDownStName);
 }
 
 void Stage1_6::ChangeStage(Input& input)
@@ -118,91 +93,4 @@ void Stage1_6::ChangeStage(Input& input)
 
 		return;
 	}
-}
-
-void Stage1_6::CheckStageConditions(int timeFrame)
-{
-	CheckConditionsTime(kLeftStName, timeFrame, kLeftExsitTime, L"ç∂");
-	CheckConditionsTime(kUpStName, timeFrame, kUpExsitTime, L"è„");
-	CheckConditionsKilled(kDownStName, kDownKilledNum, L"â∫");
-}
-
-int Stage1_6::DrawStageConditions(int drawY) const
-{
-	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(28);
-	if (!m_isLeftClear)
-	{
-		DrawArrowConditions(kLeftStName, drawY, -kRad90);
-		DrawTimeConditions(drawY, fontHandle, kLeftExsitTime);
-
-		drawY += 68;
-	}
-	if (!m_isUpClear)
-	{
-		DrawArrowConditions(kUpStName, drawY, 0.0);
-		DrawTimeConditions(drawY, fontHandle, kUpExsitTime);
-
-		drawY += 68;
-	}
-	if (!m_isDownClear)
-	{
-		DrawArrowConditions(kDownStName, drawY, DX_PI);
-		DrawKilledConditions(drawY, fontHandle, kDownKilledNum);
-
-		drawY += 68;
-	}
-
-	return drawY - startY - 68;
-}
-
-void Stage1_6::DrawArrow() const
-{
-	DrawLeftArrow(m_isLeftClear, kLeftStName);
-	DrawUpArrow(m_isUpClear, kUpStName);
-	DrawDownArrow(m_isDownClear, kDownStName);
-}
-
-void Stage1_6::DrawEnemyKilledInfo(int x, int y) const
-{
-	DrawKilledEnemy("Normal", x, y, 0);
-	DrawKilledEnemy("MoveWall", x, y, 36);
-	DrawKilledEnemy("Create", x, y, 72);
-	DrawKilledEnemy("Child", x, y, 110, 12);
-}
-
-void Stage1_6::CreateEnemy()
-{
-	m_createNormalFrame1++;
-	m_createNormalFrame2++;
-	m_createEneCreateFrame++;
-
-	if (m_createEneCreateFrame > kCreateEneCreateFrame)
-	{
-		CreateEneCreate(m_createEneCreateFrame);
-	}
-
-	if (m_createNum < kCreateNum)
-	{
-		m_createNum++;
-		CreateNormal(m_createNormalFrame1, true);
-		m_createNormalFrame1 = kDeleyFrame1;
-		m_createNormalFrame2 = kDeleyFrame2;
-	}
-	else
-	{
-		if (m_createNormalFrame1 > kCreateNormalFrame)
-		{
-			CreateNormal(m_createNormalFrame1);
-		}
-		if (m_createNormalFrame2 > kCreateNormalFrame)
-		{
-			CreateNormal(m_createNormalFrame2);
-		}
-	}
-}
-
-void Stage1_6::UpdateTime()
-{
-	m_timeFrame++;
 }

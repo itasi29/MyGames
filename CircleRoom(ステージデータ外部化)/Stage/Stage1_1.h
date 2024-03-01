@@ -10,10 +10,6 @@ public:
 	void ChangeStage(Input& input) override;
 
 private:
-
-	void UpdateTime() override;
-
-private:
 	// ¶¬”
 	int m_createNum;
 

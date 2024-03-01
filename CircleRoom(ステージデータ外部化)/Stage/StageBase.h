@@ -81,8 +81,18 @@ struct EnemyInfo
 	std::vector<CreateInfo> info = {};
 };
 
+enum class UpTimeType
+{
+	kNormal,	// 何もしなくても上がっていく
+	kAttack		// 攻撃を与えるときに上がる
+};
+
 struct StageData
 {
+	// 情報更新タイプ
+	UpTimeType timeType = UpTimeType::kNormal;
+	// 増やすフレーム
+	int addTimeFrame = 0;
 	// 次ステージ情報
 	int nextNum = 0;
 	std::vector<NextStageInfo> stageInfo = {};
@@ -118,7 +128,7 @@ public:
 	/// <summary>
 	/// 特定条件でのタイムの上昇
 	/// </summary>
-	virtual void UpTime() {}
+	virtual void UpTime();
 
 	/// <summary>
 	/// 最初にステージのクリア条件を確認する
@@ -226,7 +236,7 @@ protected:
 	/// <summary>
 	/// 時間の更新処理
 	/// </summary>
-	virtual void UpdateTime() {}
+	virtual void UpdateTime();
 
 private:
 	void UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col);
@@ -359,5 +369,7 @@ private:
 
 	// ステージ入った時にクリアしているか
 	std::unordered_map<MapDir, bool> m_isClear;
+
+	std::shared_ptr<FileBase> m_explanation;
 };
 

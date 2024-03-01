@@ -27,25 +27,30 @@
 #include "Enemy/EnemyDivision.h"
 #include "Boss/BossBase.h"
 
+#include "Boss/BossArmored.h"
+#include "Scene/OneShotScene.h"
+
 namespace
 {
 	// ステージデータインデックス番号
 	constexpr int kIndexStageName = 0;
-	constexpr int kIndexEnemyTypeNum = 1;
-	constexpr int kIndexEnemyName = 2;
-	constexpr int kIndexEnemyInfoNum = 3;
-	constexpr int kIndexStartCreateNum = 4;
-	constexpr int kIndexStartCreateFrame = 5;
-	constexpr int kIndexStartDelayFrame = 6;
-	constexpr int kIndexCreateFrame = 7;
-	constexpr int kIndexIsCreateBoss = 8;
-	constexpr int kIndexNextStageNum = 9;
-	constexpr int kIndexNextStageName = 10;
-	constexpr int kIndexDir = 11;
-	constexpr int kIndexInfoType = 12;
-	constexpr int kIndexInfo = 13;
-	constexpr int kIndexInfoGroupNum = 14;
-	constexpr int kIndexInfoGroup = 15;
+	constexpr int kIndexUpdateTimeType = 1;
+	constexpr int kIndexAddTimeFrame = 2;
+	constexpr int kIndexEnemyTypeNum = 3;
+	constexpr int kIndexEnemyName = 4;
+	constexpr int kIndexEnemyInfoNum = 5;
+	constexpr int kIndexStartCreateNum = 6;
+	constexpr int kIndexStartCreateFrame = 7;
+	constexpr int kIndexStartDelayFrame = 8;
+	constexpr int kIndexCreateFrame = 9;
+	constexpr int kIndexIsCreateBoss = 10;
+	constexpr int kIndexNextStageNum = 11;
+	constexpr int kIndexNextStageName = 12;
+	constexpr int kIndexDir = 13;
+	constexpr int kIndexInfoType = 14;
+	constexpr int kIndexInfo = 15;
+	constexpr int kIndexInfoGroupNum = 16;
+	constexpr int kIndexInfoGroup = 17;
 
 	// フィールドサイズの倍率　(半分の大きさ)
 	constexpr float kSizeScale = 0.4f;
@@ -229,6 +234,8 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_enemysImg["BossArmored"] = file->LoadGraphic(L"Enemy/BossArmored.png");
 	m_enemysImg["BossStrongArmored"] = file->LoadGraphic(L"Enemy/BossStrongArmored.png");
 	m_checkImg = file->LoadGraphic(L"UI/check.png");
+
+	m_explanation = file->LoadGraphic(L"UI/bossExplanation.png");
 	// BGM
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
@@ -237,6 +244,8 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	// キー・ボタン
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
+
+	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 }
 
 StageBase::~StageBase()
@@ -1338,6 +1347,10 @@ void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, st
 
 	// ステージ名読み込み
 	stageName = strConmaBuf[kIndexStageName];
+	// 更新タイプ読み込み
+	UpTimeType timeType = static_cast<UpTimeType>(std::stoi(strConmaBuf[kIndexUpdateTimeType]));
+	// 更新追加フレーム読み込み
+	int addTimeFrame = std::stoi(strConmaBuf[kIndexAddTimeFrame]);
 	// 敵種類数読み込み
 	int enemyTypeNum = std::stoi(strConmaBuf[kIndexEnemyTypeNum]);
 	// 隣接ステージ数読み込み
@@ -1347,6 +1360,8 @@ void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, st
 
 	// 情報の代入
 	auto& data = m_stageData[stageName];
+	data.timeType = timeType;
+	data.addTimeFrame = addTimeFrame;
 	data.enemyNum = enemyTypeNum;
 	data.enemyInfo.resize(enemyTypeNum);
 	data.nextNum = nextStageNum;
@@ -1489,6 +1504,17 @@ void StageBase::Init()
 
 		m_isClear[stage.dir] = isCreal;
 	}
+
+	// BGM変更
+	auto& file = m_mgr.GetFile();
+	if (m_stageData[m_stageName].isBoss)
+	{
+		m_playBgm = file->LoadSound(L"Bgm/boss.mp3");
+	}
+	else
+	{
+		m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
+	}
 }
 
 void StageBase::PlayStart()
@@ -1506,7 +1532,22 @@ void StageBase::PlayStart()
 	m_enemy.clear();
 	m_backEnemy.clear();
 	m_frontEnemy.clear();
+	m_boss = nullptr;
 
+	if (m_stageData[m_stageName].isBoss)
+	{
+		m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
+		m_boss->Init(m_centerPos);
+
+		// ボスステージに入ったことがなければ説明
+		if (!m_mgr.GetStage()->IsBossIn())
+		{
+			// 先にBGMをならして置かないと選択画面の音楽が流れるため流しておく
+			m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
+			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation->GetHandle()));
+			m_mgr.GetStage()->BossStageIn();
+		}
+	}
 }
 
 void StageBase::CreateEnemyType(const std::string& name, int& frame, bool isStart)
@@ -1724,4 +1765,23 @@ void StageBase::DrawEnemyKilledInfo(int x, int y) const
 			addX += 38;
 		}
 	}
+}
+
+void StageBase::UpdateTime()
+{
+	auto& data = m_stageData[m_stageName];
+
+	if (data.timeType == UpTimeType::kNormal)
+	{
+		UpTime();
+	}
+	else if (data.timeType == UpTimeType::kAttack)
+	{
+		// 弾を拾った時なのでここでは特に処理はしない
+	}
+}
+
+void StageBase::UpTime()
+{
+	m_timeFrame += m_stageData[m_stageName].addTimeFrame;
 }
