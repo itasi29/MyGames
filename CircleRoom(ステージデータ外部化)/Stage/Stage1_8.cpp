@@ -85,18 +85,3 @@ void Stage1_8::ChangeStage(Input& input)
 	}
 }
 
-void Stage1_8::UniqueEndProcessing()
-{
-	const auto& armored = std::dynamic_pointer_cast<BossArmored>(m_boss);
-
-	armored->DeleteDamageObjects();
-}
-
-void Stage1_8::CreateStrongBoss()
-{
-	std::shared_ptr<BossStrongArmored> strong;
-	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
-	strong->Init(m_boss->GetPos());
-
-	m_boss = strong;
-}

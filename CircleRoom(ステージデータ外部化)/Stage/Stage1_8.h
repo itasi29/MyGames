@@ -10,11 +10,6 @@ public:
 	void ChangeStage(Input& input) override;
 
 private:
-	void UniqueEndProcessing() override;
-
-	void CreateStrongBoss() override;
-
-private:
 	std::shared_ptr<FileBase> m_explanation;
 
 	// ステージに入った時点でのクリア情報を保持

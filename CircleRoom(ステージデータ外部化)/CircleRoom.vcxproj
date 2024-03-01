@@ -73,6 +73,7 @@
     <ClCompile Include="Stage\StageBase.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage\StageManager.cpp" />
+    <ClCompile Include="Stage\StageMap.cpp" />
     <ClCompile Include="Stage\StageTutorial.cpp" />
     <ClCompile Include="Utility\StringUtility.cpp" />
     <ClCompile Include="Utility\Collision.cpp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="Stage\StageBase.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage\StageManager.h" />
+    <ClInclude Include="Stage\StageMap.h" />
     <ClInclude Include="Stage\StageTutorial.h" />
     <ClInclude Include="Utility\StringUtility.h" />
     <ClInclude Include="Utility\Collision.h" />

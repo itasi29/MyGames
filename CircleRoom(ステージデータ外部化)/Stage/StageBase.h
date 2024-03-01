@@ -222,12 +222,8 @@ protected:
 	/// <summary>
 	/// 強化ボスの生成
 	/// </summary>
-	virtual void CreateStrongBoss() {}
+	virtual void CreateStrongBoss();
 
-	/// <summary>
-	/// 特殊終了処理
-	/// </summary>
-	virtual void UniqueEndProcessing() {}
 	/// <summary>
 	/// 特殊描画
 	/// </summary>
@@ -260,12 +256,15 @@ private:
 	void LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex);
 	void LoadNextStages(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllNextStages, int& nextStageIndex);
 
+	// チュートリアルでの処理
+	bool UpdateTutorial();
+	void DrawTutrial();
+
 	// ゲーム開始処理
 	void PlayStart();
 
 	// 敵種類ごとの生成
 	void CreateEnemyType(const std::string& name, int& frame, bool isStart = false);
-
 
 	// 方向に合わせた文字列を返す
 	std::wstring GetDirName(MapDir dir);
@@ -369,7 +368,12 @@ private:
 
 	// ステージ入った時にクリアしているか
 	std::unordered_map<MapDir, bool> m_isClear;
-
-	std::shared_ptr<FileBase> m_explanation;
+	// 説明画像
+	std::vector<std::shared_ptr<FileBase>> m_explanation;
+	std::vector<std::shared_ptr<FileBase>> m_emphasisArrow;
+	// 説明用インデックス
+	int m_explanationIndex;
+	// 説明時
+	int m_emphasisFrame;
 };
 

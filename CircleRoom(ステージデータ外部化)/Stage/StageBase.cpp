@@ -28,6 +28,7 @@
 #include "Boss/BossBase.h"
 
 #include "Boss/BossArmored.h"
+#include "Boss/BossStrongArmored.h"
 #include "Scene/OneShotScene.h"
 
 namespace
@@ -51,6 +52,10 @@ namespace
 	constexpr int kIndexInfo = 15;
 	constexpr int kIndexInfoGroupNum = 16;
 	constexpr int kIndexInfoGroup = 17;
+	// 説明インデックス番号
+	constexpr int kIndexBossExplanation = 5;
+	// チュートリアル説明総数
+	constexpr int kExplanationNum = 5;
 
 	// フィールドサイズの倍率　(半分の大きさ)
 	constexpr float kSizeScale = 0.4f;
@@ -181,6 +186,13 @@ namespace
 	constexpr int kWaveStrAdd = 24;
 	constexpr int kWaveImgPosX = 1016;
 	constexpr int kWaveImgPosY = 600;
+
+	/* チュートリアル関連定数 */
+	// 自機指し矢印
+	constexpr int kEmphasisFrame = 60 * 5;
+	constexpr int kStartAlphaEmphasisFrame = 60 * 4;
+	constexpr int kEmphasisInterval = 20;
+	constexpr float kEmphasisAngle = DX_PI_F / 180 * 8;
 }
 
 StageBase::StageBase(GameManager& mgr, Input& input) :
@@ -199,7 +211,9 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_isUpdateBestTime(false),
 	m_isExtRate(true),
 	m_isWaveDraw(true),
-	m_waveAngle(DX_PI_F)
+	m_waveAngle(DX_PI_F),
+	m_explanationIndex(0),
+	m_emphasisFrame(0)
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
@@ -234,8 +248,14 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_enemysImg["BossArmored"] = file->LoadGraphic(L"Enemy/BossArmored.png");
 	m_enemysImg["BossStrongArmored"] = file->LoadGraphic(L"Enemy/BossStrongArmored.png");
 	m_checkImg = file->LoadGraphic(L"UI/check.png");
-
-	m_explanation = file->LoadGraphic(L"UI/bossExplanation.png");
+	m_explanation.push_back(file->LoadGraphic(L"UI/operationExplanation.png"));
+	m_explanation.push_back(file->LoadGraphic(L"UI/explanation0.png"));
+	m_explanation.push_back(file->LoadGraphic(L"UI/explanation1.png"));
+	m_explanation.push_back(file->LoadGraphic(L"UI/explanation2.png"));
+	m_explanation.push_back(file->LoadGraphic(L"UI/explanation3.png"));
+	m_explanation.push_back(file->LoadGraphic(L"UI/bossExplanation.png"));
+	m_emphasisArrow.push_back(file->LoadGraphic(L"UI/playerEmphasis0.png"));
+	m_emphasisArrow.push_back(file->LoadGraphic(L"UI/playerEmphasis1.png"));
 	// BGM
 	m_selectBgm = file->LoadSound(L"Bgm/provisionalBgm.mp3");
 	m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
@@ -245,6 +265,7 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_bt = std::make_shared<BottansFile>(file);
 	m_key = std::make_shared<KeyFile>(file);
 
+	// プレイヤー生成
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 }
 
@@ -370,6 +391,8 @@ void StageBase::UpdateSelect(Input& input)
 		m_drawFunc = &StageBase::DrawPlaying;
 	}
 #else
+	if (UpdateTutorial()) return;
+
 	if (input.IsTriggered("OK"))
 	{
 		// 移動中であっても即時移動
@@ -407,6 +430,7 @@ void StageBase::UpdatePlaying(Input& input)
 		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
+	m_emphasisFrame++;
 	m_extRateFrame++;
 	if (m_isUpdateBestTime)
 	{
@@ -503,13 +527,13 @@ void StageBase::UpdatePlaying(Input& input)
 			m_isUpdateBestTime = true;
 		}
 
-		UniqueEndProcessing();
-
 		m_updateFunc = &StageBase::UpdateSelect;
 		m_drawFunc = &StageBase::DrawSelect;
 
 		return;
 	}
+
+	DrawTutrial();
 }
 
 /// <summary>
@@ -1065,6 +1089,10 @@ void StageBase::DeathBoss()
 	m_frontEnemy.clear();
 	m_backEnemy.clear();
 
+	// 死亡後はダメージオブジェクトをすべて消す
+	const auto& armored = std::dynamic_pointer_cast<BossArmored>(m_boss);
+	armored->DeleteDamageObjects();
+
 	m_updateFunc = &StageBase::UpdateAfterBossDeath;
 	m_drawFunc = &StageBase::DrawAfterBossDeath;
 }
@@ -1473,6 +1501,43 @@ void StageBase::LoadNextStages(std::vector<std::string>& strConmaBuf, StageData&
 	}
 }
 
+bool StageBase::UpdateTutorial()
+{
+	// チュートリアルステージでなければ早期リターン
+	if (m_stageName != "練習") return false;
+
+	// 説明総数を超えていたら早期リターン
+	if (m_explanationIndex >= kExplanationNum) return false;
+
+	m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation[m_explanationIndex]->GetHandle()));
+	m_explanationIndex++;
+	m_isWaveDraw = false;
+
+	return true;
+}
+
+void StageBase::DrawTutrial()
+{
+	if (m_emphasisFrame > kEmphasisFrame) return;
+
+	if (m_emphasisFrame > kStartAlphaEmphasisFrame)
+	{
+		int alpha = static_cast<int>(255 * (1.0f - (m_emphasisFrame - kStartAlphaEmphasisFrame) / static_cast<float>(kEmphasisFrame - kStartAlphaEmphasisFrame)));
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	}
+
+	float addX = sinf(m_emphasisFrame * kEmphasisAngle) * 5;
+
+	int x = static_cast<int>(m_player->GetPos().x + 64 + addX);
+	int y = static_cast<int>(m_player->GetPos().y);
+
+	int index = (m_emphasisFrame / kEmphasisInterval) % 2;
+
+	DrawRotaGraph(x, y, 1.0, 0.0, m_emphasisArrow[index]->GetHandle(), true);
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
 /// <summary>
 /// ステージの初期化処理
 /// </summary>
@@ -1520,6 +1585,7 @@ void StageBase::Init()
 void StageBase::PlayStart()
 {
 	// ゲーム動作側初期化
+	m_emphasisFrame = 0;
 	m_timeFrame = 0;
 	m_waitFrame = 0;
 	m_extRateFrame = 0;
@@ -1544,7 +1610,7 @@ void StageBase::PlayStart()
 		{
 			// 先にBGMをならして置かないと選択画面の音楽が流れるため流しておく
 			m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
-			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation->GetHandle()));
+			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation[kIndexBossExplanation]->GetHandle()));
 			m_mgr.GetStage()->BossStageIn();
 		}
 	}
@@ -1577,7 +1643,6 @@ void StageBase::CreateEnemyType(const std::string& name, int& frame, bool isStar
 		CreateDivision(frame, isStart);
 	}
 }
-
 
 void StageBase::CreateEnemy()
 {
@@ -1735,6 +1800,7 @@ void StageBase::DrawEnemyKilledInfo(int x, int y) const
 {
 	int addX = 0;
 	const auto& data = m_stageData.at(m_stageName);
+	int bossNum = 0;
 
 	for (const auto& enemy : data.enemyInfo)
 	{
@@ -1746,13 +1812,13 @@ void StageBase::DrawEnemyKilledInfo(int x, int y) const
 		{
 			addX += 2;
 			DrawKilledEnemy("Child", x, y, addX, 12);
-			addX += 38;
+			addX += 36 + 2;
 		}
 		else if (enemy.name == "Division")
 		{
 			addX += 2;
 			DrawKilledEnemy("Split", x, y, addX, 12);
-			addX += 38;
+			addX += 36 + 2;
 		}
 		else if (enemy.name == "Large")
 		{
@@ -1761,8 +1827,12 @@ void StageBase::DrawEnemyKilledInfo(int x, int y) const
 		else if (data.isBoss)
 		{
 			addX += 6;
+			DrawKilledEnemy("BossArmored", x, y, addX);
+			addX += 36 + 6;
+			DrawKilledEnemy("BossStrongArmored", x, y, addX);
+			addX += 36 + 6;
 			DrawKilledEnemy("SplitTwoBound", x, y, addX, 12);
-			addX += 38;
+			addX += 36 + 2;
 		}
 	}
 }
@@ -1784,4 +1854,13 @@ void StageBase::UpdateTime()
 void StageBase::UpTime()
 {
 	m_timeFrame += m_stageData[m_stageName].addTimeFrame;
+}
+
+void StageBase::CreateStrongBoss()
+{
+	std::shared_ptr<BossStrongArmored> strong;
+	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
+	strong->Init(m_boss->GetPos());
+
+	m_boss = strong;
 }
