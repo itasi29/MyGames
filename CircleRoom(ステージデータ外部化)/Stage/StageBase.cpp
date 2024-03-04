@@ -7,9 +7,11 @@
 #include "StringUtility.h"
 
 #include "StageBase.h"
+#include "StageMap.h"
+#include "StageManager.h"
+#include "GameData.h"
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
-#include "StageManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
 #include "FileSystem/FontSystem.h"
@@ -34,24 +36,24 @@
 namespace
 {
 	// ステージデータインデックス番号
-	constexpr int kIndexStageName = 0;
-	constexpr int kIndexUpdateTimeType = 1;
-	constexpr int kIndexAddTimeFrame = 2;
-	constexpr int kIndexEnemyTypeNum = 3;
-	constexpr int kIndexEnemyName = 4;
-	constexpr int kIndexEnemyInfoNum = 5;
-	constexpr int kIndexStartCreateNum = 6;
-	constexpr int kIndexStartCreateFrame = 7;
-	constexpr int kIndexStartDelayFrame = 8;
-	constexpr int kIndexCreateFrame = 9;
-	constexpr int kIndexIsCreateBoss = 10;
-	constexpr int kIndexNextStageNum = 11;
-	constexpr int kIndexNextStageName = 12;
-	constexpr int kIndexDir = 13;
-	constexpr int kIndexInfoType = 14;
-	constexpr int kIndexInfo = 15;
-	constexpr int kIndexInfoGroupNum = 16;
-	constexpr int kIndexInfoGroup = 17;
+	enum class Index
+	{
+		kStageName,
+		kEnemyTypeNum,
+		kEnemyName,
+		kEnemyInfoNum,
+		kEnemyStartCreatNm,
+		kEnemyStartCreateInterval,
+		kEnmeyStartDelayFrame,
+		kEnemyCreateInterval,
+		kIsCreateBoss,
+		kUpdateTimeType,
+		kAddTimeFrame,
+		kInfoType,
+		kInfo,
+		kInfoGroupNum,
+		kInfoGroup
+	};
 	// 説明インデックス番号
 	constexpr int kIndexBossExplanation = 5;
 	// チュートリアル説明総数
@@ -195,7 +197,7 @@ namespace
 	constexpr float kEmphasisAngle = DX_PI_F / 180 * 8;
 }
 
-StageBase::StageBase(GameManager& mgr, Input& input) :
+StageBase::StageBase(GameManager& mgr, Input& input, std::shared_ptr<StageMap> map) :
 	m_mgr(mgr),
 	m_soundSys(m_mgr.GetSound()),
 	m_input(input),
@@ -213,7 +215,8 @@ StageBase::StageBase(GameManager& mgr, Input& input) :
 	m_isWaveDraw(true),
 	m_waveAngle(DX_PI_F),
 	m_explanationIndex(0),
-	m_emphasisFrame(0)
+	m_emphasisFrame(0),
+	m_map(map)
 {
 	m_updateFunc = &StageBase::UpdateSelect;
 	m_drawFunc = &StageBase::DrawSelect;
@@ -371,26 +374,7 @@ void StageBase::UpdateSelect(Input& input)
 		}
 	);
 
-	// ここまではステージ外部化しても同じ処理
-
-
-#if false
-	if (input.IsTriggered("OK"))
-	{
-		// 移動中であっても即時移動
-		m_mgr.GetStage()->ImmediatelyChange();
-
-		// BGM変更
-		m_soundFrame = 0;
-		m_soundSys->Stop(m_selectBgm->GetHandle());
-		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
-
-		Init();
-
-		m_updateFunc = &StageBase::UpdatePlaying;
-		m_drawFunc = &StageBase::DrawPlaying;
-	}
-#else
+	
 	if (UpdateTutorial()) return;
 
 	if (input.IsTriggered("OK"))
@@ -408,10 +392,9 @@ void StageBase::UpdateSelect(Input& input)
 		m_updateFunc = &StageBase::UpdatePlaying;
 		m_drawFunc = &StageBase::DrawPlaying;
 	}
-#endif
 
 	// アビリティ変更
-	m_mgr.GetStage()->ChangeAbility(Ability::kDash);
+	m_mgr.GetStage()->GetData()->ChangeAbility(Ability::kDash);
 }
 
 /// <summary>
@@ -430,34 +413,23 @@ void StageBase::UpdatePlaying(Input& input)
 		m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), m_soundFrame / static_cast<float>(kSoundFade));
 	}
 
+	const auto& data = m_mgr.GetStage()->GetData();
+
 	m_emphasisFrame++;
 	m_extRateFrame++;
 	if (m_isUpdateBestTime)
 	{
 		// ベストタイムの常時更新
 		m_waitFrame++;
-		m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame);
+		data->SaveBestTime(m_stageName, m_timeFrame);
 	}
-	else if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame))
+	else if (data->SaveBestTime(m_stageName, m_timeFrame))
 	{
 		m_isUpdateBestTime = true;
 	}
-	// MEMO:途中で消したい場合はこれをオンに
-#if false
-	for (auto& achived : m_achived)
-	{
-		achived.frame++;
-	}
-	m_achived.remove_if(
-		[](const auto& achived)
-		{
-			return achived.frame > kAchivedFrame;
-		}
-	);
-#endif
 
 	// プレイヤー更新
-	m_player->Update(input, m_mgr.GetStage()->GetAbility());
+	m_player->Update(input, data->GetAbility());
 	// プレイヤーの情報を抜き取る
 	bool playerIsDash = m_player->IsDash();
 	bool playerIsExsit = m_player->IsExsit();
@@ -492,7 +464,7 @@ void StageBase::UpdatePlaying(Input& input)
 			m_player->Death();
 
 			m_mgr.UpdateDeathCcount();
-			m_mgr.GetStage()->UpdateEnemyType(m_boss->GetName());
+			data->SaveKilledEnemyType(m_boss->GetName());
 			m_mgr.GetScene()->ShakeScreen(kPlayerDeathShakeFrame);
 		}
 	}
@@ -522,7 +494,7 @@ void StageBase::UpdatePlaying(Input& input)
 		m_isExtRate = false;
 
 		// ベストタイムの更新
-		if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame))
+		if (data->SaveBestTime(m_stageName, m_timeFrame))
 		{
 			m_isUpdateBestTime = true;
 		}
@@ -692,7 +664,7 @@ void StageBase::DrawPlaying() const
 		DrawGraph(0, 0, m_extScreen, true);
 	}
 
-	if (m_mgr.GetStage()->GetAbility() == Ability::kDash)
+	if (m_mgr.GetStage()->GetData()->GetAbility() == Ability::kDash)
 	{
 		DrawWave("dash", kDashWave, kDashWaveNum);
 	}
@@ -723,14 +695,14 @@ void StageBase::DrawAfterBossDeath() const
 /// <param name="dir">方向名</param>
 void StageBase::CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir)
 {
-	auto& stage = m_mgr.GetStage();
+	const auto& stage = m_mgr.GetStage()->GetData();
 
 	if (stage->IsClearStage(stageName)) return;
 
 	if (timeFrame > exsitTime * kFrameToSec)
 	{
 		m_soundSys->PlaySe(m_clearSe->GetHandle());
-		stage->SaveClear(stageName);
+		stage->SaveClearStage(stageName);
 		AddAchivedStr(dir);
 	}
 }
@@ -739,18 +711,17 @@ void StageBase::CheckConditionsTime(const std::string& stageName, int timeFrame,
 /// あるステージ全ての生存時間がクリア時間を超えているか
 /// </summary>
 /// <param name="stageName">確認するステージ名</param>
-/// <param name="names">確認するステージの名前群</param>
 /// <param name="exsitTime">クリア時間(秒)</param>
 /// <param name="dir">方向名</param>
-void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int timeFrame, int exsitTime, const std::wstring& dir)
+void StageBase::CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir)
 {
-	auto& stage = m_mgr.GetStage();
+	const auto& stage = m_mgr.GetStage()->GetData();
 	int sumTime = 0;
 
 	if (stage->IsClearStage(stageName)) return;
 
 	// 確認するステージのすべてのタイムを加算する
-	for (const auto& name : names)
+	for (const auto& name : m_stageData[stageName].stageInfo.infoGroup)
 	{
 		if (name == m_stageName)
 		{
@@ -765,7 +736,7 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 	if (sumTime >= exsitTime * kFrameToSec)
 	{
 		m_soundSys->PlaySe(m_clearSe->GetHandle());
-		stage->SaveClear(stageName);
+		stage->SaveClearStage(stageName);
 		AddAchivedStr(dir);
 	}
 }
@@ -778,14 +749,14 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, const std::
 /// <param name="dir">方向名</param>
 void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir)
 {
-	auto& stage = m_mgr.GetStage();
+	const auto& stage = m_mgr.GetStage()->GetData();
 
 	if (stage->IsClearStage(stageName)) return;
 
 	if (stage->GetEnemyTypeCount() >= killedNum)
 	{
 		m_soundSys->PlaySe(m_clearSe->GetHandle());
-		stage->SaveClear(stageName);
+		stage->SaveClearStage(stageName);
 		AddAchivedStr(dir);
 	}
 }
@@ -798,9 +769,11 @@ void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNu
 /// <param name="existTime">クリア時間(秒)</param>
 void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
 {
+	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(m_stageName);
+
 	DrawStringToHandle(kConditionStrPosX, y, L"　　   秒間生き残る\n　　(           )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
-		existTime, m_mgr.GetStage()->GetBestTime(m_stageName) / kFrameToSec, existTime);
+		existTime, bestTime / kFrameToSec, existTime);
 }
 
 /// <summary>
@@ -812,7 +785,7 @@ void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
 /// <param name="existTime">合計クリア時間(秒)</param>
 void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const
 {
-	auto& stage = m_mgr.GetStage();
+	const auto& stage = m_mgr.GetStage()->GetData();
 	int sumTime = 0;
 
 	// 確認するステージのすべてのタイムを加算する
@@ -837,9 +810,11 @@ void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int
 /// <param name="killedNum">倒される種類数</param>
 void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
 {
+	int typeCount = m_mgr.GetStage()->GetData()->GetEnemyTypeCount();
+
 	DrawStringToHandle(kConditionStrPosX, y, L"　　   種類の敵に殺される\n　　(          )", kWhiteColor, handle);
 	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
-		killedNum, m_mgr.GetStage()->GetEnemyTypeCount(), killedNum);
+		killedNum, typeCount, killedNum);
 }
 
 /// <summary>
@@ -852,7 +827,9 @@ void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
 /// <param name="isReverxeY">反転Y/param>
 void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY) const
 {
-	if (m_mgr.GetStage()->IsClearStage(nextStName) && (m_waitFrame / kArrowFlashInterval) % 2 != 0)
+	bool isClear = m_mgr.GetStage()->GetData()->IsClearStage(nextStName);
+
+	if (isClear && (m_waitFrame / kArrowFlashInterval) % 2 != 0)
 	{
 		DrawBox(kConditionStrPosX, y, kConditionStrPosX + kArrowSize, y + kArrowSize, 0xffde00, true);
 	}
@@ -941,7 +918,8 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int 
 	}
 
 	auto& file = m_enemysImg.at(enemyName);
-	if (m_mgr.GetStage()->IsKilledEnemy(enemyName))
+	bool isKilled = m_mgr.GetStage()->GetData()->IsKilledEnemy(enemyName);
+	if (isKilled)
 	{
 		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
 		DrawRotaGraph(x + addX, y, 0.5, 0.0, m_checkImg->GetHandle(), true);
@@ -1044,7 +1022,7 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 			m_player->Death();
 
 			m_mgr.UpdateDeathCcount();
-			m_mgr.GetStage()->UpdateEnemyType(enemy->GetName());
+			m_mgr.GetStage()->GetData()->SaveKilledEnemyType(enemy->GetName());
 
 			m_mgr.GetScene()->ShakeScreen(kPlayerDeathShakeFrame);
 
@@ -1065,24 +1043,26 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 /// </summary>
 void StageBase::DeathBoss()
 {
+	const auto& data = m_mgr.GetStage()->GetData();
+
 	// すでにクリアされていた場合は強化ボスを出す
-	if (m_mgr.GetStage()->IsClearBoss(m_boss->GetName()))
+	if (data->IsClearBoss(m_boss->GetName()))
 	{
 		CreateStrongBoss();
 		return;
 	}
 
 	// ベストタイムの更新
-	if (m_mgr.GetStage()->UpdateBestTime(m_stageName, m_timeFrame))
+	if (data->SaveBestTime(m_stageName, m_timeFrame))
 	{
 		m_isUpdateBestTime = true;
 	}
 
 	// クリアしているかの確認
-	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
+	CheckStageConditions(data->GetBestTime(m_stageName));
 
 	// 倒した情報の追加
-	m_mgr.GetStage()->UpdateClearBoss(m_boss->GetName());
+	data->SaveClearBoss(m_boss->GetName());
 
 	// 敵全て消す
 	m_enemy.clear();
@@ -1124,7 +1104,7 @@ void StageBase::DrawBestTime() const
 	DrawBox(m_size.w - kBestTimeFrameSubX - kBestTimeFrameBoxSizeW, kBestTimeFrameBoxPosY, 
 		m_size.w, kBestTimeFramePosY + kBestTimeFrameBoxSizeH, kBackFrameColor, true);
 	// ベストタイムの描画
-	int bestTime = m_mgr.GetStage()->GetBestTime(m_stageName);
+	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(m_stageName);
 	int minSec = (bestTime * 1000 / kFrameToSec) % 1000;
 	int sec = (bestTime / kFrameToSec) % kFrameToSec;
 	int min = bestTime / (kFrameToSec * kFrameToSec);
@@ -1308,7 +1288,8 @@ int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName
 {
 	int handle;
 
-	if (m_mgr.GetStage()->IsClearStage(nextStName))
+	bool isClear = m_mgr.GetStage()->GetData()->IsClearStage(nextStName);
+	if (isClear)
 	{
 		if (isAlreadyClear || (m_waitFrame / kArrowFlashInterval) % 2 == 0)
 		{
@@ -1350,9 +1331,6 @@ void StageBase::LoadStageInfo()
 	// 敵1体の情報
 	int enemyInfoIndex = 0;
 	bool isLoadAllEnmeyInfo = true;
-	// 隣接ステージ情報
-	int nextStageIndex = 0;
-	bool isLoadAllNextStages = true;
 
 	// 最初は対応表情報が入っているだけなので無視する
 	std::getline(ifs, strBuf);
@@ -1361,30 +1339,32 @@ void StageBase::LoadStageInfo()
 	{
 		strConmaBuf = StringUtility::Split(strBuf, ',');
 
-		LoadImportantStageInfo(strConmaBuf, stageName, isLoadAllEnemys, enemyTypeIndex, isLoadAllNextStages, nextStageIndex);
+		LoadImportantStageInfo(strConmaBuf, stageName, isLoadAllEnemys, enemyTypeIndex);
 		auto& data = m_stageData[stageName];
 		LoadEnemys(strConmaBuf, data, isLoadAllEnemys, enemyTypeIndex, isLoadAllEnmeyInfo, enemyInfoIndex);
-		LoadNextStages(strConmaBuf, data, isLoadAllNextStages, nextStageIndex);
 	}
 }
 
-void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllNextStages, int& nextStageIndex)
+void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex)
 {
 	// 全ての情報を読み込んでいる場合のみ次の情報群に移行する
-	if (!isLoadAllEnemys || !isLoadAllNextStages) return;
+	if (!isLoadAllEnemys) return;
 
 	// ステージ名読み込み
-	stageName = strConmaBuf[kIndexStageName];
-	// 更新タイプ読み込み
-	UpTimeType timeType = static_cast<UpTimeType>(std::stoi(strConmaBuf[kIndexUpdateTimeType]));
-	// 更新追加フレーム読み込み
-	int addTimeFrame = std::stoi(strConmaBuf[kIndexAddTimeFrame]);
+	stageName = strConmaBuf[static_cast<int>(Index::kStageName)];
 	// 敵種類数読み込み
-	int enemyTypeNum = std::stoi(strConmaBuf[kIndexEnemyTypeNum]);
-	// 隣接ステージ数読み込み
-	int nextStageNum = std::stoi(strConmaBuf[kIndexNextStageNum]);
+	int enemyTypeNum = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyTypeNum)]);
 	// ボス生成フラグ読み込み
-	bool isCreateBoss = static_cast<bool>(std::stoi(strConmaBuf[kIndexIsCreateBoss]));
+	bool isCreateBoss = static_cast<bool>(std::stoi(strConmaBuf[static_cast<int>(Index::kIsCreateBoss)]));
+	// 更新タイプ読み込み
+	UpTimeType timeType = static_cast<UpTimeType>(std::stoi(strConmaBuf[static_cast<int>(Index::kUpdateTimeType)]));
+	// 更新追加フレーム読み込み
+	int addTimeFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kAddTimeFrame)]);
+	// 条件タイプ読み込み
+	ConditionsType infoType = static_cast<ConditionsType>(std::stoi(strConmaBuf[static_cast<int>(Index::kInfoType)]));
+	// 条件情報読み込み
+	int info = std::stoi(strConmaBuf[static_cast<int>(Index::kInfo)]);
+
 
 	// 情報の代入
 	auto& data = m_stageData[stageName];
@@ -1392,15 +1372,28 @@ void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, st
 	data.addTimeFrame = addTimeFrame;
 	data.enemyNum = enemyTypeNum;
 	data.enemyInfo.resize(enemyTypeNum);
-	data.nextNum = nextStageNum;
-	data.stageInfo.resize(nextStageNum);
 	data.isBoss = isCreateBoss;
+	auto& stage = data.stageInfo;
+	stage.type = infoType;
+	stage.info = info;
+
+	// 合計時間系のみ追加情報読み込み
+	if (static_cast<ConditionsType>(infoType) == ConditionsType::kSumTime)
+	{
+		// 情報群数読み込み
+		int infoNum = std::stoi(strConmaBuf[static_cast<int>(Index::kInfoGroupNum)]);
+		stage.infoGroup.resize(infoNum);
+
+		// 情報群読み込み
+		for (int i = 0; i < infoNum; i++)
+		{
+			stage.infoGroup[i] = strConmaBuf[i + static_cast<int>(Index::kInfoGroup)];
+		}
+	}
 
 	// 情報読み込んでいないとする
 	isLoadAllEnemys = false;
 	enemyTypeIndex = 0;
-	isLoadAllNextStages = false;
-	nextStageIndex = 0;
 }
 
 void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex)
@@ -1413,9 +1406,9 @@ void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& dat
 	if (isLoadAllEnmeyInfo)
 	{
 		// 名前読み込み
-		std::string enemyName = strConmaBuf[kIndexEnemyName];
+		std::string enemyName = strConmaBuf[static_cast<int>(Index::kEnemyName)];
 		// 同名別条件数読み込み
-		int enemyInfoNum = std::stoi(strConmaBuf[kIndexEnemyInfoNum]);
+		int enemyInfoNum = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyInfoNum)]);
 
 		// 情報代入
 		enemy.name = enemyName;
@@ -1430,13 +1423,13 @@ void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& dat
 	auto& info = enemy.info[enemyInfoIndex];
 
 	// 初期生成数読み込み
-	int startNum = std::stoi(strConmaBuf[kIndexStartCreateNum]);
+	int startNum = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyStartCreatNm)]);
 	// 初期生成間隔読み込み
-	int startCreateFrame = std::stoi(strConmaBuf[kIndexStartCreateFrame]);
+	int startCreateFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyStartCreateInterval)]);
 	// 初期遅延フレーム
-	int startDelayFrame = std::stoi(strConmaBuf[kIndexStartDelayFrame]);
+	int startDelayFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kEnmeyStartDelayFrame)]);
 	// 生成間隔
-	int CreateFrame = std::stoi(strConmaBuf[kIndexCreateFrame]);
+	int CreateFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyCreateInterval)]);
 
 	// 情報代入
 	info.startNum = startNum;
@@ -1455,49 +1448,6 @@ void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& dat
 		{
 			isLoadAllEnemys = true;
 		}
-	}
-}
-
-void StageBase::LoadNextStages(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllNextStages, int& nextStageIndex)
-{
-	// 隣接情報すべて読み込んでいたら早期リターン
-	if (isLoadAllNextStages) return;
-
-	// ステージ名読み込み
-	std::string name = strConmaBuf[kIndexNextStageName];
-	// 方向読み込み
-	int dir = std::stoi(strConmaBuf[kIndexDir]);
-	// 条件タイプ読み込み
-	int infoType = std::stoi(strConmaBuf[kIndexInfoType]);
-	// 条件情報読み込み
-	int info = std::stoi(strConmaBuf[kIndexInfo]);
-
-	// 情報代入
-	auto& stage = data.stageInfo[nextStageIndex];
-	stage.name = name;
-	stage.dir = static_cast<MapDir>(dir);
-	stage.type = static_cast<ConditionsType>(infoType);
-	stage.info = info;
-
-	// 合計時間系のみ追加情報読み込み
-	if (static_cast<ConditionsType>(infoType) == ConditionsType::kSumTime)
-	{
-		// 情報群数読み込み
-		int infoNum = std::stoi(strConmaBuf[kIndexInfoGroupNum]);
-		stage.infoGroup.resize(infoNum);
-
-		// 情報群読み込み
-		for (int i = 0; i < infoNum; i++)
-		{
-			stage.infoGroup[i] = strConmaBuf[i + kIndexInfoGroup];
-		}
-	}
-
-	// 情報更新
-	nextStageIndex++;
-	if (nextStageIndex >= data.nextNum)
-	{
-		isLoadAllNextStages = true;
 	}
 }
 
@@ -1561,14 +1511,28 @@ void StageBase::Init()
 	m_enemyCreateFrame.resize(m_enemyNum);
 
 	// クリア情報更新
-	CheckStageConditions(m_mgr.GetStage()->GetBestTime(m_stageName));
+	CheckStageConditions(m_mgr.GetStage()->GetData()->GetBestTime(m_stageName));
 	// 進行方向のクリアチェック
+#if false
 	for (const auto& stage : data.stageInfo)
 	{
 		bool isCreal = m_mgr.GetStage()->IsClearStage(stage.name);
 
 		m_isClear[stage.dir] = isCreal;
 	}
+#else
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		bool isCreal = m_mgr.GetStage()->GetData()->IsClearStage(m_map->GetConectName(m_stageName, dir));
+
+		m_isClear[dir] = isCreal;
+	}
+#endif
 
 	// BGM変更
 	auto& file = m_mgr.GetFile();
@@ -1606,12 +1570,13 @@ void StageBase::PlayStart()
 		m_boss->Init(m_centerPos);
 
 		// ボスステージに入ったことがなければ説明
-		if (!m_mgr.GetStage()->IsBossIn())
+		const auto& data = m_mgr.GetStage()->GetData();
+		if (!data->IsInBoss())
 		{
 			// 先にBGMをならして置かないと選択画面の音楽が流れるため流しておく
 			m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
 			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation[kIndexBossExplanation]->GetHandle()));
-			m_mgr.GetStage()->BossStageIn();
+			data->SaveInBossStage();
 		}
 	}
 }
@@ -1683,6 +1648,7 @@ void StageBase::CreateEnemy()
 
 void StageBase::CheckStageConditions(int frame)
 {
+#if false
 	for (const auto& stage : m_stageData[m_stageName].stageInfo)
 	{
 		auto& type = stage.type;
@@ -1699,6 +1665,32 @@ void StageBase::CheckStageConditions(int frame)
 			CheckConditionsSumTime(stage.name, stage.infoGroup, frame, stage.info, GetDirName(stage.dir));
 		}
 	}
+#else
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+		auto& stage = m_stageData[conectName].stageInfo;
+
+		auto& type = stage.type;
+		if (type == ConditionsType::kTime)
+		{
+			CheckConditionsTime(conectName, frame, stage.info, GetDirName(dir));
+		}
+		else if (type == ConditionsType::kKilled)
+		{
+			CheckConditionsKilled(conectName, stage.info, GetDirName(dir));
+		}
+		else if (type == ConditionsType::kSumTime)
+		{
+			CheckConditionsSumTime(conectName, stage.info, frame, GetDirName(dir));
+		}
+	}
+#endif
 }
 
 std::wstring StageBase::GetDirName(MapDir dir)
@@ -1728,6 +1720,7 @@ int StageBase::DrawStageConditions(int drawY) const
 	int startY = drawY;
 	int fontHandle = m_mgr.GetFont()->GetHandle(28);
 
+#if false
 	for (const auto& stage : m_stageData.at(m_stageName).stageInfo)
 	{
 		// 既にクリアしていたら次へ
@@ -1768,30 +1761,92 @@ int StageBase::DrawStageConditions(int drawY) const
 
 		drawY += 68;
 	}
+#else
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+
+		// 既にクリアしていたら次へ
+		if (m_isClear.at(dir)) continue;
+		// チュートリアルステージなら次へ
+		if (conectName == "練習") continue;
+
+		// 矢印描画
+		if (dir == MapDir::kUp)
+		{
+			DrawArrowConditions(conectName, drawY, 0.0);
+		}
+		else if (dir == MapDir::kDown)
+		{
+			DrawArrowConditions(conectName, drawY, DX_PI);
+		}
+		else if (dir == MapDir::kRight)
+		{
+			DrawArrowConditions(conectName, drawY, kRad90);
+		}
+		else if (dir == MapDir::kLeft)
+		{
+			DrawArrowConditions(conectName, drawY, -kRad90);
+		}
+
+		// 条件描画
+		auto& stage = m_stageData.at(conectName).stageInfo;
+		auto& type = stage.type;
+		if (type == ConditionsType::kTime)
+		{
+			DrawTimeConditions(drawY, fontHandle, stage.info);
+		}
+		else if (type == ConditionsType::kKilled)
+		{
+			DrawKilledConditions(drawY, fontHandle, stage.info);
+		}
+		else if (type == ConditionsType::kSumTime)
+		{
+			DrawSumTimeConditions(stage.infoGroup, drawY, fontHandle, stage.info);
+		}
+
+		drawY += 68;
+	}
+#endif
 
 	return drawY - startY - 68;
 }
 
 void StageBase::DrawArrow() const
 {
-	for (const auto& stage : m_stageData.at(m_stageName).stageInfo)
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
 	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+
+		// チュートリアルステージなら次へ
+		if (conectName == "練習") continue;
+
 		// 矢印描画
-		if (stage.dir == MapDir::kUp)
+		if (dir == MapDir::kUp)
 		{
-			DrawUpArrow(m_isClear.at(stage.dir), stage.name);
+			DrawUpArrow(m_isClear.at(dir), conectName);
 		}
-		else if (stage.dir == MapDir::kDown)
+		else if (dir == MapDir::kDown)
 		{
-			DrawDownArrow(m_isClear.at(stage.dir), stage.name);
+			DrawDownArrow(m_isClear.at(dir), conectName);
 		}
-		else if (stage.dir == MapDir::kRight)
+		else if (dir == MapDir::kRight)
 		{
-			DrawRightArrow(m_isClear.at(stage.dir), stage.name);
+			DrawRightArrow(m_isClear.at(dir), conectName);
 		}
-		else if (stage.dir == MapDir::kLeft)
+		else if (dir == MapDir::kLeft)
 		{
-			DrawLeftArrow(m_isClear.at(stage.dir), stage.name);
+			DrawLeftArrow(m_isClear.at(dir), conectName);
 		}
 	}
 }
@@ -1863,4 +1918,45 @@ void StageBase::CreateStrongBoss()
 	strong->Init(m_boss->GetPos());
 
 	m_boss = strong;
+}
+
+void StageBase::ChangeStage(Input& input)
+{
+	// プレイヤーが生存している間は変わらないようにする
+	if (m_player->IsExsit()) return;
+
+	// 死亡直後は変わらないようにする
+	if (m_waitFrame < kWaitChangeFrame) return;
+
+	const auto& data = m_mgr.GetStage()->GetData();
+
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+
+		// 接続ステージをクリアしてなかったら次へ
+		if (!data->IsClearStage(conectName)) continue;
+
+		if (dir == MapDir::kUp && input.IsTriggered("up"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+		else if (dir == MapDir::kDown && input.IsTriggered("down"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+		else if (dir == MapDir::kRight && input.IsTriggered("right"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+		else if (dir == MapDir::kLeft && input.IsTriggered("left"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+	}
 }

@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Common/Input.h"
 #include "Stage/StageManager.h"
+#include "Stage/GameData.h"
 
 #include "GameManager.h"
 #include "Scene/SceneManager.h"

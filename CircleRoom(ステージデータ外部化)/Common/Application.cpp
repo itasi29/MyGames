@@ -83,7 +83,7 @@ void Application::Run()
         manager.SetFileManager(fileManager);
         Input input;
 
-        manager.Init();
+        manager.Init(input);
 
 #ifdef _DEBUG
         manager.GetScene()->ChangeScene(std::make_shared<DebugScene>(manager));

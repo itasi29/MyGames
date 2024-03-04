@@ -7,18 +7,19 @@
 #include "Vec2.h"
 
 class GameManager;
-class FileBase;
 class SoundSystem;
-class Player;
-class Collision;
-class EnemyBase;
-class BossBase;
-class Input;
+class StageMap;
+class FileBase;
 class BottansFile;
 class KeyFile;
+class Collision;
+class Input;
+class Player;
+class EnemyBase;
+class BossBase;
 struct size;
-struct GameData;
 enum class StageDir;
+enum class MapDir;
 
 struct Achived
 {
@@ -28,14 +29,6 @@ struct Achived
 	int frame;
 };
 
-enum class MapDir
-{
-	kUp,
-	kDown,
-	kRight,
-	kLeft
-};
-
 enum class ConditionsType
 {
 	kTime,
@@ -43,13 +36,9 @@ enum class ConditionsType
 	kSumTime
 };
 
-// 次ステージの情報構造体
-struct NextStageInfo
+// ステージの情報構造体
+struct StageInfo
 {
-	// 方向情報
-	MapDir dir = MapDir::kUp;
-	// 名前
-	std::string name = {};
 	// 条件種類
 	ConditionsType type = ConditionsType::kTime;
 	// 条件情報
@@ -94,8 +83,7 @@ struct StageData
 	// 増やすフレーム
 	int addTimeFrame = 0;
 	// 次ステージ情報
-	int nextNum = 0;
-	std::vector<NextStageInfo> stageInfo = {};
+	StageInfo stageInfo = {};
 	// 敵情報
 	int enemyNum = 0;
 	std::vector<EnemyInfo> enemyInfo = {};
@@ -106,7 +94,7 @@ struct StageData
 class StageBase
 {
 public:
-	StageBase(GameManager& mgr, Input& input);
+	StageBase(GameManager& mgr, Input& input, std::shared_ptr<StageMap> map);
 	virtual ~StageBase();
 
 	// 初期化
@@ -118,12 +106,14 @@ public:
 
 	void GenericEnemy(const std::shared_ptr<EnemyBase>& enemy);
 
+	void ChangeStage(const std::string& name) { m_stageName = name; }
+
 	/// <summary>
 	/// ステージを変更する
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	/// <returns>true : 入れ替え可能/ fasle : 入れ替え不可能</returns>
-	virtual void ChangeStage(Input& input) = 0;
+	virtual void ChangeStage(Input& input);
 
 	/// <summary>
 	/// 特定条件でのタイムの上昇
@@ -165,7 +155,7 @@ protected:
 
 	// 条件確認
 	void CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
-	void CheckConditionsSumTime(const std::string& stageName, const std::vector<std::string>& names, int timeFrame, int exsitTime, const std::wstring& dir);
+	void CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
 	void CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir);
 
 	// 条件描画
@@ -252,9 +242,8 @@ private:
 private:
 	// ステージ情報読み込み
 	void LoadStageInfo();
-	void LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllNextStages, int& nextStageIndex);
+	void LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex);
 	void LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex);
-	void LoadNextStages(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllNextStages, int& nextStageIndex);
 
 	// チュートリアルでの処理
 	bool UpdateTutorial();
@@ -359,6 +348,9 @@ protected:
 	float m_waveAngle;
 
 private:
+	protected:
+	std::shared_ptr<StageMap> m_map;
+
 	// 敵生成数
 	int m_enemyNum;
 	// 初期生成数

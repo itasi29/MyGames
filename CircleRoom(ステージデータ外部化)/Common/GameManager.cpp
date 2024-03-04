@@ -27,9 +27,9 @@ GameManager::~GameManager()
 	Save();
 }
 
-void GameManager::Init()
+void GameManager::Init(Input& input)
 {
-	m_stage->Init();
+	m_stage->Init(input);
 	m_sound->Init();
 	m_font->Init();
 	m_scene->Init();

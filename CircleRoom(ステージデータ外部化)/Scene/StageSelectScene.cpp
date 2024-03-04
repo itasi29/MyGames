@@ -7,6 +7,7 @@
 #include "GameManager.h"
 #include "SceneManager.h"
 #include "Stage/StageManager.h"
+#include "Stage/GameData.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/SoundSystem.h"
 #include "FileSystem/FileBase.h"
@@ -15,16 +16,7 @@
 #include "FileSystem/KeyFile.h"
 #include "Input.h"
 
-#include "Stage/Stage1_1.h"
-#include "Stage/Stage1_2.h"
-#include "Stage/Stage1_3.h"
-#include "Stage/Stage1_4.h"
-#include "Stage/Stage1_5.h"
-#include "Stage/Stage1_6.h"
-#include "Stage/Stage1_7.h"
-#include "Stage/Stage1_8.h"
-#include "Stage/Stage1_9.h"
-
+#include "Stage/StageBase.h"
 #include "StageSelectScene.h"
 
 namespace
@@ -92,16 +84,6 @@ StageSelectScene::StageSelectScene(GameManager& mgr, Input& input) :
 {
 	CurrosrPos();
 
-	m_stageData["サークル"] = std::make_shared<Stage1_1>(mgr, input);
-	m_stageData["巨壁"] = std::make_shared<Stage1_2>(mgr, input);
-	m_stageData["近接遭遇"] = std::make_shared<Stage1_3>(mgr, input);
-	m_stageData["切断"] = std::make_shared<Stage1_4>(mgr, input);
-	m_stageData["ランナー"] = std::make_shared<Stage1_5>(mgr, input);
-	m_stageData["発生"] = std::make_shared<Stage1_6>(mgr, input);
-	m_stageData["分離"] = std::make_shared<Stage1_7>(mgr, input);
-	m_stageData["Reaper"] = std::make_shared<Stage1_8>(mgr, input);
-	m_stageData["要警戒"] = std::make_shared<Stage1_9>(mgr, input);
-
 	m_soundSys = mgr.GetSound();
 
 	auto& file = mgr.GetFile();
@@ -144,10 +126,10 @@ void StageSelectScene::Update(Input& input)
 	// MEMO:展示会用コード
 	if (CheckHitKey(KEY_INPUT_M))
 	{
-		auto& stage = m_mgr.GetStage();
+		const auto& stage = m_mgr.GetStage()->GetData();
 		for (const auto& name : m_stageData)
 		{
-			stage->SaveClear(name.first);
+			stage->SaveClearStage(name.first);
 		}
 	}
 
@@ -182,14 +164,14 @@ void StageSelectScene::Update(Input& input)
 		auto stgName = kStageName[m_indexLine][m_indexRow];
 
 		// そのステージがクリアされていなければ終了
-		if (!m_mgr.GetStage()->IsClearStage(stgName)) return;
+		if (!m_mgr.GetStage()->GetData()->IsClearStage(stgName)) return;
 
 		// 止めないと音が二重になる
 		m_soundSys->Stop();
 
 		m_soundSys->PlaySe(m_selectSe->GetHandle());
 
-		m_mgr.GetStage()->ChangeStage(m_stageData[stgName]);
+		m_mgr.GetStage()->ChangeStage(stgName);
 
 		m_mgr.GetScene()->PopScene();
 	}
@@ -228,7 +210,7 @@ void StageSelectScene::Draw() const
 
 
 			// ステージの描画
-			if (m_mgr.GetStage()->IsClearStage(stageName))
+			if (m_mgr.GetStage()->GetData()->IsClearStage(stageName))
 			{
 				DrawRotaGraph(drawX, drawY, 1.0, 0.0, m_stage.at(stageName)[0]->GetHandle(), true);
 			}
@@ -266,7 +248,7 @@ void StageSelectScene::DrawInf(const std::string& str) const
 	DrawStringToHandle(kDrawStringX, y, L"ベストタイム", kWhiteColor, font);
 	y += 48;
 
-	int bestTime = m_mgr.GetStage()->GetBestTime(str);
+	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(str);
 	int minSec = (bestTime * 1000 / 60) % 1000;
 	int sec = (bestTime / 60) % 60;
 	int min = bestTime / 3600;

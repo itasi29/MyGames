@@ -7,6 +7,7 @@ class SceneManager;
 class StageManager;
 class SoundSystem;
 class FontSystem;
+class Input;
 
 struct VolumeData
 {
@@ -42,7 +43,7 @@ private:
 public:
 	~GameManager();
 
-	void Init();
+	void Init(Input& input);
 	void InitData();
 
 	/// <summary>

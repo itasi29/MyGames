@@ -8,6 +8,7 @@
 #include "GameManager.h"
 #include "SceneManager.h"
 #include "Stage/StageManager.h"
+#include "Stage/GameData.h"
 #include "FileSystem/BottansFile.h"
 #include "FileSystem/FontSystem.h"
 #include "FileSystem/SoundSystem.h"
@@ -250,7 +251,7 @@ void TitleScene::NormalUpdate(Input& input)
 		if (m_currentLinePos == 0)
 		{
 			// チュートリアルをクリアしていたら続きからor初めから
-			if (m_mgr.GetStage()->IsClearStage("練習"))
+			if (m_mgr.GetStage()->GetData()->IsClearStage("練習"))
 			{
 				m_updateFunc = &TitleScene::StartSelectUpdate;
 				m_drawFunc = &TitleScene::StartSelectDraw;
@@ -332,7 +333,7 @@ void TitleScene::StartSelectUpdate(Input& input)
 		if (m_currentLinePos == 1)
 		{
 			// データの削除
-			m_mgr.GetStage()->InitData();
+			m_mgr.GetStage()->GetData()->InitData();
 			m_mgr.GetStage()->InitPos();
 			m_mgr.InitData();
 		}

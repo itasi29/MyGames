@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
 #include "Stage/StageManager.h"
+#include "Stage/GameData.h"
 #include "FileSystem/SoundSystem.h"
 
 #include "GamePlayingScene.h"
@@ -67,14 +68,14 @@ GamePlayingScene::GamePlayingScene(GameManager& mgr, Input& input) :
 
 	// ステージの設定
 	// チュートリアルステージを通常ステージに
-	if (m_mgr.GetStage()->IsClearStage("練習"))
+	if (m_mgr.GetStage()->GetData()->IsClearStage("練習"))
 	{
 		StartStage(input);
 	}
 	// していなければチュートリアルステージに
 	else
 	{
-		m_mgr.GetStage()->ChangeStage(std::make_shared<StageTutorial>(m_mgr, input));
+		m_mgr.GetStage()->ChangeStage("練習", true);
 	}
 
 	m_mgr.GetStage()->ResetClear();
@@ -187,47 +188,15 @@ void GamePlayingScene::DrawNormal() const
 void GamePlayingScene::StartStage(Input& input)
 {
 	const auto& nowStage = m_mgr.GetNowStage();
-	std::shared_ptr<StageBase> stage;
+	std::string name = nowStage;
 	
-	if (nowStage == "巨壁")
-	{
-		stage = std::make_shared<Stage1_2>(m_mgr, input);
-	}
-	else if (nowStage == "近接遭遇")
-	{
-		stage = std::make_shared<Stage1_3>(m_mgr, input);
-	}
-	else if (nowStage == "切断")
-	{
-		stage = std::make_shared<Stage1_4>(m_mgr, input);
-	}
-	else if (nowStage == "ランナー")
-	{
-		stage = std::make_shared<Stage1_5>(m_mgr, input);
-	}
-	else if (nowStage == "発生")
-	{
-		stage = std::make_shared<Stage1_6>(m_mgr, input);
-	}
-	else if (nowStage == "分離")
-	{
-		stage = std::make_shared<Stage1_7>(m_mgr, input);
-	}
-	else if (nowStage == "Reaper")
-	{
-		stage = std::make_shared<Stage1_8>(m_mgr, input);
-	}
-	else if (nowStage == "要警戒")
-	{
-		stage = std::make_shared<Stage1_9>(m_mgr, input);
-	}
-	else
+	if (nowStage == "")
 	{
 		// どこにも入らなかったら1-1に入るようにする
-		stage = std::make_shared<Stage1_1>(m_mgr, input);
+		name = "サークル";
 	}
 
-	m_mgr.GetStage()->ChangeStage(stage, true);
+	m_mgr.GetStage()->ChangeStage(name, true);
 	return;
 }
 
