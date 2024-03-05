@@ -73,7 +73,8 @@ Player::Player(const size& windowSize, float fieldSize) :
 	m_isDash(false),
 	m_isExsit(false),
 	m_deathFrame(0),
-	m_isDeathEffect(false)
+	m_isDeathEffect(false),
+	m_isInvivisible(false)
 {
 	Init();
 	m_isExsit = false;
@@ -103,6 +104,7 @@ void Player::Init()
 	m_isDash = false;
 	m_isExsit = true;
 	m_isDeathEffect = false;
+	m_isInvivisible = false;
 
 	// à íuÇÃê›íË
 	m_pos = Vec2{ m_size.w / 2.0f, m_size.h - m_fieldSize * 0.5f };
@@ -181,6 +183,8 @@ void Player::Update(Input& input, Ability ability)
 
 void Player::Draw() const
 {
+	if (m_isInvivisible) return;
+
 	if (m_isExsit)
 	{
 		float rate;

@@ -36,7 +36,7 @@
 namespace
 {
 	// ステージデータインデックス番号
-	enum class Index
+	enum Index : int
 	{
 		kStageName,
 		kEnemyTypeNum,
@@ -278,10 +278,61 @@ StageBase::~StageBase()
 	DeleteGraph(m_extScreen);
 }
 
-/// <summary>
-/// 更新処理
-/// </summary>
-/// <param name="input">入力情報</param>
+void StageBase::Init()
+{
+	auto& data = m_stageData[m_stageName];
+
+	// 敵の総数を確認
+	m_enemyNum = data.enemyNum;
+	int temp = 0;
+	for (int i = 0; i < m_enemyNum; i++)
+	{
+		for (int j = 1; j < data.enemyInfo[i].num; j++)
+		{
+			temp++;
+		}
+	}
+	m_enemyNum += temp;
+	// サイズ更新
+	m_enemyStarCreateNum.resize(m_enemyNum);
+	m_enemyCreateFrame.resize(m_enemyNum);
+
+	// クリア情報更新
+	CheckStageConditions(m_mgr.GetStage()->GetData()->GetBestTime(m_stageName));
+	// 進行方向のクリアチェック
+#if false
+	for (const auto& stage : data.stageInfo)
+	{
+		bool isCreal = m_mgr.GetStage()->IsClearStage(stage.name);
+
+		m_isClear[stage.dir] = isCreal;
+	}
+#else
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		bool isCreal = m_mgr.GetStage()->GetData()->IsClearStage(m_map->GetConectName(m_stageName, dir));
+
+		m_isClear[dir] = isCreal;
+	}
+#endif
+
+	// BGM変更
+	auto& file = m_mgr.GetFile();
+	if (m_stageData[m_stageName].isBoss)
+	{
+		m_playBgm = file->LoadSound(L"Bgm/boss.mp3");
+	}
+	else
+	{
+		m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
+	}
+}
+
 void StageBase::Update(Input& input)
 {
 	// ウェーブ文字更新
@@ -290,20 +341,116 @@ void StageBase::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-/// <summary>
-/// 描画処理
-/// </summary>
 void StageBase::Draw() const
 {
 	(this->*m_drawFunc)();
 }
 
-/// <summary>
-/// 敵の追加
-/// </summary>
 void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 {
 	m_backEnemy.push_back(enemy);
+}
+
+void StageBase::UpTime()
+{
+	m_timeFrame += m_stageData[m_stageName].addTimeFrame;
+}
+
+void StageBase::DrawEnemyKilledInfo(int x, int y) const
+{
+	int addX = 0;
+	const auto& data = m_stageData.at(m_stageName);
+	int bossNum = 0;
+
+	for (const auto& enemy : data.enemyInfo)
+	{
+		DrawKilledEnemy(enemy.name, x, y, addX);
+
+		addX += 36;
+
+		if (enemy.name == "Create")
+		{
+			addX += 2;
+			DrawKilledEnemy("Child", x, y, addX, 12);
+			addX += 36 + 2;
+		}
+		else if (enemy.name == "Division")
+		{
+			addX += 2;
+			DrawKilledEnemy("Split", x, y, addX, 12);
+			addX += 36 + 2;
+		}
+		else if (enemy.name == "Large")
+		{
+			addX += 4;
+		}
+		else if (data.isBoss)
+		{
+			addX += 6;
+			DrawKilledEnemy("BossArmored", x, y, addX);
+			addX += 36 + 6;
+			DrawKilledEnemy("BossStrongArmored", x, y, addX);
+			addX += 36 + 6;
+			DrawKilledEnemy("SplitTwoBound", x, y, addX, 12);
+			addX += 36 + 2;
+		}
+	}
+}
+
+void StageBase::ChangeStage(Input& input)
+{
+	// プレイヤーが生存している間は変わらないようにする
+	if (m_player->IsExsit()) return;
+
+	// 死亡直後は変わらないようにする
+	if (m_waitFrame < kWaitChangeFrame) return;
+
+	const auto& data = m_mgr.GetStage()->GetData();
+
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+
+		// 接続ステージをクリアしてなかったら次へ
+		if (!data->IsClearStage(conectName)) continue;
+
+		if (dir == MapDir::kUp && input.IsTriggered("up"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+		else if (dir == MapDir::kDown && input.IsTriggered("down"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+		else if (dir == MapDir::kRight && input.IsTriggered("right"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+		else if (dir == MapDir::kLeft && input.IsTriggered("left"))
+		{
+			m_mgr.GetStage()->ChangeStage(conectName);
+		}
+	}
+}
+
+void StageBase::ChangeStageData(const std::string& name)
+{ 
+	// 名前の変更
+	m_stageName = name;
+
+	// 敵の削除
+	m_enemy.clear();
+	m_frontEnemy.clear();
+	m_backEnemy.clear();
+	m_boss = nullptr;
+
+	// プレイヤー透明化
+	m_player->OnInvisible();
 }
 
 /// <summary>
@@ -559,11 +706,10 @@ void StageBase::DrawSelect() const
 	SetDrawMode(DX_DRAWMODE_NEAREST);
 	m_player->Draw();
 
-	auto name = StringUtility::StringToWString(m_stageName);
-	int fontHandle = m_mgr.GetFont()->GetHandle(32);
 	int drawScreenHandle = m_mgr.GetScene()->GetScreenHandle();
 
 	// ステージ名の描画
+	const auto& name = StringUtility::StringToWString(m_stageName);
 	DrawBox(kNameFramePosX, kNameFramePosY, kNameFramePosX + kNameFrameWidth, kNameFramePosY + kNameFrameHeight, kFrameColor, true);
 	DrawFormatStringToHandle(kNamePosX, kNamePosY, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%s", name.c_str());
 
@@ -571,12 +717,12 @@ void StageBase::DrawSelect() const
 	SetDrawScreen(m_strScreen);
 	ClearDrawScreen();
 	// 時間
-	DrawTime(kTimePosX, kTimePosY, fontHandle);
+	DrawTime(kTimePosX, kTimePosY, m_mgr.GetFont()->GetHandle(32));
 	// 種類
 	DrawStringToHandle(kKilledStrPosX, kKilledStrPosY, L"> Circle", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
 	DrawEnemyKilledInfo(kKillTypePosX, kKillTypePosY);
 	SetDrawScreen(drawScreenHandle);
-	// フレーム
+	// 背景フレーム
 	DrawRotaGraph(kInfoFramePosX, kInfoFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, false, true);
 	DrawBox(kInfoBoxPosX, kInfoBoxPosY, kInfoBoxPosX + kInfoBoxWidth, kInfoBoxPosY + kInfoBoxHeight, kBackFrameColor, true);
 	DrawGraph(0, 0, m_strScreen, true);
@@ -586,7 +732,7 @@ void StageBase::DrawSelect() const
 	ClearDrawScreen();
 	auto y = DrawStageConditions(kConditionPosY);
 	SetDrawScreen(drawScreenHandle);
-	// Y座標の変動があればフレームを描画
+	// Y座標の変動があれば背景フレームを描画
 	if (y >= 0)
 	{
 		DrawBox(kConditionBoxPosX, kConditionBoxPosY, kConditionBoxPosX + kConditionBoxWidth, kConditionBoxPosY + y, kBackFrameColor, true);
@@ -634,7 +780,7 @@ void StageBase::DrawPlaying() const
 	ClearDrawScreen();
 	// 時間
 	DrawTime(kTimePosX, kTimePosY + kTimePlayingDiff, m_mgr.GetFont()->GetHandle(64));
-	// フレーム
+	// 背景フレーム
 	SetDrawScreen(drawScreenHandle);
 	DrawRotaGraph(kInfoFramePosX, kInfoFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, false, true);
 	DrawBox(kInfoBoxPosX, kInfoBoxPosY, kInfoBoxPosX + kInfoBoxWidth, kInfoBoxPosY + kInfoBoxHeight + kInfoBoxPlayingDiff, kBackFrameColor, true);
@@ -644,7 +790,7 @@ void StageBase::DrawPlaying() const
 	SetDrawScreen(m_strScreen);
 	ClearDrawScreen();
 	auto y = DrawStageConditions(kConditionPosY + kConditionPlayingDiff);
-	// Y座標の変動があればフレームを描画
+	// Y座標の変動があれば背景フレームを描画
 	SetDrawScreen(m_extScreen);
 	ClearDrawScreen();
 	if (y >= 0)
@@ -670,7 +816,6 @@ void StageBase::DrawPlaying() const
 	}
 
 	DrawBestTime();
-	DrawUnique();
 	DrawConditionsAchived(y + kConditionPlayingDiff);
 }
 
@@ -684,6 +829,745 @@ void StageBase::DrawAfterBossDeath() const
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
 	m_boss->Draw();
 	SetDrawMode(DX_DRAWMODE_NEAREST);
+}
+
+/// <summary>
+/// プレイ開始時の処理
+/// </summary>
+void StageBase::PlayStart()
+{
+	// ゲーム動作側初期化
+	m_emphasisFrame = 0;
+	m_timeFrame = 0;
+	m_waitFrame = 0;
+	m_extRateFrame = 0;
+	m_isUpdateBestTime = false;
+	m_waveAngle = 0;
+	m_achived.clear();
+
+	// キャラ初期化
+	m_player->Init();
+	m_enemy.clear();
+	m_backEnemy.clear();
+	m_frontEnemy.clear();
+	m_boss = nullptr;
+
+	// 敵の生成フレーム初期化
+	for (int i = 0; i < static_cast<int>(m_enemyCreateFrame.size()); i++)
+	{
+		m_enemyCreateFrame[i] = 0;
+		m_enemyStarCreateNum[i] = 0;
+	}
+
+
+	if (m_stageData[m_stageName].isBoss)
+	{
+		m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
+		m_boss->Init(m_centerPos);
+
+		// ボスステージに入ったことがなければ説明
+		const auto& data = m_mgr.GetStage()->GetData();
+		if (!data->IsInBoss())
+		{
+			// 先にBGMをならして置かないと選択画面の音楽が流れるため流しておく
+			m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
+			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation[kIndexBossExplanation]->GetHandle()));
+			data->SaveInBossStage();
+		}
+	}
+}
+
+/// <summary>
+/// チュートリアルでの処理
+/// </summary>
+/// <returns>true: チュートリアル途中 / false: チュートリアル終了済み</returns>
+bool StageBase::UpdateTutorial()
+{
+	// チュートリアルステージでなければ早期リターン
+	if (m_stageName != "練習") return false;
+
+	// 説明総数を超えていたら早期リターン
+	if (m_explanationIndex >= kExplanationNum) return false;
+
+	m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation[m_explanationIndex]->GetHandle()));
+	m_explanationIndex++;
+	m_isWaveDraw = false;
+
+	return true;
+}
+
+/// <summary>
+/// 敵の更新
+/// </summary>
+/// <param name="enemys">敵の配列</param>
+/// <param name="isDash">プレイヤーがダッシュしているか</param>
+/// <param name="col">プレイヤーの当たり判定</param>
+void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col)
+{
+	for (const auto& enemy : enemys)
+	{
+		enemy->Update();
+
+		if (!isDash && col.IsCollsion(enemy->GetRect()))
+		{
+			m_player->Death();
+
+			m_mgr.UpdateDeathCcount();
+			m_mgr.GetStage()->GetData()->SaveKilledEnemyType(enemy->GetName());
+
+			m_mgr.GetScene()->ShakeScreen(kPlayerDeathShakeFrame);
+
+			break;
+		}
+	}
+
+	enemys.remove_if(
+		[](const auto& enemy)
+		{
+			return !enemy->IsExsit();
+		}
+	);
+}
+
+/// <summary>
+/// 時間の更新
+/// </summary>
+void StageBase::UpdateTime()
+{
+	auto& data = m_stageData[m_stageName];
+
+	if (data.timeType == UpTimeType::kNormal)
+	{
+		UpTime();
+	}
+	else if (data.timeType == UpTimeType::kAttack)
+	{
+		// 弾を拾った時なのでここでは特に処理はしない
+	}
+}
+
+/// <summary>
+/// チュートリアルでの描画
+/// </summary>
+void StageBase::DrawTutrial()
+{
+	if (m_emphasisFrame > kEmphasisFrame) return;
+
+	if (m_emphasisFrame > kStartAlphaEmphasisFrame)
+	{
+		int alpha = static_cast<int>(255 * (1.0f - (m_emphasisFrame - kStartAlphaEmphasisFrame) / static_cast<float>(kEmphasisFrame - kStartAlphaEmphasisFrame)));
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	}
+
+	float addX = sinf(m_emphasisFrame * kEmphasisAngle) * 5;
+
+	int x = static_cast<int>(m_player->GetPos().x + 64 + addX);
+	int y = static_cast<int>(m_player->GetPos().y);
+
+	int index = (m_emphasisFrame / kEmphasisInterval) % 2;
+
+	DrawRotaGraph(x, y, 1.0, 0.0, m_emphasisArrow[index]->GetHandle(), true);
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+/// <summary>
+/// 壁の描画
+/// </summary>
+void StageBase::DrawWall() const
+{
+	int centerX = static_cast<int>(m_size.w * 0.5f);
+	int centerY = static_cast<int>(m_size.h * 0.5f);
+
+	// 画像中心を元にした描画をするために
+	// Rotaにしている
+	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_fieldImg->GetHandle(), true);
+}
+
+/// <summary>
+/// ステージ条件描画
+/// </summary>
+/// <param name="drawY">描画位置Y</param>
+/// <returns>フレーム描画追加Y</returns>
+int StageBase::DrawStageConditions(int drawY) const
+{
+	int startY = drawY;
+	int fontHandle = m_mgr.GetFont()->GetHandle(28);
+	int arrowHandle = m_arrowConditionsImg->GetHandle();
+	int arrowX = kConditionStrPosX + static_cast<int>(kArrowSize * 0.5);
+	int arrowY = drawY + static_cast<int>(kArrowSize * 0.5);
+
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+
+		// 既にクリアしていたら次へ
+		if (m_isClear.at(dir)) continue;
+		// チュートリアルステージなら次へ
+		if (conectName == "練習") continue;
+
+		// 矢印描画
+		bool isClear = m_mgr.GetStage()->GetData()->IsClearStage(conectName);
+		double angle = 0.0;
+		if (dir == MapDir::kUp)
+		{
+			angle = 0.0;
+		}
+		else if (dir == MapDir::kDown)
+		{
+			angle = DX_PI;
+		}
+		else if (dir == MapDir::kRight)
+		{
+			angle = kRad90;
+		}
+		else if (dir == MapDir::kLeft)
+		{
+			angle = -kRad90;
+		}
+		if (isClear && (m_waitFrame / kArrowFlashInterval) % 2 != 0)
+		{
+			DrawBox(kConditionStrPosX, drawY, kConditionStrPosX + kArrowSize, drawY + kArrowSize, kYellowColor, true);
+		}
+		DrawRotaGraph(arrowX, arrowY, 1.0, angle, arrowHandle, true);
+
+
+		// 条件描画
+		auto& stage = m_stageData.at(conectName).stageInfo;
+		auto& type = stage.type;
+		if (type == ConditionsType::kTime)
+		{
+			DrawTimeConditions(drawY, fontHandle, stage.info);
+		}
+		else if (type == ConditionsType::kKilled)
+		{
+			DrawKilledConditions(drawY, fontHandle, stage.info);
+		}
+		else if (type == ConditionsType::kSumTime)
+		{
+			DrawSumTimeConditions(stage.infoGroup, drawY, fontHandle, stage.info);
+		}
+
+		drawY += 68;
+	}
+
+	return drawY - startY - 68;
+}
+
+/// <summary>
+/// クリア条件のタイムを描画
+/// </summary>
+/// <param name="y">描画Y座標</param>
+/// <param name="handle">フォントハンドル</param>
+/// <param name="existTime">クリア時間(秒)</param>
+void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
+{
+	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(m_stageName);
+
+	DrawStringToHandle(kConditionStrPosX, y, L"　　   秒間生き残る\n　　(           )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
+		existTime, bestTime / kFrameToSec, existTime);
+}
+
+/// <summary>
+/// クリア条件の合計時間のやつ描画
+/// </summary>
+/// <param name="names">確認するステージ群情報</param>
+/// <param name="y">描画Y座標</param>
+/// <param name="handle">フォントハンドル</param>
+/// <param name="existTime">合計クリア時間(秒)</param>
+void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const
+{
+	const auto& stage = m_mgr.GetStage()->GetData();
+	int sumTime = 0;
+
+	// 確認するステージのすべてのタイムを加算する
+	for (const auto& name : names)
+	{
+		sumTime += stage->GetBestTime(name);
+	}
+
+	// 秒に戻す
+	sumTime /= kFrameToSec;
+
+	DrawStringToHandle(kConditionStrPosX, y, L"　　全ステージ合計\n　　    秒間生き残る\n　　(           )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"\n　　%02d\n　　  %2d / %2d",
+		existTime, sumTime, existTime);
+}
+
+/// <summary>
+/// クリア条件の敵に殺される種類数を描画
+/// </summary>
+/// <param name="y">描画Y座標</param>
+/// <param name="handle">フォントハンドル</param>
+/// <param name="killedNum">倒される種類数</param>
+void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
+{
+	int typeCount = m_mgr.GetStage()->GetData()->GetEnemyTypeCount();
+
+	DrawStringToHandle(kConditionStrPosX, y, L"　　   種類の敵に殺される\n　　(          )", kWhiteColor, handle);
+	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
+		killedNum, typeCount, killedNum);
+}
+
+/// <summary>
+/// 条件達成の描画
+/// </summary>
+/// <param name="y">描画Y座標</param>
+void StageBase::DrawConditionsAchived(int y) const
+{
+	// 送られてきた座標をずらす
+	y += kAchivedStrShiftPosY;
+	int backFrameY = y - kAchivedFrameDiff;
+
+	for (const auto& achived : m_achived)
+	{
+		if (achived.frame < static_cast<int>(kAchivedDrawFrame * 0.5f))
+		{
+			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
+			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
+		}
+		// 少しずつ透明に描画
+		else
+		{
+			float rate = (kAchivedDrawFrame - achived.frame) / (kAchivedDrawFrame * 0.5f);
+			int alpha = static_cast<int>(255 * rate);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
+			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+
+		// 描画位置の更新
+		y += kAchivedStrAdd;
+		backFrameY += kAchivedStrAdd + kAchivedFrameDiff;
+	}
+}
+
+/// <summary>
+/// 条件の拡大描画
+/// </summary>
+void StageBase::DrawExpansion() const
+{
+	int width = m_size.w;
+	int height = m_size.h;
+
+	int posX = 0;
+
+	int left = 0;
+	int right = width + static_cast<int>((width - kExtShiftRight) * kExtRateSize);
+	int top = static_cast<int>(-kExtShiftUp * kExtRateSize);
+	int bottom = height + static_cast<int>((height - kExtShiftUp) * kExtRateSize);
+
+	if (m_extRateFrame > kWaitExtRateFrame)
+	{
+		float rate = 1.0f - ((m_extRateFrame - kWaitExtRateFrame) / static_cast<float>(kExtRateFrame - kWaitExtRateFrame));
+
+		posX = static_cast<int>(kExtShiftWidth * rate);
+
+		right = width + static_cast<int>((width - kExtShiftRight) * kExtRateSize * rate);
+		top = static_cast<int>(-kExtShiftUp * kExtRateSize * rate);
+		bottom = height + static_cast<int>((height - kExtShiftUp) * kExtRateSize * rate);
+
+		int alpha = kExtRateAlpha + static_cast<int>((255 - kExtRateAlpha) * (1.0f - rate));
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+	}
+	else
+	{
+		posX = kExtShiftWidth;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kExtRateAlpha);
+	}
+
+	DrawExtendGraph(posX + left, top, posX + right, bottom, m_extScreen, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+/// <summary>
+/// 現在のタイムを描画
+/// </summary>
+/// <param name="x">描画X座標</param>
+/// <param name="y">描画Y座標</param>
+/// <param name="handle">フォントハンドル</param>
+void StageBase::DrawTime(int x, int y, int handle) const
+{
+	DrawStringToHandle(x, y, L"> タイム", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
+	y += kTimeAddY;
+	int minSec = (m_timeFrame * 1000 / kFrameToSec) % 1000;
+	int sec = (m_timeFrame / kFrameToSec) % kFrameToSec;
+	int min = m_timeFrame / (kFrameToSec * kFrameToSec);
+	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"%01d:%02d.%03d", min, sec, minSec);
+}
+
+/// <summary>
+/// ベストタイム関連の描画
+/// </summary>
+void StageBase::DrawBestTime() const
+{
+	// フレーム描画
+	DrawRotaGraph(m_size.w - kBestTimeFrameSubX, kBestTimeFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, true, true);
+	DrawBox(m_size.w - 128 - 155, 158, m_size.w, 224, kBackFrameColor, true);
+	DrawBox(m_size.w - kBestTimeFrameSubX - kBestTimeFrameBoxSizeW, kBestTimeFrameBoxPosY,
+		m_size.w, kBestTimeFramePosY + kBestTimeFrameBoxSizeH, kBackFrameColor, true);
+	// ベストタイムの描画
+	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(m_stageName);
+	int minSec = (bestTime * 1000 / kFrameToSec) % 1000;
+	int sec = (bestTime / kFrameToSec) % kFrameToSec;
+	int min = bestTime / (kFrameToSec * kFrameToSec);
+	DrawStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
+	DrawFormatStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY + kBestTimeStrAddY, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+
+	if (!m_isUpdateBestTime) return;
+
+	// 点滅描画
+	if (((m_waitFrame / kBestTimeFlashInterval) % 2) == 1)
+	{
+		DrawFormatStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY + kBestTimeStrAddY, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
+	}
+
+	if (m_waitFrame > kAchivedDrawFrame) return;
+
+	// 更新した場合教える用
+	if (m_waitFrame > static_cast<int>(kAchivedDrawFrame * 0.5f))
+	{
+		float rate = 1.0f - (m_waitFrame - (kAchivedDrawFrame * 0.5f)) / (kAchivedDrawFrame * 0.5f);
+		int alpha = static_cast<int>(255 * rate);
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+		DrawBox(m_size.w - kBestTimeBoxPosX, kBestTimeBoxPosY, m_size.w, kBestTimeBoxPosY + kBestTimeBoxHeight, kBackFrameColor, true);
+		DrawStringToHandle(m_size.w - kBestTimeUpStrPosX, kBestTimeUpStrPosY, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		return;
+	}
+
+	DrawBox(m_size.w - kBestTimeBoxPosX, kBestTimeBoxPosY, m_size.w, kBestTimeBoxPosY + kBestTimeBoxHeight, kBackFrameColor, true);
+	DrawStringToHandle(m_size.w - kBestTimeUpStrPosX, kBestTimeUpStrPosY, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
+}
+
+/// <summary>
+/// ステージ移動の矢印描画
+/// </summary>
+void StageBase::DrawArrow() const
+{
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+
+		// チュートリアルステージなら次へ
+		if (conectName == "練習") continue;
+
+		bool isAlreadyClear = m_isClear.at(dir);
+		int handle = GetArrowHandle(isAlreadyClear, conectName);
+
+		int x = static_cast<int>(m_size.w * 0.5f);
+		int y = static_cast<int>(m_size.h * 0.5f);
+		double angle = 0.0;
+		bool isReverseX = false;
+		bool isReverseY = false;
+
+		// 矢印描画
+		if (dir == MapDir::kUp)
+		{
+			y -= kArrowShiftPos;
+		}
+		else if (dir == MapDir::kDown)
+		{
+			y += kArrowShiftPos;
+			isReverseY = true;
+		}
+		else if (dir == MapDir::kRight)
+		{
+			x += kArrowShiftPos;
+			angle = kRad90;
+			isReverseX = true;
+		}
+		else if (dir == MapDir::kLeft)
+		{
+			x -= kArrowShiftPos;
+			angle = -kRad90;
+		}
+
+		DrawRotaGraph(x, y, 1.0, angle, handle, true, isReverseX, isReverseY);
+
+		bool isBoss = m_stageData.at(conectName).isBoss;
+		// ボスステージではないまたは既にクリアしていたら描画しない
+		if (!isBoss || isAlreadyClear) continue;
+
+		// 鍵描画
+		DrawRotaGraph(x, y, 1.0, 0.0, m_arrowLockImg->GetHandle(), true);
+	}
+}
+
+/// <summary>
+/// 敵タイプの描画
+/// </summary>
+/// <param name="enemyName">名前</param>
+/// <param name="addX">X座標の追加値</param>
+/// <param name="radius">半径 : def = 16</param>
+void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius) const
+{
+	double enemyExtRate = kKillTypeDefExtRate;
+	// 小さくする敵の場合は小さく
+	for (const auto& name : kSmallTypeName)
+	{
+		if (name == enemyName)
+		{
+			enemyExtRate = kKillTypeSmallExtRate;
+			break;
+		}
+	}
+	// 大きくする敵の場合は大きく
+	for (const auto& name : kLargeTypeName)
+	{
+		if (name == enemyName)
+		{
+			enemyExtRate = kKillTypeLargeExtRate;
+			break;
+		}
+	}
+
+	auto& file = m_enemysImg.at(enemyName);
+	bool isKilled = m_mgr.GetStage()->GetData()->IsKilledEnemy(enemyName);
+	if (isKilled)
+	{
+		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
+		DrawRotaGraph(x + addX, y, 0.5, 0.0, m_checkImg->GetHandle(), true);
+	}
+	else
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kKillTypeAlpha);
+		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+}
+
+/// <summary>
+/// 選択等の文字・画像描画
+/// </summary>
+/// /// <param name="cmd">コマンド名</param>
+/// <param name="str">ウェーブさせる文字列</param>
+/// <param name="num">文字列数</param>
+void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num) const
+{
+	if (!m_isWaveDraw) return;
+
+	DrawGraph(kWaveFramePosX, kWaveFramePosY, m_frameImg->GetHandle(), true);
+
+	// 事前に入力したタイプで画像変更
+	const auto& type = m_input.GetType();
+	if (type == InputType::keybd)
+	{
+		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), kWaveImgPosX, kWaveImgPosY, 2.0);
+	}
+	else if (type == InputType::pad)
+	{
+		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), kWaveImgPosX, kWaveImgPosY, 2.0);
+	}
+
+	int handle = m_mgr.GetFont()->GetHandle(32);
+
+	int x = kWaveStrPosX;
+
+	// 文字一つずつ描画
+	for (int i = 0; i < num; i++)
+	{
+		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
+
+		if (add > 0)
+		{
+			add = 0;
+		}
+
+		int y = kWaveStrPosY + add;
+
+
+		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
+		x += kWaveStrAdd;
+	}
+}
+
+/// <summary>
+/// 敵の生成
+/// </summary>
+void StageBase::CreateEnemy()
+{
+	auto& data = m_stageData[m_stageName];
+
+	int index = 0;
+	// 敵種類全部回す
+	for (int i = 0; i < data.enemyNum; i++)
+	{
+		auto& enemy = data.enemyInfo[i];
+
+		// その種類のすべてのパターンを回す
+		for (const auto& info : enemy.info)
+		{
+			auto& startNum = m_enemyStarCreateNum[index];
+			auto& createFrame = m_enemyCreateFrame[index];
+
+			createFrame++;
+			// 初回生成
+			if (startNum < info.startNum && createFrame > info.startInterval)
+			{
+				CreateEnemyType(enemy.name, createFrame, true);
+				createFrame = info.startDelayFrame;
+
+				startNum++;
+			}
+			// 通常生成  生成間隔が０より大きいことが条件
+			else if (createFrame > info.createInterval && info.createInterval > 0)
+			{
+				CreateEnemyType(enemy.name, createFrame);
+			}
+
+			// 要素番号更新
+			index++;
+		}
+	}
+}
+
+/// <summary>
+/// 種類によって生成する敵を変更する
+/// </summary>
+/// <param name="name">名前</param>
+/// <param name="frame">生成フレーム</param>
+/// <param name="isStart">開始時に生成する敵か</param>
+void StageBase::CreateEnemyType(const std::string& name, int& frame, bool isStart)
+{
+	if (name == "MoveWall")
+	{
+		// 上側
+		auto enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
+		enemy->Init({ 0, -1 });
+		m_enemy.push_back(enemy);
+		// 下側
+		enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
+		enemy->Init({ 0, 1 });
+		m_enemy.push_back(enemy);
+
+		return;
+	}
+
+	// 生成
+	std::shared_ptr<EnemyBase> enemy;
+	if (name == "Normal")
+	{
+		enemy = std::make_shared<EnemyNormal>(m_size, m_fieldSize);
+	}
+	else if (name == "Large")
+	{
+		enemy = std::make_shared<EnemyLarge>(m_size, m_fieldSize);
+	}
+	else if (name == "Dash")
+	{
+		enemy = std::make_shared<EnemyDash>(m_size, m_fieldSize, m_player);
+	}
+	else if (name == "Create")
+	{
+		enemy = std::make_shared<EnemyCreate>(m_size, m_fieldSize, this);
+	}
+	else if (name == "Division")
+	{
+		enemy = std::make_shared<EnemyDivision>(m_size, m_fieldSize, this);
+	}
+
+	// 初期化
+	frame = 0;
+	enemy->Init(m_centerPos, isStart);
+	// 追加
+	m_enemy.push_back(enemy);
+}
+
+/// <summary>
+/// 強化ボスの生成
+/// </summary>
+void StageBase::CreateStrongBoss()
+{
+	std::shared_ptr<BossStrongArmored> strong;
+	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
+	strong->Init(m_boss->GetPos());
+
+	m_boss = strong;
+}
+
+/// <summary>
+/// ボスの死亡処理
+/// </summary>
+void StageBase::DeathBoss()
+{
+	const auto& data = m_mgr.GetStage()->GetData();
+
+	// すでにクリアされていた場合は強化ボスを出す
+	if (data->IsClearBoss(m_boss->GetName()))
+	{
+		CreateStrongBoss();
+		return;
+	}
+
+	// ベストタイムの更新
+	if (data->SaveBestTime(m_stageName, m_timeFrame))
+	{
+		m_isUpdateBestTime = true;
+	}
+
+	// クリアしているかの確認
+	CheckStageConditions(data->GetBestTime(m_stageName));
+
+	// 倒した情報の追加
+	data->SaveClearBoss(m_boss->GetName());
+
+	// 敵全て消す
+	m_enemy.clear();
+	m_frontEnemy.clear();
+	m_backEnemy.clear();
+
+	// 死亡後はダメージオブジェクトをすべて消す
+	const auto& armored = std::dynamic_pointer_cast<BossArmored>(m_boss);
+	armored->DeleteDamageObjects();
+
+	m_updateFunc = &StageBase::UpdateAfterBossDeath;
+	m_drawFunc = &StageBase::DrawAfterBossDeath;
+}
+
+/// <summary>
+/// 条件確認
+/// </summary>
+/// <param name="frame">経過時間</param>
+void StageBase::CheckStageConditions(int frame)
+{
+	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
+	{
+		const MapDir& dir = static_cast<MapDir>(i);
+
+		// 接続してなかったら次へ
+		if (!m_map->IsConect(m_stageName, dir)) continue;
+
+		const auto& conectName = m_map->GetConectName(m_stageName, dir);
+		auto& stage = m_stageData[conectName].stageInfo;
+
+		auto& type = stage.type;
+		if (type == ConditionsType::kTime)
+		{
+			CheckConditionsTime(conectName, frame, stage.info, GetDirName(dir));
+		}
+		else if (type == ConditionsType::kKilled)
+		{
+			CheckConditionsKilled(conectName, stage.info, GetDirName(dir));
+		}
+		else if (type == ConditionsType::kSumTime)
+		{
+			CheckConditionsSumTime(conectName, stage.info, frame, GetDirName(dir));
+		}
+	}
 }
 
 /// <summary>
@@ -762,177 +1646,6 @@ void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNu
 }
 
 /// <summary>
-/// クリア条件のタイムを描画
-/// </summary>
-/// <param name="y">描画Y座標</param>
-/// <param name="handle">フォントハンドル</param>
-/// <param name="existTime">クリア時間(秒)</param>
-void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
-{
-	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(m_stageName);
-
-	DrawStringToHandle(kConditionStrPosX, y, L"　　   秒間生き残る\n　　(           )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
-		existTime, bestTime / kFrameToSec, existTime);
-}
-
-/// <summary>
-/// クリア条件の合計時間のやつ描画
-/// </summary>
-/// <param name="names">確認するステージ群情報</param>
-/// <param name="y">描画Y座標</param>
-/// <param name="handle">フォントハンドル</param>
-/// <param name="existTime">合計クリア時間(秒)</param>
-void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const
-{
-	const auto& stage = m_mgr.GetStage()->GetData();
-	int sumTime = 0;
-
-	// 確認するステージのすべてのタイムを加算する
-	for (const auto& name : names)
-	{
-		sumTime += stage->GetBestTime(name);
-	}
-
-	// 秒に戻す
-	sumTime /= kFrameToSec;
-
-	DrawStringToHandle(kConditionStrPosX, y, L"　　全ステージ合計\n　　    秒間生き残る\n　　(           )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"\n　　%02d\n　　  %2d / %2d",
-		existTime, sumTime, existTime);
-}
-
-/// <summary>
-/// クリア条件の敵に殺される種類数を描画
-/// </summary>
-/// <param name="y">描画Y座標</param>
-/// <param name="handle">フォントハンドル</param>
-/// <param name="killedNum">倒される種類数</param>
-void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
-{
-	int typeCount = m_mgr.GetStage()->GetData()->GetEnemyTypeCount();
-
-	DrawStringToHandle(kConditionStrPosX, y, L"　　   種類の敵に殺される\n　　(          )", kWhiteColor, handle);
-	DrawFormatStringToHandle(kConditionStrPosX, y, kYellowColor, handle, L"　　%2d\n　　  %2d / %2d",
-		killedNum, typeCount, killedNum);
-}
-
-/// <summary>
-/// クリア条件にある矢印の描画
-/// </summary>
-/// <param name="nextStName">次のステージ名</param>
-/// <param name="y">描画Y座標</param>
-/// <param name="angle">矢印角度(上基準の時計回り)</param>
-/// <param name="isReverseX">反転X</param>
-/// <param name="isReverxeY">反転Y/param>
-void StageBase::DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX, bool isReverxeY) const
-{
-	bool isClear = m_mgr.GetStage()->GetData()->IsClearStage(nextStName);
-
-	if (isClear && (m_waitFrame / kArrowFlashInterval) % 2 != 0)
-	{
-		DrawBox(kConditionStrPosX, y, kConditionStrPosX + kArrowSize, y + kArrowSize, 0xffde00, true);
-	}
-	DrawRotaGraph(kConditionStrPosX + static_cast<int>(kArrowSize * 0.5), y + static_cast<int>(kArrowSize * 0.5), 1.0, angle, m_arrowConditionsImg->GetHandle(), true, isReverseX, isReverxeY);
-}
-
-/// <summary>
-/// 左矢印の描画
-/// </summary>
-void StageBase::DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
-{
-	int handle = GetArrowHandle(isAlreadyClear, nextStName);
-
-	int x = static_cast<int>(m_size.w * 0.5f - kArrowShiftPos);
-	int y = static_cast<int>(m_size.h * 0.5f);
-	DrawRotaGraph(x, y, 1.0, -kRad90, handle, true);
-	DrawArrowLock(x, y, isBossStage, isClear);
-}
-
-/// <summary>
-/// 右矢印の描画
-/// </summary>
-void StageBase::DrawRightArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
-{
-	int handle = GetArrowHandle(isAlreadyClear, nextStName);
-
-	int x = static_cast<int>(m_size.w * 0.5f + kArrowShiftPos);
-	int y = static_cast<int>(m_size.h * 0.5f);
-	// MEMO:何故かReverXをtrueにするとがびらないからしておいてる
-	DrawRotaGraph(x, y, 1.0, kRad90, handle, true, true);
-	DrawArrowLock(x, y, isBossStage, isClear);
-}
-
-/// <summary>
-/// 上矢印の描画
-/// </summary>
-void StageBase::DrawUpArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
-{
-	int handle = GetArrowHandle(isAlreadyClear, nextStName);
-
-	int x = static_cast<int>(m_size.w * 0.5f);
-	int y = static_cast<int>(m_size.h * 0.5f - kArrowShiftPos);
-	DrawRotaGraph(x, y, 1.0, 0.0, handle, true);
-	DrawArrowLock(x, y, isBossStage, isClear);
-}
-
-/// <summary>
-/// 下矢印の描画
-/// </summary>
-void StageBase::DrawDownArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage, bool isClear) const
-{
-	int handle = GetArrowHandle(isAlreadyClear, nextStName);
-
-	int x = static_cast<int>(m_size.w * 0.5f);
-	int y = static_cast<int>(m_size.h * 0.5f + kArrowShiftPos);
-	DrawRotaGraph(x, y, 1.0, 0.0, handle, true, false, true);
-	DrawArrowLock(x, y, isBossStage, isClear);
-}
-
-/// <summary>
-/// 敵タイプの描画
-/// </summary>
-/// <param name="enemyName">名前</param>
-/// <param name="addX">X座標の追加値</param>
-/// <param name="radius">半径 : def = 16</param>
-void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius) const
-{
-	double enemyExtRate = kKillTypeDefExtRate;
-	// 小さくする敵の場合は小さく
-	for (const auto& name : kSmallTypeName)
-	{
-		if (name == enemyName)
-		{
-			enemyExtRate = kKillTypeSmallExtRate;
-			break;
-		}
-	}
-	// 大きくする敵の場合は大きく
-	for (const auto& name : kLargeTypeName)
-	{
-		if (name == enemyName)
-		{
-			enemyExtRate = kKillTypeLargeExtRate;
-			break;
-		}
-	}
-
-	auto& file = m_enemysImg.at(enemyName);
-	bool isKilled = m_mgr.GetStage()->GetData()->IsKilledEnemy(enemyName);
-	if (isKilled)
-	{
-		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
-		DrawRotaGraph(x + addX, y, 0.5, 0.0, m_checkImg->GetHandle(), true);
-	}
-	else
-	{
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kKillTypeAlpha);
-		DrawRotaGraph(x + addX, y, enemyExtRate, 0.0, file->GetHandle(), true);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-}
-
-/// <summary>
 /// クリアした文字の描画群に追加
 /// </summary>
 /// <param name="dir">方向</param>
@@ -941,341 +1654,31 @@ void StageBase::AddAchivedStr(const std::wstring& dir)
 	m_achived.push_back({ dir + L"の条件達成！", 0 });
 }
 
-void StageBase::CreateMoveWall()
-{
-	// 上側
-	auto enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
-	enemy->Init({ 0, -1 });
-	m_enemy.push_back(enemy);
-	// 下側
-	enemy = std::make_shared<EnemyMoveWall>(m_size, m_fieldSize);
-	enemy->Init({ 0, 1 });
-	m_enemy.push_back(enemy);
-}
-
-void StageBase::CreateNormal(int& frame, bool isStart)
-{
-	frame = 0;
-	auto enemy = std::make_shared<EnemyNormal>(m_size, m_fieldSize);
-	enemy->Init(m_centerPos, isStart);
-	m_enemy.push_back(enemy);
-}
-
-void StageBase::CreateLarge(int& frame, bool isStart)
-{
-	frame = 0;
-	auto enemy = std::make_shared<EnemyLarge>(m_size, m_fieldSize);
-	enemy->Init(m_centerPos, isStart);
-	m_enemy.push_back(enemy);
-}
-
-void StageBase::CreateDash(int& frame, bool isStart)
-{
-	frame = 0;
-	auto enemy = std::make_shared<EnemyDash>(m_size, m_fieldSize, m_player);
-	enemy->Init(m_centerPos, isStart);
-	m_frontEnemy.push_back(enemy);
-}
-
-void StageBase::CreateEneCreate(int& frame, bool isStart)
-{
-	frame = 0;
-	auto enemy = std::make_shared<EnemyCreate>(m_size, m_fieldSize, this);
-	enemy->Init(m_centerPos, isStart);
-	m_enemy.push_back(enemy);
-}
-
-void StageBase::CreateDivision(int& frame, bool isStart)
-{
-	frame = 0;
-	auto enemy = std::make_shared<EnemyDivision>(m_size, m_fieldSize, this);
-	enemy->Init(m_centerPos, isStart);
-	m_frontEnemy.push_back(enemy);
-}
-
-void StageBase::ChangeSelectFunc()
-{
-	m_updateFunc = &StageBase::UpdateSelect;
-	m_drawFunc = &StageBase::DrawSelect;
-}
-
-void StageBase::ChangePlayingFunc()
-{
-	m_updateFunc = &StageBase::UpdatePlaying;
-	m_drawFunc = &StageBase::DrawPlaying;
-}
-
 /// <summary>
-/// 敵の更新
+/// 矢印方向の文字を取得
 /// </summary>
-/// <param name="enemys">敵の配列</param>
-/// <param name="isDash">プレイヤーがダッシュしているか</param>
-/// <param name="col">プレイヤーの当たり判定</param>
-void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col)
+/// <param name="dir">方向</param>
+/// <returns>方向文字</returns>
+std::wstring StageBase::GetDirName(MapDir dir)
 {
-	for (const auto& enemy : enemys)
+	if (dir == MapDir::kUp)
 	{
-		enemy->Update();
-
-		if (!isDash && col.IsCollsion(enemy->GetRect()))
-		{
-			m_player->Death();
-
-			m_mgr.UpdateDeathCcount();
-			m_mgr.GetStage()->GetData()->SaveKilledEnemyType(enemy->GetName());
-
-			m_mgr.GetScene()->ShakeScreen(kPlayerDeathShakeFrame);
-
-			break;
-		}
+		return L"上";
+	}
+	else if (dir == MapDir::kDown)
+	{
+		return L"下";
+	}
+	else if (dir == MapDir::kRight)
+	{
+		return L"右";
+	}
+	else if (dir == MapDir::kLeft)
+	{
+		return L"左";
 	}
 
-	enemys.remove_if(
-		[](const auto& enemy)
-		{
-			return !enemy->IsExsit();
-		}
-	);
-}
-
-/// <summary>
-/// ボスの死亡処理
-/// </summary>
-void StageBase::DeathBoss()
-{
-	const auto& data = m_mgr.GetStage()->GetData();
-
-	// すでにクリアされていた場合は強化ボスを出す
-	if (data->IsClearBoss(m_boss->GetName()))
-	{
-		CreateStrongBoss();
-		return;
-	}
-
-	// ベストタイムの更新
-	if (data->SaveBestTime(m_stageName, m_timeFrame))
-	{
-		m_isUpdateBestTime = true;
-	}
-
-	// クリアしているかの確認
-	CheckStageConditions(data->GetBestTime(m_stageName));
-
-	// 倒した情報の追加
-	data->SaveClearBoss(m_boss->GetName());
-
-	// 敵全て消す
-	m_enemy.clear();
-	m_frontEnemy.clear();
-	m_backEnemy.clear();
-
-	// 死亡後はダメージオブジェクトをすべて消す
-	const auto& armored = std::dynamic_pointer_cast<BossArmored>(m_boss);
-	armored->DeleteDamageObjects();
-
-	m_updateFunc = &StageBase::UpdateAfterBossDeath;
-	m_drawFunc = &StageBase::DrawAfterBossDeath;
-}
-
-/// <summary>
-/// 現在のタイムを描画
-/// </summary>
-/// <param name="x">描画X座標</param>
-/// <param name="y">描画Y座標</param>
-/// <param name="handle">フォントハンドル</param>
-void StageBase::DrawTime(int x, int y, int handle) const
-{
-	DrawStringToHandle(x, y, L"> タイム", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
-	y += kTimeAddY;
-	int minSec = (m_timeFrame * 1000 / kFrameToSec) % 1000;
-	int sec = (m_timeFrame / kFrameToSec) % kFrameToSec;
-	int min = m_timeFrame / (kFrameToSec * kFrameToSec);
-	DrawFormatStringToHandle(x, y, kYellowColor, handle, L"%01d:%02d.%03d", min, sec, minSec);
-}
-
-/// <summary>
-/// ベストタイム関連の描画
-/// </summary>
-void StageBase::DrawBestTime() const
-{
-	// フレーム描画
-	DrawRotaGraph(m_size.w - kBestTimeFrameSubX, kBestTimeFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, true, true);
-	DrawBox(m_size.w - 128 - 155, 158, m_size.w, 224, kBackFrameColor, true);
-	DrawBox(m_size.w - kBestTimeFrameSubX - kBestTimeFrameBoxSizeW, kBestTimeFrameBoxPosY, 
-		m_size.w, kBestTimeFramePosY + kBestTimeFrameBoxSizeH, kBackFrameColor, true);
-	// ベストタイムの描画
-	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(m_stageName);
-	int minSec = (bestTime * 1000 / kFrameToSec) % 1000;
-	int sec = (bestTime / kFrameToSec) % kFrameToSec;
-	int min = bestTime / (kFrameToSec * kFrameToSec);
-	DrawStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY, L"> ベストタイム", kWhiteColor, m_mgr.GetFont()->GetHandle(32));
-	DrawFormatStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY + kBestTimeStrAddY, kYellowColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
-
-	if (!m_isUpdateBestTime) return;
-
-	// 点滅描画
-	if (((m_waitFrame / kBestTimeFlashInterval) % 2) == 1)
-	{
-		DrawFormatStringToHandle(m_size.w - kBestTimeStrSubX, kBestTimeStrPosY + kBestTimeStrAddY, kRedColor, m_mgr.GetFont()->GetHandle(64), L"%02d:%02d.%03d", min, sec, minSec);
-	}
-	
-	if (m_waitFrame > kAchivedDrawFrame) return;
-
-	// 更新した場合教える用
-	if (m_waitFrame > static_cast<int>(kAchivedDrawFrame * 0.5f))
-	{
-		float rate = 1.0f - (m_waitFrame - (kAchivedDrawFrame * 0.5f)) / (kAchivedDrawFrame * 0.5f);
-		int alpha = static_cast<int>(255 * rate);
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-		DrawBox(m_size.w - kBestTimeBoxPosX, kBestTimeBoxPosY, m_size.w, kBestTimeBoxPosY + kBestTimeBoxHeight, kBackFrameColor, true);
-		DrawStringToHandle(m_size.w - kBestTimeUpStrPosX, kBestTimeUpStrPosY, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-		return;
-	}
-
-	DrawBox(m_size.w - kBestTimeBoxPosX, kBestTimeBoxPosY, m_size.w, kBestTimeBoxPosY + kBestTimeBoxHeight, kBackFrameColor, true);
-	DrawStringToHandle(m_size.w - kBestTimeUpStrPosX, kBestTimeUpStrPosY, L"ベストタイム更新！", kYellowColor, m_mgr.GetFont()->GetHandle(48));
-}
-
-/// <summary>
-/// 条件達成の描画
-/// </summary>
-/// <param name="y">描画Y座標</param>
-void StageBase::DrawConditionsAchived(int y) const
-{
-	// 送られてきた座標をずらす
-	y += kAchivedStrShiftPosY;
-	int backFrameY = y - kAchivedFrameDiff;
-
-	for (const auto& achived : m_achived)
-	{
-		if (achived.frame < static_cast<int>(kAchivedDrawFrame * 0.5f))
-		{
-			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
-			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
-		}
-		// 少しずつ透明に描画
-		else
-		{
-			float rate = (kAchivedDrawFrame - achived.frame) / (kAchivedDrawFrame * 0.5f);
-			int alpha = static_cast<int>(255 * rate);
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-			DrawBox(0, backFrameY, kAchivedFrameWidth, backFrameY + kAchivedFrameHeight, kBackFrameColor, true);
-			DrawStringToHandle(kAchivedStrPosX, y, achived.str.c_str(), kRedColor, m_mgr.GetFont()->GetHandle(64));
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		}
-
-		// 描画位置の更新
-		y += kAchivedStrAdd;
-		backFrameY += kAchivedStrAdd + kAchivedFrameDiff;
-	}
-}
-
-/// <summary>
-/// 条件の拡大描画
-/// </summary>
-void StageBase::DrawExpansion() const
-{
-	int width = m_size.w;
-	int height = m_size.h;
-
-	int posX = 0;
-
-	int left = 0;
-	int right = width + static_cast<int>((width - kExtShiftRight) * kExtRateSize);
-	int top = static_cast<int>(-kExtShiftUp * kExtRateSize);
-	int bottom = height + static_cast<int>((height - kExtShiftUp) * kExtRateSize);
-
-	if (m_extRateFrame > kWaitExtRateFrame)
-	{
-		float rate = 1.0f - ((m_extRateFrame - kWaitExtRateFrame) / static_cast<float>(kExtRateFrame - kWaitExtRateFrame));
-
-		posX = static_cast<int>(kExtShiftWidth * rate);
-
-		right = width + static_cast<int>((width - kExtShiftRight) * kExtRateSize * rate);
-		top = static_cast<int>(-kExtShiftUp * kExtRateSize * rate);
-		bottom = height + static_cast<int>((height - kExtShiftUp) * kExtRateSize * rate);
-
-		int alpha = kExtRateAlpha + static_cast<int>((255 - kExtRateAlpha) * (1.0f - rate));
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-	}
-	else
-	{
-		posX = kExtShiftWidth;
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, kExtRateAlpha);
-	}
-
-	DrawExtendGraph(posX + left, top, posX + right, bottom, m_extScreen, true);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-}
-
-/// <summary>
-/// 壁の描画
-/// </summary>
-void StageBase::DrawWall() const
-{
-	int centerX = static_cast<int>(m_size.w * 0.5f);
-	int centerY = static_cast<int>(m_size.h * 0.5f);
-
-	// 画像中心を元にした描画をするために
-	// Rotaにしている
-	DrawRotaGraph(centerX, centerY, 1.0, 0.0, m_fieldImg->GetHandle(), true);
-}
-
-/// <summary>
-/// 選択等の文字・画像描画
-/// </summary>
-/// /// <param name="cmd">コマンド名</param>
-/// <param name="str">ウェーブさせる文字列</param>
-/// <param name="num">文字列数</param>
-void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num) const
-{
-	if (!m_isWaveDraw) return;
-
-	DrawGraph(kWaveFramePosX, kWaveFramePosY, m_frameImg->GetHandle(), true);
-
-	// 事前に入力したタイプで画像変更
-	const auto& type = m_input.GetType();
-	if (type == InputType::keybd)
-	{
-		m_key->DrawKey(m_input.GetHardDataName(cmd, InputType::keybd), kWaveImgPosX, kWaveImgPosY, 2.0);
-	}
-	else if (type == InputType::pad)
-	{
-		m_bt->DrawBottan(m_input.GetHardDataName(cmd, InputType::pad), kWaveImgPosX, kWaveImgPosY, 2.0);
-	}
-
-	int handle = m_mgr.GetFont()->GetHandle(32);
-
-	int x = kWaveStrPosX;
-
-	// 文字一つずつ描画
-	for (int i = 0; i < num; i++)
-	{
-		int add = static_cast<int>(sinf(m_waveAngle + kWaveInterval * i) * -10);
-
-		if (add > 0)
-		{
-			add = 0;
-		}
-
-		int y = kWaveStrPosY + add;
-
-
-		DrawStringToHandle(x, y, str[i], kWhiteColor, handle);
-		x += kWaveStrAdd;
-	}
-}
-
-/// <summary>
-/// 矢印の上に鍵の描画
-/// </summary>
-void StageBase::DrawArrowLock(int x, int y, bool isBossStage, bool isClear) const
-{
-	if (!isBossStage || isClear) return;
-
-	DrawRotaGraph(x, y, 1.0, 0.0, m_arrowLockImg->GetHandle(), true);
+	return L"";
 }
 
 /// <summary>
@@ -1308,6 +1711,9 @@ int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName
 	return handle;
 }
 
+/// <summary>
+/// ステージデータのロード
+/// </summary>
 void StageBase::LoadStageInfo()
 {
 	// 一時保存用string
@@ -1345,26 +1751,32 @@ void StageBase::LoadStageInfo()
 	}
 }
 
+/// <summary>
+/// ステージの詳細データ取得
+/// </summary>
+/// <param name="strConmaBuf">カンマ区切り済データ</param>
+/// <param name="stageName">ステージ名</param>
+/// <param name="isLoadAllEnemys">全敵ロードフラグ</param>
+/// <param name="enemyTypeIndex">敵種類要素番号</param>
 void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex)
 {
 	// 全ての情報を読み込んでいる場合のみ次の情報群に移行する
 	if (!isLoadAllEnemys) return;
 
 	// ステージ名読み込み
-	stageName = strConmaBuf[static_cast<int>(Index::kStageName)];
+	stageName = strConmaBuf[kStageName];
 	// 敵種類数読み込み
-	int enemyTypeNum = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyTypeNum)]);
+	int enemyTypeNum = std::stoi(strConmaBuf[kEnemyTypeNum]);
 	// ボス生成フラグ読み込み
-	bool isCreateBoss = static_cast<bool>(std::stoi(strConmaBuf[static_cast<int>(Index::kIsCreateBoss)]));
+	bool isCreateBoss = static_cast<bool>(std::stoi(strConmaBuf[kIsCreateBoss]));
 	// 更新タイプ読み込み
-	UpTimeType timeType = static_cast<UpTimeType>(std::stoi(strConmaBuf[static_cast<int>(Index::kUpdateTimeType)]));
+	UpTimeType timeType = static_cast<UpTimeType>(std::stoi(strConmaBuf[kUpdateTimeType]));
 	// 更新追加フレーム読み込み
-	int addTimeFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kAddTimeFrame)]);
+	int addTimeFrame = std::stoi(strConmaBuf[kAddTimeFrame]);
 	// 条件タイプ読み込み
-	ConditionsType infoType = static_cast<ConditionsType>(std::stoi(strConmaBuf[static_cast<int>(Index::kInfoType)]));
+	ConditionsType infoType = static_cast<ConditionsType>(std::stoi(strConmaBuf[kInfoType]));
 	// 条件情報読み込み
-	int info = std::stoi(strConmaBuf[static_cast<int>(Index::kInfo)]);
-
+	int info = std::stoi(strConmaBuf[kInfo]);
 
 	// 情報の代入
 	auto& data = m_stageData[stageName];
@@ -1381,13 +1793,13 @@ void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, st
 	if (static_cast<ConditionsType>(infoType) == ConditionsType::kSumTime)
 	{
 		// 情報群数読み込み
-		int infoNum = std::stoi(strConmaBuf[static_cast<int>(Index::kInfoGroupNum)]);
+		int infoNum = std::stoi(strConmaBuf[kInfoGroupNum]);
 		stage.infoGroup.resize(infoNum);
 
 		// 情報群読み込み
 		for (int i = 0; i < infoNum; i++)
 		{
-			stage.infoGroup[i] = strConmaBuf[i + static_cast<int>(Index::kInfoGroup)];
+			stage.infoGroup[i] = strConmaBuf[i + kInfoGroup];
 		}
 	}
 
@@ -1396,6 +1808,15 @@ void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, st
 	enemyTypeIndex = 0;
 }
 
+/// <summary>
+/// 生成敵データ取得
+/// </summary>
+/// <param name="strConmaBuf">カンマ区切り済データ</param>
+/// <param name="data">ステージデータ</param>
+/// <param name="isLoadAllEnemys">全敵ロードフラグ</param>
+/// <param name="enemyTypeIndex">敵種類要素番号</param>
+/// <param name="isLoadAllEnmeyInfo">敵ロードフラグ</param>
+/// <param name="enemyInfoIndex">敵単体要素番号</param>
 void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex)
 {
 	// 敵情報すべて読み込んでいたら早期リターン
@@ -1406,9 +1827,9 @@ void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& dat
 	if (isLoadAllEnmeyInfo)
 	{
 		// 名前読み込み
-		std::string enemyName = strConmaBuf[static_cast<int>(Index::kEnemyName)];
+		std::string enemyName = strConmaBuf[kEnemyName];
 		// 同名別条件数読み込み
-		int enemyInfoNum = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyInfoNum)]);
+		int enemyInfoNum = std::stoi(strConmaBuf[kEnemyInfoNum]);
 
 		// 情報代入
 		enemy.name = enemyName;
@@ -1423,13 +1844,13 @@ void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& dat
 	auto& info = enemy.info[enemyInfoIndex];
 
 	// 初期生成数読み込み
-	int startNum = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyStartCreatNm)]);
+	int startNum = std::stoi(strConmaBuf[kEnemyStartCreatNm]);
 	// 初期生成間隔読み込み
-	int startCreateFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyStartCreateInterval)]);
+	int startCreateFrame = std::stoi(strConmaBuf[kEnemyStartCreateInterval]);
 	// 初期遅延フレーム
-	int startDelayFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kEnmeyStartDelayFrame)]);
+	int startDelayFrame = std::stoi(strConmaBuf[kEnmeyStartDelayFrame]);
 	// 生成間隔
-	int CreateFrame = std::stoi(strConmaBuf[static_cast<int>(Index::kEnemyCreateInterval)]);
+	int CreateFrame = std::stoi(strConmaBuf[kEnemyCreateInterval]);
 
 	// 情報代入
 	info.startNum = startNum;
@@ -1447,516 +1868,6 @@ void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& dat
 		if (enemyTypeIndex >= data.enemyNum)
 		{
 			isLoadAllEnemys = true;
-		}
-	}
-}
-
-bool StageBase::UpdateTutorial()
-{
-	// チュートリアルステージでなければ早期リターン
-	if (m_stageName != "練習") return false;
-
-	// 説明総数を超えていたら早期リターン
-	if (m_explanationIndex >= kExplanationNum) return false;
-
-	m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation[m_explanationIndex]->GetHandle()));
-	m_explanationIndex++;
-	m_isWaveDraw = false;
-
-	return true;
-}
-
-void StageBase::DrawTutrial()
-{
-	if (m_emphasisFrame > kEmphasisFrame) return;
-
-	if (m_emphasisFrame > kStartAlphaEmphasisFrame)
-	{
-		int alpha = static_cast<int>(255 * (1.0f - (m_emphasisFrame - kStartAlphaEmphasisFrame) / static_cast<float>(kEmphasisFrame - kStartAlphaEmphasisFrame)));
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-	}
-
-	float addX = sinf(m_emphasisFrame * kEmphasisAngle) * 5;
-
-	int x = static_cast<int>(m_player->GetPos().x + 64 + addX);
-	int y = static_cast<int>(m_player->GetPos().y);
-
-	int index = (m_emphasisFrame / kEmphasisInterval) % 2;
-
-	DrawRotaGraph(x, y, 1.0, 0.0, m_emphasisArrow[index]->GetHandle(), true);
-
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-}
-
-/// <summary>
-/// ステージの初期化処理
-/// </summary>
-void StageBase::Init()
-{
-	auto& data = m_stageData[m_stageName];
-
-	// 敵の総数を確認
-	m_enemyNum = data.enemyNum;
-	int temp = 0;
-	for (int i = 0; i < m_enemyNum;i ++)
-	{
-		for (int j = 1; j < data.enemyInfo[i].num; j++)
-		{
-			temp++;
-		}
-	}
-	m_enemyNum += temp;
-	// サイズ更新
-	m_enemyStarCreateNum.resize(m_enemyNum);
-	m_enemyCreateFrame.resize(m_enemyNum);
-
-	// クリア情報更新
-	CheckStageConditions(m_mgr.GetStage()->GetData()->GetBestTime(m_stageName));
-	// 進行方向のクリアチェック
-#if false
-	for (const auto& stage : data.stageInfo)
-	{
-		bool isCreal = m_mgr.GetStage()->IsClearStage(stage.name);
-
-		m_isClear[stage.dir] = isCreal;
-	}
-#else
-	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
-	{
-		const MapDir& dir = static_cast<MapDir>(i);
-
-		// 接続してなかったら次へ
-		if (!m_map->IsConect(m_stageName, dir)) continue;
-
-		bool isCreal = m_mgr.GetStage()->GetData()->IsClearStage(m_map->GetConectName(m_stageName, dir));
-
-		m_isClear[dir] = isCreal;
-	}
-#endif
-
-	// BGM変更
-	auto& file = m_mgr.GetFile();
-	if (m_stageData[m_stageName].isBoss)
-	{
-		m_playBgm = file->LoadSound(L"Bgm/boss.mp3");
-	}
-	else
-	{
-		m_playBgm = file->LoadSound(L"Bgm/fieldFight.mp3");
-	}
-}
-
-void StageBase::PlayStart()
-{
-	// ゲーム動作側初期化
-	m_emphasisFrame = 0;
-	m_timeFrame = 0;
-	m_waitFrame = 0;
-	m_extRateFrame = 0;
-	m_isUpdateBestTime = false;
-	m_waveAngle = 0;
-	m_achived.clear();
-
-	// キャラ初期化
-	m_player->Init();
-	m_enemy.clear();
-	m_backEnemy.clear();
-	m_frontEnemy.clear();
-	m_boss = nullptr;
-
-	if (m_stageData[m_stageName].isBoss)
-	{
-		m_boss = std::make_shared<BossArmored>(m_size, m_fieldSize, this);
-		m_boss->Init(m_centerPos);
-
-		// ボスステージに入ったことがなければ説明
-		const auto& data = m_mgr.GetStage()->GetData();
-		if (!data->IsInBoss())
-		{
-			// 先にBGMをならして置かないと選択画面の音楽が流れるため流しておく
-			m_soundSys->PlayFadeBgm(m_playBgm->GetHandle(), 0.8f);
-			m_mgr.GetScene()->PushScene(std::make_shared<OneShotScene>(m_mgr, m_explanation[kIndexBossExplanation]->GetHandle()));
-			data->SaveInBossStage();
-		}
-	}
-}
-
-void StageBase::CreateEnemyType(const std::string& name, int& frame, bool isStart)
-{
-	if (name == "Normal")
-	{
-		CreateNormal(frame, isStart);
-	}
-	else if (name == "MoveWall")
-	{
-		CreateMoveWall();
-	}
-	else if (name == "Large")
-	{
-		CreateLarge(frame, isStart);
-	}
-	else if (name == "Dash")
-	{
-		CreateDash(frame, isStart);
-	}
-	else if (name == "Create")
-	{
-		CreateEneCreate(frame, isStart);
-	}
-	else if (name == "Division")
-	{
-		CreateDivision(frame, isStart);
-	}
-}
-
-void StageBase::CreateEnemy()
-{
-	auto& data = m_stageData[m_stageName];
-
-	int index = 0;
-	// 敵種類全部回す
-	for (int i = 0; i < data.enemyNum; i++)
-	{
-		auto& enemy = data.enemyInfo[i];
-
-		// その種類のすべてのパターンを回す
-		for (const auto& info : enemy.info)
-		{
-			auto& startNum = m_enemyStarCreateNum[index];
-			auto& createFrame = m_enemyCreateFrame[index];
-
-			createFrame++;
-			// 初回生成
-			if (startNum < info.startNum && createFrame > info.startInterval)
-			{
-				CreateEnemyType(enemy.name, createFrame, true);
-				createFrame = info.startDelayFrame;
-
-				startNum++;
-			}
-			// 通常生成  生成間隔が０より大きいことが条件
-			else if (createFrame > info.createInterval && info.createInterval > 0)
-			{
-				CreateEnemyType(enemy.name, createFrame);
-			}
-
-			// 要素番号更新
-			index++;
-		}
-	}
-}
-
-void StageBase::CheckStageConditions(int frame)
-{
-#if false
-	for (const auto& stage : m_stageData[m_stageName].stageInfo)
-	{
-		auto& type = stage.type;
-		if (type == ConditionsType::kTime)
-		{
-			CheckConditionsTime(stage.name, frame, stage.info, GetDirName(stage.dir));
-		}
-		else if (type == ConditionsType::kKilled)
-		{
-			CheckConditionsKilled(stage.name, stage.info, GetDirName(stage.dir));
-		}
-		else if (type == ConditionsType::kSumTime)
-		{
-			CheckConditionsSumTime(stage.name, stage.infoGroup, frame, stage.info, GetDirName(stage.dir));
-		}
-	}
-#else
-	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
-	{
-		const MapDir& dir = static_cast<MapDir>(i);
-
-		// 接続してなかったら次へ
-		if (!m_map->IsConect(m_stageName, dir)) continue;
-
-		const auto& conectName = m_map->GetConectName(m_stageName, dir);
-		auto& stage = m_stageData[conectName].stageInfo;
-
-		auto& type = stage.type;
-		if (type == ConditionsType::kTime)
-		{
-			CheckConditionsTime(conectName, frame, stage.info, GetDirName(dir));
-		}
-		else if (type == ConditionsType::kKilled)
-		{
-			CheckConditionsKilled(conectName, stage.info, GetDirName(dir));
-		}
-		else if (type == ConditionsType::kSumTime)
-		{
-			CheckConditionsSumTime(conectName, stage.info, frame, GetDirName(dir));
-		}
-	}
-#endif
-}
-
-std::wstring StageBase::GetDirName(MapDir dir)
-{
-	if (dir == MapDir::kUp)
-	{
-		return L"上";
-	}
-	else if (dir == MapDir::kDown)
-	{
-		return L"下";
-	}
-	else if (dir == MapDir::kRight)
-	{
-		return L"右";
-	}
-	else if (dir == MapDir::kLeft)
-	{
-		return L"左";
-	}
-
-	return L"";
-}
-
-int StageBase::DrawStageConditions(int drawY) const
-{
-	int startY = drawY;
-	int fontHandle = m_mgr.GetFont()->GetHandle(28);
-
-#if false
-	for (const auto& stage : m_stageData.at(m_stageName).stageInfo)
-	{
-		// 既にクリアしていたら次へ
-		if (m_isClear.at(stage.dir)) continue;
-
-		// 矢印描画
-		if (stage.dir == MapDir::kUp)
-		{
-			DrawArrowConditions(stage.name, drawY, 0.0);
-		}
-		else if (stage.dir == MapDir::kDown)
-		{
-			DrawArrowConditions(stage.name, drawY, DX_PI);
-		}
-		else if (stage.dir == MapDir::kRight)
-		{
-			DrawArrowConditions(stage.name, drawY, kRad90);
-		}
-		else if (stage.dir == MapDir::kLeft)
-		{
-			DrawArrowConditions(stage.name, drawY, -kRad90);
-		}
-
-		// 条件描画
-		auto& type = stage.type;
-		if (type == ConditionsType::kTime)
-		{
-			DrawTimeConditions(drawY, fontHandle, stage.info);
-		}
-		else if (type == ConditionsType::kKilled)
-		{
-			DrawKilledConditions(drawY, fontHandle, stage.info);
-		}
-		else if (type == ConditionsType::kSumTime)
-		{
-			DrawSumTimeConditions(stage.infoGroup, drawY, fontHandle, stage.info);
-		}
-
-		drawY += 68;
-	}
-#else
-	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
-	{
-		const MapDir& dir = static_cast<MapDir>(i);
-
-		// 接続してなかったら次へ
-		if (!m_map->IsConect(m_stageName, dir)) continue;
-
-		const auto& conectName = m_map->GetConectName(m_stageName, dir);
-
-		// 既にクリアしていたら次へ
-		if (m_isClear.at(dir)) continue;
-		// チュートリアルステージなら次へ
-		if (conectName == "練習") continue;
-
-		// 矢印描画
-		if (dir == MapDir::kUp)
-		{
-			DrawArrowConditions(conectName, drawY, 0.0);
-		}
-		else if (dir == MapDir::kDown)
-		{
-			DrawArrowConditions(conectName, drawY, DX_PI);
-		}
-		else if (dir == MapDir::kRight)
-		{
-			DrawArrowConditions(conectName, drawY, kRad90);
-		}
-		else if (dir == MapDir::kLeft)
-		{
-			DrawArrowConditions(conectName, drawY, -kRad90);
-		}
-
-		// 条件描画
-		auto& stage = m_stageData.at(conectName).stageInfo;
-		auto& type = stage.type;
-		if (type == ConditionsType::kTime)
-		{
-			DrawTimeConditions(drawY, fontHandle, stage.info);
-		}
-		else if (type == ConditionsType::kKilled)
-		{
-			DrawKilledConditions(drawY, fontHandle, stage.info);
-		}
-		else if (type == ConditionsType::kSumTime)
-		{
-			DrawSumTimeConditions(stage.infoGroup, drawY, fontHandle, stage.info);
-		}
-
-		drawY += 68;
-	}
-#endif
-
-	return drawY - startY - 68;
-}
-
-void StageBase::DrawArrow() const
-{
-	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
-	{
-		const MapDir& dir = static_cast<MapDir>(i);
-
-		// 接続してなかったら次へ
-		if (!m_map->IsConect(m_stageName, dir)) continue;
-
-		const auto& conectName = m_map->GetConectName(m_stageName, dir);
-
-		// チュートリアルステージなら次へ
-		if (conectName == "練習") continue;
-
-		// 矢印描画
-		if (dir == MapDir::kUp)
-		{
-			DrawUpArrow(m_isClear.at(dir), conectName);
-		}
-		else if (dir == MapDir::kDown)
-		{
-			DrawDownArrow(m_isClear.at(dir), conectName);
-		}
-		else if (dir == MapDir::kRight)
-		{
-			DrawRightArrow(m_isClear.at(dir), conectName);
-		}
-		else if (dir == MapDir::kLeft)
-		{
-			DrawLeftArrow(m_isClear.at(dir), conectName);
-		}
-	}
-}
-
-void StageBase::DrawEnemyKilledInfo(int x, int y) const
-{
-	int addX = 0;
-	const auto& data = m_stageData.at(m_stageName);
-	int bossNum = 0;
-
-	for (const auto& enemy : data.enemyInfo)
-	{
-		DrawKilledEnemy(enemy.name, x, y, addX);
-
-		addX += 36;
-
-		if (enemy.name == "Create")
-		{
-			addX += 2;
-			DrawKilledEnemy("Child", x, y, addX, 12);
-			addX += 36 + 2;
-		}
-		else if (enemy.name == "Division")
-		{
-			addX += 2;
-			DrawKilledEnemy("Split", x, y, addX, 12);
-			addX += 36 + 2;
-		}
-		else if (enemy.name == "Large")
-		{
-			addX += 4;
-		}
-		else if (data.isBoss)
-		{
-			addX += 6;
-			DrawKilledEnemy("BossArmored", x, y, addX);
-			addX += 36 + 6;
-			DrawKilledEnemy("BossStrongArmored", x, y, addX);
-			addX += 36 + 6;
-			DrawKilledEnemy("SplitTwoBound", x, y, addX, 12);
-			addX += 36 + 2;
-		}
-	}
-}
-
-void StageBase::UpdateTime()
-{
-	auto& data = m_stageData[m_stageName];
-
-	if (data.timeType == UpTimeType::kNormal)
-	{
-		UpTime();
-	}
-	else if (data.timeType == UpTimeType::kAttack)
-	{
-		// 弾を拾った時なのでここでは特に処理はしない
-	}
-}
-
-void StageBase::UpTime()
-{
-	m_timeFrame += m_stageData[m_stageName].addTimeFrame;
-}
-
-void StageBase::CreateStrongBoss()
-{
-	std::shared_ptr<BossStrongArmored> strong;
-	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
-	strong->Init(m_boss->GetPos());
-
-	m_boss = strong;
-}
-
-void StageBase::ChangeStage(Input& input)
-{
-	// プレイヤーが生存している間は変わらないようにする
-	if (m_player->IsExsit()) return;
-
-	// 死亡直後は変わらないようにする
-	if (m_waitFrame < kWaitChangeFrame) return;
-
-	const auto& data = m_mgr.GetStage()->GetData();
-
-	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
-	{
-		const MapDir& dir = static_cast<MapDir>(i);
-
-		// 接続してなかったら次へ
-		if (!m_map->IsConect(m_stageName, dir)) continue;
-
-		const auto& conectName = m_map->GetConectName(m_stageName, dir);
-
-		// 接続ステージをクリアしてなかったら次へ
-		if (!data->IsClearStage(conectName)) continue;
-
-		if (dir == MapDir::kUp && input.IsTriggered("up"))
-		{
-			m_mgr.GetStage()->ChangeStage(conectName);
-		}
-		else if (dir == MapDir::kDown && input.IsTriggered("down"))
-		{
-			m_mgr.GetStage()->ChangeStage(conectName);
-		}
-		else if (dir == MapDir::kRight && input.IsTriggered("right"))
-		{
-			m_mgr.GetStage()->ChangeStage(conectName);
-		}
-		else if (dir == MapDir::kLeft && input.IsTriggered("left"))
-		{
-			m_mgr.GetStage()->ChangeStage(conectName);
 		}
 	}
 }

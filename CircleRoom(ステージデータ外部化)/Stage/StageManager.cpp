@@ -134,7 +134,7 @@ void StageManager::ChangeStage(const std::string& nextStage, bool isGameScene)
 	if (isGameScene)
 	{
 //		m_stage = nextStage;
-		m_stage->ChangeStage(nextStage);
+		m_stage->ChangeStageData(nextStage);
 		m_stage->Init();
 		return;
 	}
@@ -158,7 +158,7 @@ void StageManager::ChangeStage(const std::string& nextStage, bool isGameScene)
 		DrawGraph(static_cast<int>(pos.x), static_cast<int>(pos.y), m_drawScreen, true);
 
 	}
-	m_stage->ChangeStage(nextStage);
+	m_stage->ChangeStageData(nextStage);
 	m_stage->Init();
 
 	// 描画用スクリーンに次のステージの描画
@@ -184,7 +184,6 @@ void StageManager::ChangeStage(const std::string& nextStage, bool isGameScene)
 
 	// 次のステージの保存
 	m_data->SaveClearStage(nextStage);
-	m_stage->StartCheck();
 
 	m_isMove = true;
 

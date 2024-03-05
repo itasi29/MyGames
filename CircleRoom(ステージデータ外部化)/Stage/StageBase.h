@@ -104,32 +104,16 @@ public:
 	// 描画
 	void Draw() const;
 
+	/// <summary>
+	/// 敵の追加
+	/// </summary>
+	/// <param name="enemy">敵のポインタ</param>
 	void GenericEnemy(const std::shared_ptr<EnemyBase>& enemy);
 
-	void ChangeStage(const std::string& name) { m_stageName = name; }
-
 	/// <summary>
-	/// ステージを変更する
-	/// </summary>
-	/// <param name="input">入力情報</param>
-	/// <returns>true : 入れ替え可能/ fasle : 入れ替え不可能</returns>
-	virtual void ChangeStage(Input& input);
-
-	/// <summary>
-	/// 特定条件でのタイムの上昇
+	/// タイムの上昇
 	/// </summary>
 	virtual void UpTime();
-
-	/// <summary>
-	/// 最初にステージのクリア条件を確認する
-	/// </summary>
-	virtual void StartCheck() {};
-
-	/// <summary>
-	/// ステージ名を取得する
-	/// </summary>
-	/// <returns>ステージ名</returns>
-	std::string GetStageName() const { return m_stageName; }
 
 	/// <summary>
 	/// 敵に殺された/殺されてないの情報の描画
@@ -139,11 +123,32 @@ public:
 	virtual void DrawEnemyKilledInfo(int x, int y) const;
 
 	/// <summary>
+	/// ステージを変更処理
+	/// 接続方向で条件を達成していたら移動する
+	/// </summary>
+	/// <param name="input">入力情報</param>
+	/// <returns>true : 入れ替え可能/ fasle : 入れ替え不可能</returns>
+	virtual void ChangeStage(Input& input);
+
+	/// <summary>
+	/// ステージ変更処理
+	/// 指定したステージにデータを変更する
+	/// </summary>
+	/// <param name="name">ステージ名</param>
+	void ChangeStageData(const std::string& name);
+
+	/// <summary>
+	/// ステージ名を取得する
+	/// </summary>
+	/// <returns>ステージ名</returns>
+	std::string GetStageName() const { return m_stageName; }
+
+	/// <summary>
 	/// ウェーブする文字の非描画化
 	/// </summary>
 	void OffDrawWave() { m_isWaveDraw = false; }
 
-protected:
+private:
 	// 更新関数
 	virtual void UpdateSelect(Input& input);
 	virtual void UpdatePlaying(Input& input);
@@ -153,22 +158,37 @@ protected:
 	void DrawPlaying() const;
 	void DrawAfterBossDeath() const;
 
+	// ゲーム開始処理
+	void PlayStart();
+
+	// 細かな更新処理
+	bool UpdateTutorial();
+	void UpdateTime();
+	// 細かな描画処理
+	void DrawTutrial();
+	void DrawWall() const;
+
+	// 条件関係描画
+	int DrawStageConditions(int drawY) const;
+	void DrawTimeConditions(int y, int handle, int existTime) const;
+	void DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const;
+	void DrawKilledConditions(int y, int handle, int killedNum) const;
+	void DrawConditionsAchived(int y) const;
+	void DrawExpansion() const;
+
+	// 時間関係描画
+	void DrawTime(int x, int y, int handle) const;
+	void DrawBestTime() const;
+
+	// 矢印描画
+	void DrawArrow() const;
+
+	// TODO:ここまで確認済み
+
 	// 条件確認
 	void CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
 	void CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
 	void CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir);
-
-	// 条件描画
-	void DrawTimeConditions(int y, int handle, int existTime) const;
-	void DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const;
-	void DrawKilledConditions(int y, int handle, int killedNum) const;
-	void DrawArrowConditions(const std::string& nextStName, int y, double angle, bool isReverseX = false, bool isReverxeY = false) const;
-
-	// 矢印描画
-	void DrawLeftArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
-	void DrawRightArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
-	void DrawUpArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
-	void DrawDownArrow(bool isAlreadyClear, const std::string& nextStName, bool isBossStage = false, bool isClear = false) const;
 
 	// 敵タイプ描画
 	void DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius = 16) const;
@@ -176,33 +196,11 @@ protected:
 	// 達成文字追加
 	void AddAchivedStr(const std::wstring& dir);
 
-	/*敵の各種生成*/
-	void CreateMoveWall();
-	void CreateNormal(int& frame, bool isStart = false);
-	void CreateLarge(int& frame, bool isStart = false);
-	void CreateDash(int& frame, bool isStart = false);
-	void CreateEneCreate(int& frame, bool isStart = false);
-	void CreateDivision(int& frame, bool isStart = false);
-
-	/*メンバ変数ポインタの変更*/
-	void ChangeSelectFunc();
-	void ChangePlayingFunc();
-
 	/// <summary>
 	/// ステージのクリア確認
 	/// </summary>
 	/// <param name="timeFrame">タイムフレーム</param>
 	virtual void CheckStageConditions(int timeFrame);
-	/// <summary>
-	/// ステージ条件の描画
-	/// </summary>
-	/// <param name="drawY">描画Y座標</param>
-	/// <returns>背景フレーム描画Y座標</returns>
-	virtual int DrawStageConditions(int drawY) const;
-	/// <summary>
-	/// ステージの矢印描画
-	/// </summary>
-	virtual void DrawArrow() const;
 
 	/// <summary>
 	/// 敵の生成
@@ -214,28 +212,15 @@ protected:
 	/// </summary>
 	virtual void CreateStrongBoss();
 
-	/// <summary>
-	/// 特殊描画
-	/// </summary>
-	virtual void DrawUnique() const {}
-
-	/// <summary>
-	/// 時間の更新処理
-	/// </summary>
-	virtual void UpdateTime();
+	
 
 private:
 	void UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col);
 
 	void DeathBoss();
 
-	void DrawTime(int x, int y, int handle) const;
-	void DrawBestTime() const;
-	void DrawConditionsAchived(int y) const;
-	void DrawExpansion() const;
-	void DrawWall() const;
+	
 	void DrawWave(const char* const cmd, const wchar_t* const str[], int num) const;
-	void DrawArrowLock(int x, int y, bool isBossStage, bool isClear) const;
 
 	int GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const;
 
@@ -244,13 +229,6 @@ private:
 	void LoadStageInfo();
 	void LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex);
 	void LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex);
-
-	// チュートリアルでの処理
-	bool UpdateTutorial();
-	void DrawTutrial();
-
-	// ゲーム開始処理
-	void PlayStart();
 
 	// 敵種類ごとの生成
 	void CreateEnemyType(const std::string& name, int& frame, bool isStart = false);

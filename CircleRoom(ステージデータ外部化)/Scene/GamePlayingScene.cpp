@@ -15,17 +15,6 @@
 #include "FileSystem/FileManager.h"
 #include "FileSystem/ImageFile.h"
 
-#include "Stage/Stage1_1.h"
-#include "Stage/Stage1_2.h"
-#include "Stage/Stage1_3.h"
-#include "Stage/Stage1_4.h"
-#include "Stage/Stage1_5.h"
-#include "Stage/Stage1_6.h"
-#include "Stage/Stage1_7.h"
-#include "Stage/Stage1_8.h"
-#include "Stage/Stage1_9.h"
-#include "Stage/StageTutorial.h"
-
 
 namespace
 {

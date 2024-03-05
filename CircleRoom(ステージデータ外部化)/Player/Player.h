@@ -74,6 +74,11 @@ public:
 	/// </summary>
 	void Death();
 
+	/// <summary>
+	/// 透明化
+	/// </summary>
+	void OnInvisible() { m_isInvivisible = true; };
+
 private:
 	/// <summary>
 	/// プレイヤーの移動
@@ -152,5 +157,8 @@ private:
 	int m_deathFrame;
 	// 死亡エフェクを行うかどうか
 	bool m_isDeathEffect;
+
+	// 描画フラグ
+	bool m_isInvivisible;
 };
 
