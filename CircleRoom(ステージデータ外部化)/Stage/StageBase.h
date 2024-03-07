@@ -183,19 +183,21 @@ private:
 	// 矢印描画
 	void DrawArrow() const;
 
-	// TODO:ここまで確認済み
+	// 敵タイプ描画
+	void DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius = 16) const;
+
+	// 揺らぎ文字描画
+	void DrawWave(const char* const cmd, const wchar_t* const str[], int num) const;
+	// MEMO:ここまで確認済み
 
 	// 条件確認
 	void CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
 	void CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
 	void CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir);
 
-	// 敵タイプ描画
-	void DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius = 16) const;
 
 	// 達成文字追加
 	void AddAchivedStr(const std::wstring& dir);
-
 	/// <summary>
 	/// ステージのクリア確認
 	/// </summary>
@@ -220,7 +222,6 @@ private:
 	void DeathBoss();
 
 	
-	void DrawWave(const char* const cmd, const wchar_t* const str[], int num) const;
 
 	int GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const;
 
