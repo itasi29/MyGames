@@ -127,25 +127,25 @@ void WriteBin(PathData_t& datas)
 
     Header header;
     header.var = kVar;
-    header.size = datas.size();
+    header.size = static_cast<int>(datas.size());
     fwrite(&header, sizeof(header), 1, fp);
 
     for (const auto& data : datas)
     {
         auto& name = data.first;
         // 名前の保存
-        size_t size = name.size();
+        int size = static_cast<int>(name.size());
         fwrite(&size, sizeof(size), 1, fp);
-        fwrite(name.c_str(), size, 1, fp);
+        fwrite(name.data(), size * sizeof(wchar_t), 1, fp);
 
         // 種類の保存
         auto& type = data.second.type;
         fwrite(&(type), sizeof(type), 1, fp);
         // パスの保存
         auto& path = data.second.path;
-        size = path.size();
+        size = static_cast<int>(path.size());
         fwrite(&size, sizeof(size), 1, fp);
-        fwrite(path.c_str(), size, 1, fp);
+        fwrite(path.data(), size * sizeof(wchar_t), 1, fp);
     }
 
     fclose(fp);
@@ -156,7 +156,7 @@ std::vector<std::wstring> Split(const std::wstring& str, const char del)
     // 区切り開始位置
     int first = 0;
     // 区切り最終位置
-    int last = str.find_first_of(del);
+    int last = static_cast<int>(str.find_first_of(del));
 
     std::vector<std::wstring> result;
 
@@ -169,10 +169,10 @@ std::vector<std::wstring> Split(const std::wstring& str, const char del)
 
         // 位置更新
         first = last + 1;
-        last = str.find_first_of(del, first);
+        last = static_cast<int>(str.find_first_of(del, first));
         if (last == std::wstring::npos)
         {
-            last = str.size();
+            last = static_cast<int>(str.size());
         }
     }
 

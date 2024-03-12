@@ -22,12 +22,9 @@ private:
 
 protected:
 	FileManager& m_mgr;
-	int m_handle;
-
-private:
 	std::wstring m_name;
+	int m_handle;
 	int m_refCount;
 	bool m_isEternal;
 	bool m_isEnd;
 };
-

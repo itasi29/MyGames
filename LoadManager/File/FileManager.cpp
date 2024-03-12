@@ -3,7 +3,7 @@
 #include <DxLib.h>
 #include <cassert>
 #include "FileBase.h"
-#include "FileGraph.h"
+#include "FileImage.h"
 #include "FileSound.h"
 #include "FileModel.h"
 
@@ -18,6 +18,7 @@ namespace
 
 FileManager::FileManager()
 {
+	LoadPath();
 }
 
 FileManager::~FileManager()
@@ -25,6 +26,7 @@ FileManager::~FileManager()
 	for (auto& file : m_file)
 	{
 		file.second->Delete();
+		file.second->End();
 	}
 }
 
@@ -72,7 +74,7 @@ std::shared_ptr<FileBase> FileManager::MakeFile(const wchar_t* const name)
 	auto type = m_path.at(name).type;
 
 	if (type == LoadType::kImage) {
-		return std::make_shared<FileGraph>(*this);
+		return std::make_shared<FileImage>(*this);
 	}
 	else if (type == LoadType::kSoudn) {
 		return std::make_shared<FileSound>(*this);
@@ -84,7 +86,7 @@ std::shared_ptr<FileBase> FileManager::MakeFile(const wchar_t* const name)
 	// ‚±‚±‚Ü‚Å—ˆ‚½‚ç‚¨‚©‚µ‚¢
 	assert(false);
 	// “®‚­‚æ‚¤‚ÉFileGraph‚ð•Ô‚µ‚Ä‚¨‚­
-	return std::make_shared<FileGraph>(*this);
+	return std::make_shared<FileImage>(*this);
 }
 
 /// <summary>
@@ -98,8 +100,8 @@ std::shared_ptr<FileBase> FileManager::CastCopyFile(std::shared_ptr<FileBase>& f
 	auto type = m_path.at(file->m_name).type;
 
 	if (type == LoadType::kImage) {
-		std::shared_ptr<FileGraph> fileGraph = std::dynamic_pointer_cast<FileGraph>(file);
-		return std::make_shared<FileGraph>(*fileGraph);
+		std::shared_ptr<FileImage> fileGraph = std::dynamic_pointer_cast<FileImage>(file);
+		return std::make_shared<FileImage>(*fileGraph);
 	}
 	else if (type == LoadType::kSoudn) {
 		std::shared_ptr<FileSound> fileSound = std::dynamic_pointer_cast<FileSound>(file);
@@ -113,8 +115,8 @@ std::shared_ptr<FileBase> FileManager::CastCopyFile(std::shared_ptr<FileBase>& f
 	// ‚±‚±‚Ü‚Å—ˆ‚½‚ç‚¨‚©‚µ‚¢
 	assert(false);
 	// “®‚­‚æ‚¤‚ÉFileGraph‚ð•Ô‚µ‚Ä‚¨‚­
-	std::shared_ptr<FileGraph> fileGraph = std::dynamic_pointer_cast<FileGraph>(file);
-	return std::make_shared<FileGraph>(*fileGraph);
+	std::shared_ptr<FileImage> fileGraph = std::dynamic_pointer_cast<FileImage>(file);
+	return std::make_shared<FileImage>(*fileGraph);
 }
 
 /// <summary>
@@ -148,7 +150,7 @@ int FileManager::GetHandle(const wchar_t* name) const
 
 void FileManager::LoadPath()
 {
-	int handle = FileRead_open(L"DataManager.bin");
+	int handle = FileRead_open(L"Data/Bin/DataManager.bin");
 
 	if (handle == 0) {
 		assert(false);
@@ -158,7 +160,7 @@ void FileManager::LoadPath()
 	Header header;
 	FileRead_read(&header, sizeof(header), handle);
 
-	size_t size;
+	int size;
 	std::wstring name;
 	LoadType type;
 	std::wstring path;
@@ -166,15 +168,16 @@ void FileManager::LoadPath()
 		// –¼‘O‚ÌŽæ“¾
 		FileRead_read(&size, sizeof(size), handle);
 		name.resize(size);
-		FileRead_read(name.data(), static_cast<int>(size), handle);
+		FileRead_read(name.data(), size * sizeof(wchar_t), handle);
 		// Ží—Þ‚ÌŽæ“¾
 		FileRead_read(&type, sizeof(type), handle);
 		// ƒpƒX‚ÌŽæ“¾
 		FileRead_read(&size, sizeof(size), handle);
 		path.resize(size);
-		FileRead_read(path.data(), static_cast<int>(size), handle);
-	}
+		FileRead_read(path.data(), size * sizeof(wchar_t), handle);
 
+		m_path[name] = { type, path };
+	}
 	
 	FileRead_close(handle);
 }

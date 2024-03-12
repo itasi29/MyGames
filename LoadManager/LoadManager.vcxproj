@@ -144,7 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="File\FileBase.cpp" />
-    <ClCompile Include="File\FileGraph.cpp" />
+    <ClCompile Include="File\FileImage.cpp" />
     <ClCompile Include="File\FileManager.cpp" />
     <ClCompile Include="File\FileModel.cpp" />
     <ClCompile Include="File\FileSound.cpp" />
@@ -152,7 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="File\FileBase.h" />
-    <ClInclude Include="File\FileGraph.h" />
+    <ClInclude Include="File\FileImage.h" />
     <ClInclude Include="File\FileManager.h" />
     <ClInclude Include="File\FileModel.h" />
     <ClInclude Include="File\FileSound.h" />
