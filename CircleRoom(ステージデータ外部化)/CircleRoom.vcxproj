@@ -61,7 +61,7 @@
     <ClCompile Include="Scene\SoundOptionScene.cpp" />
     <ClCompile Include="Scene\StageSelectScene.cpp" />
     <ClCompile Include="FileSystem\SoundSystem.cpp" />
-    <ClCompile Include="Stage\StageBase.cpp" />
+    <ClCompile Include="Stage\Stage.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage\GameData.cpp" />
     <ClCompile Include="Stage\StageManager.cpp" />
@@ -112,7 +112,7 @@
     <ClInclude Include="Scene\SoundOptionScene.h" />
     <ClInclude Include="Scene\StageSelectScene.h" />
     <ClInclude Include="FileSystem\SoundSystem.h" />
-    <ClInclude Include="Stage\StageBase.h" />
+    <ClInclude Include="Stage\Stage.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage\GameData.h" />
     <ClInclude Include="Stage\StageManager.h" />

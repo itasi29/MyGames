@@ -9,7 +9,7 @@
 
 #include "BossArmored.h"
 
-#include "Stage/StageBase.h"
+#include "Stage/Stage.h"
 #include "BossDamageObject.h"
 #include "Enemy/EnemySplitTwoBound.h"
 
@@ -60,7 +60,7 @@ BossArmored::BossArmored(const size& windowSize, float fieldSize) :
 	InitData();
 }
 
-BossArmored::BossArmored(const size& windowSize, float fieldSize, StageBase* stage) :
+BossArmored::BossArmored(const size& windowSize, float fieldSize, Stage* stage) :
 	BossBase(windowSize, fieldSize, kMaxHp),
 	m_stage(stage)
 {

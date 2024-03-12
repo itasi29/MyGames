@@ -124,7 +124,7 @@ void StageMap::Load()
 	std::vector<std::string> strDownConectNameBuf;
 
 	// ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
-	std::ifstream ifs("MapData.csv");
+	std::ifstream ifs("Data/Stage/MapData.csv");
 	if (!ifs)
 	{
 		assert(false);

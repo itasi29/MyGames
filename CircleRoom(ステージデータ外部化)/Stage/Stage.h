@@ -91,14 +91,14 @@ struct StageData
 	bool isBoss = false;
 };
 
-class StageBase
+class Stage
 {
 public:
-	StageBase(GameManager& mgr, Input& input, std::shared_ptr<StageMap> map);
-	virtual ~StageBase();
+	Stage(GameManager& mgr, Input& input, std::shared_ptr<StageMap> map);
+	~Stage();
 
 	// 初期化
-	virtual void Init();
+	void Init();
 	// 更新
 	void Update(Input& input);
 	// 描画
@@ -113,14 +113,14 @@ public:
 	/// <summary>
 	/// タイムの上昇
 	/// </summary>
-	virtual void UpTime();
+	void UpTime();
 
 	/// <summary>
 	/// 敵に殺された/殺されてないの情報の描画
 	/// </summary>
 	/// <param name="x">描画X座標</param>
 	/// <param name="y">描画Y座標</param>
-	virtual void DrawEnemyKilledInfo(int x, int y) const;
+	void DrawEnemyKilledInfo(int x, int y) const;
 
 	/// <summary>
 	/// ステージを変更処理
@@ -128,7 +128,7 @@ public:
 	/// </summary>
 	/// <param name="input">入力情報</param>
 	/// <returns>true : 入れ替え可能/ fasle : 入れ替え不可能</returns>
-	virtual void ChangeStage(Input& input);
+	void ChangeStage(Input& input);
 
 	/// <summary>
 	/// ステージ変更処理
@@ -150,8 +150,8 @@ public:
 
 private:
 	// 更新関数
-	virtual void UpdateSelect(Input& input);
-	virtual void UpdatePlaying(Input& input);
+	void UpdateSelect(Input& input);
+	void UpdatePlaying(Input& input);
 	void UpdateAfterBossDeath(Input& input);
 	// 描画
 	void DrawSelect() const;
@@ -163,6 +163,7 @@ private:
 
 	// 細かな更新処理
 	bool UpdateTutorial();
+	void UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col);
 	void UpdateTime();
 	// 細かな描画処理
 	void DrawTutrial();
@@ -188,59 +189,40 @@ private:
 
 	// 揺らぎ文字描画
 	void DrawWave(const char* const cmd, const wchar_t* const str[], int num) const;
-	// MEMO:ここまで確認済み
-
-	// 条件確認
-	void CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
-	void CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
-	void CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir);
-
-
-	// 達成文字追加
-	void AddAchivedStr(const std::wstring& dir);
-	/// <summary>
-	/// ステージのクリア確認
-	/// </summary>
-	/// <param name="timeFrame">タイムフレーム</param>
-	virtual void CheckStageConditions(int timeFrame);
 
 	/// <summary>
 	/// 敵の生成
 	/// </summary>
-	virtual void CreateEnemy();
-
-	/// <summary>
-	/// 強化ボスの生成
-	/// </summary>
-	virtual void CreateStrongBoss();
-
-	
-
-private:
-	void UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col);
-
+	void CreateEnemy();
+	// 敵種類ごとの生成
+	void CreateEnemyType(const std::string& name, int& frame, bool isStart = false);
+	// 強化ボスの生成
+	void CreateStrongBoss();
+	// ボス死亡処理
 	void DeathBoss();
 
-	
+	// 条件確認
+	void CheckStageConditions(int timeFrame);
+	void CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
+	void CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir);
+	void CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir);
 
+	// 達成文字追加
+	void AddAchivedStr(const std::wstring& dir);
+
+	// 方向に合わせた文字列を返す
+	std::wstring GetDirName(MapDir dir);
 	int GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const;
-
-private:
+	
 	// ステージ情報読み込み
 	void LoadStageInfo();
 	void LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex);
 	void LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex);
 
-	// 敵種類ごとの生成
-	void CreateEnemyType(const std::string& name, int& frame, bool isStart = false);
-
-	// 方向に合わせた文字列を返す
-	std::wstring GetDirName(MapDir dir);
-
 protected:
 	// メンバ変数ポインタ
-	using UpdateFunc_t = void (StageBase::*)(Input&);
-	using DrawFunc_t = void (StageBase::*)() const;
+	using UpdateFunc_t = void (Stage::*)(Input&);
+	using DrawFunc_t = void (Stage::*)() const;
 	UpdateFunc_t m_updateFunc;
 	DrawFunc_t m_drawFunc;
 
@@ -261,6 +243,11 @@ protected:
 	// フィールドサイズ
 	float m_fieldSize;
 
+	// マップデータ
+	std::shared_ptr<StageMap> m_map;
+	// ステージ入った時にクリアしているか
+	std::unordered_map<MapDir, bool> m_isClear;
+
 	/*定数*/
 	// ステージ変更可能までの待機時間
 	const int kWaitChangeFrame = 30;
@@ -276,6 +263,8 @@ protected:
 	std::list<Achived> m_achived;
 
 	// 画像
+	std::vector<std::shared_ptr<FileBase>> m_explanation;
+	std::vector<std::shared_ptr<FileBase>> m_emphasisArrow;
 	std::shared_ptr<FileBase> m_fieldImg;
 	std::shared_ptr<FileBase> m_arrowImg;
 	std::shared_ptr<FileBase> m_arrowFlashImg;
@@ -295,6 +284,11 @@ protected:
 	std::shared_ptr<BottansFile> m_bt;
 	std::shared_ptr<KeyFile> m_key;
 
+	// 説明用インデックス
+	int m_explanationIndex;
+	// 説明時
+	int m_emphasisFrame;
+
 	// プレイヤー
 	std::shared_ptr<Player> m_player;
 	/*敵*/
@@ -306,6 +300,12 @@ protected:
 	std::list<std::shared_ptr<EnemyBase>> m_frontEnemy;
 	// ボス
 	std::shared_ptr<BossBase> m_boss;
+	// 生成数
+	int m_enemyNum;
+	// 初期生成数
+	std::vector<int> m_enemyStarCreateNum;
+	// 生成フレーム
+	std::vector<int> m_enemyCreateFrame;
 
 	// サウンドのフェードフレーム
 	int m_soundFrame;
@@ -325,26 +325,4 @@ protected:
 
 	// 文字ウェーブ用の角度
 	float m_waveAngle;
-
-private:
-	protected:
-	std::shared_ptr<StageMap> m_map;
-
-	// 敵生成数
-	int m_enemyNum;
-	// 初期生成数
-	std::vector<int> m_enemyStarCreateNum;
-	// 敵生成フレーム
-	std::vector<int> m_enemyCreateFrame;
-
-	// ステージ入った時にクリアしているか
-	std::unordered_map<MapDir, bool> m_isClear;
-	// 説明画像
-	std::vector<std::shared_ptr<FileBase>> m_explanation;
-	std::vector<std::shared_ptr<FileBase>> m_emphasisArrow;
-	// 説明用インデックス
-	int m_explanationIndex;
-	// 説明時
-	int m_emphasisFrame;
 };
-

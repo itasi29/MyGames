@@ -6,7 +6,7 @@
 #include "Input.h"
 #include "StringUtility.h"
 
-#include "StageBase.h"
+#include "Stage.h"
 #include "StageMap.h"
 #include "StageManager.h"
 #include "GameData.h"
@@ -197,7 +197,7 @@ namespace
 	constexpr float kEmphasisAngle = DX_PI_F / 180 * 8;
 }
 
-StageBase::StageBase(GameManager& mgr, Input& input, std::shared_ptr<StageMap> map) :
+Stage::Stage(GameManager& mgr, Input& input, std::shared_ptr<StageMap> map) :
 	m_mgr(mgr),
 	m_soundSys(m_mgr.GetSound()),
 	m_input(input),
@@ -218,8 +218,8 @@ StageBase::StageBase(GameManager& mgr, Input& input, std::shared_ptr<StageMap> m
 	m_emphasisFrame(0),
 	m_map(map)
 {
-	m_updateFunc = &StageBase::UpdateSelect;
-	m_drawFunc = &StageBase::DrawSelect;
+	m_updateFunc = &Stage::UpdateSelect;
+	m_drawFunc = &Stage::DrawSelect;
 
 	// ステージ情報読み込み
 	LoadStageInfo();
@@ -272,13 +272,13 @@ StageBase::StageBase(GameManager& mgr, Input& input, std::shared_ptr<StageMap> m
 	m_player = std::make_shared<Player>(m_size, m_fieldSize);
 }
 
-StageBase::~StageBase()
+Stage::~Stage()
 {
 	DeleteGraph(m_strScreen);
 	DeleteGraph(m_extScreen);
 }
 
-void StageBase::Init()
+void Stage::Init()
 {
 	auto& data = m_stageData[m_stageName];
 
@@ -333,7 +333,7 @@ void StageBase::Init()
 	}
 }
 
-void StageBase::Update(Input& input)
+void Stage::Update(Input& input)
 {
 	// ウェーブ文字更新
 	m_isWaveDraw = true;
@@ -341,22 +341,22 @@ void StageBase::Update(Input& input)
 	(this->*m_updateFunc)(input);
 }
 
-void StageBase::Draw() const
+void Stage::Draw() const
 {
 	(this->*m_drawFunc)();
 }
 
-void StageBase::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
+void Stage::GenericEnemy(const std::shared_ptr<EnemyBase>& enemy)
 {
 	m_backEnemy.push_back(enemy);
 }
 
-void StageBase::UpTime()
+void Stage::UpTime()
 {
 	m_timeFrame += m_stageData[m_stageName].addTimeFrame;
 }
 
-void StageBase::DrawEnemyKilledInfo(int x, int y) const
+void Stage::DrawEnemyKilledInfo(int x, int y) const
 {
 	int addX = 0;
 	const auto& data = m_stageData.at(m_stageName);
@@ -397,7 +397,7 @@ void StageBase::DrawEnemyKilledInfo(int x, int y) const
 	}
 }
 
-void StageBase::ChangeStage(Input& input)
+void Stage::ChangeStage(Input& input)
 {
 	// プレイヤーが生存している間は変わらないようにする
 	if (m_player->IsExsit()) return;
@@ -438,7 +438,7 @@ void StageBase::ChangeStage(Input& input)
 	}
 }
 
-void StageBase::ChangeStageData(const std::string& name)
+void Stage::ChangeStageData(const std::string& name)
 { 
 	// 名前の変更
 	m_stageName = name;
@@ -457,7 +457,7 @@ void StageBase::ChangeStageData(const std::string& name)
 /// 選択中の更新処理
 /// </summary>
 /// <param name="input">入力情報</param>
-void StageBase::UpdateSelect(Input& input)
+void Stage::UpdateSelect(Input& input)
 {
 	if (m_soundFrame > kSoundFade)
 	{
@@ -536,8 +536,8 @@ void StageBase::UpdateSelect(Input& input)
 
 		PlayStart();
 
-		m_updateFunc = &StageBase::UpdatePlaying;
-		m_drawFunc = &StageBase::DrawPlaying;
+		m_updateFunc = &Stage::UpdatePlaying;
+		m_drawFunc = &Stage::DrawPlaying;
 	}
 
 	// アビリティ変更
@@ -548,7 +548,7 @@ void StageBase::UpdateSelect(Input& input)
 /// プレイ中の更新処理
 /// </summary>
 /// <param name="input">入力情報</param>
-void StageBase::UpdatePlaying(Input& input)
+void Stage::UpdatePlaying(Input& input)
 {
 	if (m_soundFrame > kSoundFade)
 	{
@@ -646,8 +646,8 @@ void StageBase::UpdatePlaying(Input& input)
 			m_isUpdateBestTime = true;
 		}
 
-		m_updateFunc = &StageBase::UpdateSelect;
-		m_drawFunc = &StageBase::DrawSelect;
+		m_updateFunc = &Stage::UpdateSelect;
+		m_drawFunc = &Stage::DrawSelect;
 
 		return;
 	}
@@ -659,7 +659,7 @@ void StageBase::UpdatePlaying(Input& input)
 /// ボス倒した後の更新処理
 /// </summary>
 /// <param name="input">入力情報</param>
-void StageBase::UpdateAfterBossDeath(Input& input)
+void Stage::UpdateAfterBossDeath(Input& input)
 {
 	if (m_soundFrame > kSoundFade)
 	{
@@ -682,7 +682,7 @@ void StageBase::UpdateAfterBossDeath(Input& input)
 /// <summary>
 /// 選択中の描画処理
 /// </summary>
-void StageBase::DrawSelect() const
+void Stage::DrawSelect() const
 {
 	DrawWall();
 
@@ -749,7 +749,7 @@ void StageBase::DrawSelect() const
 /// <summary>
 /// プレイ中の描画処理
 /// </summary>
-void StageBase::DrawPlaying() const
+void Stage::DrawPlaying() const
 {
 	DrawWall();
 
@@ -822,7 +822,7 @@ void StageBase::DrawPlaying() const
 /// <summary>
 /// ボス倒した後の描画処理
 /// </summary>
-void StageBase::DrawAfterBossDeath() const
+void Stage::DrawAfterBossDeath() const
 {
 	DrawWall();
 
@@ -834,7 +834,7 @@ void StageBase::DrawAfterBossDeath() const
 /// <summary>
 /// プレイ開始時の処理
 /// </summary>
-void StageBase::PlayStart()
+void Stage::PlayStart()
 {
 	// ゲーム動作側初期化
 	m_emphasisFrame = 0;
@@ -881,7 +881,7 @@ void StageBase::PlayStart()
 /// チュートリアルでの処理
 /// </summary>
 /// <returns>true: チュートリアル途中 / false: チュートリアル終了済み</returns>
-bool StageBase::UpdateTutorial()
+bool Stage::UpdateTutorial()
 {
 	// チュートリアルステージでなければ早期リターン
 	if (m_stageName != "練習") return false;
@@ -902,7 +902,7 @@ bool StageBase::UpdateTutorial()
 /// <param name="enemys">敵の配列</param>
 /// <param name="isDash">プレイヤーがダッシュしているか</param>
 /// <param name="col">プレイヤーの当たり判定</param>
-void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col)
+void Stage::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool isDash, const Collision& col)
 {
 	for (const auto& enemy : enemys)
 	{
@@ -932,7 +932,7 @@ void StageBase::UpdateEnemy(std::list<std::shared_ptr<EnemyBase>>& enemys, bool 
 /// <summary>
 /// 時間の更新
 /// </summary>
-void StageBase::UpdateTime()
+void Stage::UpdateTime()
 {
 	auto& data = m_stageData[m_stageName];
 
@@ -949,7 +949,7 @@ void StageBase::UpdateTime()
 /// <summary>
 /// チュートリアルでの描画
 /// </summary>
-void StageBase::DrawTutrial()
+void Stage::DrawTutrial()
 {
 	if (m_emphasisFrame > kEmphasisFrame) return;
 
@@ -974,7 +974,7 @@ void StageBase::DrawTutrial()
 /// <summary>
 /// 壁の描画
 /// </summary>
-void StageBase::DrawWall() const
+void Stage::DrawWall() const
 {
 	int centerX = static_cast<int>(m_size.w * 0.5f);
 	int centerY = static_cast<int>(m_size.h * 0.5f);
@@ -989,7 +989,7 @@ void StageBase::DrawWall() const
 /// </summary>
 /// <param name="drawY">描画位置Y</param>
 /// <returns>フレーム描画追加Y</returns>
-int StageBase::DrawStageConditions(int drawY) const
+int Stage::DrawStageConditions(int drawY) const
 {
 	int startY = drawY;
 	int fontHandle = m_mgr.GetFont()->GetHandle(28);
@@ -1065,7 +1065,7 @@ int StageBase::DrawStageConditions(int drawY) const
 /// <param name="y">描画Y座標</param>
 /// <param name="handle">フォントハンドル</param>
 /// <param name="existTime">クリア時間(秒)</param>
-void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
+void Stage::DrawTimeConditions(int y, int handle, int existTime) const
 {
 	int bestTime = m_mgr.GetStage()->GetData()->GetBestTime(m_stageName);
 
@@ -1081,7 +1081,7 @@ void StageBase::DrawTimeConditions(int y, int handle, int existTime) const
 /// <param name="y">描画Y座標</param>
 /// <param name="handle">フォントハンドル</param>
 /// <param name="existTime">合計クリア時間(秒)</param>
-void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const
+void Stage::DrawSumTimeConditions(const std::vector<std::string>& names, int y, int handle, int existTime) const
 {
 	const auto& stage = m_mgr.GetStage()->GetData();
 	int sumTime = 0;
@@ -1106,7 +1106,7 @@ void StageBase::DrawSumTimeConditions(const std::vector<std::string>& names, int
 /// <param name="y">描画Y座標</param>
 /// <param name="handle">フォントハンドル</param>
 /// <param name="killedNum">倒される種類数</param>
-void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
+void Stage::DrawKilledConditions(int y, int handle, int killedNum) const
 {
 	int typeCount = m_mgr.GetStage()->GetData()->GetEnemyTypeCount();
 
@@ -1119,7 +1119,7 @@ void StageBase::DrawKilledConditions(int y, int handle, int killedNum) const
 /// 条件達成の描画
 /// </summary>
 /// <param name="y">描画Y座標</param>
-void StageBase::DrawConditionsAchived(int y) const
+void Stage::DrawConditionsAchived(int y) const
 {
 	// 送られてきた座標をずらす
 	y += kAchivedStrShiftPosY;
@@ -1152,7 +1152,7 @@ void StageBase::DrawConditionsAchived(int y) const
 /// <summary>
 /// 条件の拡大描画
 /// </summary>
-void StageBase::DrawExpansion() const
+void Stage::DrawExpansion() const
 {
 	int width = m_size.w;
 	int height = m_size.h;
@@ -1193,7 +1193,7 @@ void StageBase::DrawExpansion() const
 /// <param name="x">描画X座標</param>
 /// <param name="y">描画Y座標</param>
 /// <param name="handle">フォントハンドル</param>
-void StageBase::DrawTime(int x, int y, int handle) const
+void Stage::DrawTime(int x, int y, int handle) const
 {
 	DrawStringToHandle(x, y, L"> タイム", kWhiteColor, m_mgr.GetFont()->GetHandle(24));
 	y += kTimeAddY;
@@ -1206,7 +1206,7 @@ void StageBase::DrawTime(int x, int y, int handle) const
 /// <summary>
 /// ベストタイム関連の描画
 /// </summary>
-void StageBase::DrawBestTime() const
+void Stage::DrawBestTime() const
 {
 	// フレーム描画
 	DrawRotaGraph(m_size.w - kBestTimeFrameSubX, kBestTimeFramePosY, 1.0, 0.0, m_backFrameImg->GetHandle(), true, true, true);
@@ -1251,7 +1251,7 @@ void StageBase::DrawBestTime() const
 /// <summary>
 /// ステージ移動の矢印描画
 /// </summary>
-void StageBase::DrawArrow() const
+void Stage::DrawArrow() const
 {
 	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
 	{
@@ -1313,7 +1313,7 @@ void StageBase::DrawArrow() const
 /// <param name="enemyName">名前</param>
 /// <param name="addX">X座標の追加値</param>
 /// <param name="radius">半径 : def = 16</param>
-void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius) const
+void Stage::DrawKilledEnemy(const std::string& enemyName, int x, int y, int addX, int radius) const
 {
 	double enemyExtRate = kKillTypeDefExtRate;
 	// 小さくする敵の場合は小さく
@@ -1356,7 +1356,7 @@ void StageBase::DrawKilledEnemy(const std::string& enemyName, int x, int y, int 
 /// /// <param name="cmd">コマンド名</param>
 /// <param name="str">ウェーブさせる文字列</param>
 /// <param name="num">文字列数</param>
-void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int num) const
+void Stage::DrawWave(const char* const cmd, const wchar_t* const str[], int num) const
 {
 	if (!m_isWaveDraw) return;
 
@@ -1398,7 +1398,7 @@ void StageBase::DrawWave(const char* const cmd, const wchar_t* const str[], int 
 /// <summary>
 /// 敵の生成
 /// </summary>
-void StageBase::CreateEnemy()
+void Stage::CreateEnemy()
 {
 	auto& data = m_stageData[m_stageName];
 
@@ -1441,7 +1441,7 @@ void StageBase::CreateEnemy()
 /// <param name="name">名前</param>
 /// <param name="frame">生成フレーム</param>
 /// <param name="isStart">開始時に生成する敵か</param>
-void StageBase::CreateEnemyType(const std::string& name, int& frame, bool isStart)
+void Stage::CreateEnemyType(const std::string& name, int& frame, bool isStart)
 {
 	if (name == "MoveWall")
 	{
@@ -1490,7 +1490,7 @@ void StageBase::CreateEnemyType(const std::string& name, int& frame, bool isStar
 /// <summary>
 /// 強化ボスの生成
 /// </summary>
-void StageBase::CreateStrongBoss()
+void Stage::CreateStrongBoss()
 {
 	std::shared_ptr<BossStrongArmored> strong;
 	strong = std::make_shared<BossStrongArmored>(m_size, m_fieldSize, this);
@@ -1502,7 +1502,7 @@ void StageBase::CreateStrongBoss()
 /// <summary>
 /// ボスの死亡処理
 /// </summary>
-void StageBase::DeathBoss()
+void Stage::DeathBoss()
 {
 	const auto& data = m_mgr.GetStage()->GetData();
 
@@ -1534,15 +1534,15 @@ void StageBase::DeathBoss()
 	const auto& armored = std::dynamic_pointer_cast<BossArmored>(m_boss);
 	armored->DeleteDamageObjects();
 
-	m_updateFunc = &StageBase::UpdateAfterBossDeath;
-	m_drawFunc = &StageBase::DrawAfterBossDeath;
+	m_updateFunc = &Stage::UpdateAfterBossDeath;
+	m_drawFunc = &Stage::DrawAfterBossDeath;
 }
 
 /// <summary>
 /// 条件確認
 /// </summary>
 /// <param name="frame">経過時間</param>
-void StageBase::CheckStageConditions(int frame)
+void Stage::CheckStageConditions(int frame)
 {
 	for (int i = 0; i < static_cast<int>(MapDir::kMax); i++)
 	{
@@ -1577,7 +1577,7 @@ void StageBase::CheckStageConditions(int frame)
 /// <param name="timeFrame">タイムフレーム</param>
 /// <param name="exsitTime">クリア時間(秒)</param>
 /// <param name="dir">方向名</param>
-void StageBase::CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir)
+void Stage::CheckConditionsTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir)
 {
 	const auto& stage = m_mgr.GetStage()->GetData();
 
@@ -1597,7 +1597,7 @@ void StageBase::CheckConditionsTime(const std::string& stageName, int timeFrame,
 /// <param name="stageName">確認するステージ名</param>
 /// <param name="exsitTime">クリア時間(秒)</param>
 /// <param name="dir">方向名</param>
-void StageBase::CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir)
+void Stage::CheckConditionsSumTime(const std::string& stageName, int timeFrame, int exsitTime, const std::wstring& dir)
 {
 	const auto& stage = m_mgr.GetStage()->GetData();
 	int sumTime = 0;
@@ -1631,7 +1631,7 @@ void StageBase::CheckConditionsSumTime(const std::string& stageName, int timeFra
 /// <param name="stageName">確認するステージ名</param>
 /// <param name="killedNum">殺される種類数</param>
 /// <param name="dir">方向名</param>
-void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir)
+void Stage::CheckConditionsKilled(const std::string& stageName, int killedNum, const std::wstring& dir)
 {
 	const auto& stage = m_mgr.GetStage()->GetData();
 
@@ -1649,7 +1649,7 @@ void StageBase::CheckConditionsKilled(const std::string& stageName, int killedNu
 /// クリアした文字の描画群に追加
 /// </summary>
 /// <param name="dir">方向</param>
-void StageBase::AddAchivedStr(const std::wstring& dir)
+void Stage::AddAchivedStr(const std::wstring& dir)
 {
 	m_achived.push_back({ dir + L"の条件達成！", 0 });
 }
@@ -1659,7 +1659,7 @@ void StageBase::AddAchivedStr(const std::wstring& dir)
 /// </summary>
 /// <param name="dir">方向</param>
 /// <returns>方向文字</returns>
-std::wstring StageBase::GetDirName(MapDir dir)
+std::wstring Stage::GetDirName(MapDir dir)
 {
 	if (dir == MapDir::kUp)
 	{
@@ -1687,7 +1687,7 @@ std::wstring StageBase::GetDirName(MapDir dir)
 /// <param name="isAlreadyClear">既にステージをクリアしたことがあるか</param>
 /// <param name="nextStName">次のステージ名</param>
 /// <returns>対応した画像ハンドル</returns>
-int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const
+int Stage::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName) const
 {
 	int handle;
 
@@ -1714,7 +1714,7 @@ int StageBase::GetArrowHandle(bool isAlreadyClear, const std::string& nextStName
 /// <summary>
 /// ステージデータのロード
 /// </summary>
-void StageBase::LoadStageInfo()
+void Stage::LoadStageInfo()
 {
 	// 一時保存用string
 	std::string strBuf;
@@ -1722,7 +1722,7 @@ void StageBase::LoadStageInfo()
 	std::vector<std::string> strConmaBuf;
 
 	// ファイル読み込み
-	std::ifstream ifs("StageData.csv");
+	std::ifstream ifs("Data/Stage/StageData.csv");
 	if (!ifs)
 	{
 		assert(false);
@@ -1758,7 +1758,7 @@ void StageBase::LoadStageInfo()
 /// <param name="stageName">ステージ名</param>
 /// <param name="isLoadAllEnemys">全敵ロードフラグ</param>
 /// <param name="enemyTypeIndex">敵種類要素番号</param>
-void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex)
+void Stage::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, std::string& stageName, bool& isLoadAllEnemys, int& enemyTypeIndex)
 {
 	// 全ての情報を読み込んでいる場合のみ次の情報群に移行する
 	if (!isLoadAllEnemys) return;
@@ -1817,7 +1817,7 @@ void StageBase::LoadImportantStageInfo(std::vector<std::string>& strConmaBuf, st
 /// <param name="enemyTypeIndex">敵種類要素番号</param>
 /// <param name="isLoadAllEnmeyInfo">敵ロードフラグ</param>
 /// <param name="enemyInfoIndex">敵単体要素番号</param>
-void StageBase::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex)
+void Stage::LoadEnemys(std::vector<std::string>& strConmaBuf, StageData& data, bool& isLoadAllEnemys, int& enemyTypeIndex, bool& isLoadAllEnmeyInfo, int& enemyInfoIndex)
 {
 	// 敵情報すべて読み込んでいたら早期リターン
 	if (isLoadAllEnemys) return;

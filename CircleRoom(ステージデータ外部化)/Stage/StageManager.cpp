@@ -11,7 +11,7 @@
 #include "Scene/OneShotScene.h"
 
 #include "StageManager.h"
-#include "StageBase.h"
+#include "Stage.h"
 #include "StageMap.h"
 #include "GameData.h"
 
@@ -83,7 +83,7 @@ void StageManager::Init(Input& input)
 {
 	m_data->Init();
 	InitPos();
-	m_stage = std::make_shared<StageBase>(GameManager::GetInstance(), input, m_map);
+	m_stage = std::make_shared<Stage>(GameManager::GetInstance(), input, m_map);
 }
 
 void StageManager::InitPos()

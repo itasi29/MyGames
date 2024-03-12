@@ -2,7 +2,7 @@
 #include <cmath>
 #include <memory>
 
-#include "Stage/StageBase.h"
+#include "Stage/Stage.h"
 #include "GameManager.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/FileBase.h"
@@ -37,7 +37,7 @@ EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize) :
 	m_charImg = mgr->LoadGraphic(L"Enemy/Create.png");
 }
 
-EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize, StageBase* stage) :
+EnemyCreate::EnemyCreate(const size& windowSize, float fieldSize, Stage* stage) :
 	EnemyBase(windowSize, fieldSize),
 	m_stage(stage),
 	m_radian(0)

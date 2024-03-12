@@ -16,7 +16,7 @@
 #include "FileSystem/KeyFile.h"
 #include "Input.h"
 
-#include "Stage/StageBase.h"
+#include "Stage/Stage.h"
 #include "StageSelectScene.h"
 
 namespace

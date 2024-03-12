@@ -3,7 +3,7 @@
 #include <memory>
 #include "BossBase.h"
 
-class StageBase;
+class Stage;
 class BossDamageObject;
 
 /// <summary>
@@ -13,7 +13,7 @@ class BossArmored : public BossBase
 {
 public:
 	BossArmored(const size& windowSize, float fieldSize);
-	BossArmored(const size& windowSize, float fieldSize, StageBase* stage);
+	BossArmored(const size& windowSize, float fieldSize, Stage* stage);
 	virtual ~BossArmored();
 
 	/// <summary>
@@ -52,7 +52,7 @@ private:
 
 protected:
 	// ステージのポインタ
-	StageBase* m_stage;
+	Stage* m_stage;
 
 	// 実際の移動は別の動きとなるので変数としてもっておく
 	Vec2 m_conversionVec;

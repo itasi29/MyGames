@@ -2,7 +2,7 @@
 
 #include "GameManager.h"
 #include "Scene/SceneManager.h"
-#include "Stage/StageBase.h"
+#include "Stage/Stage.h"
 #include "FileSystem/ImageFile.h"
 #include "FileSystem/FileManager.h"
 #include "FileSystem/SoundSystem.h"
@@ -51,7 +51,7 @@ BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize) :
 	InitData();
 }
 
-BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, StageBase* stage) :
+BossStrongArmored::BossStrongArmored(const size& windowSize, float fieldSize, Stage* stage) :
 	BossArmored(windowSize, fieldSize, stage)
 {
 	InitData();

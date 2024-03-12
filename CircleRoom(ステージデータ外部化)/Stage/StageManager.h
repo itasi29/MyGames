@@ -7,7 +7,7 @@
 
 class Input;
 class SceneManager;
-class StageBase;
+class Stage;
 class StageMap;
 class GameData;
 struct size;
@@ -98,7 +98,7 @@ private:
 	bool m_isClear;
 
 	// ステージのポインタ
-	std::shared_ptr<StageBase> m_stage;
+	std::shared_ptr<Stage> m_stage;
 	// マップ情報のポインタ
 	std::shared_ptr<StageMap> m_map;
 	// ゲームデータのポインタ

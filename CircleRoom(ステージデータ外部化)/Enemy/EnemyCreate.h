@@ -1,7 +1,7 @@
 #pragma once
 #include "EnemyBase.h"
 
-class StageBase;
+class Stage;
 
 /// <summary>
 /// EnemyChildを生成していく敵
@@ -10,7 +10,7 @@ class EnemyCreate : public EnemyBase
 {
 public:
 	EnemyCreate(const size& windowSize, float fieldSize);
-	EnemyCreate(const size& windowSize, float fieldSize, StageBase* stage);
+	EnemyCreate(const size& windowSize, float fieldSize, Stage* stage);
 	virtual ~EnemyCreate();
 
 	/// <summary>
@@ -26,7 +26,7 @@ private:
 
 private:
 	// ステージのポインタ
-	StageBase* m_stage;
+	Stage* m_stage;
 
 	// 変換後の移動ベクトル
 	Vec2 m_conversionVec;

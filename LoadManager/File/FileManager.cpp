@@ -69,26 +69,22 @@ void FileManager::Delete(const wchar_t* const name)
 
 std::shared_ptr<FileBase> FileManager::MakeFile(const wchar_t* const name)
 {
-	std::shared_ptr<FileBase> result;
+	auto type = m_path.at(name).type;
 
 	if (type == LoadType::kImage) {
-		std::shared_ptr<FileGraph> fileGraph = std::dynamic_pointer_cast<FileGraph>(file);
-		return std::make_shared<FileGraph>(*fileGraph);
+		return std::make_shared<FileGraph>(*this);
 	}
 	else if (type == LoadType::kSoudn) {
-		std::shared_ptr<FileSound> fileSound = std::dynamic_pointer_cast<FileSound>(file);
-		return std::make_shared<FileSound>(*fileSound);
+		return std::make_shared<FileSound>(*this);
 	}
 	else if (type == LoadType::kModel) {
-		std::shared_ptr<FileModel> fileModel = std::dynamic_pointer_cast<FileModel>(file);
-		return std::make_shared<FileModel>(*fileModel);
-	}
-	else {
-		assert(false);
-		return std::make_shared<FileBase>(*file);
+		return std::make_shared<FileModel>(*this);
 	}
 
-	return ;
+	// ‚±‚±‚Ü‚Å—ˆ‚½‚ç‚¨‚©‚µ‚¢
+	assert(false);
+	// “®‚­‚æ‚¤‚ÉFileGraph‚ð•Ô‚µ‚Ä‚¨‚­
+	return std::make_shared<FileGraph>(*this);
 }
 
 /// <summary>
@@ -113,9 +109,12 @@ std::shared_ptr<FileBase> FileManager::CastCopyFile(std::shared_ptr<FileBase>& f
 		std::shared_ptr<FileModel> fileModel = std::dynamic_pointer_cast<FileModel>(file);
 		return std::make_shared<FileModel>(*fileModel);
 	}
-	else {
-		assert(false);
-	}
+
+	// ‚±‚±‚Ü‚Å—ˆ‚½‚ç‚¨‚©‚µ‚¢
+	assert(false);
+	// “®‚­‚æ‚¤‚ÉFileGraph‚ð•Ô‚µ‚Ä‚¨‚­
+	std::shared_ptr<FileGraph> fileGraph = std::dynamic_pointer_cast<FileGraph>(file);
+	return std::make_shared<FileGraph>(*fileGraph);
 }
 
 /// <summary>

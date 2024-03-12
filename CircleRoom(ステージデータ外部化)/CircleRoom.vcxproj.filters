@@ -102,7 +102,7 @@
     <ClCompile Include="Enemy\EnemyBase.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Stage\StageBase.cpp">
+    <ClCompile Include="Stage\Stage.cpp">
       <Filter>ソース ファイル\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Stage\StageManager.cpp">
@@ -251,7 +251,7 @@
     <ClInclude Include="Enemy\EnemyBase.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Stage\StageBase.h">
+    <ClInclude Include="Stage\Stage.h">
       <Filter>ヘッダー ファイル\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Stage\StageManager.h">

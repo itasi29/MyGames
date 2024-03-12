@@ -6,7 +6,7 @@
 #include "Scene.h"
 
 class FileBase;
-class StageBase;
+class Stage;
 class SoundSystem;
 
 /// <summary>
@@ -40,7 +40,7 @@ private:
 
 	int m_fadeFrame;
 
-	std::unordered_map<std::string, std::shared_ptr<StageBase>> m_stageData;
+	std::unordered_map<std::string, std::shared_ptr<Stage>> m_stageData;
 	// 音マネージャー
 	std::shared_ptr<SoundSystem> m_soundSys;
 

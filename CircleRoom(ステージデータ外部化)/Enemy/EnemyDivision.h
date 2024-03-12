@@ -1,7 +1,7 @@
 #pragma once
 #include "EnemyBase.h"
 
-class StageBase;
+class Stage;
 
 /// <summary>
 /// 分裂して4方向に飛ばす敵
@@ -10,7 +10,7 @@ class EnemyDivision : public EnemyBase
 {
 public:
 	EnemyDivision(const size& windowSize, float fieldSize);
-	EnemyDivision(const size& windowSize, float fieldSize, StageBase* stage);
+	EnemyDivision(const size& windowSize, float fieldSize, Stage* stage);
 	virtual ~EnemyDivision();
 
 	/// <summary>
@@ -41,7 +41,7 @@ private:
 	DrawFunc_t m_dDrawFunc;
 
 	// ステージのポインタ
-	StageBase* m_stage;
+	Stage* m_stage;
 
 	// 分裂前待機フレーム
 	int m_divisionWaitFrame;
