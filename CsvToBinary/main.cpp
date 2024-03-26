@@ -8,6 +8,8 @@
 
 namespace
 {
+    const char* const kOutPath = "FileManager.bin";
+
     enum Index : int
     {
         kName,
@@ -118,7 +120,7 @@ void WriteBin(PathData_t& datas)
     FILE* fp;
 
     // ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
-    auto err = fopen_s(&fp, "DataManager.bin", "wb");
+    auto err = fopen_s(&fp, kOutPath, "wb");
     if (err != 0)
     {
         assert(false);
