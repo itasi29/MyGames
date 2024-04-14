@@ -8,6 +8,7 @@
 
 namespace
 {
+    const char* const kInPath = "FileMaster.csv";
     const char* const kOutPath = "FileManager.bin";
 
     enum Index : int
@@ -57,11 +58,8 @@ int main()
 
 void LoadCsv(PathData_t& datas)
 {
-    std::string path;
-    std::cin >> path;
-
     // ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
-    std::wifstream ifs(path.c_str());
+    std::wifstream ifs(kInPath);
     if (!ifs)
     {
         assert(false);

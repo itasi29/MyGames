@@ -1,0 +1,14 @@
+﻿名前,種類,パス,拡張子
+Player,Model,player,mv1
+Enemy,Model,enemy,mv1
+Bg,Image,Bg/bg,png
+AddUI0,Image,UI/AddUI0,png
+AddUI1,Image,UI/AddUI1,png
+AddUI2,Image,UI/AddUI2,png
+AddUI3,Image,UI/AddUI3,png
+Title,Image,UI/Title,png
+Select,Image,UI/SelectArrow,png
+Explanation,Image,UI/explanation,png
+GameClear,Image,UI/GameClear,png
+GameOver,Image,UI/GameOver,png
+Number,Image,UI/Number,png
