@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actor\ActorTarget.cpp" />
     <ClCompile Include="Actor\ActorPlayer.cpp" />
     <ClCompile Include="Actor\ActorBase.cpp" />
     <ClCompile Include="Actor\ActorManager.cpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="Utility\StringUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor\ActorTarget.h" />
     <ClInclude Include="Actor\ActorPlayer.h" />
     <ClInclude Include="Actor\ActorBase.h" />
     <ClInclude Include="Actor\ActorManager.h" />
