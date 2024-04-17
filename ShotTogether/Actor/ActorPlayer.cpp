@@ -16,7 +16,7 @@ namespace
 
 ActorPlayer::ActorPlayer(int handle, ActorManager& actorMgr, FileManager& fileMgr, SoundSystem& sndSys, const wchar_t* const name) :
 	ActorBase(handle, actorMgr, fileMgr, sndSys, name),
-	m_updateFunc(&ActorPlayer::UpdateNeutual)
+	m_updateFunc(&ActorPlayer::UpdateExsit)
 {
 	ChangeAnim(kAnimIndexIdle);
 }
@@ -41,7 +41,7 @@ void ActorPlayer::Update(Input& input)
 /// ‘Ò‹@
 /// </summary>
 /// <param name="input">“ü—Íî•ñ</param>
-void ActorPlayer::UpdateNeutual(Input& input)
+void ActorPlayer::UpdateExsit(Input& input)
 {
 	// ˆÚ“®ó‘Ô‚É‘JˆÚ
 	if (input.IsTriggered("right"))
@@ -115,7 +115,7 @@ void ActorPlayer::OnNeutual()
 	m_vel = { 0.0f, 0.0f, 0.0f };
 
 	ChangeAnim(kAnimIndexIdle);
-	m_updateFunc = &ActorPlayer::UpdateNeutual;
+	m_updateFunc = &ActorPlayer::UpdateExsit;
 }
 
 /// <summary>

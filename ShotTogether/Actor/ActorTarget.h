@@ -14,9 +14,10 @@ public:
 
 private:
 	using UpdateFunc_t = void(ActorTarget::*)(Input&);
-	void UpdateNeutual(Input& input);
+	void UpdateExsit(Input& input);
 	void UpdateDeath(Input& input);
 
+	void ChangeMove();
 
 private:
 	UpdateFunc_t m_updateFunc;

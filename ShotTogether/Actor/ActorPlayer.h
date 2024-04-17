@@ -12,7 +12,7 @@ public:
 
 private:
 	using UpdateFunc_t = void(ActorPlayer::*)(Input&);
-	void UpdateNeutual(Input& input);
+	void UpdateExsit(Input& input);
 	void UpdateMoveRight(Input& input);
 	void UpdateMoveLeft(Input& input);
 	void UpdateShot(Input& input);

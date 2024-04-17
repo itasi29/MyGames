@@ -154,6 +154,7 @@
     <ClCompile Include="File\FileSound.cpp" />
     <ClCompile Include="File\SoundSystem.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object\ObjectBase.cpp" />
     <ClCompile Include="Scene\SceneGameClear.cpp" />
     <ClCompile Include="Scene\SceneGameOver.cpp" />
     <ClCompile Include="Scene\SceneMain.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="File\FileModel.h" />
     <ClInclude Include="File\FileSound.h" />
     <ClInclude Include="File\SoundSystem.h" />
+    <ClInclude Include="Object\ObjectBase.h" />
     <ClInclude Include="Scene\SceneGameClear.h" />
     <ClInclude Include="Scene\SceneGameOver.h" />
     <ClInclude Include="Scene\SceneMain.h" />
@@ -185,6 +187,9 @@
     <ClInclude Include="Scene\SceneBase.h" />
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Utility\StringUtility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ShotTogether.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
