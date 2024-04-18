@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include <unordered_map>
 #include "Common/Geometry.h"
 
 class Input;
@@ -10,6 +9,9 @@ class SoundSystem;
 class FileBase;
 class FileManager;
 
+/// <summary>
+/// “®‚«‚ğ‚Â•¨‘Ì‚ÌŠî’êƒNƒ‰ƒX
+/// </summary>
 class ActorBase
 {
 public:

@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actor\ActorArrow.cpp" />
     <ClCompile Include="Actor\ActorTarget.cpp" />
     <ClCompile Include="Actor\ActorPlayer.cpp" />
     <ClCompile Include="Actor\ActorBase.cpp" />
@@ -154,7 +155,8 @@
     <ClCompile Include="File\FileSound.cpp" />
     <ClCompile Include="File\SoundSystem.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Object\ObjectBase.cpp" />
+    <ClCompile Include="Object\ObjectManager.cpp" />
+    <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Scene\SceneGameClear.cpp" />
     <ClCompile Include="Scene\SceneGameOver.cpp" />
     <ClCompile Include="Scene\SceneMain.cpp" />
@@ -164,6 +166,7 @@
     <ClCompile Include="Utility\StringUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor\ActorArrow.h" />
     <ClInclude Include="Actor\ActorTarget.h" />
     <ClInclude Include="Actor\ActorPlayer.h" />
     <ClInclude Include="Actor\ActorBase.h" />
@@ -179,7 +182,8 @@
     <ClInclude Include="File\FileModel.h" />
     <ClInclude Include="File\FileSound.h" />
     <ClInclude Include="File\SoundSystem.h" />
-    <ClInclude Include="Object\ObjectBase.h" />
+    <ClInclude Include="Object\ObjectManager.h" />
+    <ClInclude Include="Object\Object.h" />
     <ClInclude Include="Scene\SceneGameClear.h" />
     <ClInclude Include="Scene\SceneGameOver.h" />
     <ClInclude Include="Scene\SceneMain.h" />

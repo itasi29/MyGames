@@ -127,10 +127,11 @@ Rect::Rect() :
 {
 }
 
-void Rect::SetRange(float inH, float inW)
+void Rect::SetRange(float inH, float inW, float inD)
 {
 	h = inH;
 	w = inW;
+	d = inD;
 }
 
 void Rect::SetPos(float inX, float inY)

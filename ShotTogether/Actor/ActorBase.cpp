@@ -1,6 +1,7 @@
 #include "ActorBase.h"
 #include <DxLib.h>
 #include <cassert>
+#include "ActorManager.h"
 
 namespace
 {
@@ -18,7 +19,8 @@ ActorBase::ActorBase(int handle, ActorManager& actorMgr, FileManager& fileMgr, S
 	m_handle = MV1DuplicateModel(handle);
 	assert(m_handle > 0);
 
-	MV1SetScale();
+	const auto& scale = actorMgr.GetActorData(name).model;
+	MV1SetScale(m_handle, VGet(scale.w, scale.h, scale.d));
 }
 
 ActorBase::~ActorBase()

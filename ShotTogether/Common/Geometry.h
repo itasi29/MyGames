@@ -2,6 +2,19 @@
 #include <DxLib.h>
 
 /// <summary>
+/// サイズ構造体
+/// </summary>
+struct Size
+{
+	// 幅
+	float w = 0.0f;
+	// 高さ
+	float h = 0.0f;
+	// 奥行き
+	float d = 0.0f;
+};
+
+/// <summary>
 /// ベクター構造体
 /// </summary>
 struct Vec3
@@ -69,7 +82,7 @@ private:
 	// 位置
 	Pos3 pos;
 	// 幅高さ
-	float h, w;
+	float h, w, d;
 
 public:
 	Rect();
@@ -79,7 +92,8 @@ public:
 	/// </summary>
 	/// <param name="inH">高さ</param>
 	/// <param name="inW">幅</param>
-	void SetRange(float inH, float inW);
+	/// <param name="inD">奥行き</param>
+	void SetRange(float inH, float inW, float inD);
 	/// <summary>
 	/// 場所を設定
 	/// </summary>

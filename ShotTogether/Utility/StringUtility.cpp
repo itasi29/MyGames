@@ -41,9 +41,9 @@ std::wstring StringUtility::StringToWString(const std::string& str)
 std::vector<std::string> StringUtility::Split(std::string& str, char del)
 {
     // 区切り開始位置
-    int first = 0;
+    size_t first = 0;
     // 区切り最終位置
-    int last = str.find_first_of(del);
+    size_t last = str.find_first_of(del);
 
     std::vector<std::string> result;
 
@@ -69,9 +69,9 @@ std::vector<std::string> StringUtility::Split(std::string& str, char del)
 std::vector<std::wstring> StringUtility::Split(std::wstring& str, char del)
 {
     // 区切り開始位置
-    int first = 0;
+    size_t first = 0;
     // 区切り最終位置
-    int last = str.find_first_of(del);
+    size_t last = str.find_first_of(del);
 
     std::vector<std::wstring> result;
 
