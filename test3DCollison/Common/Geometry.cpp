@@ -208,7 +208,10 @@ void CircleCol::SetPos(const Pos3& pos)
 
 bool CircleCol::IsHit(const CircleCol& col)
 {
-	return radius * col.radius;
+	float len = (pos - col.pos).SqLength();
+	float dis = (radius + col.radius) * (radius + col.radius);
+
+	return dis > len;
 }
 
 void CircleCol::Draw(unsigned int color) const

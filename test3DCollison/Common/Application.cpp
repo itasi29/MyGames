@@ -78,7 +78,7 @@ void Application::Run()
 
         ClearDrawScreen();
 
-        constexpr float kSpeed = 0.1f;
+        constexpr float kSpeed = 0.5f;
         if (CheckHitKey(KEY_INPUT_RIGHT))
         {
             playerPos.x += kSpeed;
@@ -100,6 +100,10 @@ void Application::Run()
         if (playerCol.IsHit(enemyCol))
         {
             enemyCol.Draw(0x00ff00);
+        }
+        else
+        {
+            enemyCol.Draw();
         }
 
         ScreenFlip();
