@@ -7,11 +7,14 @@ public:
 	Rect();
 	~Rect();
 
-	void Init(const Pos3& pos, const Vec3& size);
-	void Update(const Pos3& pos);
+	void Init(const Pos3& pos, const Size& size);
+	void UpdatePos(const Pos3& pos);
+
+	const Pos3& GetPos()  const { return m_pos;  }
+	const Size& GetSize() const { return m_size; }
 
 private:
 	Pos3 m_pos;
-	Vec3 m_size;
+	Size m_size;
 };
 
