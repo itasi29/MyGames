@@ -12,5 +12,8 @@ public:
 
 private:
 	VECTOR m_pos;
+
+
+	float m_angle = -DX_PI_F / 2;
 };
 
