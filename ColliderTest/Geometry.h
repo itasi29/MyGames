@@ -12,6 +12,12 @@ struct Size
 	float h = 0.0f;
 	// ‰œs‚«
 	float d = 0.0f;
+
+	Size();
+	Size(float inW, float inH, float inD);
+
+	Size operator+(const Size& val) const;
+	Size operator*(float scale) const;
 };
 
 /// <summary>

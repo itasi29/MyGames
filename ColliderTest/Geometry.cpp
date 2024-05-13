@@ -2,6 +2,30 @@
 #include <cassert>
 #include <cmath>
 
+Size::Size() :
+	w(0.0f),
+	h(0.0f),
+	d(0.0f)
+{
+}
+
+Size::Size(float inW, float inH, float inD) :
+	w(inW),
+	h(inH),
+	d(inD)
+{
+}
+
+Size Size::operator+(const Size& val) const
+{
+	return Size( w + val.w, h + val.h, d + val.d );
+}
+
+Size Size::operator*(float scale) const
+{
+	return Size( w * scale, h * scale, d * scale);
+}
+
 Vec3::Vec3() :
 	x(0.0f),
 	y(0.0f),

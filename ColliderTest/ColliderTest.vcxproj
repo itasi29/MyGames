@@ -140,16 +140,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Caspsule.cpp" />
+    <ClCompile Include="CaspsuleCol.cpp" />
+    <ClCompile Include="CircleCol.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Rect.cpp" />
+    <ClCompile Include="RectCol.cpp" />
+    <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Caspsule.h" />
+    <ClInclude Include="CaspsuleCol.h" />
+    <ClInclude Include="CircleCol.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Geometry.h" />
-    <ClInclude Include="Rect.h" />
+    <ClInclude Include="RectCol.h" />
+    <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

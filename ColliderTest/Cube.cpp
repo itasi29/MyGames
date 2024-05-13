@@ -27,7 +27,25 @@ void Cube::Update(bool isMove)
 {
 	if (!isMove) return;
 
+	const float kSpeed = 0.1f;
 
+	if ((GetJoypadInputState(DX_INPUT_KEY_PAD1) & PAD_INPUT_RIGHT))
+	{
+		m_pos.x += kSpeed;
+	}
+	if ((GetJoypadInputState(DX_INPUT_KEY_PAD1) & PAD_INPUT_LEFT))
+	{
+		m_pos.x -= kSpeed;
+	}
+	if ((GetJoypadInputState(DX_INPUT_KEY_PAD1) & PAD_INPUT_UP))
+	{
+		m_pos.y += kSpeed;
+	}
+	if ((GetJoypadInputState(DX_INPUT_KEY_PAD1) & PAD_INPUT_DOWN))
+	{
+		m_pos.y -= kSpeed;
+	}
+	m_rect.UpdatePos(m_pos);
 }
 
 void Cube::Draw() const
@@ -37,15 +55,46 @@ void Cube::Draw() const
 	float halfH = size.h * 0.5f;
 	float halfD = size.d * 0.5f;
 
-	// 手前左下の座標
-	VECTOR FLBPos = VGet(m_pos.x - halfW, m_pos.y - halfH, m_pos.z - halfD);
-	// 奥右上の座標
-	VECTOR BRTPos = VGet(m_pos.x + halfW, m_pos.y + halfH, m_pos.z + halfD);
+	float right = m_pos.x + halfW;
+	float left = m_pos.x - halfW;
+	float top = m_pos.y + halfH;
+	float bottom = m_pos.y - halfH;
+	float front = m_pos.z - halfD;
+	float back = m_pos.z + halfD;
 
-	DrawCube3D(FLBPos, BRTPos, m_color, 0x0f0f0f, true);
+#if true
+	// 横の線
+	DrawLine3D(VGet(left, bottom, front), VGet(right, bottom, front), m_color);
+	DrawLine3D(VGet(left, top, front), VGet(right, top, front), m_color);
+	DrawLine3D(VGet(left, bottom, back), VGet(right, bottom, back), m_color);
+	DrawLine3D(VGet(left, top, back), VGet(right, top, back), m_color);
+	// 縦の線
+	DrawLine3D(VGet(left, top, front), VGet(left, bottom, front), m_color);
+	DrawLine3D(VGet(right, top, front), VGet(right, bottom, front), m_color);
+	DrawLine3D(VGet(left, top, back), VGet(left, bottom, back), m_color);
+	DrawLine3D(VGet(right, top, back), VGet(right, bottom, back), m_color);
+	// 前後の線
+	DrawLine3D(VGet(left, top, front), VGet(left, top, back), m_color);
+	DrawLine3D(VGet(left, bottom, front), VGet(left, bottom, back), m_color);
+	DrawLine3D(VGet(right, top, front), VGet(right, top, back), m_color);
+	DrawLine3D(VGet(right, bottom, front), VGet(right, bottom, back), m_color);
+#else
+	DrawCube3D(VGet(left, top, back), VGet(right, bottom, front), m_color, 0, true);
+#endif
 }
 
-bool Cube::IsHit(const Rect& rect)
+bool Cube::IsHit(const RectCol& rect)
 {
-	return false;
+	bool isHit = m_rect.IsHit(rect);
+
+	if (isHit)
+	{
+		m_color = kHitColor;
+	}
+	else
+	{
+		m_color = kNoHitColor;
+	}
+
+	return isHit;
 }

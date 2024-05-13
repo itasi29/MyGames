@@ -3,8 +3,8 @@
 
 namespace
 {
-	constexpr float kDist = 96;
-	constexpr float kHeight = 32;
+	constexpr float kDist = 36;
+	constexpr float kHeight = 16;
 
 	constexpr float kNear = 1.0f;
 	constexpr float kFar = 180.0f;
@@ -23,10 +23,15 @@ Camera::~Camera()
 void Camera::Init()
 {
 	m_angle = -DX_PI_F / 2;
+
+	SetCameraNearFar(kNear, kFar);
+	SetCameraPositionAndTarget_UpVecY(VGet(0.0f, kHeight, -kDist), VGet(0, 0, 0));
 }
 
-void Camera::Update()
+void Camera::Update(bool isMove)
 {
+	if (!isMove) return;
+
 	if ((GetJoypadInputState(DX_INPUT_KEY_PAD1) & PAD_INPUT_LEFT))
 	{
 		m_angle += 0.05f;

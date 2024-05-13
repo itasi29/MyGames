@@ -8,7 +8,7 @@ public:
 	~Camera();
 
 	void Init();
-	void Update();
+	void Update(bool isMove = false);
 
 private:
 	VECTOR m_pos;
