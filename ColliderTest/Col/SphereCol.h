@@ -1,16 +1,16 @@
 #pragma once
 #include "Geometry.h"
 
-class CircleCol
+class SphereCol
 {
 public:
-	CircleCol();
-	~CircleCol();
+	SphereCol();
+	~SphereCol();
 
 	void Init(const Pos3& pos, float radius);
 	void UpdatePos(const Pos3& pos);
 
-	bool IsHit(const CircleCol& circle);
+	bool IsHit(const SphereCol& col);
 
 	const Pos3& GetPos()  const { return m_pos; }
 	float GetRadius() const { return m_radius; }

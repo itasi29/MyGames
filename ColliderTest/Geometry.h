@@ -30,6 +30,8 @@ struct Vec3
 	Vec3();
 	Vec3(float inX, float inY, float inZ);
 
+	Vec3 Reverse();
+
 	Vec3 operator+(const Vec3& val) const;
 	void operator+=(const Vec3& val);
 	Vec3 operator-(const Vec3& val) const;
@@ -83,5 +85,13 @@ Vec3 Lerp(const Vec3& start, const Vec3& end, float t);
 /// <param name="vec2">ベクトル２</param>
 /// <returns>内積値</returns>
 float Dot(const Vec3& vec1, const Vec3& vec2);
+
+/// <summary>
+/// 外積
+/// </summary>
+/// <param name="vec1">ベクトル１</param>
+/// <param name="vec2">ベクトル２</param>
+/// <returns>外積</returns>
+Vec3 Cross(const Vec3& vec1, const Vec3& vec2);
 
 using Pos3 = Vec3;

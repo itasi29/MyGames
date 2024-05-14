@@ -1,25 +1,25 @@
-#include "CircleCol.h"
+#include "SphereCol.h"
 
-CircleCol::CircleCol()
+SphereCol::SphereCol()
 {
 }
 
-CircleCol::~CircleCol()
+SphereCol::~SphereCol()
 {
 }
 
-void CircleCol::Init(const Pos3& pos, float radius)
+void SphereCol::Init(const Pos3& pos, float radius)
 {
 	m_pos = pos;
 	m_radius = radius;
 }
 
-void CircleCol::UpdatePos(const Pos3& pos)
+void SphereCol::UpdatePos(const Pos3& pos)
 {
 	m_pos = pos;
 }
 
-bool CircleCol::IsHit(const CircleCol& circle)
+bool SphereCol::IsHit(const SphereCol& circle)
 {
 	// ‘Š‘ÎƒxƒNƒgƒ‹
 	Vec3 vec = circle.GetPos() - m_pos;

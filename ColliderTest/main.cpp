@@ -2,13 +2,14 @@
 #include <memory>
 #include "Geometry.h"
 #include "Camera.h"
-#include "Cube.h"
-#include "Sphere.h"
-#include "Caspsule.h"
+#include "Obj/Cube.h"
+#include "Obj/Sphere.h"
+#include "Obj/Caspsule.h"
 
 #define CUBE_
 #define SPHERE_
-#define CASPSULE
+#define CASPSULE_
+#define CASPSULE2
 
 void DrawGrid();
 
@@ -22,6 +23,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         return false;
     }
     SetDrawScreen(DX_SCREEN_BACK);
+
+	SetGlobalAmbientLight(GetColorF(0.25f, 0.25f, 0.25f, 0.0f));
 
 	Camera camera;
 	camera.Init();
@@ -43,6 +46,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>();
 	caspsule->Init(Pos3(), Vec3(0, 1, 0), 4, 5);
 	sphere->Init(Pos3(10, 10, 0), 4);
+#endif
+#ifdef CASPSULE2
+	std::shared_ptr<Caspsule> caspsule1 = std::make_shared<Caspsule>();
+	std::shared_ptr<Caspsule> caspsule2 = std::make_shared<Caspsule>();
+	caspsule1->Init(Pos3(), Vec3(1, 0.5f, 0), 3, 2);
+	caspsule2->Init(Pos3(), Vec3(0, 1, 1), 4, 3);
 #endif
 
 	bool isMoveObj = true;
@@ -73,16 +82,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 #ifdef CUBE
         cube1->Update();
-		cube2->Update(true);
-		cube2->IsHit(cube1->GetRect());
+		cube2->Update(isMoveObj);
+		cube2->IsHit(cube1->GetCol());
 
         cube1->Draw();
 		cube2->Draw();
 #endif
 #ifdef SPHERE
 		sphere1->Update();
-		sphere2->Update(true);
-		sphere2->IsHit(sphere1->GetRect());
+		sphere2->Update(isMoveObj);
+		sphere2->IsHit(sphere1->GetCol());
 
 		sphere1->Draw();
 		sphere2->Draw();
@@ -90,10 +99,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 #ifdef CASPSULE
 		caspsule->Update();
 		sphere->Update(isMoveObj);
-		caspsule->IsHit(sphere->GetRect());
+		caspsule->IsHit(sphere->GetCol());
 
 		caspsule->Draw();
 		sphere->Draw();
+#endif
+#ifdef CASPSULE2
+		caspsule1->Update();
+		caspsule2->Update(isMoveObj);
+		caspsule2->IsHit(caspsule1->GetCol());
+
+		caspsule1->Draw();
+		caspsule2->Draw();
 #endif
 		if (isMoveObj)
 		{

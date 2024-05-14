@@ -140,24 +140,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Caspsule.cpp" />
-    <ClCompile Include="CaspsuleCol.cpp" />
-    <ClCompile Include="CircleCol.cpp" />
-    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Matrix3x3.cpp" />
+    <ClCompile Include="Obj\Caspsule.cpp" />
+    <ClCompile Include="Col\CaspsuleCol.cpp" />
+    <ClCompile Include="Col\SphereCol.cpp" />
+    <ClCompile Include="Obj\Cube.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="RectCol.cpp" />
-    <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="Col\RectCol.cpp" />
+    <ClCompile Include="Obj\Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Caspsule.h" />
-    <ClInclude Include="CaspsuleCol.h" />
-    <ClInclude Include="CircleCol.h" />
-    <ClInclude Include="Cube.h" />
+    <ClInclude Include="Matrix3x3.h" />
+    <ClInclude Include="Obj\Caspsule.h" />
+    <ClInclude Include="Col\CaspsuleCol.h" />
+    <ClInclude Include="Col\SphereCol.h" />
+    <ClInclude Include="Obj\Cube.h" />
     <ClInclude Include="Geometry.h" />
-    <ClInclude Include="RectCol.h" />
-    <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Col\RectCol.h" />
+    <ClInclude Include="Obj\Sphere.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

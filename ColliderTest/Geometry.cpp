@@ -40,6 +40,11 @@ Vec3::Vec3(float inX, float inY, float inZ) :
 {
 }
 
+Vec3 Vec3::Reverse()
+{
+	return Vec3(-x, -y, -z);
+}
+
 Vec3 Vec3::operator+(const Vec3& val) const
 {
 	return Vec3( x + val.x, y + val.y, z + val.z );
@@ -155,4 +160,15 @@ Vec3 Lerp(const Vec3& start, const Vec3& end, float t)
 float Dot(const Vec3& vec1, const Vec3& vec2)
 {
 	return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
+}
+
+Vec3 Cross(const Vec3& vec1, const Vec3& vec2)
+{
+	Vec3 val;
+
+	val.x = vec1.y * vec2.z - vec1.z * vec2.y;
+	val.y = vec1.z * vec2.x - vec1.x * vec2.z;
+	val.z = vec1.x * vec2.y - vec1.y * vec2.x;
+
+	return val;
 }
