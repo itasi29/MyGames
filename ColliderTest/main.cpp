@@ -24,7 +24,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     }
     SetDrawScreen(DX_SCREEN_BACK);
 
-	SetGlobalAmbientLight(GetColorF(0.25f, 0.25f, 0.25f, 0.0f));
+	SetGlobalAmbientLight(GetColorF(1.0f, 1.0f, 1.0f, 0.0f));
 
 	Camera camera;
 	camera.Init();
