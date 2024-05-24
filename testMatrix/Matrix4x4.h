@@ -1,4 +1,5 @@
 #pragma once
+#include "Vec3.h"
 
 /// <summary>
 /// 4x4行列
@@ -6,7 +7,12 @@
 struct Matrix4x4
 {
 public:
-	float m[4][4];
+	float m[4 * 4];
+	/* 要素の並び方
+	0  1  2  3
+	4  5  6  7
+	8  9  10 11
+	12 13 14 15	*/
 
 	Matrix4x4();
 
@@ -20,8 +26,13 @@ public:
 	// 単位行列
 	void Identity();
 	// 逆行列
-	void Inverse(bool isCorrect = false);
+	Matrix4x4 Inverse(bool isCorrect = false);
 
-	void Scale(float x, float y, float z);
+	// Setter
+	void SetLine(int lineNo, const Vec3 val);
+	void SetRow(int rowNo, const Vec3 val);
+	// Getter
+	Vec3 GetLine(int lineNo) const;
+	Vec3 GetRow(int rowNo) const;
 };
 
