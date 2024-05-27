@@ -136,13 +136,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Common\Geometry.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Matrix4x4.cpp" />
-    <ClCompile Include="Vec3.cpp" />
+    <ClCompile Include="Common\Matrix4x4.cpp" />
+    <ClCompile Include="Common\Vec3.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Matrix4x4.h" />
-    <ClInclude Include="Vec3.h" />
+    <ClInclude Include="Common\Geometry.h" />
+    <ClInclude Include="Common\Matrix4x4.h" />
+    <ClInclude Include="Common\Vec3.h" />
+    <ClInclude Include="Quaternion.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

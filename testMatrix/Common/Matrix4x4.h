@@ -28,11 +28,7 @@ public:
 	// ãtçsóÒ
 	Matrix4x4 Inverse(bool isCorrect = false);
 
-	// Setter
-	void SetLine(int lineNo, const Vec3 val);
-	void SetRow(int rowNo, const Vec3 val);
-	// Getter
-	Vec3 GetLine(int lineNo) const;
-	Vec3 GetRow(int rowNo) const;
+private:
+	float Dot(const Matrix4x4& mat, int line, int row) const;
 };
 
