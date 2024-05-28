@@ -20,6 +20,7 @@ public:
 	Matrix4x4 operator+ (const Matrix4x4& mat) const;
 	Matrix4x4 operator- (const Matrix4x4& mat) const;
 	Matrix4x4 operator* (const Matrix4x4& mat) const;
+	Matrix4x4 operator* (float scale) const;
 
 	// É[Éç
 	void Zero();
