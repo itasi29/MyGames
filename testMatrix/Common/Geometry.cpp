@@ -1,4 +1,5 @@
 #include "Geometry.h"
+#include <cmath>
 
 float Dot(const Vec3& item1, const Vec3& item2)
 {
@@ -24,6 +25,7 @@ Matrix4x4 Move(const Vec3& move)
 Matrix4x4 Move(float x, float y, float z)
 {
 	Matrix4x4 result;
+	result.Identity();
 
 	result.m[0 + 3] = x;
 	result.m[4 + 3] = y;
@@ -40,6 +42,7 @@ Matrix4x4 Scale(const Vec3& scale)
 Matrix4x4 Scale(float x, float y, float z)
 {
 	Matrix4x4 result;
+	result.Identity();
 
 	result.m[0 + 0] = x;
 	result.m[4 + 1] = y;
@@ -48,22 +51,23 @@ Matrix4x4 Scale(float x, float y, float z)
 	return result;
 }
 
-Vec3 Easing::Linear(const Vec3& start, const Vec3& end, float rate)
+Vec3 Easing::Linear(const Vec3& start, const Vec3& end, float t)
+{
+	return (end - start) * t;
+}
+
+Vec3 Easing::EaseIn(const Vec3& start, const Vec3& end, float t)
+{
+	float rate = 1 - std::cosf(t * DX_PI_F * 0.5f);
+	return (end - start) * rate;
+}
+
+Vec3 Easing::EaseOut(const Vec3& start, const Vec3& end, float t)
 {
 	return Vec3();
 }
 
-Vec3 Easing::EaseIn(const Vec3& start, const Vec3& end, float rate)
-{
-	return Vec3();
-}
-
-Vec3 Easing::EaseOut(const Vec3& start, const Vec3& end, float rate)
-{
-	return Vec3();
-}
-
-Vec3 Easing::EaseInOut(const Vec3& start, const Vec3& end, float rate)
+Vec3 Easing::EaseInOut(const Vec3& start, const Vec3& end, float t)
 {
 	return Vec3();
 }

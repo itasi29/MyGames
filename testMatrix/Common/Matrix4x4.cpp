@@ -49,7 +49,7 @@ Matrix4x4 Matrix4x4::operator*(const Matrix4x4& mat) const
         }
     }
 
-    return ;
+    return result;
 }
 
 void Matrix4x4::Zero()

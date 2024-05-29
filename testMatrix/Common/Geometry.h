@@ -26,11 +26,11 @@ private:
 	Easing();
 public:
 	// “™‘¬
-	static Vec3 Linear(const Vec3& start, const Vec3& end, float rate);
+	static Vec3 Linear(const Vec3& start, const Vec3& end, float t);
 	// ‰Á‘¬
-	static Vec3 EaseIn(const Vec3& start, const Vec3& end, float rate);
+	static Vec3 EaseIn(const Vec3& start, const Vec3& end, float t);
 	// Œ¸‘¬
-	static Vec3 EaseOut(const Vec3& start, const Vec3& end, float rate);
+	static Vec3 EaseOut(const Vec3& start, const Vec3& end, float t);
 	// ‰Á‘¬‚µ‚ÄŒ¸‘¬
-	static Vec3 EaseInOut(const Vec3& start, const Vec3& end, float rate);
+	static Vec3 EaseInOut(const Vec3& start, const Vec3& end, float t);
 };
