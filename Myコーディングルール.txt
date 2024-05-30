@@ -1,0 +1,27 @@
+コーディングルール
+
+変数
+ ・bool以外 : camelCase
+ ・bool     : isPascalCase
+
+関数・構造体・クラス
+ ・PascalCase
+
+メンバ変数
+ ・bool以外 : m_camelCase
+ ・bool     : m_isPascalCase
+
+定数
+ ・bool以外 : kPascalCase
+ ・bool     : kIsPascalCase
+
+列挙型
+ ・型名 : PascalCase
+ ・変数 : kPascalCase
+
+コメント
+ ・基本的に上に "// " で書く
+ ・変数の説明時は大きな括りで上に "/*  */" で書き、
+   それぞれの説明を横に "// " で書く
+ ・関数はヘッダー側には "// " で簡易説明し、
+   cpp側で "/// " で詳しく説明する

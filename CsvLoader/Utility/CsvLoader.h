@@ -20,12 +20,12 @@ struct Value
 	std::wstring tWstr;
 };
 
-using CsvHeader_t = std::unordered_map<std::wstring, Type>;
-using CsvData_t = std::unordered_map<std::wstring, Value>;
+using CsvHeader_t = std::unordered_map<const wchar_t*, Type>;
+using CsvData_t = std::unordered_map<const wchar_t*, Value>;
 using CsvOut_t = std::list<CsvData_t>;
 
 using ConmaStr_t = std::vector<std::wstring>;
-using CsvIndex_t = std::unordered_map<std::wstring, int>;
+using CsvIndex_t = std::unordered_map<const wchar_t*, int>;
 
 class CsvLoader final
 {

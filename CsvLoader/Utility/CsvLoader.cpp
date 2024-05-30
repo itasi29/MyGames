@@ -52,7 +52,7 @@ void CsvLoader::MakeIndex(const CsvHeader_t& header, const ConmaStr_t& strConmaB
 			if (headerName == header.first)
 			{
 				// —v‘f‚Æ‚µ‚Ä’Ç‰Á
-				indexData[headerName] = index;
+				indexData[header.first] = index;
 				// —v‘f”Ô†‚ğŸ‚Ö
 				++index;
 				// Ÿ‚Ì“ª‚Ì•¶š—ñ‚Ö
@@ -66,6 +66,8 @@ CsvData_t CsvLoader::LoadInfo(const CsvHeader_t& header, const ConmaStr_t& strCo
 {
 	// Headerî•ñ‚ğ‚·‚×‚Ä‰ñ‚·
 	CsvData_t datas;
+	datas.clear();
+
 	for (const auto& info : header)
 	{
 		auto& data = datas[info.first];
@@ -87,6 +89,7 @@ CsvData_t CsvLoader::LoadInfo(const CsvHeader_t& header, const ConmaStr_t& strCo
 		else if (info.second == Type::kWstr)
 		{
 			data.tWstr = strConmaBuf[index];
+			int a = 0;
 		}
 	}
 	return datas;
