@@ -3,6 +3,9 @@
 #include "Matrix4x4.h"
 #include "Quaternion.h"
 
+float Deg2Rad();
+float Rad2Deg();
+
 // 内積
 float Dot(const Vec3& item1, const Vec3& item2);
 // 外積
@@ -15,8 +18,7 @@ Matrix4x4 Move(float x, float y, float z);
 Matrix4x4 Scale(const Vec3& scale);
 Matrix4x4 Scale(float x, float y, float z);
 // 回転
-// TODO:どう作ろう
-Matrix4x4 Rotate(const Quaternion& item);
+Quaternion AngleAxis(float angle, const Vec3 axis);
 
 // イージング
 class Easing

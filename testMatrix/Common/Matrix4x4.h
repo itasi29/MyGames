@@ -25,6 +25,8 @@ public:
 	void Zero();
 	// 単位行列
 	void Identity();
+	// 転置行列
+	Matrix4x4 Transpose();
 	// 逆行列
 	Matrix4x4 Inverse(bool isCorrect = false);
 

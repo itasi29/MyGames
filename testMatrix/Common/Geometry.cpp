@@ -1,5 +1,18 @@
 #include "Geometry.h"
+#define _USE_MATH_DEFINES
 #include <cmath>
+
+float Deg2Rad()
+{
+	static float conversion = M_PI / 180.0f;
+	return conversion;
+}
+
+float Rad2Deg()
+{
+	static float conversion = 180.0f / M_PI;
+	return conversion;
+}
 
 float Dot(const Vec3& item1, const Vec3& item2)
 {
@@ -26,7 +39,7 @@ Matrix4x4 Move(float x, float y, float z)
 {
 	Matrix4x4 result;
 	result.Identity();
-
+	
 	result.m[0 + 3] = x;
 	result.m[4 + 3] = y;
 	result.m[8 + 3] = z;
@@ -47,6 +60,20 @@ Matrix4x4 Scale(float x, float y, float z)
 	result.m[0 + 0] = x;
 	result.m[4 + 1] = y;
 	result.m[8 + 2] = z;
+
+	return result;
+}
+
+Quaternion AngleAxis(float angle, const Vec3 axis)
+{
+	Quaternion result;
+
+	float halfRad = angle * Deg2Rad() * 0.5f;
+	float sin = std::sin(halfRad);
+	float cos = std::cos(halfRad);
+	auto normAxis = axis.GetNormalized();
+
+	result = Quaternion(normAxis.x * sin, normAxis.y * sin, normAxis.z * sin, cos);
 
 	return result;
 }

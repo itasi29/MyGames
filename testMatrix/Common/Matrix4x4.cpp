@@ -63,10 +63,25 @@ void Matrix4x4::Zero()
 void Matrix4x4::Identity()
 {
     Zero();
-    m[0] = 1.0f;
-    m[5] = 1.0f;
-    m[10] = 1.0f;
-    m[15] = 1.0f;
+    m[0 + 0] = 1.0f;
+    m[4 + 1] = 1.0f;
+    m[8 + 2] = 1.0f;
+    m[12 + 3] = 1.0f;
+}
+
+Matrix4x4 Matrix4x4::Transpose()
+{
+    Matrix4x4 result;
+
+    for (int row = 0; row < 4; ++row)
+    {
+        for (int line = 0; line < 4; ++line)
+        {
+            result.m[row * 4 + line] = m[line * 4 + row];
+        }
+    }
+
+    return result;
 }
 
 Matrix4x4 Matrix4x4::Inverse(bool isCorrect)
@@ -76,12 +91,19 @@ Matrix4x4 Matrix4x4::Inverse(bool isCorrect)
     // ŠÈ—ª‚È‚â‚è•û
     if (!isCorrect)
     {
-        for (int row = 0; row < 4; ++row)
+        // ‰ñ“]•”•ª‚Ì“]’u
+        for (int row = 0; row < 3; ++row)
         {
-            for (int line = 0; line < 4; ++line)
+            for (int line = 0; line < 3; ++line)
             {
                 result.m[row * 4 + line] = m[line * 4 + row];
             }
+        }
+        // •½sˆÚ“®•”•ª‚Ì’l”½“]
+        for (int i = 0; i < 3; ++i)
+        {
+            int idx = 4 * i + 3;
+            result.m[idx] = m[idx] * -1;
         }
     }
     // ³Šm‚È‚â‚è•û
