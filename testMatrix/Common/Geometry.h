@@ -3,8 +3,14 @@
 #include "Matrix4x4.h"
 #include "Quaternion.h"
 
-float Deg2Rad();
-float Rad2Deg();
+namespace Math
+{
+	constexpr double kPi = 3.14159265358979323846;
+	constexpr float kPiF = 3.14159265358979323846f;
+
+	constexpr float kDeg2Rad = kPiF / 180.0f;
+	constexpr float kRad2Deg = 180.0f / kPiF;
+}
 
 // ì‡êœ
 float Dot(const Vec3& item1, const Vec3& item2);

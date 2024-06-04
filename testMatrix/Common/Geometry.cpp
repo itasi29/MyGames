@@ -1,18 +1,5 @@
 #include "Geometry.h"
-#define _USE_MATH_DEFINES
 #include <cmath>
-
-float Deg2Rad()
-{
-	static float conversion = M_PI / 180.0f;
-	return conversion;
-}
-
-float Rad2Deg()
-{
-	static float conversion = 180.0f / M_PI;
-	return conversion;
-}
 
 float Dot(const Vec3& item1, const Vec3& item2)
 {
@@ -68,7 +55,7 @@ Quaternion AngleAxis(float angle, const Vec3 axis)
 {
 	Quaternion result;
 
-	float halfRad = angle * Deg2Rad() * 0.5f;
+	float halfRad = angle * Math::kDeg2Rad * 0.5f;
 	float sin = std::sin(halfRad);
 	float cos = std::cos(halfRad);
 	auto normAxis = axis.GetNormalized();

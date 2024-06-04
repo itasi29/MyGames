@@ -18,7 +18,8 @@ public:
 
 	Quaternion Conjugated() const;
 
-	Quaternion operator* (const Quaternion& val) const;
+	Quaternion operator* (const Quaternion& q) const;
+	Matrix4x4 operator* (const Matrix4x4& mat) const;
 	Vec3 operator* (const Vec3& vec) const;
 };
 
