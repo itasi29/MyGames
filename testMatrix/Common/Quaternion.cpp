@@ -36,30 +36,7 @@ Quaternion Quaternion::operator*(const Quaternion& q) const
 
 Matrix4x4 Quaternion::operator*(const Matrix4x4& mat) const
 {
-    Matrix4x4 matQ;
-
-    float r00 = x * x + y * y - z * z - w * w;
-    float r01 = 2 * (y * z - x * w);
-    float r02 = 2 * (y * w - x * z);
-    float r10 = 2 * (y * z + x * w);
-    float r11 = x * x - y * y + z * z - w * w;
-    float r12 = 2 * (z * w - x * y);
-    float r20 = 2 * (y * w - x * z);
-    float r21 = 2 * (z * w + x * y);
-    float r22 = x * x - y * y - z * z + w * w;
-
-    matQ.m[0 + 0] = r00;
-    matQ.m[0 + 1] = r01;
-    matQ.m[0 + 2] = r02;
-    matQ.m[4 + 0] = r10;
-    matQ.m[4 + 1] = r11;
-    matQ.m[4 + 2] = r12;
-    matQ.m[8 + 0] = r20;
-    matQ.m[8 + 1] = r21;
-    matQ.m[8 + 2] = r22;
-    matQ.m[12 + 3] = 1.0f;
-
-    return matQ * mat;
+    return GetMat() * mat;
 }
 
 Vec3 Quaternion::operator*(const Vec3& vec) const
@@ -69,4 +46,40 @@ Vec3 Quaternion::operator*(const Vec3& vec) const
     Quaternion newPos = *this * posQ * this->Conjugated();
     
     return Vec3(newPos.x, newPos.y, newPos.z);
+}
+
+Matrix4x4 Quaternion::GetMat() const
+{
+    Matrix4x4 matQ;
+
+    float x2 = x * x;
+    float y2 = y * y;
+    float z2 = z * z;
+    float w2 = w * w;
+
+    float r00 = x2 - y2 - z2 + w2;
+    float r01 = 2.0f * (x * y + z * w);
+    float r02 = 2.0f * (x * z - y * w);
+
+    float r10 = 2.0f * (x * y - z * w);
+    float r11 = -x2 + y2 - z2 + w2;
+    float r12 = 2.0f * (y * z + x * w);
+
+    float r20 = 2.0f * (x * z + y * w);
+    float r21 = 2.0f * (y * z - x * w);
+    float r22 = -x2 - y2 + z2 + w2;
+
+    matQ.m[0][0] = r00;
+    matQ.m[0][1] = r01;
+    matQ.m[0][2] = r02;
+    matQ.m[1][0] = r10;
+    matQ.m[1][1] = r11;
+    matQ.m[1][2] = r12;
+    matQ.m[2][0] = r20;
+    matQ.m[2][1] = r21;
+    matQ.m[2][2] = r22;
+
+    matQ.m[3][3] = 1.0f;
+
+    return matQ;
 }

@@ -27,9 +27,9 @@ Matrix4x4 Move(float x, float y, float z)
 	Matrix4x4 result;
 	result.Identity();
 	
-	result.m[0 + 3] = x;
-	result.m[4 + 3] = y;
-	result.m[8 + 3] = z;
+	result.m[3][0] = x;
+	result.m[3][1] = y;
+	result.m[3][2] = z;
 
 	return result;
 }
@@ -44,9 +44,9 @@ Matrix4x4 Scale(float x, float y, float z)
 	Matrix4x4 result;
 	result.Identity();
 
-	result.m[0 + 0] = x;
-	result.m[4 + 1] = y;
-	result.m[8 + 2] = z;
+	result.m[0][0] = x;
+	result.m[1][1] = y;
+	result.m[2][2] = z;
 
 	return result;
 }
@@ -72,16 +72,19 @@ Vec3 Easing::Linear(const Vec3& start, const Vec3& end, float t)
 
 Vec3 Easing::EaseIn(const Vec3& start, const Vec3& end, float t)
 {
-	float rate = 1 - std::cosf(t * DX_PI_F * 0.5f);
+	// FIXME: ‚ ‚Á‚Ä‚È‚¢‹C‚ª‚·‚é
+	float rate = 1 - std::cosf(t * Math::kPiF * 0.5f);
 	return (end - start) * rate;
 }
 
 Vec3 Easing::EaseOut(const Vec3& start, const Vec3& end, float t)
 {
+	// TODO:ŽÀ‘•
 	return Vec3();
 }
 
 Vec3 Easing::EaseInOut(const Vec3& start, const Vec3& end, float t)
 {
+	// TODO:ŽÀ‘•
 	return Vec3();
 }

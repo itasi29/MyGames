@@ -1,5 +1,8 @@
 #pragma once
+#include <DxLib.h>
 #include "Vec3.h"
+
+struct Quaternion;
 
 /// <summary>
 /// 4x4çsóÒ
@@ -7,12 +10,8 @@
 struct Matrix4x4
 {
 public:
-	float m[4 * 4];
-	/* óvëfÇÃï¿Ç—ï˚
-	0  1  2  3
-	4  5  6  7
-	8  9  10 11
-	12 13 14 15	*/
+	float m[4][4];
+	// çs->óÒ
 
 	Matrix4x4();
 
@@ -20,6 +19,8 @@ public:
 	Matrix4x4 operator+ (const Matrix4x4& mat) const;
 	Matrix4x4 operator- (const Matrix4x4& mat) const;
 	Matrix4x4 operator* (const Matrix4x4& mat) const;
+	Matrix4x4 operator* (const Quaternion& q) const;
+	Matrix4x4 operator/ (float div) const;
 
 	// É[Éç
 	void Zero();
@@ -29,6 +30,9 @@ public:
 	Matrix4x4 Transpose();
 	// ãtçsóÒ
 	Matrix4x4 Inverse(bool isCorrect = false);
+
+	// DxLibïœä∑óp
+	MATRIX GetMATRIX() const;
 
 private:
 	float Dot(const Matrix4x4& mat, int line, int row) const;
