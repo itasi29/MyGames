@@ -31,6 +31,11 @@ public:
 	// 逆行列
 	Matrix4x4 Inverse(bool isCorrect = false);
 
+	// ポジションの設定
+	void SetPos(Vec3 pos);
+	void SetRot(const Quaternion& q);
+	Vec3 GetPos() const;
+
 	// DxLib変換用
 	MATRIX GetMATRIX() const;
 

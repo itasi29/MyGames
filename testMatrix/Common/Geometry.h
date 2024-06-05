@@ -23,7 +23,7 @@ Matrix4x4 Move(float x, float y, float z);
 // 拡大
 Matrix4x4 Scale(const Vec3& scale);
 Matrix4x4 Scale(float x, float y, float z);
-// 回転
+// 回転(度数法)
 Quaternion AngleAxis(float angle, const Vec3 axis);
 
 // イージング

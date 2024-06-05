@@ -14,6 +14,8 @@ public:
 	Vec3();
 	Vec3(float inX, float inY, float inZ);
 
+	static Vec3 Up();
+
 	/* ‰‰ŽZ */
 	Vec3 operator+(const Vec3& val) const;
 	void operator+=(const Vec3& val);

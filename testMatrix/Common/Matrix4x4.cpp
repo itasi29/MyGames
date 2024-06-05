@@ -188,6 +188,28 @@ Matrix4x4 Matrix4x4::Inverse(bool isCorrect)
     return result;
 }
 
+void Matrix4x4::SetPos(Vec3 pos)
+{
+    Identity();
+
+    m[3][0] = pos.x;
+    m[3][1] = pos.y;
+    m[3][2] = pos.z;
+}
+
+void Matrix4x4::SetRot(const Quaternion& q)
+{
+    Matrix4x4 matQ = q.GetMat();
+    matQ.m[3][3] = 0.0f;
+
+    *this = *this + matQ;
+}
+
+Vec3 Matrix4x4::GetPos() const
+{
+    return Vec3(m[3][0], m[3][1], m[3][2]);
+}
+
 MATRIX Matrix4x4::GetMATRIX() const
 {
     MATRIX result;
@@ -209,7 +231,8 @@ float Matrix4x4::Dot(const Matrix4x4& mat, int line, int row) const
 
     for (int i = 0; i < 4; ++i)
     {
-        result += m[row][i] * mat.m[i][line];
+        float val = m[row][i] * mat.m[i][line];
+        result += val;
     }
 
     return result;
