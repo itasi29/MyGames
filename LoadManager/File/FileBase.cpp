@@ -1,9 +1,8 @@
 #include "FileBase.h"
-
 #include "FileManager.h"
 
-FileBase::FileBase(FileManager& mgr) :
-	m_mgr(mgr),
+FileBase::FileBase() :
+	m_mgr(FileManager::GetInstance()),
 	m_handle(-1),
 	m_refCount(0),
 	m_isEternal(false),

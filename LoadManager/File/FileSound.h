@@ -1,10 +1,13 @@
 #pragma once
 #include "FileBase.h"
 
+/// <summary>
+/// サウンド用ファイルクラス
+/// </summary>
 class FileSound : public FileBase
 {
 public:
-	FileSound(FileManager& mgr);
+	FileSound();
 	virtual ~FileSound();
 
 private:

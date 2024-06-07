@@ -1,10 +1,7 @@
 #include "FileImage.h"
-
 #include <DxLib.h>
-#include "FileManager.h"
 
-FileImage::FileImage(FileManager& mgr) :
-	FileBase(mgr)
+FileImage::FileImage()
 {
 }
 

@@ -2,8 +2,7 @@
 
 #include <DxLib.h>
 
-FileModel::FileModel(FileManager& mgr) :
-	FileBase(mgr)
+FileModel::FileModel()
 {
 }
 

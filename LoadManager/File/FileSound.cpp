@@ -2,8 +2,7 @@
 
 #include <DxLib.h>
 
-FileSound::FileSound(FileManager& mgr) :
-	FileBase(mgr)
+FileSound::FileSound()
 {
 }
 

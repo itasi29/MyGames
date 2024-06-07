@@ -17,7 +17,7 @@
 
 列挙型
  ・型名 : PascalCase
- ・変数 : kPascalCase
+ ・変数 : PascalCase
 
 コメント
  ・基本的に上に "// " で書く

@@ -11,7 +11,7 @@ class FileBase
 friend FileManager;
 
 public:
-	FileBase(FileManager& mgr);
+	FileBase();
 	virtual ~FileBase();
 
 	virtual int GetHandle() const { return m_handle; }

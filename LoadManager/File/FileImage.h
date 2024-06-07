@@ -1,11 +1,13 @@
 #pragma once
 #include "FileBase.h"
 
-
+/// <summary>
+/// 画像用ファイルクラス
+/// </summary>
 class FileImage :  public FileBase
 {
 public:
-	FileImage(FileManager& mgr);
+	FileImage();
 	virtual ~FileImage();
 
 private:

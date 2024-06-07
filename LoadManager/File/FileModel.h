@@ -1,10 +1,13 @@
 #pragma once
 #include "FileBase.h"
 
+/// <summary>
+/// モデル用ファイルクラス
+/// </summary>
 class FileModel : public FileBase
 {
 public:
-	FileModel(FileManager& mgr);
+	FileModel();
 	virtual ~FileModel();
 
 	int GetHandle() const override;
