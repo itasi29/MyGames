@@ -1,0 +1,11 @@
+#pragma once
+
+namespace Game
+{
+	/* âÊñ ÉTÉCÉY */
+	constexpr int kWindowWidth = 1280;
+	constexpr int kWindowHeight = 720;
+
+	/* ç≈ëÂPadêî */
+	constexpr int kMaxPadNum = 1;
+}
