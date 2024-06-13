@@ -51,7 +51,7 @@ Matrix4x4 Scale(float x, float y, float z)
 	return result;
 }
 
-Quaternion AngleAxis(float angle, const Vec3 axis)
+Quaternion AngleAxis(float angle, const Vec3& axis)
 {
 	Quaternion result;
 
