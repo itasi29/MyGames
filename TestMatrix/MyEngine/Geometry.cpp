@@ -1,12 +1,14 @@
 #include "Geometry.h"
 #include <cmath>
 
-float Dot(const Vec3& item1, const Vec3& item2)
+using namespace MyEngine;
+
+float MyEngine::Dot(const Vec3& item1, const Vec3& item2)
 {
 	return item1.x * item2.x + item1.y * item2.y + item1.z * item2.z;
 }
 
-Vec3 Cross(const Vec3& item1, const Vec3& item2)
+Vec3 MyEngine::Cross(const Vec3& item1, const Vec3& item2)
 {
 	Vec3 result;
 
@@ -17,12 +19,12 @@ Vec3 Cross(const Vec3& item1, const Vec3& item2)
 	return result;
 }
 
-Matrix4x4 Move(const Vec3& move)
+Matrix4x4 MyEngine::Move(const Vec3& move)
 {
 	return Move(move.x, move.y, move.z);
 }
 
-Matrix4x4 Move(float x, float y, float z)
+Matrix4x4 MyEngine::Move(float x, float y, float z)
 {
 	Matrix4x4 result;
 	result.Identity();
@@ -34,12 +36,12 @@ Matrix4x4 Move(float x, float y, float z)
 	return result;
 }
 
-Matrix4x4 Scale(const Vec3& scale)
+Matrix4x4 MyEngine::Scale(const Vec3& scale)
 {
 	return Scale(scale.x, scale.y, scale.z);
 }
 
-Matrix4x4 Scale(float x, float y, float z)
+Matrix4x4 MyEngine::Scale(float x, float y, float z)
 {
 	Matrix4x4 result;
 	result.Identity();
@@ -51,7 +53,7 @@ Matrix4x4 Scale(float x, float y, float z)
 	return result;
 }
 
-Quaternion AngleAxis(float angle, const Vec3& axis)
+Quaternion MyEngine::AngleAxis(float angle, const Vec3& axis)
 {
 	Quaternion result;
 
@@ -70,21 +72,30 @@ Vec3 Easing::Linear(const Vec3& start, const Vec3& end, float t)
 	return (end - start) * t;
 }
 
-Vec3 Easing::EaseIn(const Vec3& start, const Vec3& end, float t)
+Vec3 MyEngine::Easing::EaseIn(const Vec3& start, const Vec3& end, float t, float effect)
 {
-	// FIXME: ‚ ‚Á‚Ä‚È‚¢‹C‚ª‚·‚é
-	float rate = 1 - std::cosf(t * Math::kPiF * 0.5f);
+	float rate = std::powf(t, effect);
 	return (end - start) * rate;
 }
 
-Vec3 Easing::EaseOut(const Vec3& start, const Vec3& end, float t)
+Vec3 MyEngine::Easing::EaseOut(const Vec3& start, const Vec3& end, float t, float effect)
 {
-	// TODO:ŽÀ‘•
-	return Vec3();
+	float rate = 1.0f - std::powf(1.0f - t, effect);
+	return (end - start) * rate;
 }
 
-Vec3 Easing::EaseInOut(const Vec3& start, const Vec3& end, float t)
+Vec3 Easing::EaseInOut(const Vec3& start, const Vec3& end, float t, float effect)
 {
 	// TODO:ŽÀ‘•
-	return Vec3();
+//	float rate = (std::cosf(t * Math::kPiF) - 1) * -1 * 0.5f;
+	float rate;
+	if (t < 0.5f)
+	{
+		rate = 2 * (effect - 1.0f) * std::powf(t, effect);
+	}
+	else
+	{
+		rate = 1.0f - std::powf(-2 * t + 2, effect) * 0.5f;
+	}
+	return (end - start) * rate;
 }

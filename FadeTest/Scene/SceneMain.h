@@ -14,5 +14,9 @@ public:
 	void Draw() const override;
 
 	std::shared_ptr<SceneBase> Change() override;
+
+private:
+	int m_handle;
+	int m_frame;
 };
 

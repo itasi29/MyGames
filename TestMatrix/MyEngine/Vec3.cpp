@@ -2,6 +2,8 @@
 #include <cmath>
 #include <cassert>
 
+using namespace MyEngine;
+
 Vec3::Vec3() :
     x(0.0f),
     y(0.0f),
@@ -134,7 +136,7 @@ void Vec3::Normalize()
 	}
 }
 
-VECTOR Vec3::GetVECTOR() const
+DxLib::VECTOR Vec3::VGet() const
 {
-    return VGet(x, y, z);
+    return DxLib::VGet(x, y, z);
 }

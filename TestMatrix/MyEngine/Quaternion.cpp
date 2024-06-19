@@ -1,5 +1,7 @@
 #include "Quaternion.h"
 
+using namespace MyEngine;
+
 // HACK: ‰Ê‚½‚µ‚Ä‰Šú‰»q‚±‚ê‚Å‚¢‚¢‚Ì‚©...
 Quaternion::Quaternion() :
     x(0.0f),

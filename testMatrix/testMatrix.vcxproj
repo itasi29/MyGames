@@ -139,17 +139,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Common\Geometry.cpp" />
-    <ClCompile Include="Common\Matrix4x4.cpp" />
-    <ClCompile Include="Common\Quaternion.cpp" />
-    <ClCompile Include="Common\Vec3.cpp" />
+    <ClCompile Include="MyEngine\Geometry.cpp" />
+    <ClCompile Include="MyEngine\Matrix4x4.cpp" />
+    <ClCompile Include="MyEngine\Quaternion.cpp" />
+    <ClCompile Include="MyEngine\Vec3.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Common\Geometry.h" />
-    <ClInclude Include="Common\Matrix4x4.h" />
-    <ClInclude Include="Common\Quaternion.h" />
-    <ClInclude Include="Common\Vec3.h" />
+    <ClInclude Include="MyEngine\Geometry.h" />
+    <ClInclude Include="MyEngine\Matrix4x4.h" />
+    <ClInclude Include="MyEngine\Quaternion.h" />
+    <ClInclude Include="MyEngine\Vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

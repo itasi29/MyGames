@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include <cassert>
 #include "Common/Game.h"
+#include "Common/Draw.h"
 #ifdef _DEBUG
 #include "SceneDebug.h"
 #else
@@ -44,12 +45,9 @@ void SceneManager::Init()
 	m_scene = std::make_shared<SceneTitle>();
 #endif
 
-	assert(m_rt == -1);
-	assert(m_preSceneScreen == -1);
-	assert(m_psH == -1);
 	m_rt = MakeScreen(Game::kWindowWidth, Game::kWindowHeight, true);
 	m_preSceneScreen = MakeScreen(Game::kWindowWidth, Game::kWindowHeight, true);
-	m_psH = LoadPixelShader(L"");
+	m_psH = LoadPixelShader(L"Shader/FadePanel.pso");
 	assert(m_rt != -1);
 	assert(m_preSceneScreen != -1);
 	assert(m_psH != -1);
@@ -74,14 +72,8 @@ void SceneManager::Update()
 
 void SceneManager::Draw() const
 {
-	SetDrawScreen(m_rt);
-	ClearDrawScreen();
-
 	m_scene->Draw();
 	FadeDraw();
-
-	SetDrawScreen(DX_SCREEN_BACK);
-	DrawGraph(0, 0, m_rt, true);
 }
 
 void SceneManager::Change(float fadeSpeed)
@@ -140,9 +132,8 @@ void SceneManager::FadeDraw() const
 	if (!m_isFade) return;
 
 #ifdef _DEBUG
-	DrawFormatString(16, 32, 0xff00ff, L"NowFade : rate = %.2f", m_fadeRate);
+	DrawFormatString(Game::kWindowWidth - 256, 32, 0xff00ff, L"NowFade : rate = %.2f", m_fadeRate);
 #endif
 
-	// FIXME: ここ以降に書くシェーダのコードは別のとこで繰り返し使えるようにする
-	
+	MyEngine::DrawGraph(0, 0, m_preSceneScreen, m_psH, true);
 }

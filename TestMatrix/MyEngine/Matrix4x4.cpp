@@ -1,6 +1,8 @@
 #include "Matrix4x4.h"
 #include "Quaternion.h"
 
+using namespace MyEngine;
+
 Matrix4x4::Matrix4x4() :
     m{}
 {
