@@ -18,6 +18,12 @@ namespace MyEngine
 	float Dot(const Vec3& item1, const Vec3& item2);
 	// 外積
 	Vec3 Cross(const Vec3& item1, const Vec3& item2);
+	// 射影
+	Vec3 Projection(const Vec3& projection, const Vec3& base);
+	// 最近接点
+	Vec3 GetNearestPointOnLine(const Vec3& point, const Vec3& start, const Vec3& end);
+	// 線分上に最近接点があるかの判定
+	bool IsNearestPointOnLine(const Vec3& point, const Vec3& start, const Vec3& end);
 
 	// 平行移動
 	Matrix4x4 Move(const Vec3& move);

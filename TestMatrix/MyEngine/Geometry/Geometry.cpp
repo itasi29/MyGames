@@ -19,6 +19,37 @@ Vec3 MyEngine::Cross(const Vec3& item1, const Vec3& item2)
 	return result;
 }
 
+Vec3 MyEngine::Projection(const Vec3& projection, const Vec3& base)
+{
+	auto projectionN = projection.GetNormalized();
+	return projectionN * Dot(base, projectionN);
+}
+
+Vec3 MyEngine::GetNearestPointOnLine(const Vec3& point, const Vec3& start, const Vec3& end)
+{
+	Vec3 startToEnd = end - start;
+	Vec3 startToPoint = point - start;
+
+	// üã‚Ì‚Ç‚Ì•Ó‚©
+	float t = Dot(startToEnd, startToPoint) / startToEnd.SqLength();
+	// ”r‘¼ˆ—
+	t = std::fmax(std::fmin(t, 1.0f), 0.0f);
+
+	return start + startToEnd * t;
+}
+
+bool MyEngine::IsNearestPointOnLine(const Vec3& point, const Vec3& start, const Vec3& end)
+{
+	Vec3 startToEnd = end - start;
+	Vec3 startToPoint = point - start;
+
+	// üã‚Ì‚Ç‚Ì•Ó‚©
+	float t = Dot(startToEnd, startToPoint) / startToEnd.SqLength();
+
+	// t‚ªü•ªã‚È‚çtrue
+	return 0.0f <= t && t <= 1.0f;
+}
+
 Matrix4x4 MyEngine::Move(const Vec3& move)
 {
 	return Move(move.x, move.y, move.z);
@@ -69,13 +100,13 @@ Quaternion MyEngine::AngleAxis(float angle, const Vec3& axis)
 
 Vec3 Easing::Linear(const Vec3& start, const Vec3& end, float t)
 {
-	return (end - start) * t;
+	return start + (end - start) * t;
 }
 
 Vec3 MyEngine::Easing::EaseIn(const Vec3& start, const Vec3& end, float t, float effect)
 {
 	float rate = std::powf(t, effect);
-	return (end - start) * rate;
+	return start + (end - start) * rate;
 }
 
 Vec3 MyEngine::Easing::EaseOut(const Vec3& start, const Vec3& end, float t, float effect)
@@ -86,8 +117,6 @@ Vec3 MyEngine::Easing::EaseOut(const Vec3& start, const Vec3& end, float t, floa
 
 Vec3 Easing::EaseInOut(const Vec3& start, const Vec3& end, float t, float effect)
 {
-	// TODO:À‘•
-//	float rate = (std::cosf(t * Math::kPiF) - 1) * -1 * 0.5f;
 	float rate;
 	if (t < 0.5f)
 	{
@@ -97,5 +126,5 @@ Vec3 Easing::EaseInOut(const Vec3& start, const Vec3& end, float t, float effect
 	{
 		rate = 1.0f - std::powf(-2 * t + 2, effect) * 0.5f;
 	}
-	return (end - start) * rate;
+	return start + (end - start) * rate;
 }
