@@ -4,6 +4,6 @@ using namespace MyEngine;
 
 ColliderSphere::ColliderSphere() :
 	ColliderBase(ColliderBase::Kind::Sphere),
-	m_radius(0.0f)
+	radius(0.0f)
 {
 }

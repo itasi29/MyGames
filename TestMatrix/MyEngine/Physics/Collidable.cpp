@@ -3,20 +3,26 @@
 
 using namespace MyEngine;
 
-Collidable::Collidable(Priority priority, ObjectTag tag, const ColliderBase::Kind& kind)
+Collidable::Collidable(Priority priority, ObjectTag tag, const ColliderBase::Kind& kind) :
+	m_priority(priority),
+	m_tag(tag)
 {
+	CreateColliderData(kind);
 }
 
 Collidable::~Collidable()
 {
 }
 
-std::shared_ptr<ColliderBase> Collidable::CreateColliderData(const ColliderBase::Kind& kind)
+void MyEngine::Collidable::AddCollider(const ColliderBase::Kind& kind)
+{
+	CreateColliderData(kind);
+}
+
+void Collidable::CreateColliderData(const ColliderBase::Kind& kind)
 {
 	if (kind == ColliderBase::Kind::Sphere)
 	{
-		m_collider = std::make_shared<ColliderSphere>();
+		m_collider.emplace_back(std::make_shared<ColliderSphere>());
 	}
-
-	return m_collider;
 }

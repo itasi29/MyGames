@@ -9,7 +9,8 @@ namespace MyEngine
 		ColliderSphere();
 
 	public:
-		float m_radius;
+		// MEMO: 色々なところで使うためコーディング規約無視している
+		float radius;
 	};
 }
 

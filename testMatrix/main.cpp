@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "MyEngine/Geometry/Geometry.h"
+#include "MyEngine/DebugDraw.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -22,7 +23,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	auto cross2 = MyEngine::Cross(aVec, aSToBE);
 	float dot = MyEngine::Dot(cross1, cross2);
 
-
+	auto& debugDraw = MyEngine::DebugDraw::GetInstance();
 
 	MyEngine::Vec3 start = MyEngine::Vec3(0, 0, 0);
 	MyEngine::Vec3 end   = MyEngine::Vec3(100, 100, 0);
@@ -32,6 +33,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	while (ProcessMessage() != -1)
 	{
 		ClearDrawScreen();
+		debugDraw.Clear();
 
 		t += 0.005f;
 		if (t > 1.0f) t = 0.0f;
@@ -41,15 +43,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		MyEngine::Vec3 easeOut   = MyEngine::Easing::EaseOut(start, end, t);
 		MyEngine::Vec3 easeInOut = MyEngine::Easing::EaseInOut(start, end, t);
 
-		DrawFormatString(16, 16, 0xffffff, L"t = %.3f", t);
+		DrawFormatString(16, 32, 0xff00ff, L"t = %.3f", t);
 
-		DrawCircle(linear.x, linear.y, 5, 0xffffff, true);
-		DrawCircle(easeIn.x, easeIn.y, 5, 0xff0000, true);
-		DrawCircle(easeOut.x, easeOut.y, 5, 0x00ff00, true);
-		DrawCircle(easeInOut.x, easeInOut.y, 5, 0x0000ff, true);
-
-		DrawLine(0, 50, 640, 50, 0xff00ff);
-		DrawLine(0, 150, 640, 150, 0xff00ff);
+		debugDraw.DrawCircle({linear, 5, 0xffffff});
+		debugDraw.DrawCircle({easeIn, 5, 0xff0000});
+		debugDraw.DrawCircle({easeOut, 5, 0x00ff00});
+		debugDraw.DrawCircle({easeInOut, 5, 0x0000ff});
+		debugDraw.DrawLine({MyEngine::Vec3(0, 50, 0), MyEngine::Vec3(640, 50, 0), 0xff00ff});
+		debugDraw.DrawLine({MyEngine::Vec3(0, 150, 0), MyEngine::Vec3(640, 150, 0), 0xff00ff});
+		
+		debugDraw.Draw();
 
 		ScreenFlip();
 	}

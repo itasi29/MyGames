@@ -1,14 +1,43 @@
 #pragma once
+#include <list>
+#include "Geometry/Vec3.h"
 
-class DebugDraw
+namespace MyEngine
 {
-private:
-	DebugDraw();
+	class DebugDraw
+	{
+	public:
+		struct CircleInfo
+		{
+			Vec3 center = Vec3();
+			float radius = 0.0f;
+			unsigned int color = 0xff00ff;
+		};
+		struct LineInfo
+		{
+			Vec3 start = Vec3();
+			Vec3 end = Vec3();
+			unsigned int color = 0xff00ff;
+		};
+	private:
+		DebugDraw();
+		~DebugDraw();
 
-	DebugDraw(const DebugDraw&) = delete;
-	void operator= (const DebugDraw&) = delete;
+		DebugDraw(const DebugDraw&) = delete;
+		void operator= (const DebugDraw&) = delete;
 
-public:
-	static DebugDraw& 
-};
+	public:
+		static DebugDraw& GetInstance();
+
+		void Clear();
+		void Draw() const;
+
+		void DrawCircle(const CircleInfo& circleInfo);
+		void DrawLine(const LineInfo& lineInfo);
+
+	private:
+		std::list<CircleInfo> m_circleInfo;
+		std::list<LineInfo> m_lineInfo;
+	};
+}
 

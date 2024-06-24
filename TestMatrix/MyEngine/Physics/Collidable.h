@@ -1,12 +1,14 @@
 #pragma once
 #include <memory>
-#include "../ObjectTag.h"
+#include <vector>
+#include "Common/ObjectTag.h"
 #include "Rigidbody.h"
+#include "ColliderBase.h"
 
 namespace MyEngine
 {
 	class Physics;
-	class ColliderBase;
+//	class ColliderBase;
 
 	/// <summary>
 	/// 衝突できるもの
@@ -29,20 +31,28 @@ namespace MyEngine
 		virtual ~Collidable();
 
 		// 衝突したとき
-		virtual void OnCollide(const Collidable& colider) abstract;
+		virtual void OnCollideEnter(const Collidable& colider) {}
+		virtual void OnCollideStay(const Collidable& colider) {}
+		virtual void OnCollideExit(const Collidable& colider) {}
+		virtual void OnTriggerEnter(const Collidable& colider) {}
+		virtual void OnTriggerStay(const Collidable& colider) {}
+		virtual void OnTriggerExit(const Collidable& colider) {}
 
 		/* Getter */
 		ObjectTag GetTag() const { return m_tag; }
 		Priority GetPriority() const { return m_priority; }
 
+	protected:
+		void AddCollider(const ColliderBase::Kind& kind);
+
 	private:
-		std::shared_ptr<ColliderBase> CreateColliderData(const ColliderBase::Kind& kind);
+		void CreateColliderData(const ColliderBase::Kind& kind);
 
 	protected:
 		// 物理データ
 		Rigidbody m_rigid;
 		// 当たり判定データ
-		std::shared_ptr<ColliderBase> m_collider;
+		std::vector<std::shared_ptr<ColliderBase>> m_collider;
 
 	private:
 		ObjectTag m_tag;
