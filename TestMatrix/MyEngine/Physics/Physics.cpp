@@ -117,59 +117,13 @@ void MyEngine::Physics::CheckCollide()
                         }
                         FixNextPos(primary, secondary, colliderPrimary, colliderSecondary);
 
-                        // 登録済みか確認
-                        bool isEntry = false;
-                        for (const auto& info : m_onCollideInfo)
-                        {
-                            if (info.kind == OnCollideInfoKind::CollideStay && (info.send == primary || info.send == secondary))
-                            {
-                                isEntry = true;
-                                break;
-                            }
-                        }
-                        // 未登録なら登録
-                        if (!isEntry)
-                        {
-                            OnCollideInfo infoA;
-                            infoA.send = secondary;
-                            infoA.kind = OnCollideInfoKind::CollideStay;
-                            infoA.func = [&primary](const Collidable& collider) { primary->OnCollideStay(collider); };
-                            m_onCollideInfo.emplace_back(infoA);
-                        }
+                        // 一度でも判定したら再判定する
+                        isCheck = true;
+                        break;
                     }
                 }
             }
         }
-
-        //for (const auto& objA : m_collidables)
-        //{
-        //    for (const auto& objB : m_collidables)
-        //    {
-        //        // 同一オブジェの場合は次のオブジェへ
-        //        if (objA == objB) continue;
-
-        //        // 当たっていない場合は次のオブジェへ
-        //        if (!IsCollide(objA, objB)) continue;
-
-        //        // 優先度の高い物体の確認
-        //        auto primary = objA;
-        //        auto secondary = objB;
-        //        if (objA->GetPriority() < objB->GetPriority())
-        //        {
-        //            primary = objB;
-        //            secondary = objA;
-        //        }
-
-        //        FixNextPos(primary, secondary);
-        //        AddOnCollideInfo(objA, objB);
-
-        //        // 一度でも判定したら再判定する
-        //        isCheck = true;
-        //        break;
-        //    }
-
-        //    if (isCheck) break;
-        //}
 
         if (isCheck && checkCount > kCheckMaxCount)
         {
@@ -198,7 +152,7 @@ bool Physics::IsCollide(const Collidable* objA, const Collidable* objB, const st
     return isCollide;
 }
 
-void Physics::FixNextPos(const Collidable* primary, const Collidable* secondary, const std::shared_ptr<ColliderBase>& colliderPrimary, const std::shared_ptr<ColliderBase>& colliderSecondary) const
+void Physics::FixNextPos(const Collidable* primary, Collidable* secondary, const std::shared_ptr<ColliderBase>& colliderPrimary, const std::shared_ptr<ColliderBase>& colliderSecondary) const
 {
     Vec3 fixedPos;
 
@@ -222,6 +176,8 @@ void Physics::FixNextPos(const Collidable* primary, const Collidable* secondary,
             fixedPos = primary->m_rigid.GetNextPos() + primaryToSecondary;
         }
     }
+
+    secondary->m_rigid.SetNextPos(fixedPos);
 }
 
 void MyEngine::Physics::AddOnCollideInfo(Collidable* objA, Collidable* objB, OnCollideInfoKind kind)

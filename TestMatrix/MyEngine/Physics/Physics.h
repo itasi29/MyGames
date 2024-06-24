@@ -46,7 +46,7 @@ namespace MyEngine
 		void CheckCollide();
 
 		bool IsCollide(const Collidable* objA, const Collidable* objB, const std::shared_ptr<ColliderBase>& colliderA, const std::shared_ptr<ColliderBase>& colliderB) const;
-		void FixNextPos(const Collidable* primary, const Collidable* secondary, const std::shared_ptr<ColliderBase>& colliderPrimary, const std::shared_ptr<ColliderBase>& colliderSecondary) const;
+		void FixNextPos(const Collidable* primary, Collidable* secondary, const std::shared_ptr<ColliderBase>& colliderPrimary, const std::shared_ptr<ColliderBase>& colliderSecondary) const;
 		void AddOnCollideInfo(Collidable* objA, Collidable* objB, OnCollideInfoKind kind);
 		std::function<void(const Collidable&)> GetOnCollideInfoFunc(Collidable* obj, OnCollideInfoKind kind);
 		void FixPos() const;
