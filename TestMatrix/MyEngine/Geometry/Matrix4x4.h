@@ -37,6 +37,7 @@ namespace MyEngine
 		void SetPos(Vec3 pos);
 		void SetRot(const Quaternion& q);
 		Vec3 GetPos() const;
+		Quaternion GetRot() const;
 
 		// DxLib•ÏŠ·—p
 		MATRIX GetMATRIX() const;
@@ -44,4 +45,7 @@ namespace MyEngine
 	private:
 		float Dot(const Matrix4x4& mat, int line, int row) const;
 	};
+
+	Matrix4x4 Move(const Vec3& velocity);
+	Matrix4x4 Scale(const Vec3& size);
 }

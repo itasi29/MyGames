@@ -140,3 +140,25 @@ DxLib::VECTOR Vec3::VGet() const
 {
     return DxLib::VGet(x, y, z);
 }
+
+float MyEngine::Dot(const Vec3& item1, const Vec3& item2)
+{
+	return item1.x * item2.x + item1.y * item2.y + item1.z * item2.z;
+}
+
+Vec3 MyEngine::Cross(const Vec3& item1, const Vec3& item2)
+{
+	Vec3 result;
+
+	result.x = item1.y * item2.z - item1.z * item2.y;
+	result.y = item1.z * item2.x - item1.x * item2.z;
+	result.z = item1.x * item2.y - item1.y * item2.x;
+
+	return result;
+}
+
+Vec3 MyEngine::Projection(const Vec3& projection, const Vec3& base)
+{
+	auto projectionN = projection.GetNormalized();
+	return projectionN * Dot(base, projectionN);
+}

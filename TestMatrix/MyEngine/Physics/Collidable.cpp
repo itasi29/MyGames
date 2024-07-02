@@ -23,6 +23,6 @@ void Collidable::CreateColliderData(const ColliderBase::Kind& kind)
 {
 	if (kind == ColliderBase::Kind::Sphere)
 	{
-		m_collider.emplace_back(std::make_shared<ColliderSphere>());
+		m_collider = std::make_shared<ColliderSphere>();
 	}
 }

@@ -139,6 +139,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Common\Input.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="MyEngine\Geometry\Easing.cpp" />
     <ClCompile Include="MyEngine\DebugDraw.cpp" />
     <ClCompile Include="MyEngine\Physics\ColliderSphere.cpp" />
     <ClCompile Include="MyEngine\Physics\ColliderBase.cpp" />
@@ -150,9 +153,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyEngine\Physics\Rigidbody.cpp" />
     <ClCompile Include="MyEngine\Physics\Physics.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Game.h" />
+    <ClInclude Include="Common\Input.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="MyEngine\Geometry\Easing.h" />
     <ClInclude Include="MyEngine\DebugDraw.h" />
     <ClInclude Include="MyEngine\Physics\ColliderSphere.h" />
     <ClInclude Include="MyEngine\Physics\ColliderBase.h" />
@@ -164,6 +171,7 @@
     <ClInclude Include="MyEngine\Geometry\Vec3.h" />
     <ClInclude Include="MyEngine\Physics\Rigidbody.h" />
     <ClInclude Include="MyEngine\Physics\Physics.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

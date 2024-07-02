@@ -1,8 +1,12 @@
 #include "Matrix4x4.h"
+#include <cmath>
 #include "Quaternion.h"
 
 using namespace MyEngine;
 
+/// <summary>
+/// ƒeƒXƒg2
+/// </summary>
 Matrix4x4::Matrix4x4() :
     m{}
 {
@@ -192,8 +196,6 @@ Matrix4x4 Matrix4x4::Inverse(bool isCorrect)
 
 void Matrix4x4::SetPos(Vec3 pos)
 {
-    Identity();
-
     m[3][0] = pos.x;
     m[3][1] = pos.y;
     m[3][2] = pos.z;
@@ -201,15 +203,93 @@ void Matrix4x4::SetPos(Vec3 pos)
 
 void Matrix4x4::SetRot(const Quaternion& q)
 {
-    Matrix4x4 matQ = q.GetMat();
-    matQ.m[3][3] = 0.0f;
-
-    *this = *this + matQ;
+    const auto& qMat = q.GetMat();
+    for (int x = 0; x < 3; ++x)
+    {
+        for (int y = 0; y < 3; ++y)
+        {
+            m[x][y] = qMat.m[x][y];
+        }
+    }
 }
 
 Vec3 Matrix4x4::GetPos() const
 {
     return Vec3(m[3][0], m[3][1], m[3][2]);
+}
+
+Quaternion MyEngine::Matrix4x4::GetRot() const
+{
+    float px =  m[0][0] - m[1][1] - m[2][2] + 1.0f;
+    float py = -m[0][0] + m[1][1] - m[2][2] + 1.0f;
+    float pz = -m[0][0] - m[1][1] + m[2][2] + 1.0f;
+    float pw =  m[0][0] + m[1][1] + m[2][2] + 1.0f;
+
+    enum Select
+    {
+        PX,
+        PY,
+        PZ,
+        PW
+    };
+    Select select = Select::PX;
+    float max = px;
+    if (max < py)
+    {
+        select = Select::PY;
+        max = py;
+    }
+    if (max < pz)
+    {
+        select = Select::PZ;
+        max = pz;
+    }
+    if (max < pw)
+    {
+        select = Select::PW;
+        max = pw;
+    }
+
+    Quaternion res;
+
+    if (select == Select::PX)
+    {
+        float x = std::sqrtf(px) * 0.5f;
+        float d = 1.0f / (4 * x);
+        res.x = x;
+        res.y = (m[1][0] + m[0][1]) * d;
+        res.z = (m[0][2] + m[2][0]) * d;
+        res.w = (m[2][1] - m[1][2]) * d;
+    }
+    else if (select == Select::PY)
+    {
+        float y = std::sqrtf(py) * 0.5f;
+        float d = 1.0f / (4 * y);
+        res.x = (m[1][0] + m[0][1]) * d;
+        res.y = y;
+        res.z = (m[2][1] + m[1][2]) * d;
+        res.w = (m[0][2] - m[2][0]) * d;
+    }
+    else if (select == Select::PZ)
+    {
+        float z = std::sqrtf(pz) * 0.5f;
+        float d = 1.0f / (4 * z);
+        res.x = (m[0][2] + m[2][0]) * d;
+        res.y = (m[2][1] + m[1][2]) * d;
+        res.z = z;
+        res.w = (m[1][0] - m[0][1]) * d;
+    }
+    else if (select == Select::PW)
+    {
+        float w = std::sqrtf(pw) * 0.5f;
+        float d = 1.0f / (4 * w);
+        res.w = (m[2][1] - m[1][2]) * d;
+        res.z = (m[0][2] - m[2][0]) * d;
+        res.y = (m[1][0] - m[0][1]) * d;
+        res.x = w;
+    }
+
+    return res;
 }
 
 MATRIX Matrix4x4::GetMATRIX() const
@@ -236,6 +316,30 @@ float Matrix4x4::Dot(const Matrix4x4& mat, int line, int row) const
         float val = m[row][i] * mat.m[i][line];
         result += val;
     }
+
+    return result;
+}
+
+Matrix4x4 MyEngine::Move(const Vec3& velocity)
+{
+    Matrix4x4 result;
+    result.Identity();
+
+    result.m[3][0] = velocity.x;
+    result.m[3][1] = velocity.y;
+    result.m[3][2] = velocity.z;
+
+    return result;
+}
+
+Matrix4x4 MyEngine::Scale(const Vec3& size)
+{
+    Matrix4x4 result;
+    result.Identity();
+
+    result.m[0][0] = size.x;
+    result.m[1][1] = size.y;
+    result.m[2][2] = size.z;
 
     return result;
 }

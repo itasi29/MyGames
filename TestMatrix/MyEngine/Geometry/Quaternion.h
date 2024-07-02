@@ -26,4 +26,6 @@ namespace MyEngine
 
 		Matrix4x4 GetMat() const;
 	};
+
+	Quaternion AngleAxis(float angle, const Vec3& axis);
 }

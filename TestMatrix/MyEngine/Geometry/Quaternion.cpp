@@ -1,4 +1,6 @@
 #include "Quaternion.h"
+#include <cmath>
+#include "Common/Game.h"
 
 using namespace MyEngine;
 
@@ -84,4 +86,18 @@ Matrix4x4 Quaternion::GetMat() const
     matQ.m[3][3] = 1.0f;
 
     return matQ;
+}
+
+Quaternion MyEngine::AngleAxis(float angle, const Vec3& axis)
+{
+    Quaternion result;
+
+    float halfRad = angle * Game::kDeg2Rad * 0.5f;
+    float sin = std::sin(halfRad);
+    float cos = std::cos(halfRad);
+    auto normAxis = axis.GetNormalized();
+
+    result = Quaternion(normAxis.x * sin, normAxis.y * sin, normAxis.z * sin, cos);
+
+    return result;
 }

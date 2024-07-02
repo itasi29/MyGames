@@ -2,6 +2,7 @@
 #include <cassert>
 #include "Collidable.h"
 #include "ColliderSphere.h"
+#include "MyEngine/DebugDraw.h"
 
 using namespace MyEngine;
 
@@ -53,15 +54,21 @@ void Physics::Exit(const std::shared_ptr<Collidable>& collidable)
 
 void Physics::Update()
 {
+    m_preCollideInfo = m_newCollideInfo;
+    m_newCollideInfo.clear();
+    m_onCollideInfo.clear();
+
     MoveNextPos();
 
     CheckCollide();
+
+    AddOnCollideInfo();
 
     FixPos();
 
     for (const auto& info : m_onCollideInfo)
     {
-        info.func(*info.send);
+        OnCollideInfo(info.own, info.send, info.kind);
     }
 }
 
@@ -72,12 +79,32 @@ void MyEngine::Physics::MoveNextPos() const
 {
     for (const auto& item : m_collidables)
     {
-        auto rigid = item->m_rigid;
+        auto& rigid = item->m_rigid;
 
         auto pos = rigid.GetPos();
         auto nextPos = pos + rigid.GetVelocity();
 
         rigid.SetNextPos(nextPos);
+
+#ifdef _DEBUG
+        auto& debug = DebugDraw::GetInstance();
+
+        auto kind = item->m_collider->GetKind();
+        if (kind == ColliderBase::Kind::Sphere)
+        {
+            auto sphereData = dynamic_cast<ColliderSphere*>(item->m_collider.get());
+            DebugDraw::SphereInfo preInfo;
+            preInfo.center = pos;
+            preInfo.radius = sphereData->radius;
+            preInfo.color = DebugDraw::kBeforColor;
+            debug.DrawSphere(preInfo);
+            DebugDraw::SphereInfo newInfo;
+            newInfo.center = nextPos;
+            newInfo.radius = sphereData->radius;
+            newInfo.color = DebugDraw::kNextColor;
+            debug.DrawSphere(newInfo);
+        }
+#endif
     }
 }
 
@@ -85,43 +112,41 @@ void MyEngine::Physics::CheckCollide()
 {
     bool isCheck = true;
     int checkCount = 0;
+    std::unordered_map<Collidable*, std::list<Collidable*>> newCollideInfo;
     while (isCheck)
     {
         isCheck = false;
         ++checkCount;
 
-        for (auto itA = m_collidables.begin(); itA != m_collidables.end(); /* â∫ÇÃÉãÅ[ÉvÇ≈ëùÇ‚ÇµÇƒÇ¢ÇÈÇÕÇ∏ */)
+        for (const auto& objA : m_collidables)
         {
-            for (auto itB = ++itA; itB != m_collidables.end(); ++itB)
+            for (const auto& objB : m_collidables)
             {
-                // AÇ™éùÇ¡ÇƒÇ¢ÇÈColliderÇëSÇƒÇ‹ÇÌÇ∑
-                for (auto& colliderA : itA->get()->m_collider)
+                if (objA == objB) continue;
+
+                // ìñÇΩÇ¡ÇƒÇ¢Ç»Ç¢èÍçáÇÕéüÇÃColliderÇ÷
+                if (!IsCollide(objA, objB)) continue;
+
+                // óDêÊìxÇÃê›íË
+                auto primary = objA;
+                auto secondary = objB;
+                if (objA->m_priority < objB->m_priority)
                 {
-                    // BÇ™éùÇ¡ÇƒÇ¢ÇÈColliderÇëSÇƒÇ‹ÇÌÇ∑
-                    for (auto& colliderB : itB->get()->m_collider)
-                    {
-                        // ìñÇΩÇ¡ÇƒÇ¢Ç»Ç¢èÍçáÇÕéüÇÃColliderÇ÷
-                        if (!IsCollide(itA->get(), itB->get(), colliderA, colliderB)) continue;
-
-                        // óDêÊìxÇÃê›íË
-                        auto primary = itA->get();
-                        auto secondary = itB->get();
-                        auto colliderPrimary = colliderA;
-                        auto colliderSecondary = colliderB;
-                        if (itA->get()->m_priority < itB->get()->m_priority)
-                        {
-                            primary = itB->get();
-                            secondary = itA->get();
-                            colliderPrimary = colliderB;
-                            colliderSecondary = colliderA;
-                        }
-                        FixNextPos(primary, secondary, colliderPrimary, colliderSecondary);
-
-                        // àÍìxÇ≈Ç‡îªíËÇµÇΩÇÁçƒîªíËÇ∑ÇÈ
-                        isCheck = true;
-                        break;
-                    }
+                    primary = objB;
+                    secondary = objA;
                 }
+                FixNextPos(primary, secondary);
+
+                // ñ¢í«â¡Ç»ÇÁí«â¡Ç≥ÇπÇÈ
+                auto& newParent = m_newCollideInfo[objA.get()];
+                if (std::find(newParent.begin(), newParent.end(), objB.get()) == newParent.end())
+                {
+                    newParent.emplace_back(objB.get());
+                }
+
+                // àÍìxÇ≈Ç‡îªíËÇµÇΩÇÁçƒîªíËÇ∑ÇÈ
+                isCheck = true;
+                break;
             }
         }
 
@@ -132,17 +157,17 @@ void MyEngine::Physics::CheckCollide()
     }
 }
 
-bool Physics::IsCollide(const Collidable* objA, const Collidable* objB, const std::shared_ptr<ColliderBase>& colliderA, const std::shared_ptr<ColliderBase>& colliderB) const
+bool Physics::IsCollide(const std::shared_ptr<Collidable>& objA, const std::shared_ptr<Collidable>& objB) const
 {
     bool isCollide = false;
 
-    auto kindA = colliderA->GetKind();
-    auto kindB = colliderB->GetKind();
+    auto kindA = objA->m_collider->GetKind();
+    auto kindB = objB->m_collider->GetKind();
 
     if (kindA == ColliderBase::Kind::Sphere && kindB == ColliderBase::Kind::Sphere)
     {
-        auto sphereA = dynamic_cast<ColliderSphere*>(colliderA.get());
-        auto sphereB = dynamic_cast<ColliderSphere*>(colliderB.get());
+        auto sphereA = dynamic_cast<ColliderSphere*>(objA->m_collider.get());
+        auto sphereB = dynamic_cast<ColliderSphere*>(objB->m_collider.get());
 
         auto aToB = objB->m_rigid.GetNextPos() - objA->m_rigid.GetNextPos();
         float sumRadius = sphereA->radius + sphereB->radius;
@@ -152,19 +177,19 @@ bool Physics::IsCollide(const Collidable* objA, const Collidable* objB, const st
     return isCollide;
 }
 
-void Physics::FixNextPos(const Collidable* primary, Collidable* secondary, const std::shared_ptr<ColliderBase>& colliderPrimary, const std::shared_ptr<ColliderBase>& colliderSecondary) const
+void Physics::FixNextPos(const std::shared_ptr<Collidable>& primary, std::shared_ptr<Collidable>& secondary) const
 {
     Vec3 fixedPos;
 
-    auto primaryKind = colliderPrimary->GetKind();
-    auto secondaryKind = colliderSecondary->GetKind();
+    auto primaryKind = primary->m_collider->GetKind();
+    auto secondaryKind = secondary->m_collider->GetKind();
 
     if (primaryKind == ColliderBase::Kind::Sphere)
     {
         if (secondaryKind == ColliderBase::Kind::Sphere)
         {
-            auto primarySphere = dynamic_cast<ColliderSphere*>(colliderPrimary.get());
-            auto secondarySphere = dynamic_cast<ColliderSphere*>(colliderSecondary.get());
+            auto primarySphere = dynamic_cast<ColliderSphere*>(primary->m_collider.get());
+            auto secondarySphere = dynamic_cast<ColliderSphere*>(secondary->m_collider.get());
 
             // primaryÇ©ÇÁsecondaryÇ÷ÇÃÉxÉNÉgÉãÇçÏê¨
             auto primaryToSecondary = secondary->m_rigid.GetNextPos() - primary->m_rigid.GetNextPos();
@@ -180,6 +205,7 @@ void Physics::FixNextPos(const Collidable* primary, Collidable* secondary, const
     secondary->m_rigid.SetNextPos(fixedPos);
 }
 
+#if false
 void MyEngine::Physics::AddOnCollideInfo(Collidable* objA, Collidable* objB, OnCollideInfoKind kind)
 {
     // ìoò^çœÇ›Ç©ämîF
@@ -208,37 +234,105 @@ void MyEngine::Physics::AddOnCollideInfo(Collidable* objA, Collidable* objB, OnC
         m_onCollideInfo.emplace_back(infoB);
     }
 }
+#endif
 
-std::function<void(const Collidable&)> MyEngine::Physics::GetOnCollideInfoFunc(Collidable* obj, OnCollideInfoKind kind)
+void MyEngine::Physics::AddOnCollideInfo()
 {
-    std::function<void(const Collidable&)> func;
+    for (auto& parent : m_newCollideInfo)
+    {
+        // êeèÓïÒÇ∆ÇµÇƒìoò^Ç≥ÇÍÇƒÇ¢ÇÈÇ©
+        bool isParentFind = m_preCollideInfo.find(parent.first) != m_preCollideInfo.end();
+        
+        for (auto& child : parent.second)
+        {
+            // éqÇ∆ÇµÇƒìoò^Ç≥ÇÍÇƒÇ¢ÇÈÇ©
+            bool isChildFind = false;
+            if (isParentFind)
+            {
+                auto& preInfo = m_preCollideInfo[parent.first];
+                isChildFind = std::find(preInfo.begin(), preInfo.end(), child) != preInfo.end();
+            }
 
+            // ç°âÒì¸Ç¡ÇƒÇ´ÇΩèÍçáÇÕEnterÇåƒÇ‘
+            if (!isChildFind)
+            {
+                OnCollideInfoData infoA;
+                infoA.own = parent.first;
+                infoA.send = child;
+                infoA.kind = OnCollideInfoKind::CollideEnter;
+                OnCollideInfoData infoB;
+                infoB.own = child;
+                infoB.send = parent.first;
+                infoB.kind = OnCollideInfoKind::CollideEnter;
+                m_onCollideInfo.emplace_back(infoA);
+                m_onCollideInfo.emplace_back(infoB);
+            }
+            // StayÇÕÇ∆ÇËÇ†Ç¶Ç∏åƒÇ‘
+            OnCollideInfoData infoA;
+            infoA.own = parent.first;
+            infoA.send = child;
+            infoA.kind = OnCollideInfoKind::CollideStay;
+            OnCollideInfoData infoB;
+            infoB.own = child;
+            infoB.send = parent.first;
+            infoB.kind = OnCollideInfoKind::CollideStay;
+            m_onCollideInfo.emplace_back(infoA);
+            m_onCollideInfo.emplace_back(infoB);
+        }
+    }
+
+    for (auto& parent : m_preCollideInfo)
+    {
+        // êeèÓïÒÇ™ìoò^Ç≥ÇÍÇƒÇ¢ÇΩÇÁñ≥éã
+        if (m_newCollideInfo.find(parent.first) != m_newCollideInfo.end()) continue;
+
+        for (auto& child : parent.second)
+        {
+            // éqÇ™ìoò^Ç≥ÇÍÇƒÇ¢ÇΩÇÁñ≥éã
+            auto& newInfo = m_newCollideInfo[parent.first];
+            if (std::find(newInfo.begin(), newInfo.end(), child) != newInfo.end()) continue;
+
+            // ç°âÒî≤ÇØÇƒÇ¢Ç¡ÇΩÇÁExist
+            OnCollideInfoData infoA;
+            infoA.own = parent.first;
+            infoA.send = child;
+            infoA.kind = OnCollideInfoKind::CollideExit;
+            OnCollideInfoData infoB;
+            infoB.own = child;
+            infoB.send = parent.first;
+            infoB.kind = OnCollideInfoKind::CollideExit;
+            m_onCollideInfo.emplace_back(infoA);
+            m_onCollideInfo.emplace_back(infoB);
+        }
+    }
+}
+
+void MyEngine::Physics::OnCollideInfo(Collidable* own, Collidable* send, OnCollideInfoKind kind)
+{
     if (kind == OnCollideInfoKind::CollideEnter)
     {
-        func = [&obj](const Collidable& collider) { obj->OnCollideEnter(collider); };
+        own->OnCollideEnter(*send);
     }
     else if (kind == OnCollideInfoKind::CollideStay)
     {
-        func = [&obj](const Collidable& collider) { obj->OnCollideStay(collider); };
+        own->OnCollideStay(*send);
     }
     else if (kind == OnCollideInfoKind::CollideExit)
     {
-        func = [&obj](const Collidable& collider) { obj->OnCollideExit(collider); };
+        own->OnCollideExit(*send);
     }
     else if (kind == OnCollideInfoKind::TriggerEnter)
     {
-        func = [&obj](const Collidable& collider) { obj->OnTriggerEnter(collider); };
+        own->OnTriggerEnter(*send);
     }
     else if (kind == OnCollideInfoKind::TriggerStay)
     {
-        func = [&obj](const Collidable& collider) { obj->OnTriggerStay(collider); };
+        own->OnTriggerStay(*send);
     }
     else if (kind == OnCollideInfoKind::TriggerExit)
     {
-        func = [&obj](const Collidable& collider) { obj->OnTriggerExit(collider); };
+        own->OnTriggerExit(*send);
     }
-
-    return func;
 }
 
 /// <summary>
@@ -248,8 +342,23 @@ void Physics::FixPos() const
 {
     for (const auto& item : m_collidables)
     {
-        auto rigid = item->m_rigid;
+        auto& rigid = item->m_rigid;
 
         rigid.SetPos(rigid.GetNextPos());
+
+#ifdef _DEBUG
+        auto& debug = DebugDraw::GetInstance();
+        auto kind = item->m_collider->GetKind();
+        if (kind == ColliderBase::Kind::Sphere)
+        {
+            auto sphereData = dynamic_cast<ColliderSphere*>(item->m_collider.get());
+            DebugDraw::SphereInfo info;
+            info.center = rigid.GetPos();
+            info.radius = sphereData->radius;
+            info.color = DebugDraw::kAffterColor;
+            debug.DrawSphere(info);
+        }
+#endif
     }
+
 }

@@ -21,11 +21,11 @@ namespace MyEngine
 			TriggerStay,
 			TriggerExit
 		};
-		struct OnCollideInfo
+		struct OnCollideInfoData
 		{
+			Collidable* own;
 			Collidable* send;
 			OnCollideInfoKind kind;
-			std::function<void(const Collidable&)> func;
 		};
 	private:
 		Physics();
@@ -45,15 +45,21 @@ namespace MyEngine
 
 		void CheckCollide();
 
-		bool IsCollide(const Collidable* objA, const Collidable* objB, const std::shared_ptr<ColliderBase>& colliderA, const std::shared_ptr<ColliderBase>& colliderB) const;
-		void FixNextPos(const Collidable* primary, Collidable* secondary, const std::shared_ptr<ColliderBase>& colliderPrimary, const std::shared_ptr<ColliderBase>& colliderSecondary) const;
+		bool IsCollide(const std::shared_ptr<Collidable>& objA, const std::shared_ptr<Collidable>& objB) const;
+		void FixNextPos(const std::shared_ptr<Collidable>& primary, std::shared_ptr<Collidable>& secondary) const;
+#if false
 		void AddOnCollideInfo(Collidable* objA, Collidable* objB, OnCollideInfoKind kind);
-		std::function<void(const Collidable&)> GetOnCollideInfoFunc(Collidable* obj, OnCollideInfoKind kind);
+#else
+		void AddOnCollideInfo();
+#endif
+		void OnCollideInfo(Collidable* own, Collidable* send, OnCollideInfoKind kind);
 		void FixPos() const;
 
 	private:
 		std::list<std::shared_ptr<Collidable>> m_collidables;
-		std::list<OnCollideInfo> m_onCollideInfo;
+		std::list<OnCollideInfoData> m_onCollideInfo;
+		std::unordered_map<Collidable*, std::list<Collidable*>> m_newCollideInfo;
+		std::unordered_map<Collidable*, std::list<Collidable*>> m_preCollideInfo;
 	};
 }
 

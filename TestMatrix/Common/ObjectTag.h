@@ -2,5 +2,7 @@
 
 enum class ObjectTag
 {
+	Player,
+	Enemy,
 	None,
 };

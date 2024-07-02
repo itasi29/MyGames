@@ -52,7 +52,7 @@ namespace MyEngine
 		// 物理データ
 		Rigidbody m_rigid;
 		// 当たり判定データ
-		std::vector<std::shared_ptr<ColliderBase>> m_collider;
+		std::shared_ptr<ColliderBase> m_collider;
 
 	private:
 		ObjectTag m_tag;
